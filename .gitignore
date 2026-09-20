@@ -56,3 +56,4 @@ target/
 # Vite / Netlify
 .netlify/
 *.local
+deno.lock
