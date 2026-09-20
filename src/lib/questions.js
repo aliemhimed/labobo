@@ -77,6 +77,8 @@ function toQuestion(row, subject, topicMap, imageBase) {
   };
 }
 
+let warnedAboutApi = false;
+
 async function viaApi(tables, signal) {
   const res = await fetch(`/api/questions?tables=${encodeURIComponent(tables.join(','))}`, { signal });
   if (!res.ok) throw new Error(`/api/questions -> ${res.status}`);
@@ -126,7 +128,10 @@ export async function loadQuestions(config, signal) {
     byTable = await viaApi(tables, signal);
   } catch (e) {
     if (signal?.aborted) throw e;
-    console.warn('[questions] /api/questions unavailable, reading Supabase directly:', e.message);
+    if (!warnedAboutApi) {
+      warnedAboutApi = true;
+      console.info('[questions] /api/questions unavailable — reading Supabase directly.', e.message);
+    }
     byTable = await viaSupabaseDirect(config.sources, signal);
   }
 
