@@ -1,0 +1,60 @@
+import { useState } from 'react';
+import { supaInsert } from '../lib/supabase.js';
+import { useToast } from './Toast.jsx';
+
+const REASONS = [
+  'Wrong answer marked',
+  'Typo or formatting error',
+  'Outdated information',
+  'Unclear or ambiguous wording',
+  'Other',
+];
+
+export default function ReportModal({ question, deviceId, onClose }) {
+  const [selected, setSelected] = useState(null);
+  const [note, setNote] = useState('');
+  const [sending, setSending] = useState(false);
+  const toast = useToast();
+
+  async function submit() {
+    if (!selected || sending) return;
+    setSending(true);
+    onClose();
+    await supaInsert('question_reports', {
+      question_text: question.q,
+      subject: question.subject,
+      topic: question.topic,
+      reason: selected,
+      note: note.trim() || null,
+      device_id: deviceId || 'anon',
+      reported_at: new Date().toISOString(),
+    });
+    toast("Thanks! We'll review this question.");
+  }
+
+  return (
+    <div className="report-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="report-modal">
+        <h3>🚩 Report a problem</h3>
+        <p>Help us improve — what's wrong with this question?</p>
+        <div className="report-reasons">
+          {REASONS.map((r) => (
+            <div key={r}
+                 className={'report-reason' + (selected === r ? ' active' : '')}
+                 onClick={() => setSelected(r)}>
+              {r}
+            </div>
+          ))}
+        </div>
+        <textarea className="report-note" placeholder="Optional: add details…" maxLength={500}
+                  value={note} onChange={(e) => setNote(e.target.value)} />
+        <div className="report-actions">
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn primary" disabled={!selected || sending} onClick={submit}>
+            Submit Report
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

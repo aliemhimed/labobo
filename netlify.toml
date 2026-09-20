@@ -1,4 +1,6 @@
 [build]
+  command = "npm run build"
+  publish = "dist"
   functions = "netlify/functions"
 
 # Friendly URL rewrites: /api/* -> /.netlify/functions/*
@@ -20,4 +22,16 @@
 [[redirects]]
   from = "/api/announcements"
   to   = "/.netlify/functions/announcements"
+  status = 200
+
+[[redirects]]
+  from = "/api/questions"
+  to   = "/.netlify/functions/questions"
+  status = 200
+
+# SPA fallback — every other path is handled by React Router.
+# Must stay last so it doesn't shadow the /api rules above.
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
   status = 200

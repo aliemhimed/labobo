@@ -1,0 +1,4 @@
+{
+  "//": "Scopes these functions back to CommonJS. The root package.json sets \"type\": \"module\" for the Vite app, which would otherwise make Node treat exports.handler in this folder as ESM and fail to load every function.",
+  "type": "commonjs"
+}
