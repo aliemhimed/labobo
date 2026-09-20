@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const FUNCTIONS_ORIGIN = 'http://localhost:8888';
+// `netlify dev` defaults to 8888; override with FUNCTIONS_ORIGIN if it picks
+// another port, or if you run the functions somewhere else.
+const FUNCTIONS_ORIGIN = process.env.FUNCTIONS_ORIGIN || 'http://localhost:8888';
 
 /* The /api/* routes are Netlify Functions. `netlify dev` serves them on 8888;
    plain `vite dev` has nothing there.

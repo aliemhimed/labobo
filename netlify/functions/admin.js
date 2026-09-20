@@ -5,8 +5,14 @@
      GET    /api/admin?action=leaderboard[&week=YYYY-MM-DD]
      GET    /api/admin?action=users
      GET    /api/admin?action=sessions[&limit=N]
+     GET    /api/admin?action=announcements        (includes hidden ones)
+     POST   /api/admin?action=announcement         body: {id,title,body,pub_date,active}
      DELETE /api/admin?action=leaderboard&id=N
      DELETE /api/admin?action=report&id=N
+     DELETE /api/admin?action=announcement&id=SLUG
+
+   The public site reads announcements from /api/announcements instead,
+   which is unauthenticated and only returns active ones.
 
    ENV VARS (set in Netlify dashboard):
      ADMIN_PASSWORD   — required. The password the admin page sends in X-Admin-Password.
@@ -20,6 +26,10 @@ const SUPA_URL = 'https://boukmowybmtfqkinuvqj.supabase.co';
 const SUPA_KEY = 'sb_publishable_LLpEKdQRvePMYJ5b7loUKA_SeZ51lJs';
 const SUPA_SERVICE_KEY = process.env.SUPA_SERVICE_KEY || null;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'CHANGE_ME_labobo_admin';
+
+const SERVICE_KEY_HINT =
+  'SUPA_SERVICE_KEY not set on Netlify. Add it under Site → Site settings → Environment variables, ' +
+  'then redeploy. Find the key in Supabase → Settings → API → "service_role" secret.';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -147,18 +157,62 @@ exports.handler = async (event) => {
         return ok({ rows });
       }
 
+      if (action === 'announcements') {
+        // Read as admin: the anon policy only exposes active rows, and the
+        // dashboard needs to see hidden ones too.
+        if (!adminHeaders()) return err(503, SERVICE_KEY_HINT);
+        const rows = await rest(
+          '/announcements?select=*&order=pub_date.desc,created_at.desc&limit=500',
+          {},
+          true
+        );
+        return ok({ rows });
+      }
+
       return err(400, `Unknown GET action: ${action}`);
     }
 
     // ============ WRITE ==========
     if (event.httpMethod === 'POST') {
+      if (action === 'announcement') {
+        if (!adminHeaders()) return err(503, SERVICE_KEY_HINT);
+
+        let payload;
+        try { payload = JSON.parse(event.body || '{}'); }
+        catch { return err(400, 'Body is not valid JSON'); }
+
+        const id = String(payload.id || '').trim();
+        const title = String(payload.title || '').trim();
+        const body = String(payload.body || '').trim();
+        if (!id) return err(400, 'Missing id');
+        if (!title) return err(400, 'Missing title');
+        if (!body) return err(400, 'Missing body');
+
+        const row = {
+          id,
+          title,
+          body,
+          pub_date: payload.pub_date || new Date().toISOString().slice(0, 10),
+          active: payload.active !== false,
+        };
+
+        // Upsert, so the dashboard's Save button both creates and edits.
+        const saved = await rest('/announcements', {
+          method: 'POST',
+          headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+          body: JSON.stringify(row),
+        }, true);
+
+        return ok({ saved: Array.isArray(saved) ? saved[0] : saved });
+      }
+
       return err(400, `Unknown POST action: ${action}`);
     }
 
     // ============ DELETE ACTIONS ============
     if (event.httpMethod === 'DELETE') {
       if (!adminHeaders()) {
-        return err(503, 'SUPA_SERVICE_KEY not set on Netlify. Add it under Site → Site settings → Environment variables, then redeploy. Find the key in Supabase → Settings → API → "service_role" secret.');
+        return err(503, SERVICE_KEY_HINT);
       }
 
       const id = params.id;
@@ -179,6 +233,10 @@ exports.handler = async (event) => {
       if (action === 'user') {
         await rest(`/users?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' }, true);
         return ok({ deleted: 'users', id });
+      }
+      if (action === 'announcement') {
+        await rest(`/announcements?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' }, true);
+        return ok({ deleted: 'announcements', id });
       }
       return err(400, `Unknown DELETE action: ${action}`);
     }
