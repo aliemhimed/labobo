@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" font-family="Arial, Helvetica, sans-serif">
+<rect width="600" height="380" fill="#ffffff"/>
+<text x="300" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#1a3c5e">Identify the injection route</text>
+<rect x="60" y="60"  width="480" height="40"  fill="#f6d8c4" stroke="#b07a55"/>
+<rect x="60" y="100" width="480" height="80"  fill="#f1c9a8" stroke="#b07a55"/>
+<rect x="60" y="180" width="480" height="90"  fill="#fdeec2" stroke="#caa45a"/>
+<rect x="60" y="270" width="480" height="70"  fill="#e7a9a0" stroke="#a85b52"/>
+<text x="70" y="84" font-size="13" fill="#5a3b27">Epidermis</text>
+<text x="70" y="145" font-size="13" fill="#5a3b27">Dermis</text>
+<text x="70" y="230" font-size="13" fill="#7a5b1f">Subcutaneous tissue</text>
+<text x="70" y="312" font-size="13" fill="#7a322b">Muscle</text>
+<path d="M250 124 q50 -34 100 0" fill="none" stroke="#b07a55" stroke-width="3"/>
+<line x1="180" y1="105" x2="300" y2="225" stroke="#444" stroke-width="7" stroke-linecap="round"/>
+<rect x="143" y="77" width="34" height="18" rx="3" fill="#dfe9f2" stroke="#7d97ad" transform="rotate(45,180,105)"/>
+</svg>

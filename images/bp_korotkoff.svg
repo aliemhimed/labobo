@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 300" font-family="Arial, Helvetica, sans-serif">
+<rect width="620" height="300" fill="#ffffff"/>
+<text x="310" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a3c5e">Blood Pressure: Korotkoff Sounds</text>
+<line x1="60" y1="220" x2="560" y2="220" stroke="#333" stroke-width="2"/>
+<line x1="60" y1="60" x2="60" y2="220" stroke="#333" stroke-width="2"/>
+<text x="40" y="70" font-size="11" fill="#333" text-anchor="end">mmHg</text>
+<!-- cuff pressure declining -->
+<line x1="60" y1="80" x2="560" y2="210" stroke="#3498db" stroke-width="3"/>
+<circle cx="180" cy="112" r="6" fill="#c0392b"/><text x="180" y="100" text-anchor="middle" font-size="12" fill="#c0392b">1st sound</text>
+<text x="180" y="245" text-anchor="middle" font-size="13" font-weight="bold" fill="#c0392b">SYSTOLIC</text>
+<text x="180" y="262" text-anchor="middle" font-size="11" fill="#666">90–120 mmHg</text>
+<circle cx="430" cy="187" r="6" fill="#27ae60"/><text x="430" y="176" text-anchor="middle" font-size="12" fill="#27ae60">sound disappears</text>
+<text x="430" y="245" text-anchor="middle" font-size="13" font-weight="bold" fill="#27ae60">DIASTOLIC</text>
+<text x="430" y="262" text-anchor="middle" font-size="11" fill="#666">60–80 mmHg</text>
+<text x="310" y="290" text-anchor="middle" font-size="12" fill="#777">Deflate ~2–3 mmHg per second; cuff lower edge 2–3 cm above antecubital fossa.</text>
+</svg>

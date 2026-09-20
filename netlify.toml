@@ -1,0 +1,23 @@
+[build]
+  functions = "netlify/functions"
+
+# Friendly URL rewrites: /api/* -> /.netlify/functions/*
+[[redirects]]
+  from = "/api/supa-insert"
+  to   = "/.netlify/functions/supa-insert"
+  status = 200
+
+[[redirects]]
+  from = "/api/leaderboard"
+  to   = "/.netlify/functions/leaderboard"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin"
+  to   = "/.netlify/functions/admin"
+  status = 200
+
+[[redirects]]
+  from = "/api/announcements"
+  to   = "/.netlify/functions/announcements"
+  status = 200

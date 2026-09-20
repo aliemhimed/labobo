@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" font-family="Arial, Helvetica, sans-serif">
+<rect width="600" height="420" fill="#ffffff"/>
+<text x="300" y="34" text-anchor="middle" font-size="22" font-weight="bold" fill="#1a3c5e">Intramuscular (IM) Injection</text>
+<!-- layers -->
+<rect x="60" y="80"  width="480" height="40"  fill="#f6d8c4" stroke="#b07a55"/>
+<rect x="60" y="120" width="480" height="80"  fill="#f1c9a8" stroke="#b07a55"/>
+<rect x="60" y="200" width="480" height="90"  fill="#fdeec2" stroke="#caa45a"/>
+<rect x="60" y="290" width="480" height="70"  fill="#e7a9a0" stroke="#a85b52"/>
+<text x="70" y="104" font-size="14" fill="#5a3b27">Epidermis</text>
+<text x="70" y="165" font-size="14" fill="#5a3b27">Dermis</text>
+<text x="70" y="250" font-size="14" fill="#7a5b1f">Subcutaneous tissue (fat)</text>
+<text x="70" y="332" font-size="14" fill="#7a322b">Muscle</text>
+<line x1="300" y1="155" x2="300" y2="325" stroke="#6a1b9a" stroke-width="7" stroke-linecap="round"/>
+<line x1="300" y1="155" x2="300" y2="325" stroke="#cccccc" stroke-width="2"/>
+<rect x="282" y="120" width="34" height="18" rx="3" fill="#dfe9f2" stroke="#7d97ad" transform="rotate(90,300,155)"/>
+<text x="300" y="398" text-anchor="middle" font-size="16" fill="#1a3c5e" font-weight="bold">Angle: 90°</text>
+<text x="300" y="416" text-anchor="middle" font-size="12" fill="#555">21–23 G • up to ~1 mL deltoid • Z-track for irritants</text>
+</svg>

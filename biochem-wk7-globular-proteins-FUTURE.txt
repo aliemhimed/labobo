@@ -1,0 +1,253 @@
+﻿================================================================
+BIOCHEMISTRY WEEK 7: GLOBULAR PROTEINS (Hemoglobin / Myoglobin)
+Saved 2026-05-24 for future re-integration
+Total: 12 questions
+================================================================
+
+=== JSON format (for re-integration into gct.html) ===
+[
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Hemoglobin A consists of:",
+        "options":  [
+                        "2 α + 2 γ chains",
+                        "2 α + 2 β chains",
+                        "4 identical α chains",
+                        "4 β chains"
+                    ],
+        "answer":  1,
+        "explanation":  "Adult Hb (HbA) is α₂β₂. Fetal HbF is α₂γ₂."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Fetal hemoglobin (HbF) has higher affinity for O₂ than adult hemoglobin because:",
+        "options":  [
+                        "It contains γ chains that bind 2,3-BPG less avidly",
+                        "It contains an extra heme group",
+                        "It has more α chains",
+                        "It is monomeric"
+                    ],
+        "answer":  0,
+        "explanation":  "γ-chains of HbF bind 2,3-BPG less avidly → higher O₂ affinity, advantageous in the low-O₂ fetal environment."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Which scenario best describes Alzheimer\u0027s pathology?",
+        "options":  [
+                        "Misfolded prion protein PrPSc accumulates",
+                        "Hyperphosphorylated tau forms intracellular neurofibrillary tangles and Aβ plaques accumulate extracellularly",
+                        "Mutation in dystrophin causes muscle degeneration",
+                        "Hemoglobin polymerizes under low oxygen"
+                    ],
+        "answer":  1,
+        "explanation":  "Hallmarks: extracellular Aβ plaques and intracellular hyperphosphorylated tau tangles."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Which is the INCORRECT statement about hemoglobin?",
+        "options":  [
+                        "Adult HbA is a tetramer (α₂β₂)",
+                        "Sickle cell anemia is caused by a single amino-acid substitution in β-globin",
+                        "HbF has lower affinity for O₂ than HbA",
+                        "Fetal hemoglobin contains γ-chains"
+                    ],
+        "answer":  2,
+        "explanation":  "HbF has HIGHER O₂ affinity than HbA (adaptation to fetal environment)."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Down syndrome patients have increased Alzheimer risk because:",
+        "options":  [
+                        "They lack β-globin",
+                        "The amyloid precursor protein (APP) gene is on chromosome 21",
+                        "Trisomy 21 inactivates BRCA1",
+                        "Their telomeres are too long"
+                    ],
+        "answer":  1,
+        "explanation":  "APP is on chromosome 21 → trisomy 21 → APP overexpression → ↑ Aβ → early-onset AD."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Sickle hemoglobin (HbS) differs from HbA by:",
+        "options":  [
+                        "A point mutation Glu→Val at position 6 of β-globin",
+                        "Loss of an entire α-chain",
+                        "Increased heme content",
+                        "Trisomy of chromosome 11"
+                    ],
+        "answer":  0,
+        "explanation":  "HbS: missense mutation (Glu→Val) at β-globin position 6."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Hemoglobin\u0027s quaternary structure consists of:",
+        "options":  [
+                        "1 polypeptide",
+                        "2 polypeptides",
+                        "4 polypeptides (2α + 2β)",
+                        "8 polypeptides"
+                    ],
+        "answer":  2,
+        "explanation":  "Adult hemoglobin (HbA) is α2β2."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "The Bohr effect describes:",
+        "options":  [
+                        "The cooperative O₂ binding of hemoglobin\u0027s four subunits",
+                        "Decreased O₂ affinity of hemoglobin in tissues with high CO₂ and low pH",
+                        "The higher O₂ affinity of fetal hemoglobin compared to adult",
+                        "Carbon monoxide binding to hemoglobin with 200× the affinity of O₂"
+                    ],
+        "answer":  1,
+        "explanation":  "Bohr effect: ↑ CO₂, ↑ H⁺, ↑ 2,3-BPG (in tissues) → right shift of O₂ dissociation curve → ↓ Hb affinity → ↑ O₂ release."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Compared to hemoglobin, myoglobin:",
+        "options":  [
+                        "Is a tetramer composed of two α and two β chains",
+                        "Is a monomer with hyperbolic (non-cooperative) O₂ binding curve",
+                        "Has lower O₂ affinity than hemoglobin in muscle tissue",
+                        "Releases O₂ at higher Po₂ values than hemoglobin"
+                    ],
+        "answer":  1,
+        "explanation":  "Myoglobin: single polypeptide + 1 heme, hyperbolic curve, very high O₂ affinity (P50 ≈ 1 mmHg); stores O₂ in muscle."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "Sickle-cell anemia is caused by a substitution of:",
+        "options":  [
+                        "Lysine for arginine at position 6 of the α-globin chain",
+                        "Valine for glutamic acid at position 6 of the β-globin chain",
+                        "Glutamine for lysine at position 26 of the β-globin chain",
+                        "Serine for glycine at position 92 of the α-globin chain"
+                    ],
+        "answer":  1,
+        "explanation":  "HbS: β6 Glu→Val. The hydrophobic Val promotes polymerization of deoxy-Hb → sickling under low O₂."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "A 5-year-old African-American boy presents with severe pain in the hands and feet (dactylitis), fatigue and jaundice. Hemoglobin electrophoresis shows HbS without HbA. Peripheral smear shows sickled erythrocytes. The molecular cause is:",
+        "options":  [
+                        "A frameshift mutation in the α-globin chain producing a truncated protein",
+                        "A point mutation in β-globin: Glu→Val at position 6, causing polymerization",
+                        "Deletion of all four α-globin genes producing hydrops fetalis",
+                        "Defective ankyrin causing membrane fragility and spherical RBCs"
+                    ],
+        "answer":  1,
+        "explanation":  "Sickle cell anemia (HbSS): β6 Glu→Val. Hydrophobic Val polymerizes deoxy-HbS → sickling → vaso-occlusion and hemolysis."
+    },
+    {
+        "subject":  "Biochemistry",
+        "topic":  "Biochem Wk 7: Globular Proteins (Hb/Mb)",
+        "q":  "A patient develops severe muscle pain after vigorous exercise. Blood shows elevated lactate but normal glucose. Muscle biopsy shows abnormal accumulation of glycogen. This patient\u0027s myoglobin levels would behave how in working muscle?",
+        "options":  [
+                        "Myoglobin would release O₂ to muscle with sigmoidal cooperative kinetics",
+                        "Myoglobin would release O₂ to muscle only when Po₂ falls to very low levels",
+                        "Myoglobin would bind CO₂ for transport back to the lungs efficiently",
+                        "Myoglobin would polymerize like HbS under low O₂ in working muscle"
+                    ],
+        "answer":  1,
+        "explanation":  "Myoglobin: hyperbolic curve, very high O₂ affinity (P50 ~1 mmHg). Releases O₂ to mitochondria only at very low Po₂. Acts as a short-term O₂ buffer in muscle."
+    }
+]
+
+=== Human-readable format ===
+
+[1] Hemoglobin A consists of:
+    A. 2 α + 2 γ chains
+  ✓ B. 2 α + 2 β chains
+    C. 4 identical α chains
+    D. 4 β chains
+    Explanation: Adult Hb (HbA) is α₂β₂. Fetal HbF is α₂γ₂.
+
+[2] Fetal hemoglobin (HbF) has higher affinity for O₂ than adult hemoglobin because:
+  ✓ A. It contains γ chains that bind 2,3-BPG less avidly
+    B. It contains an extra heme group
+    C. It has more α chains
+    D. It is monomeric
+    Explanation: γ-chains of HbF bind 2,3-BPG less avidly → higher O₂ affinity, advantageous in the low-O₂ fetal environment.
+
+[3] Which scenario best describes Alzheimer's pathology?
+    A. Misfolded prion protein PrPSc accumulates
+  ✓ B. Hyperphosphorylated tau forms intracellular neurofibrillary tangles and Aβ plaques accumulate extracellularly
+    C. Mutation in dystrophin causes muscle degeneration
+    D. Hemoglobin polymerizes under low oxygen
+    Explanation: Hallmarks: extracellular Aβ plaques and intracellular hyperphosphorylated tau tangles.
+
+[4] Which is the INCORRECT statement about hemoglobin?
+    A. Adult HbA is a tetramer (α₂β₂)
+    B. Sickle cell anemia is caused by a single amino-acid substitution in β-globin
+  ✓ C. HbF has lower affinity for O₂ than HbA
+    D. Fetal hemoglobin contains γ-chains
+    Explanation: HbF has HIGHER O₂ affinity than HbA (adaptation to fetal environment).
+
+[5] Down syndrome patients have increased Alzheimer risk because:
+    A. They lack β-globin
+  ✓ B. The amyloid precursor protein (APP) gene is on chromosome 21
+    C. Trisomy 21 inactivates BRCA1
+    D. Their telomeres are too long
+    Explanation: APP is on chromosome 21 → trisomy 21 → APP overexpression → ↑ Aβ → early-onset AD.
+
+[6] Sickle hemoglobin (HbS) differs from HbA by:
+  ✓ A. A point mutation Glu→Val at position 6 of β-globin
+    B. Loss of an entire α-chain
+    C. Increased heme content
+    D. Trisomy of chromosome 11
+    Explanation: HbS: missense mutation (Glu→Val) at β-globin position 6.
+
+[7] Hemoglobin's quaternary structure consists of:
+    A. 1 polypeptide
+    B. 2 polypeptides
+  ✓ C. 4 polypeptides (2α + 2β)
+    D. 8 polypeptides
+    Explanation: Adult hemoglobin (HbA) is α2β2.
+
+[8] The Bohr effect describes:
+    A. The cooperative O₂ binding of hemoglobin's four subunits
+  ✓ B. Decreased O₂ affinity of hemoglobin in tissues with high CO₂ and low pH
+    C. The higher O₂ affinity of fetal hemoglobin compared to adult
+    D. Carbon monoxide binding to hemoglobin with 200× the affinity of O₂
+    Explanation: Bohr effect: ↑ CO₂, ↑ H⁺, ↑ 2,3-BPG (in tissues) → right shift of O₂ dissociation curve → ↓ Hb affinity → ↑ O₂ release.
+
+[9] Compared to hemoglobin, myoglobin:
+    A. Is a tetramer composed of two α and two β chains
+  ✓ B. Is a monomer with hyperbolic (non-cooperative) O₂ binding curve
+    C. Has lower O₂ affinity than hemoglobin in muscle tissue
+    D. Releases O₂ at higher Po₂ values than hemoglobin
+    Explanation: Myoglobin: single polypeptide + 1 heme, hyperbolic curve, very high O₂ affinity (P50 ≈ 1 mmHg); stores O₂ in muscle.
+
+[10] Sickle-cell anemia is caused by a substitution of:
+    A. Lysine for arginine at position 6 of the α-globin chain
+  ✓ B. Valine for glutamic acid at position 6 of the β-globin chain
+    C. Glutamine for lysine at position 26 of the β-globin chain
+    D. Serine for glycine at position 92 of the α-globin chain
+    Explanation: HbS: β6 Glu→Val. The hydrophobic Val promotes polymerization of deoxy-Hb → sickling under low O₂.
+
+[11] A 5-year-old African-American boy presents with severe pain in the hands and feet (dactylitis), fatigue and jaundice. Hemoglobin electrophoresis shows HbS without HbA. Peripheral smear shows sickled erythrocytes. The molecular cause is:
+    A. A frameshift mutation in the α-globin chain producing a truncated protein
+  ✓ B. A point mutation in β-globin: Glu→Val at position 6, causing polymerization
+    C. Deletion of all four α-globin genes producing hydrops fetalis
+    D. Defective ankyrin causing membrane fragility and spherical RBCs
+    Explanation: Sickle cell anemia (HbSS): β6 Glu→Val. Hydrophobic Val polymerizes deoxy-HbS → sickling → vaso-occlusion and hemolysis.
+
+[12] A patient develops severe muscle pain after vigorous exercise. Blood shows elevated lactate but normal glucose. Muscle biopsy shows abnormal accumulation of glycogen. This patient's myoglobin levels would behave how in working muscle?
+    A. Myoglobin would release O₂ to muscle with sigmoidal cooperative kinetics
+  ✓ B. Myoglobin would release O₂ to muscle only when Po₂ falls to very low levels
+    C. Myoglobin would bind CO₂ for transport back to the lungs efficiently
+    D. Myoglobin would polymerize like HbS under low O₂ in working muscle
+    Explanation: Myoglobin: hyperbolic curve, very high O₂ affinity (P50 ~1 mmHg). Releases O₂ to mitochondria only at very low Po₂. Acts as a short-term O₂ buffer in muscle.
+
+

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="Arial, Helvetica, sans-serif">
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="320" y="36" text-anchor="middle" font-size="22" font-weight="bold" fill="#1a3c5e">Body Mass Index (BMI) Categories</text>
+<text x="320" y="60" text-anchor="middle" font-size="13" fill="#555">BMI = weight (kg) ÷ height² (m²) — units kg/m²</text>
+<!-- segmented bar -->
+<rect x="40"  y="110" width="150" height="46" fill="#5dade2"/>
+<rect x="190" y="110" width="170" height="46" fill="#58d68d"/>
+<rect x="360" y="110" width="140" height="46" fill="#f5b041"/>
+<rect x="500" y="110" width="100" height="46" fill="#e74c3c"/>
+<text x="115" y="139" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Underweight</text>
+<text x="275" y="139" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Normal</text>
+<text x="430" y="139" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Overweight</text>
+<text x="550" y="139" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Obese</text>
+<!-- thresholds -->
+<text x="190" y="180" text-anchor="middle" font-size="14" fill="#1a3c5e">18.5</text>
+<text x="360" y="180" text-anchor="middle" font-size="14" fill="#1a3c5e">25.0</text>
+<text x="500" y="180" text-anchor="middle" font-size="14" fill="#1a3c5e">30.0</text>
+<text x="115" y="205" text-anchor="middle" font-size="13" fill="#555">&lt; 18.5</text>
+<text x="275" y="205" text-anchor="middle" font-size="13" fill="#555">18.5 – 24.9</text>
+<text x="430" y="205" text-anchor="middle" font-size="13" fill="#555">25.0 – 29.9</text>
+<text x="550" y="205" text-anchor="middle" font-size="13" fill="#555">≥ 30.0</text>
+<text x="320" y="255" text-anchor="middle" font-size="13" fill="#777">Children: percentiles for age &amp; sex — &lt;5th underweight, 85–95th overweight, &gt;95th obese</text>
+</svg>
