@@ -82,8 +82,9 @@ async function rest(path, init = {}, asAdmin = false) {
 }
 
 async function countTable(table, filter = '') {
+  // users/sessions/question_reports have no anon SELECT policy, so count as admin.
   const res = await fetch(`${SUPA_URL}/rest/v1/${table}?select=id${filter}`, {
-    headers: { ...publicHeaders(), 'Prefer': 'count=exact', 'Range': '0-0' }
+    headers: { ...(adminHeaders() || publicHeaders()), 'Prefer': 'count=exact', 'Range': '0-0' }
   });
   const range = res.headers.get('content-range');
   if (!range) return null;
@@ -133,7 +134,7 @@ exports.handler = async (event) => {
       }
 
       if (action === 'reports') {
-        const rows = await rest('/question_reports?select=*&order=created_at.desc.nullslast,id.desc&limit=500');
+        const rows = await rest('/question_reports?select=*&order=created_at.desc.nullslast,id.desc&limit=500', {}, true);
         return ok({ rows });
       }
 
@@ -147,13 +148,13 @@ exports.handler = async (event) => {
       }
 
       if (action === 'users') {
-        const rows = await rest('/users?select=*&order=joined.desc.nullslast&limit=1000');
+        const rows = await rest('/users?select=*&order=joined.desc.nullslast&limit=1000', {}, true);
         return ok({ rows });
       }
 
       if (action === 'sessions') {
         const limit = Math.min(parseInt(params.limit || '100', 10), 500);
-        const rows = await rest(`/sessions?select=*&order=created_at.desc.nullslast&limit=${limit}`);
+        const rows = await rest(`/sessions?select=*&order=created_at.desc.nullslast&limit=${limit}`, {}, true);
         return ok({ rows });
       }
 

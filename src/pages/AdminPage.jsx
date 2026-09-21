@@ -80,6 +80,14 @@ function Gate({ onUnlocked }) {
 }
 
 export default function AdminPage() {
+  return (
+    <div className="admin-page">
+      <AdminInner />
+    </div>
+  );
+}
+
+function AdminInner() {
   const [unlocked, setUnlocked] = useState(false);
   const [checking, setChecking] = useState(true);
   const [tab, setTab] = useState('reports');

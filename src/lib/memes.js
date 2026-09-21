@@ -16,8 +16,8 @@ export const RIGHT_MEMES = [
   'c09490bb02f0eca38b0420eabaccb28c.jpg',
   'cat-meme.gif',
   'f20f149659887c02bafb1f1aa44fb42a.jpg',
-  'OGC.gif',
-  'OIP.webp',
+  'ogc.gif',
+  'oip.webp',
 ];
 
 export const WRONG_MEMES = [
@@ -35,8 +35,8 @@ export const WRONG_MEMES = [
   '77.webp',
   'ab6775700000ee85d9c655e3568d50620ddd5d5b.jpg',
   'cat-reaction-images.jpg',
-  'e84a13a2-1a17-4b1e-9789-618f615a8e05._CR0,0,500,500_SX460_.jpg',
-  'OIP (2).webp',
+  'e84a13a2-1a17-4b1e-9789-618f615a8e05._cr0,0,500,500_sx460_.jpg',
+  'oip (2).webp',
 ];
 
 export const WRONG_CAPTIONS = [

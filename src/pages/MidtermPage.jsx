@@ -52,6 +52,14 @@ function Gate({ onUnlock }) {
 }
 
 export default function MidtermPage() {
+  return (
+    <div className="midterm-page">
+      <MidtermInner />
+    </div>
+  );
+}
+
+function MidtermInner() {
   const [unlocked, setUnlocked] = useState(() => {
     try { return sessionStorage.getItem(SESSION_KEY) === '1'; } catch { return false; }
   });
