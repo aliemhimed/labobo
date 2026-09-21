@@ -1,7 +1,5 @@
 import { useRef, useState } from 'react';
-import { uid } from '../lib/utils.js';
-import { setUser } from '../lib/storage.js';
-import { supaInsert } from '../lib/supabase.js';
+import { registerUser, createGuest } from '../lib/user.js';
 
 export default function Welcome({ config, totalQuestions, onReady }) {
   const [warned, setWarned] = useState(false);
@@ -10,17 +8,12 @@ export default function Welcome({ config, totalQuestions, onReady }) {
   function register() {
     const name = inputRef.current.value.trim();
     if (!name) { inputRef.current.focus(); return; }
-    const user = { name, deviceId: uid(), registered: true, joined: new Date().toISOString() };
-    setUser(user);
-    supaInsert('users', { name: user.name, device_id: user.deviceId, joined: user.joined });
-    onReady(user);
+    onReady(registerUser(name));
   }
 
   function skip() {
     if (!warned) { setWarned(true); return; }
-    const user = { name: 'Guest', deviceId: uid(), registered: false };
-    setUser(user);
-    onReady(user);
+    onReady(createGuest());
   }
 
   return (

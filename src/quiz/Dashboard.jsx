@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
+import { useHistory, useWrong } from '../hooks/useStore.js';
 import { Breakdown } from './Breakdown.jsx';
 import { fmtDate, scoreClass } from '../lib/utils.js';
 
-export default function Dashboard({ store, tick, onHome, onOpen }) {
-  const { hist, wrong, avg, totalAnswered, bySubj, worst } = useMemo(() => {
-    const hist = store.getHistory();
-    const wrong = Object.keys(store.getWrong()).length;
+export default function Dashboard({ store, onHome, onOpen }) {
+  const hist = useHistory(store);
+  const wrongMap = useWrong(store);
+  const { wrong, avg, totalAnswered, bySubj, worst } = useMemo(() => {
+    const wrong = Object.keys(wrongMap).length;
     let totalAnswered = 0, totalCorrect = 0;
     const bySubj = {};
     hist.forEach((r) => {
@@ -24,14 +26,13 @@ export default function Dashboard({ store, tick, onHome, onOpen }) {
       const p = st.total ? Math.round((100 * st.correct) / st.total) : 0;
       if (p < worstPct && st.total >= 5) { worstPct = p; worst = s; }
     });
-    return { hist, wrong, avg, totalAnswered, bySubj, worst };
-    // `tick` forces a recompute after a session is saved
-  }, [store, tick]);
+    return { wrong, avg, totalAnswered, bySubj, worst };
+  }, [hist, wrongMap]);
 
   return (
     <div className="container">
       <div className="page-header">
-        <button className="back-btn" onClick={onHome}>←</button>
+        <button className="back-btn" aria-label="Back to menu" onClick={onHome}>←</button>
         <h1>Performance Dashboard</h1>
       </div>
       <div className="dash-grid">

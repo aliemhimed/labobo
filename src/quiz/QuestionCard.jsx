@@ -1,4 +1,6 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useRef } from 'react';
+import QuestionBody from './QuestionBody.jsx';
+import { useEqualOptionHeights } from '../hooks/useEqualOptionHeights.js';
 import { LETTERS } from '../lib/utils.js';
 
 /* Options are rendered in a shuffled order so the correct answer isn't
@@ -23,16 +25,7 @@ export default function QuestionCard({
   const answered = answer && answer.selected !== null;
   const showFeedback = !isExam && answered;
 
-  /* Equalize option heights so the longest answer isn't a visual giveaway. */
-  useLayoutEffect(() => {
-    const box = optionsRef.current;
-    if (!box) return;
-    const opts = box.querySelectorAll('.option');
-    opts.forEach((o) => { o.style.minHeight = ''; });
-    let maxH = 0;
-    opts.forEach((o) => { maxH = Math.max(maxH, o.offsetHeight); });
-    opts.forEach((o) => { o.style.minHeight = maxH + 'px'; });
-  }, [question, displayOrder, answer]);
+  useEqualOptionHeights(optionsRef, [question, displayOrder, answer]);
 
   const isLast = index === total - 1;
   const correctDisplayPos = displayOrder.indexOf(question.answer);
@@ -69,25 +62,7 @@ export default function QuestionCard({
       </div>
 
       <div className="question-card">
-        <div className="q-meta">
-          <span>{question.subject} · {question.topic}</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span className="q-tag">Q{index + 1}</span>
-            <button className="report-btn" title="Report a problem" onClick={onReport}>🚩 Report</button>
-          </div>
-        </div>
-
-        <div className="q-text">{question.q}</div>
-
-        {question.images?.length ? (
-          <div className="q-images">
-            {question.images.map((src) => (
-              <a key={src} className="q-image-link" href={src} target="_blank" rel="noreferrer">
-                <img src={src} alt="" loading="lazy" decoding="async" />
-              </a>
-            ))}
-          </div>
-        ) : null}
+        <QuestionBody question={question} index={index} onReport={onReport} />
 
         <div className="options" ref={optionsRef}>
           {displayOrder.map((origIdx, displayPos) => {

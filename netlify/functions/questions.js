@@ -10,8 +10,7 @@
    Rows come back ordered by `ord`, then `id`, so question indices are stable
    between loads. Only the tables in ALLOWED_TABLES can be read. */
 
-const SUPA_URL = 'https://boukmowybmtfqkinuvqj.supabase.co';
-const SUPA_KEY = 'sb_publishable_LLpEKdQRvePMYJ5b7loUKA_SeZ51lJs';
+const { SUPA_URL, anonHeaders, fail } = require('./_lib/common');
 
 // Keep in sync with ALL_QUESTION_TABLES in src/lib/subjects.js
 const ALLOWED_TABLES = [
@@ -32,11 +31,17 @@ const ALLOWED_TABLES = [
   'midterm_histology',
 ];
 
+// Public, read-only data: any origin may fetch it.
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
+
+// Netlify Functions reject responses over ~6 MB, so ask for a few tables at
+// a time and refuse to send more than fits.
+const MAX_TABLES = 6;
+const MAX_BODY_BYTES = 5.5 * 1024 * 1024;
 
 // Supabase caps a single REST response; page through anything larger.
 const PAGE_SIZE = 1000;
@@ -56,8 +61,7 @@ async function fetchTable(table) {
       `${SUPA_URL}/rest/v1/${table}?select=${selectFor(table)}&order=ord.asc,id.asc`,
       {
         headers: {
-          apikey: SUPA_KEY,
-          Authorization: `Bearer ${SUPA_KEY}`,
+          ...anonHeaders(),
           Range: `${from}-${from + PAGE_SIZE - 1}`,
           'Range-Unit': 'items',
         },
@@ -71,36 +75,27 @@ async function fetchTable(table) {
 }
 
 exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: CORS, body: '' };
-  }
-  if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, headers: CORS, body: 'Method not allowed' };
-  }
+  const reply = (r) => ({ ...r, headers: { ...r.headers, ...CORS } });
+
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
+  if (event.httpMethod !== 'GET') return reply(fail(405, 'Method not allowed'));
 
   const raw = (event.queryStringParameters || {}).tables || '';
-  const requested = raw.split(',').map((t) => t.trim()).filter(Boolean);
+  const requested = [...new Set(raw.split(',').map((t) => t.trim()).filter(Boolean))];
 
-  if (!requested.length) {
-    return {
-      statusCode: 400,
-      headers: { ...CORS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Missing ?tables=' }),
-    };
-  }
+  if (!requested.length) return reply(fail(400, 'Missing ?tables='));
+  if (requested.length > MAX_TABLES) return reply(fail(400, `Ask for at most ${MAX_TABLES} tables at a time`));
   const bad = requested.filter((t) => !ALLOWED_TABLES.includes(t));
-  if (bad.length) {
-    return {
-      statusCode: 403,
-      headers: { ...CORS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: `Table not allowed: ${bad.join(', ')}` }),
-    };
-  }
+  if (bad.length) return reply(fail(403, `Table not allowed: ${bad.join(', ')}`));
 
   try {
     const results = await Promise.all(requested.map(fetchTable));
     const tables = {};
     requested.forEach((t, i) => { tables[t] = results[i]; });
+    const body = JSON.stringify({ tables });
+    if (Buffer.byteLength(body) > MAX_BODY_BYTES) {
+      return reply(fail(413, 'Response too large; request fewer tables'));
+    }
     return {
       statusCode: 200,
       headers: {
@@ -109,13 +104,9 @@ exports.handler = async (event) => {
         // Questions change rarely; let the CDN carry the load.
         'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400',
       },
-      body: JSON.stringify({ tables }),
+      body,
     };
   } catch (e) {
-    return {
-      statusCode: 502,
-      headers: { ...CORS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: String(e.message || e) }),
-    };
+    return reply(fail(502, 'Questions are unavailable right now', e));
   }
 };

@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import TopBar from '../components/TopBar.jsx';
 import ReportModal from '../components/ReportModal.jsx';
+import { useLeaderboard } from '../components/Leaderboard.jsx';
 import { useMeme } from '../components/MemePopup.jsx';
+import { useToast } from '../components/Toast.jsx';
 import Welcome from './Welcome.jsx';
 import ModeHome from './ModeHome.jsx';
 import StudyView from './StudyView.jsx';
@@ -12,12 +15,28 @@ import ReviewView from './ReviewView.jsx';
 import Flashcards from './Flashcards.jsx';
 import Dashboard from './Dashboard.jsx';
 import ExamDetail from './ExamDetail.jsx';
+import { initialSession, restoreSession, serializeSession, sessionReducer } from './session.js';
+import { useHistory, useWrong } from '../hooks/useStore.js';
 import { buildSubjectIndex } from '../lib/questions.js';
-import { createSubjectStore, getUser, clearUser } from '../lib/storage.js';
+import {
+  clearUser, createSubjectStore, getUser, onStorageError, saveSession,
+} from '../lib/storage.js';
 import { supaInsert } from '../lib/supabase.js';
 import { buildQuizQuestions, distribute, shuffle, uid } from '../lib/utils.js';
 
-export default function QuizEngine({ config, questions }) {
+/* Which views need a quiz in progress, and which need a finished result. The
+   view itself lives in the URL (/gct/exam, /gct/dashboard …) so the browser's
+   Back button and a refresh both do the sensible thing. */
+const NEEDS_QUIZ = new Set(['practice', 'exam', 'review-wrong', 'review-after-exam']);
+const NEEDS_RECORD = new Set(['exam-results', 'exam-detail']);
+const VIEWS = new Set([
+  'home', 'study', 'practice-config', 'exam-config', 'flashcards-config', 'flashcards', 'dashboard',
+  ...NEEDS_QUIZ, ...NEEDS_RECORD,
+]);
+
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+export default function QuizEngine({ config, questions, basePath }) {
   const store = useMemo(() => createSubjectStore(config.storagePrefix), [config.storagePrefix]);
   const subjectIndex = useMemo(() => buildSubjectIndex(questions), [questions]);
   const idToIndex = useMemo(() => {
@@ -26,18 +45,33 @@ export default function QuizEngine({ config, questions }) {
     return m;
   }, [questions]);
 
-  const [user, setUserState] = useState(() => getUser());
-  const [view, setView] = useState(() => (getUser() ? 'home' : 'welcome'));
-  const [quizMode, setQuizMode] = useState(null);
-  const [qIds, setQIds] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [examLength, setExamLength] = useState(() => config.examLengths[Math.min(2, config.examLengths.length - 1)]);
-  const [viewingExam, setViewingExam] = useState(null);
-  const [reportFor, setReportFor] = useState(null);
-  const [historyTick, setHistoryTick] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { '*': splat = '' } = useParams();
+  const view = splat.split('/')[0] || 'home';
+  const go = useCallback((v, opts) => navigate(v === 'home' ? basePath : `${basePath}/${v}`, opts), [navigate, basePath]);
 
-  const [memeEl, triggerMeme, dismissMeme] = useMeme(quizMode);
+  const toast = useToast();
+  const [user, setUserState] = useState(() => getUser());
+  const [session, dispatch] = useReducer(sessionReducer, initialSession, () => restoreSession(config.storagePrefix, idToIndex));
+  const [examLength, setExamLength] = useState(() => config.examLengths[Math.min(2, config.examLengths.length - 1)]);
+  const [reportFor, setReportFor] = useState(null);
+
+  const wrong = useWrong(store);
+  const history = useHistory(store);
+  const leaderboard = useLeaderboard(config.leaderboardSubject);
+  const [memeEl, triggerMeme, dismissMeme] = useMeme(session.mode);
+
+  const { mode: quizMode, qIds, answers, index, record } = session;
+
+  /* Keep an in-progress quiz across refreshes. */
+  useEffect(() => {
+    saveSession(config.storagePrefix, serializeSession(session, questions));
+  }, [session, questions, config.storagePrefix]);
+
+  useEffect(() => onStorageError(() => {
+    toast("Couldn't save your progress: browser storage is full or blocked.");
+  }), [toast]);
 
   /* Option shuffling is stable for as long as a question stays on screen. */
   const optionOrders = useRef(new Map());
@@ -49,89 +83,87 @@ export default function QuizEngine({ config, questions }) {
     return optionOrders.current.get(qIdx);
   }, [questions]);
 
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [view]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+  }, [view]);
 
   useEffect(() => {
     document.title = config.docTitle;
   }, [config.docTitle]);
 
+  /* The router applies navigation as a transition, so a plain dispatch next to
+     it could render first and trip the "nothing to show" redirect below. Doing
+     both inside one transition makes them land in the same render. */
+  const commit = useCallback((action, v, opts) => {
+    startTransition(() => {
+      dispatch(action);
+      go(v, opts);
+    });
+  }, [go]);
+
   const goHome = useCallback(() => {
     dismissMeme();
-    setView(user ? 'home' : 'welcome');
-  }, [user, dismissMeme]);
+    commit({ type: 'reset' }, 'home');
+  }, [dismissMeme, commit]);
 
   function logout() {
     if (!confirm('Switch user? Your saved progress will remain on this device.')) return;
     clearUser();
     setUserState(null);
-    setView('welcome');
+    commit({ type: 'reset' }, 'home');
   }
 
   /* ── starting each mode ─────────────────────────────────────────── */
 
-  function startConfigured(mode) {
-    const dist = distribute(examLength, config.ratio);
-    const picked = buildQuizQuestions(dist, questions);
+  function startSession(mode, picked) {
     optionOrders.current.clear();
-    setQIds(picked);
-    setAnswers(picked.map((idx) => ({ qIdx: idx, selected: null })));
-    setIndex(0);
-    setQuizMode(mode);
-    setView(mode);
+    commit({ type: 'start', mode, qIds: picked }, mode);
+  }
+
+  function startConfigured(mode) {
+    startSession(mode, buildQuizQuestions(distribute(examLength, config.ratio), questions));
   }
 
   function startReviewWrong() {
-    const wrong = store.getWrong();
     const ids = Object.keys(wrong)
       .map((id) => idToIndex.get(id))
       .filter((i) => i !== undefined);
-    if (!ids.length) return;
-    const picked = shuffle(ids);
-    optionOrders.current.clear();
-    setQIds(picked);
-    setAnswers(picked.map((idx) => ({ qIdx: idx, selected: null })));
-    setIndex(0);
-    setQuizMode('review-wrong');
-    setView('review-wrong');
+    if (!ids.length) {
+      toast('Nothing to review: those questions are no longer in the bank.');
+      return;
+    }
+    startSession('review-wrong', shuffle(ids));
   }
 
   function handleGo(key) {
-    if (key === 'study') { setView('study'); setQuizMode('study'); }
-    else if (key === 'practice-config' || key === 'exam-config') setView(key);
-    else if (key === 'review-wrong') startReviewWrong();
-    else if (key === 'flashcards') setView('flashcards-config');
-    else if (key === 'dashboard') setView('dashboard');
-    else if (key === 'leaderboard') {
-      if (window.LABOBO_LEADERBOARD) {
-        window.LABOBO_LEADERBOARD.showLeaderboardModal(config.leaderboardSubject);
-      }
-    }
+    if (key === 'review-wrong') startReviewWrong();
+    else if (key === 'flashcards') go('flashcards-config');
+    else if (key === 'leaderboard') leaderboard.openBoard();
+    else go(key); // study, practice-config, exam-config, dashboard
   }
 
   /* ── answering ──────────────────────────────────────────────────── */
 
   const selectOption = useCallback((slot, optionIdx) => {
-    setAnswers((prev) => {
-      const next = prev.slice();
-      next[slot] = { ...next[slot], selected: optionIdx };
-      return next;
-    });
+    dispatch({ type: 'select', slot, option: optionIdx });
     const q = questions[qIds[slot]];
     if (q) triggerMeme(optionIdx === q.answer);
   }, [questions, qIds, triggerMeme]);
+
+  const setIndex = useCallback((i) => dispatch({ type: 'goto', index: i }), []);
 
   /* ── finishing ──────────────────────────────────────────────────── */
 
   function finishExam() {
     dismissMeme();
-    let correct = 0, wrong = 0;
+    let correct = 0, wrongCount = 0;
     const subjectStats = {};
     const topicStats = {};
     answers.forEach((a) => {
       const q = questions[a.qIdx];
       if (!q) return;
       const isC = a.selected !== null && a.selected === q.answer;
-      if (isC) correct++; else wrong++;
+      if (isC) correct++; else wrongCount++;
       if (!subjectStats[q.subject]) subjectStats[q.subject] = { correct: 0, total: 0 };
       subjectStats[q.subject].total++;
       if (isC) subjectStats[q.subject].correct++;
@@ -143,12 +175,12 @@ export default function QuizEngine({ config, questions }) {
 
     const total = qIds.length;
     const score = total > 0 ? Math.round((100 * correct) / total) : 0;
-    const record = {
+    const finished = {
       id: uid(),
       date: new Date().toISOString(),
       type: quizMode === 'review-wrong' ? 'practice' : quizMode,
       questionCount: total,
-      correct, wrong, score,
+      correct, wrong: wrongCount, score,
       // store question ids, not array positions — positions shift when the
       // database gains or loses rows
       questionIds: qIds.map((i) => questions[i]?.id).filter(Boolean),
@@ -156,45 +188,39 @@ export default function QuizEngine({ config, questions }) {
       subjectStats, topicStats,
     };
 
-    if (user && user.registered) {
-      const hist = store.getHistory();
-      hist.unshift(record);
-      store.setHistory(hist.slice(0, 200));
+    if (user?.registered) {
+      store.setHistory([finished, ...store.getHistory()]);
 
-      const wrongMap = store.getWrong();
+      const wrongMap = { ...store.getWrong() };
       answers.forEach((a) => {
         const q = questions[a.qIdx];
         if (!q) return;
         if (a.selected === null || a.selected !== q.answer) {
-          wrongMap[q.id] = wrongMap[q.id] || [];
-          wrongMap[q.id].push({ date: record.date, examId: record.id, selected: a.selected });
+          wrongMap[q.id] = [...(wrongMap[q.id] || []), { date: finished.date, examId: finished.id, selected: a.selected }];
         } else {
           delete wrongMap[q.id];
         }
       });
       store.setWrong(wrongMap);
-      setHistoryTick((t) => t + 1);
     }
 
     supaInsert('sessions', {
       device_id: user?.deviceId,
       subject: config.sessionSubject,
-      mode: record.type,
-      score: record.correct,
-      total: record.questionCount,
-      pct: record.score,
+      mode: finished.type,
+      score: finished.correct,
+      total: finished.questionCount,
+      pct: finished.score,
     });
-    if (record.type === 'exam' && record.questionCount === 30 && window.LABOBO_LEADERBOARD) {
-      window.LABOBO_LEADERBOARD.handleExamSubmission({
-        subject: config.leaderboardSubject,
-        score_pct: record.score,
-        total_questions: record.questionCount,
-        time_seconds: null,
+    if (finished.type === 'exam' && finished.questionCount === 30) {
+      leaderboard.submitExam({
+        score_pct: finished.score,
+        total_questions: finished.questionCount,
+        time_seconds: session.startedAt ? Math.round((Date.now() - session.startedAt) / 1000) : null,
       });
     }
 
-    setViewingExam(record);
-    setView('exam-results');
+    commit({ type: 'finish', record: finished }, 'exam-results', { replace: true });
   }
 
   function promptSubmitExam() {
@@ -216,17 +242,12 @@ export default function QuizEngine({ config, questions }) {
 
   /* Re-open a saved record for review. Records store question ids, so a
      question deleted from the database since is simply skipped. */
-  function openReview(record) {
-    const slots = (record.questionIds || [])
-      .map((id, i) => ({ qIdx: idToIndex.get(id), selected: record.answers[i] }))
+  function openReview(rec) {
+    const slots = (rec.questionIds || [])
+      .map((id, i) => ({ qIdx: idToIndex.get(id), selected: rec.answers[i] }))
       .filter((s) => s.qIdx !== undefined);
     optionOrders.current.clear();
-    setQIds(slots.map((s) => s.qIdx));
-    setAnswers(slots.map((s) => ({ qIdx: s.qIdx, selected: s.selected })));
-    setIndex(0);
-    setViewingExam(record);
-    setQuizMode('review-after-exam');
-    setView('review-after-exam');
+    commit({ type: 'review', slots, record: rec }, 'review-after-exam', { state: { from: view } });
   }
 
   /* ── rendering ──────────────────────────────────────────────────── */
@@ -244,30 +265,40 @@ export default function QuizEngine({ config, questions }) {
   if (!user) {
     body = (
       <Welcome config={config} totalQuestions={questions.length}
-               onReady={(u) => { setUserState(u); setView('home'); }} />
+               onReady={(u) => { setUserState(u); go('home'); }} />
     );
+  } else if (!VIEWS.has(view) || (NEEDS_QUIZ.has(view) && !qIds.length) || (NEEDS_RECORD.has(view) && !record)) {
+    // Unknown address, or a quiz/result screen with nothing to show (fresh tab,
+    // shared link): land on the mode menu instead of an empty page.
+    return <Navigate to={basePath} replace />;
   } else {
     switch (view) {
       case 'home':
         body = (
           <ModeHome user={user}
-                    wrongCount={Object.keys(store.getWrong()).length}
-                    historyCount={store.getHistory().length}
+                    wrongCount={Object.keys(wrong).length}
+                    historyCount={history.length}
                     onGo={handleGo} />
         );
         break;
       case 'study':
-        body = <StudyView {...shared} setQIds={setQIds} setAnswers={setAnswers} onHome={goHome} />;
+        body = (
+          <StudyView questions={questions} subjectIndex={subjectIndex}
+                     getDisplayOrder={getDisplayOrder} triggerMeme={triggerMeme}
+                     onReport={shared.onReport} dismissMeme={dismissMeme} onHome={goHome} />
+        );
         break;
       case 'practice-config':
-      case 'exam-config':
+      case 'exam-config': {
+        const mode = view === 'exam-config' ? 'exam' : 'practice';
         body = (
-          <ConfigView config={config} mode={view === 'exam-config' ? 'exam' : 'practice'}
+          <ConfigView config={config} mode={mode}
                       examLength={examLength} setExamLength={setExamLength}
-                      onStart={() => startConfigured(view === 'exam-config' ? 'exam' : 'practice')}
+                      onStart={() => startConfigured(mode)}
                       onHome={goHome} />
         );
         break;
+      }
       case 'practice':
       case 'exam':
       case 'review-wrong':
@@ -277,15 +308,12 @@ export default function QuizEngine({ config, questions }) {
         );
         break;
       case 'exam-results':
-        body = (
-          <ResultsView record={viewingExam} onHome={goHome}
-                       onReview={() => openReview(viewingExam)} />
-        );
+        body = <ResultsView record={record} onHome={goHome} onReview={() => openReview(record)} />;
         break;
       case 'review-after-exam':
         body = (
           <ReviewView {...shared}
-                      onBack={() => setView(viewingExam ? 'exam-results' : 'dashboard')} />
+                      onBack={() => go(location.state?.from === 'exam-detail' ? 'exam-detail' : 'exam-results')} />
         );
         break;
       case 'flashcards-config':
@@ -293,25 +321,22 @@ export default function QuizEngine({ config, questions }) {
         body = (
           <Flashcards questions={questions} subjectIndex={subjectIndex} store={store}
                       started={view === 'flashcards'}
-                      onStart={() => setView('flashcards')}
-                      onConfig={() => setView('flashcards-config')}
+                      onStart={() => go('flashcards')}
+                      onConfig={() => go('flashcards-config')}
                       onHome={goHome} />
         );
         break;
       case 'dashboard':
         body = (
-          <Dashboard store={store} tick={historyTick} onHome={goHome}
-                     onOpen={(rec) => { setViewingExam(rec); setView('exam-detail'); }} />
+          <Dashboard store={store} onHome={goHome}
+                     onOpen={(rec) => commit({ type: 'view-record', record: rec }, 'exam-detail')} />
         );
         break;
       case 'exam-detail':
-        body = (
-          <ExamDetail record={viewingExam} onBack={() => setView('dashboard')}
-                      onReview={() => openReview(viewingExam)} />
-        );
+        body = <ExamDetail record={record} onBack={() => go('dashboard')} onReview={() => openReview(record)} />;
         break;
       default:
-        body = <ModeHome user={user} wrongCount={0} historyCount={0} onGo={handleGo} />;
+        body = null;
     }
   }
 
@@ -321,6 +346,7 @@ export default function QuizEngine({ config, questions }) {
               onBrandClick={goHome} onLogout={logout} />
       <div id="root">{body}</div>
       {memeEl}
+      {leaderboard.element}
       {reportFor !== null && questions[reportFor] ? (
         <ReportModal question={questions[reportFor]} deviceId={user?.deviceId}
                      onClose={() => setReportFor(null)} />

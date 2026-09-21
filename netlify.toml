@@ -3,6 +3,11 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[functions]
+  # The handle validator reads shared/profanity-patterns.json, which lives
+  # outside the functions folder.
+  included_files = ["shared/**"]
+
 # Friendly URL rewrites: /api/* -> /.netlify/functions/*
 [[redirects]]
   from = "/api/supa-insert"

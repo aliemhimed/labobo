@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { shuffle } from '../lib/utils.js';
+import { useTopicKeys } from '../hooks/useTopicKeys.js';
 
 const DAY = 86400000;
 
@@ -27,13 +28,7 @@ function grade(card, rating) {
 export default function Flashcards({
   questions, subjectIndex, store, started, onStart, onConfig, onHome,
 }) {
-  const allKeys = useMemo(() => {
-    const keys = [];
-    Object.keys(subjectIndex).forEach((s) =>
-      Object.keys(subjectIndex[s]).forEach((t) => keys.push(`${s}::${t}`))
-    );
-    return keys;
-  }, [subjectIndex]);
+  const allKeys = useTopicKeys(subjectIndex);
 
   const [topics, setTopics] = useState(() => new Set(allKeys));
   const [queue, setQueue] = useState([]);
@@ -92,8 +87,7 @@ export default function Flashcards({
     const q = questions[i];
     if (q) {
       const sched = store.getFlashcards();
-      sched[q.id] = grade(sched[q.id], rating);
-      store.setFlashcards(sched);
+      store.setFlashcards({ ...sched, [q.id]: grade(sched[q.id], rating) });
     }
     if (rating === 'again') {
       setAgain((a) => a + 1);

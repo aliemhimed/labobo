@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getUser, setUser } from '../lib/storage.js';
-import { supaInsert } from '../lib/supabase.js';
+import { getUser } from '../lib/storage.js';
 import { toggleTheme } from '../lib/theme.js';
-import { uid } from '../lib/utils.js';
+import { registerUser, createGuest } from '../lib/user.js';
+import { SunIcon, MoonIcon } from '../components/ThemeIcons.jsx';
 
 const MedArtIcon = () => (
   /* Paintbrush + stethoscope: the arms form a Y at the top, the tube curves
@@ -52,16 +52,11 @@ export default function HomePage() {
   function start() {
     const name = inputRef.current.value.trim();
     if (!name) { inputRef.current.focus(); return; }
-    const u = { name, deviceId: uid(), registered: true, joined: new Date().toISOString() };
-    setUser(u);
-    supaInsert('users', { name: u.name, device_id: u.deviceId, joined: u.joined });
-    reveal(u);
+    reveal(registerUser(name));
   }
 
   function skip() {
-    const u = { name: 'Guest', deviceId: uid(), registered: false };
-    setUser(u);
-    reveal(u);
+    reveal(createGuest());
   }
 
   const greeting =
@@ -72,12 +67,8 @@ export default function HomePage() {
   return (
     <>
       <button className="theme-toggle" title="Toggle theme" aria-label="Toggle theme" onClick={toggleTheme}>
-        <svg className="icon-sun" viewBox="0 0 24 24">
-          <path d="M12 4.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 12 4.5zm0 13.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75zm7.5-7.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1 0-1.5h1.5zm-13.5 0a.75.75 0 0 1 0 1.5H4.5a.75.75 0 0 1 0-1.5H6zM17.03 6.97a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 0 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0zm-8.48 8.48a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 0 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0zm9.54 0a.75.75 0 0 1-1.06 0l-1.06-1.06a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1 0 1.06zm-8.48-8.48A.75.75 0 0 1 8.543 7.97L7.483 6.91a.75.75 0 0 1 1.06-1.06l1.06 1.06a.75.75 0 0 1 0 1.06zM12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5z" />
-        </svg>
-        <svg className="icon-moon" viewBox="0 0 24 24">
-          <path d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 12a9 9 0 0 0 17.999-.004l-.001-.002-.245.008z" />
-        </svg>
+        <SunIcon className="icon-sun" />
+        <MoonIcon className="icon-moon" />
       </button>
 
       <div className="wrap">

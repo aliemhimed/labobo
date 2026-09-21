@@ -819,3 +819,9 @@ h1, h2, h3 { text-wrap: balance; }
 .fc-topic input,.fc-subj-head input{width:17px;height:17px;accent-color:var(--brand);cursor:pointer;flex-shrink:0;}
 .mode-card.flashcards:hover{border-color:rgba(139,92,246,.45);box-shadow:var(--shadow-md),0 0 0 1px rgba(139,92,246,.14);}
 .mode-card.flashcards .mode-icon{background:linear-gradient(135deg,#8B5CF6,#EC4899);}
+
+/* Visually hidden, still read by screen readers. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}

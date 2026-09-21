@@ -1,42 +1,49 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import QuestionCard from './QuestionCard.jsx';
+import { useTopicKeys } from '../hooks/useTopicKeys.js';
 import { shuffle } from '../lib/utils.js';
 import { quizStats } from './stats.js';
 
+/* Study mode owns its own little session: the pool is derived from the
+   filters, and answers/position reset whenever the pool is rebuilt. */
 export default function StudyView({
-  questions, subjectIndex, qIds, answers, index,
-  setQIds, setAnswers, setIndex, getDisplayOrder, onSelect, onReport, onHome, dismissMeme,
+  questions, subjectIndex, getDisplayOrder, triggerMeme, onReport, onHome, dismissMeme,
 }) {
-  const allTopicKeys = useMemo(() => {
-    const keys = [];
-    Object.keys(subjectIndex).forEach((s) =>
-      Object.keys(subjectIndex[s]).forEach((t) => keys.push(`${s}::${t}`))
-    );
-    return keys;
-  }, [subjectIndex]);
+  const allTopicKeys = useTopicKeys(subjectIndex);
 
   const [selectedTopics, setSelectedTopics] = useState(() => new Set(allTopicKeys));
   const [search, setSearch] = useState('');
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [shuffleTick, setShuffleTick] = useState(0);
 
-  /* Rebuild the pool whenever the filters change. */
-  useEffect(() => {
+  /* The shuffled pool for the current filters. */
+  const qIds = useMemo(() => {
     const term = search.trim().toLowerCase();
     const pool = [];
     questions.forEach((q, i) => {
       if (!selectedTopics.has(`${q.subject}::${q.topic}`)) return;
-      if (term) {
-        const txt = (q.q + ' ' + q.options.join(' ')).toLowerCase();
-        if (!txt.includes(term)) return;
-      }
+      if (term && !(q.q + ' ' + q.options.join(' ')).toLowerCase().includes(term)) return;
       pool.push(i);
     });
-    const picked = shuffle(pool);
-    setQIds(picked);
-    setAnswers(picked.map((idx) => ({ qIdx: idx, selected: null })));
-    setIndex(0);
-  }, [questions, selectedTopics, search, shuffleTick, setQIds, setAnswers, setIndex]);
+    return shuffle(pool);
+    // shuffleTick re-runs the shuffle on demand
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions, selectedTopics, search, shuffleTick]);
+
+  /* Progress belongs to one pool; a new pool starts fresh. */
+  const [progress, setProgress] = useState({ pool: null, answers: [], index: 0 });
+  const fresh = progress.pool === qIds ? progress : { pool: qIds, answers: qIds.map(() => null), index: 0 };
+  const { index } = fresh;
+  const answers = fresh.answers.map((selected, i) => ({ qIdx: qIds[i], selected }));
+  const setIndex = (i) => setProgress({ ...fresh, index: i });
+
+  function onSelect(slot, option) {
+    const next = fresh.answers.slice();
+    next[slot] = option;
+    setProgress({ ...fresh, answers: next });
+    const q = questions[qIds[slot]];
+    if (q) triggerMeme(option === q.answer);
+  }
 
   function toggleTopic(key, on) {
     setSelectedTopics((prev) => {
@@ -53,7 +60,7 @@ export default function StudyView({
   return (
     <div className="container">
       <div className="page-header">
-        <button className="back-btn" onClick={onHome}>←</button>
+        <button className="back-btn" aria-label="Back to menu" onClick={onHome}>←</button>
         <h1>Study Mode</h1>
       </div>
       <div className="filter-section">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supaInsert } from '../lib/supabase.js';
 import { useToast } from './Toast.jsx';
+import Dialog from './Dialog.jsx';
 
 const REASONS = [
   'Wrong answer marked',
@@ -33,28 +34,27 @@ export default function ReportModal({ question, deviceId, onClose }) {
   }
 
   return (
-    <div className="report-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="report-modal">
-        <h3>🚩 Report a problem</h3>
-        <p>Help us improve — what's wrong with this question?</p>
-        <div className="report-reasons">
-          {REASONS.map((r) => (
-            <div key={r}
-                 className={'report-reason' + (selected === r ? ' active' : '')}
-                 onClick={() => setSelected(r)}>
-              {r}
-            </div>
-          ))}
-        </div>
-        <textarea className="report-note" placeholder="Optional: add details…" maxLength={500}
-                  value={note} onChange={(e) => setNote(e.target.value)} />
-        <div className="report-actions">
-          <button className="btn" onClick={onClose}>Cancel</button>
-          <button className="btn primary" disabled={!selected || sending} onClick={submit}>
-            Submit Report
-          </button>
-        </div>
+    <Dialog onClose={onClose} labelledBy="report-title"
+            overlayClass="report-overlay" modalClass="report-modal">
+      <h3 id="report-title">🚩 Report a problem</h3>
+      <p>Help us improve — what's wrong with this question?</p>
+      <div className="report-reasons">
+        {REASONS.map((r) => (
+          <div key={r}
+               className={'report-reason' + (selected === r ? ' active' : '')}
+               onClick={() => setSelected(r)}>
+            {r}
+          </div>
+        ))}
       </div>
-    </div>
+      <textarea className="report-note" placeholder="Optional: add details…" maxLength={500}
+                value={note} onChange={(e) => setNote(e.target.value)} />
+      <div className="report-actions">
+        <button className="btn" onClick={onClose}>Cancel</button>
+        <button className="btn primary" disabled={!selected || sending} onClick={submit}>
+          Submit Report
+        </button>
+      </div>
+    </Dialog>
   );
 }

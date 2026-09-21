@@ -83,7 +83,7 @@ export default function SubjectPage({ subjectKey }) {
 
   return (
     <ToastProvider>
-      <QuizEngine config={config} questions={questions} />
+      <QuizEngine config={config} questions={questions} basePath={`/${subjectKey}`} />
     </ToastProvider>
   );
 }

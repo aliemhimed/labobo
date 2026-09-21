@@ -1,4 +1,6 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useRef } from 'react';
+import QuestionBody from './QuestionBody.jsx';
+import { useEqualOptionHeights } from '../hooks/useEqualOptionHeights.js';
 import { LETTERS } from '../lib/utils.js';
 
 /* Post-exam review: every answer visible, original option order (no
@@ -11,21 +13,13 @@ export default function ReviewView({
   const question = questions[qIdx];
   const answer = answers[index];
 
-  useLayoutEffect(() => {
-    const box = optionsRef.current;
-    if (!box) return;
-    const opts = box.querySelectorAll('.option');
-    opts.forEach((o) => { o.style.minHeight = ''; });
-    let maxH = 0;
-    opts.forEach((o) => { maxH = Math.max(maxH, o.offsetHeight); });
-    opts.forEach((o) => { o.style.minHeight = maxH + 'px'; });
-  }, [question]);
+  useEqualOptionHeights(optionsRef, [question]);
 
   if (!question) {
     return (
       <div className="container">
         <div className="page-header">
-          <button className="back-btn" onClick={onBack}>←</button>
+          <button className="back-btn" aria-label="Back" onClick={onBack}>←</button>
           <h1>Review Answers</h1>
         </div>
         <div className="card empty-state">
@@ -43,7 +37,7 @@ export default function ReviewView({
   return (
     <div className="container">
       <div className="page-header">
-        <button className="back-btn" onClick={onBack}>←</button>
+        <button className="back-btn" aria-label="Back" onClick={onBack}>←</button>
         <h1>Review Answers</h1>
       </div>
       <div id="quizArea">
@@ -55,23 +49,7 @@ export default function ReviewView({
           <div className="qpb-fill"><div style={{ width: `${(100 * (index + 1)) / qIds.length}%` }} /></div>
         </div>
         <div className="question-card">
-          <div className="q-meta">
-            <span>{question.subject} · {question.topic}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="q-tag">Q{index + 1}</span>
-              <button className="report-btn" title="Report a problem" onClick={() => onReport(qIdx)}>🚩 Report</button>
-            </div>
-          </div>
-          <div className="q-text">{question.q}</div>
-          {question.images?.length ? (
-            <div className="q-images">
-              {question.images.map((src) => (
-                <a key={src} className="q-image-link" href={src} target="_blank" rel="noreferrer">
-                  <img src={src} alt="" loading="lazy" decoding="async" />
-                </a>
-              ))}
-            </div>
-          ) : null}
+          <QuestionBody question={question} index={index} onReport={() => onReport(qIdx)} />
           <div className="options" ref={optionsRef}>
             {question.options.map((opt, i) => {
               let cls = 'option disabled';
