@@ -1,3 +1,5 @@
+import { escapeHtml, sanitizeHtml } from '../lib/sanitize.js';
+
 /* ============================================================
    LABOBO ANNOUNCEMENTS
    ============================================================
@@ -123,10 +125,10 @@ window.LABOBO_ANNOUNCEMENTS = window.LABOBO_ANNOUNCEMENTS || [];
     overlay.innerHTML = `
       <div class="labobo-announce-modal" role="dialog" aria-modal="true" aria-labelledby="ann-title">
         <div class="labobo-announce-badge">What's new</div>
-        <h3 id="ann-title">${announcement.title}</h3>
-        <p>${announcement.body}</p>
+        <h3 id="ann-title">${escapeHtml(announcement.title)}</h3>
+        <p>${sanitizeHtml(announcement.body)}</p>
         <div class="labobo-announce-meta">
-          <span>${announcement.date || ''}</span>
+          <span>${escapeHtml(announcement.date || '')}</span>
           <button class="labobo-announce-btn" type="button">Got it</button>
         </div>
       </div>

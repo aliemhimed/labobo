@@ -1,15 +1,30 @@
 const API = '/api/admin';
-const PW_KEY = 'labobo_admin_pw';
+/* The password is exchanged once for a short-lived signed token; only the
+   token is kept (sessionStorage, so it dies with the tab). */
+const TOKEN_KEY = 'labobo_admin_token';
 
-export const getPassword = () => {
-  try { return sessionStorage.getItem(PW_KEY) || ''; } catch { return ''; }
+export const getToken = () => {
+  try { return sessionStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; }
 };
-export const setPassword = (pw) => {
-  try { sessionStorage.setItem(PW_KEY, pw); } catch { /* ignore */ }
+const setToken = (t) => {
+  try { sessionStorage.setItem(TOKEN_KEY, t); } catch { /* ignore */ }
 };
-export const clearPassword = () => {
-  try { sessionStorage.removeItem(PW_KEY); } catch { /* ignore */ }
+export const clearToken = () => {
+  try { sessionStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ }
 };
+
+/** Exchange the password for a token. Throws Unauthorized on a wrong password. */
+export async function login(password) {
+  const res = await fetch(`${API}?action=login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401) throw new Unauthorized('Wrong password.');
+  if (!res.ok || !data.token) throw new Error(data.error || `HTTP ${res.status}`);
+  setToken(data.token);
+}
 
 export class Unauthorized extends Error {}
 
@@ -18,13 +33,13 @@ export async function apiCall(method, action, opts = {}) {
   const res = await fetch(`${API}?${qs}`, {
     method,
     headers: {
-      'X-Admin-Password': getPassword(),
+      Authorization: `Bearer ${getToken()}`,
       ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
     },
     body: opts.body ? JSON.stringify(opts.body) : undefined,
   });
   if (res.status === 401) {
-    clearPassword();
+    clearToken();
     throw new Unauthorized('Session expired — unlock again.');
   }
   const text = await res.text();

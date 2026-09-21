@@ -20,7 +20,7 @@ export default function ReportModal({ question, deviceId, onClose }) {
     if (!selected || sending) return;
     setSending(true);
     onClose();
-    await supaInsert('question_reports', {
+    const saved = await supaInsert('question_reports', {
       question_text: question.q,
       subject: question.subject,
       topic: question.topic,
@@ -29,7 +29,7 @@ export default function ReportModal({ question, deviceId, onClose }) {
       device_id: deviceId || 'anon',
       reported_at: new Date().toISOString(),
     });
-    toast("Thanks! We'll review this question.");
+    toast(saved ? "Thanks! We'll review this question." : "Couldn't send your report. Please try again later.");
   }
 
   return (

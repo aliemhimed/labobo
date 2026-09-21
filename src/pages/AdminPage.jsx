@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  apiCall, clearPassword, getPassword, setPassword, Unauthorized,
+  apiCall, clearToken, getToken, login, Unauthorized,
   fmtDate, timeAgo,
 } from '../lib/adminApi.js';
 import AnnouncementsTab from '../components/admin/AnnouncementsTab.jsx';
@@ -52,13 +52,11 @@ function Gate({ onUnlocked }) {
     if (!pw) return;
     setErr('');
     setBusy(true);
-    setPassword(pw);
     try {
-      await apiCall('GET', 'stats');
+      await login(pw);
       onUnlocked();
-    } catch {
-      clearPassword();
-      setErr('Wrong password.');
+    } catch (e) {
+      setErr(e instanceof Unauthorized ? 'Wrong password.' : e.message);
     } finally {
       setBusy(false);
     }
@@ -106,7 +104,7 @@ function AdminInner() {
   }, []);
 
   const relock = useCallback(() => {
-    clearPassword();
+    clearToken();
     setUnlocked(false);
   }, []);
 
@@ -114,12 +112,12 @@ function AdminInner() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!getPassword()) { setChecking(false); return; }
+      if (!getToken()) { setChecking(false); return; }
       try {
         await apiCall('GET', 'stats');
         if (!cancelled) setUnlocked(true);
       } catch {
-        clearPassword();
+        clearToken();
       } finally {
         if (!cancelled) setChecking(false);
       }

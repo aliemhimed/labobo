@@ -1,5 +1,6 @@
 /* Netlify Function: admin — password-gated dashboard backend.
-   Routes (all gated by X-Admin-Password header):
+   Routes (all but login need `Authorization: Bearer <token>`):
+     POST   /api/admin?action=login                body: {password} -> {token}
      GET    /api/admin?action=stats
      GET    /api/admin?action=reports
      GET    /api/admin?action=leaderboard[&week=YYYY-MM-DD]
@@ -10,55 +11,76 @@
      DELETE /api/admin?action=leaderboard&id=N
      DELETE /api/admin?action=report&id=N
      DELETE /api/admin?action=announcement&id=SLUG
+     DELETE /api/admin?action=session&id=UUID
+     DELETE /api/admin?action=user&id=UUID
 
    The public site reads announcements from /api/announcements instead,
    which is unauthenticated and only returns active ones.
 
    ENV VARS (set in Netlify dashboard):
-     ADMIN_PASSWORD   — required. The password the admin page sends in X-Admin-Password.
+     ADMIN_PASSWORD   — required. Exchanged for a short-lived token by the login action.
+                        There is no default: without it the endpoint returns 503.
     SUPA_SERVICE_KEY — required for write actions (POST/DELETE). Found in
               Supabase → Settings → API → "service_role secret".
               NEVER expose to client.
    Without SUPA_SERVICE_KEY, only the simple read actions work.
 */
 
-const SUPA_URL = 'https://boukmowybmtfqkinuvqj.supabase.co';
-const SUPA_KEY = 'sb_publishable_LLpEKdQRvePMYJ5b7loUKA_SeZ51lJs';
-const SUPA_SERVICE_KEY = process.env.SUPA_SERVICE_KEY || null;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'CHANGE_ME_labobo_admin';
+const crypto = require('crypto');
+const { SUPA_URL, anonHeaders, serviceHeaders, json, fail, getWeekStart, isIsoDate, parseBody } = require('./_lib/common');
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || null;
+const TOKEN_TTL_MS = 8 * 60 * 60 * 1000;
 
 const SERVICE_KEY_HINT =
   'SUPA_SERVICE_KEY not set on Netlify. Add it under Site → Site settings → Environment variables, ' +
   'then redeploy. Find the key in Supabase → Settings → API → "service_role" secret.';
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Password',
-  'Cache-Control': 'no-store'
-};
+const publicHeaders = anonHeaders;
+const adminHeaders = serviceHeaders;
+const ok = (body) => json(200, body);
+const err = (status, msg) => fail(status, msg);
 
-function publicHeaders() {
-  return { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` };
-}
-function adminHeaders() {
-  if (!SUPA_SERVICE_KEY) return null;
-  return { 'apikey': SUPA_SERVICE_KEY, 'Authorization': `Bearer ${SUPA_SERVICE_KEY}` };
+/* ---------- auth ----------
+   POST ?action=login {password} -> {token}. The token is "<expiry>.<hmac>"
+   signed with a key derived from ADMIN_PASSWORD, so the browser never has to
+   keep (or resend) the password itself, and changing the password revokes
+   every outstanding token. There is no fallback password: without
+   ADMIN_PASSWORD the endpoint refuses to work. */
+
+const sha256 = (s) => crypto.createHash('sha256').update(s).digest();
+const safeEqual = (a, b) => crypto.timingSafeEqual(sha256(a), sha256(b));
+const signingKey = () => sha256(`labobo-admin-token:${ADMIN_PASSWORD}`);
+const sign = (payload) => crypto.createHmac('sha256', signingKey()).update(payload).digest('hex');
+
+function issueToken() {
+  const exp = String(Date.now() + TOKEN_TTL_MS);
+  return `${exp}.${sign(exp)}`;
 }
 
-function ok(body) {
-  return {
-    statusCode: 200,
-    headers: { ...CORS, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  };
+function tokenValid(token) {
+  if (!ADMIN_PASSWORD || typeof token !== 'string') return false;
+  const [exp, sig] = token.split('.');
+  if (!exp || !sig || !(Number(exp) > Date.now())) return false;
+  return safeEqual(sig, sign(exp));
 }
-function err(status, msg) {
-  return {
-    statusCode: status,
-    headers: { ...CORS, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ error: msg })
-  };
+
+/* Best-effort brute-force brake. Function instances are ephemeral, so this
+   only slows a guesser down per warm instance; it is not a hard limit. */
+const attempts = new Map(); // ip -> { fails, until }
+const MAX_FAILS = 5;
+const LOCK_MS = 15 * 60 * 1000;
+
+function clientIp(event) {
+  const h = event.headers || {};
+  return h['x-nf-client-connection-ip'] || (h['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+}
+const isLocked = (ip) => (attempts.get(ip)?.until || 0) > Date.now();
+function recordFailure(ip) {
+  const a = attempts.get(ip) || { fails: 0, until: 0 };
+  a.fails += 1;
+  if (a.fails >= MAX_FAILS) { a.until = Date.now() + LOCK_MS; a.fails = 0; }
+  attempts.set(ip, a);
 }
 
 async function rest(path, init = {}, asAdmin = false) {
@@ -92,27 +114,29 @@ async function countTable(table, filter = '') {
   return Number.isFinite(total) ? total : null;
 }
 
-function getWeekStart(date = new Date()) {
-  const d = new Date(date);
-  const day = d.getUTCDay();
-  const diff = day === 0 ? 6 : day - 1;
-  d.setUTCDate(d.getUTCDate() - diff);
-  d.setUTCHours(0, 0, 0, 0);
-  return d.toISOString().slice(0, 10);
-}
-
 exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: CORS, body: '' };
-  }
+  // Same-origin only: no CORS headers, preflights get an empty 204.
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, body: '' };
 
-  // Password gate
-  const pw = event.headers['x-admin-password'] || event.headers['X-Admin-Password'];
-  if (!pw || pw !== ADMIN_PASSWORD) {
-    return err(401, 'Unauthorized');
-  }
+  if (!ADMIN_PASSWORD) return err(503, 'Admin is not configured (ADMIN_PASSWORD is not set).');
 
+  const ip = clientIp(event);
   const params = event.queryStringParameters || {};
+
+  if (event.httpMethod === 'POST' && params.action === 'login') {
+    if (isLocked(ip)) return err(429, 'Too many attempts. Try again later.');
+    const body = parseBody(event);
+    if (!body || typeof body.password !== 'string' || !safeEqual(body.password, ADMIN_PASSWORD)) {
+      recordFailure(ip);
+      return err(401, 'Unauthorized');
+    }
+    attempts.delete(ip);
+    return ok({ token: issueToken(), expires_in: TOKEN_TTL_MS / 1000 });
+  }
+
+  const auth = event.headers['authorization'] || event.headers['Authorization'] || '';
+  if (!tokenValid(auth.replace(/^Bearer\s+/i, ''))) return err(401, 'Unauthorized');
+
   const action = params.action;
 
   try {
@@ -140,6 +164,7 @@ exports.handler = async (event) => {
 
       if (action === 'leaderboard') {
         const week = params.week || getWeekStart();
+        if (!isIsoDate(week)) return err(400, 'week must be YYYY-MM-DD');
         const rows = await rest(`/leaderboard_entries?week_start=eq.${week}&select=*&order=score_pct.desc,time_seconds.asc,completed_at.asc&limit=500`);
         // Also list distinct weeks available
         const weeksRaw = await rest('/leaderboard_entries?select=week_start&order=week_start.desc&limit=1000');
@@ -186,8 +211,12 @@ exports.handler = async (event) => {
         const title = String(payload.title || '').trim();
         const body = String(payload.body || '').trim();
         if (!id) return err(400, 'Missing id');
+        if (!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id)) return err(400, 'id must be a lowercase slug (a-z, 0-9, -)');
         if (!title) return err(400, 'Missing title');
+        if (title.length > 200) return err(400, 'Title is too long (max 200)');
         if (!body) return err(400, 'Missing body');
+        if (body.length > 5000) return err(400, 'Body is too long (max 5000)');
+        if (payload.pub_date && !isIsoDate(payload.pub_date)) return err(400, 'pub_date must be YYYY-MM-DD');
 
         const row = {
           id,
@@ -244,6 +273,6 @@ exports.handler = async (event) => {
 
     return err(405, 'Method not allowed');
   } catch (e) {
-    return err(500, e.message);
+    return fail(500, 'Request failed', e);
   }
 };

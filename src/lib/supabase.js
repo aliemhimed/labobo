@@ -16,7 +16,9 @@ export async function supaInsert(table, data) {
       body: JSON.stringify({ table, data }),
     });
     if (!res.ok) console.error('[Supabase proxy]', table, res.status, await res.text());
+    return res.ok;
   } catch (e) {
     console.error('[Supabase network]', table, e);
+    return false;
   }
 }

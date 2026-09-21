@@ -67,6 +67,6 @@ export default defineConfig({
   server: { port: 5173 },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: 'hidden', // maps are generated for debugging but not linked from the bundles
   },
 });

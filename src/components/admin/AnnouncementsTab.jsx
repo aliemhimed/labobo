@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { sanitizeHtml } from '../../lib/sanitize.js';
 import { apiCall, fmtDate, timeAgo, suggestId, todayISODate } from '../../lib/adminApi.js';
 
 const EMPTY = { id: '', title: '', body: '', pub_date: todayISODate(), active: true };
@@ -125,9 +126,9 @@ export default function AnnouncementsTab({ tick, toast, refresh }) {
             <div className="pv-label">Preview</div>
             <div className="pv-title">{form.title || 'Title will appear here…'}</div>
             {form.body ? (
-              /* Same trust model as the live popup: the body is authored here
-                 and rendered as HTML on the site, so preview it the same way. */
-              <div className="pv-body" dangerouslySetInnerHTML={{ __html: form.body }} />
+              /* Same filter as the live popup, so the preview shows exactly what
+                 visitors get (only a few inline tags survive). */
+              <div className="pv-body" dangerouslySetInnerHTML={{ __html: sanitizeHtml(form.body) }} />
             ) : (
               <div className="pv-body"><span className="muted">Body will appear here…</span></div>
             )}

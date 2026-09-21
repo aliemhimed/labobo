@@ -226,7 +226,7 @@
       const overlay = buildOverlay(`
         <h3>Choose your leaderboard handle</h3>
         <div class="lb-sub">3–20 characters. Letters, numbers, _ and - only.</div>
-        <p style="font-size:13.5px;">This is the only name shown publicly. Your real name (${currentName ? '<strong>' + currentName + '</strong>' : 'from registration'}) stays private.</p>
+        <p style="font-size:13.5px;">This is the only name shown publicly. Your real name (${currentName ? '<strong>' + escHtml(currentName) + '</strong>' : 'from registration'}) stays private.</p>
         <input type="text" class="lb-input" id="lb-handle-input" value="${seed}" placeholder="e.g. MedGenius99" maxlength="20" autofocus>
         <div class="lb-error" id="lb-handle-err"></div>
         <div class="lb-actions">
@@ -325,9 +325,8 @@
         `;
         return;
       }
-      const myDeviceId = getDeviceId();
       const rows = data.top.map((entry, i) => {
-        const isMe = myDeviceId && entry.device_id === myDeviceId;
+        const isMe = !!entry.is_me;
         return `
           <tr class="${isMe ? 'lb-me' : ''}">
             <td class="lb-rank">${rankBadge(i + 1)}</td>
