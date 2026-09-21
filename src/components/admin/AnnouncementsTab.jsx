@@ -82,22 +82,22 @@ export default function AnnouncementsTab({ tick, toast, refresh }) {
     <div className="card">
       <div className="ann-form">
         <div>
-          <label>Title</label>
-          <input type="text" placeholder="e.g. 🎉 New: Question feedback button"
+          <label htmlFor="ann-title-input">Title</label>
+          <input id="ann-title-input" type="text" placeholder="e.g. 🎉 New: Question feedback button"
                  value={form.title} onChange={(e) => setTitle(e.target.value)} />
           <div className="hint">Emoji + plain text. Shown bold at the top of the popup.</div>
         </div>
         <div>
-          <label>ID (slug)</label>
-          <input type="text" placeholder="auto from title" value={form.id}
+          <label htmlFor="ann-id-input">ID (slug)</label>
+          <input id="ann-id-input" type="text" placeholder="auto from title" value={form.id}
                  onChange={(e) => { setIdEdited(true); setForm((f) => ({ ...f, id: e.target.value })); }} />
           <div className="hint">
             Used so each user sees this announcement only once. Auto-fills from the title.
           </div>
         </div>
         <div className="full">
-          <label>Body (HTML allowed)</label>
-          <textarea placeholder={'Type the announcement. Use <strong>, <em>, <br>, <a href="...">link</a> to format.'}
+          <label htmlFor="ann-body-input">Body (HTML allowed)</label>
+          <textarea id="ann-body-input" placeholder={'Type the announcement. Use <strong>, <em>, <br>, <a href="...">link</a> to format.'}
                     value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))} />
           <div className="hint">
             Allowed tags: &lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, &lt;a&gt;. Plain &amp;, &lt;, &gt; need to be
@@ -105,8 +105,8 @@ export default function AnnouncementsTab({ tick, toast, refresh }) {
           </div>
         </div>
         <div>
-          <label>Publish date</label>
-          <input type="date" value={form.pub_date}
+          <label htmlFor="ann-date-input">Publish date</label>
+          <input id="ann-date-input" type="date" value={form.pub_date}
                  onChange={(e) => setForm((f) => ({ ...f, pub_date: e.target.value }))} />
         </div>
         <div>

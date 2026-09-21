@@ -8,7 +8,7 @@ export default function ConfigView({ config, mode, examLength, setExamLength, on
   return (
     <div className="container">
       <div className="page-header">
-        <button className="back-btn" onClick={onHome}>←</button>
+        <button className="back-btn" aria-label="Back to menu" onClick={onHome}>←</button>
         <h1>{isExam ? 'Configure Exam' : 'Configure Practice Set'}</h1>
       </div>
       <div className="card config-card">
@@ -18,12 +18,13 @@ export default function ConfigView({ config, mode, examLength, setExamLength, on
         ) : (
           <p>All questions come from {Object.keys(config.ratio)[0]}.</p>
         )}
-        <div className="length-grid">
+        <div className="length-grid" role="group" aria-label="Number of questions">
           {config.examLengths.map((n) => (
-            <div key={n} className={'length-opt' + (n === examLength ? ' active' : '')}
-                 onClick={() => setExamLength(n)}>
+            <button type="button" key={n} className={'length-opt' + (n === examLength ? ' active' : '')}
+                    aria-pressed={n === examLength} aria-label={`${n} questions`}
+                    onClick={() => setExamLength(n)}>
               {n}
-            </div>
+            </button>
           ))}
         </div>
         <div className="distribution">

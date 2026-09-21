@@ -66,7 +66,7 @@ export default function StudyView({
       <div className="filter-section">
         <div className="card">
           <div className="filter-search">
-            <input type="text" placeholder="Search questions…" value={search}
+            <input type="search" aria-label="Search questions" placeholder="Search questions…" value={search}
                    onChange={(e) => setSearch(e.target.value)} />
           </div>
           <div className="filter-actions">
@@ -81,14 +81,14 @@ export default function StudyView({
               const isOpen = !collapsed.has(subject);
               return (
                 <div key={subject} className={'subject-group' + (isOpen ? ' open' : '')}>
-                  <div className="subject-title"
-                       onClick={() => setCollapsed((prev) => {
-                         const next = new Set(prev);
-                         if (next.has(subject)) next.delete(subject); else next.add(subject);
-                         return next;
-                       })}>
-                    <span className="arrow">▶</span>{subject}<span className="count">{total}</span>
-                  </div>
+                  <button type="button" className="subject-title" aria-expanded={isOpen}
+                          onClick={() => setCollapsed((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(subject)) next.delete(subject); else next.add(subject);
+                            return next;
+                          })}>
+                    <span className="arrow" aria-hidden="true">▶</span>{subject}<span className="count">{total}</span>
+                  </button>
                   <div className="topics">
                     {Object.keys(topics).map((topic) => {
                       const key = `${subject}::${topic}`;

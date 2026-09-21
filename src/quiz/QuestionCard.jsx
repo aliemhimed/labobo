@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import QuestionBody from './QuestionBody.jsx';
 import { useEqualOptionHeights } from '../hooks/useEqualOptionHeights.js';
+import { useQuizShortcuts } from '../hooks/useQuizShortcuts.js';
 import { LETTERS } from '../lib/utils.js';
 
 /* Options are rendered in a shuffled order so the correct answer isn't
@@ -29,6 +30,16 @@ export default function QuestionCard({
 
   const isLast = index === total - 1;
   const correctDisplayPos = displayOrder.indexOf(question.answer);
+
+  /* Once an answer is chosen the question is locked in every mode. */
+  const locked = answered;
+
+  useQuizShortcuts({
+    optionCount: displayOrder.length,
+    onChoose: (pos) => { if (!locked) onSelect(displayOrder[pos]); },
+    onPrev: () => { if (index > 0) onPrev(); },
+    onNext: () => { if (!isLast) onNext(); },
+  });
 
   return (
     <>
@@ -67,37 +78,41 @@ export default function QuestionCard({
         <div className="options" ref={optionsRef}>
           {displayOrder.map((origIdx, displayPos) => {
             let cls = 'option';
+            let glyph = null;
+            let status = null; // spoken by screen readers; the glyph is the visual twin
+            if (locked) cls += ' disabled';
             if (isExam) {
-              if (answered) {
-                cls += ' disabled';
-                if (origIdx === answer.selected) cls += ' selected';
-              }
+              if (answered && origIdx === answer.selected) { cls += ' selected'; status = 'Your answer'; }
             } else if (showFeedback) {
-              cls += ' disabled';
-              if (origIdx === question.answer) cls += ' correct';
-              else if (origIdx === answer.selected) cls += ' incorrect';
+              if (origIdx === question.answer) { cls += ' correct'; glyph = '✓'; status = 'Correct answer'; }
+              else if (origIdx === answer.selected) { cls += ' incorrect'; glyph = '✗'; status = 'Your answer, incorrect'; }
             }
-            const disabled = cls.includes('disabled');
             return (
-              <div key={origIdx} className={cls} data-i={origIdx}
-                   onClick={() => { if (!disabled) onSelect(origIdx); }}>
-                <div className="letter">{LETTERS[displayPos]}</div>
-                <div>{question.options[origIdx]}</div>
-              </div>
+              <button type="button" key={origIdx} className={cls} data-i={origIdx}
+                      aria-disabled={locked || undefined}
+                      onClick={() => { if (!locked) onSelect(origIdx); }}>
+                <span className="letter">{LETTERS[displayPos]}</span>
+                <span className="body">{question.options[origIdx]}</span>
+                {glyph ? <span className="mark" aria-hidden="true">{glyph}</span> : null}
+                {status ? <span className="sr-only">{status}</span> : null}
+              </button>
             );
           })}
         </div>
 
-        {showFeedback ? (
-          <div className={'explanation ' + (answer.selected === question.answer ? 'good' : 'bad')}>
-            <strong>
-              {answer.selected === question.answer
-                ? '✓ Correct'
-                : `✗ Incorrect — Correct answer: ${LETTERS[correctDisplayPos]}`}.
-            </strong>
-            {question.explanation ? ' ' + question.explanation : ''}
-          </div>
-        ) : null}
+        {/* Announced as soon as an answer is chosen. */}
+        <div role="status" aria-live="polite">
+          {showFeedback ? (
+            <div className={'explanation ' + (answer.selected === question.answer ? 'good' : 'bad')}>
+              <strong>
+                {answer.selected === question.answer
+                  ? '✓ Correct'
+                  : `✗ Incorrect — Correct answer: ${LETTERS[correctDisplayPos]}`}.
+              </strong>
+              {question.explanation ? ' ' + question.explanation : ''}
+            </div>
+          ) : null}
+        </div>
 
         <div className="actions">
           <button className="btn" disabled={index === 0} onClick={onPrev}>← Previous</button>
@@ -110,6 +125,10 @@ export default function QuestionCard({
               <button className="btn primary" disabled={isLast} onClick={onNext}>Next →</button>
             )}
           </div>
+        </div>
+        <div className="shortcut-hint" aria-hidden="true">
+          Keys: <kbd>1</kbd>–<kbd>{displayOrder.length}</kbd> or <kbd>A</kbd>–<kbd>{LETTERS[displayOrder.length - 1]}</kbd> to answer
+          · <kbd>←</kbd> <kbd>→</kbd> to move
         </div>
       </div>
     </>

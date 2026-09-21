@@ -9,7 +9,7 @@ export default function ExamDetail({ record, onBack, onReview }) {
   return (
     <div className="container">
       <div className="page-header">
-        <button className="back-btn" onClick={onBack}>←</button>
+        <button className="back-btn" aria-label="Back to dashboard" onClick={onBack}>←</button>
         <h1>{record.type === 'exam' ? 'Exam' : 'Practice'} Details</h1>
       </div>
       <div className="card" style={{ marginBottom: 16 }}>

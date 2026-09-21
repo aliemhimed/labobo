@@ -15,9 +15,9 @@ export default function QuestionBody({ question, index, onReport }) {
 
       {question.images?.length ? (
         <div className="q-images">
-          {question.images.map((src) => (
+          {question.images.map((src, n) => (
             <a key={src} className="q-image-link" href={src} target="_blank" rel="noreferrer">
-              <img src={src} alt="" loading="lazy" decoding="async" />
+              <img src={src} alt={`Image ${n + 1} for this question`} loading="lazy" decoding="async" />
             </a>
           ))}
         </div>

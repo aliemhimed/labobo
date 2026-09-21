@@ -19,12 +19,15 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={show}>
       {children}
-      {toasts.map((t) => (
-        <div key={t.id} className="labobo-toast"
-             style={{ opacity: t.leaving ? 0 : 1, transition: 'opacity 0.4s' }}>
-          {t.msg}
-        </div>
-      ))}
+      {/* The region exists before any message so screen readers announce each new toast. */}
+      <div role="status" aria-live="polite">
+        {toasts.map((t) => (
+          <div key={t.id} className="labobo-toast"
+               style={{ opacity: t.leaving ? 0 : 1, transition: 'opacity 0.4s' }}>
+            {t.msg}
+          </div>
+        ))}
+      </div>
     </ToastContext.Provider>
   );
 }

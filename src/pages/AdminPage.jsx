@@ -67,11 +67,11 @@ function Gate({ onUnlocked }) {
       <div className="gate-box">
         <h2>🔒 Labobo Admin</h2>
         <p>Enter the admin password to continue.</p>
-        <input type="password" placeholder="Password" autoFocus value={pw}
+        <input type="password" aria-label="Admin password" placeholder="Password" autoFocus value={pw}
                onChange={(e) => setPw(e.target.value)}
                onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} />
         <button className="btn btn-primary" disabled={busy} onClick={submit}>Unlock</button>
-        <div className="gate-err">{err}</div>
+        <div className="gate-err" role="alert">{err}</div>
       </div>
     </div>
   );

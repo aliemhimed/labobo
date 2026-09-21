@@ -41,9 +41,9 @@ function Gate({ onUnlock }) {
         <h1>Midterm Review</h1>
         <p>This page is private. Enter the password to continue.</p>
         <form onSubmit={submit} autoComplete="off">
-          <input type="password" placeholder="Password" autoFocus value={value}
+          <input type="password" aria-label="Password" placeholder="Password" autoFocus value={value}
                  onChange={(e) => setValue(e.target.value)} />
-          <div className={'gate-error' + (error ? ' show' : '')}>Incorrect password.</div>
+          <div className={'gate-error' + (error ? ' show' : '')} role="alert">{error ? 'Incorrect password.' : ''}</div>
           <button className="btn-primary" type="submit">Unlock</button>
         </form>
       </div>

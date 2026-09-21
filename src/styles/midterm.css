@@ -8,7 +8,7 @@
   --review:#D97706;  --review-soft:rgba(217,119,6,0.12);
   --bg:#0B1220; --surface:#111A2E; --surface-raised:#162035; --surface-float:#1C2940;
   --border:#1E2D47; --border-strong:#243858;
-  --text:#E8EEFF; --text-soft:#8BA3CC; --text-muted:#4D6488;
+  --text:#E8EEFF; --text-soft:#8BA3CC; --text-muted:#8093B6;
   --input-bg:#0D1624;
   --radius:14px; --radius-sm:9px; --radius-xs:6px;
   --shadow-md:0 4px 16px rgba(0,0,0,0.6); --shadow-lg:0 12px 40px rgba(0,0,0,0.7);
@@ -225,4 +225,10 @@
   .midterm-page .card {padding:22px 18px;}
   .midterm-page .qcard {padding:18px 16px;}
   .midterm-page .result-score {font-size:38px;}
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .midterm-page *, .midterm-page *::before, .midterm-page *::after {
+    animation: none !important; transition: none !important; scroll-behavior: auto !important;
+  }
 }

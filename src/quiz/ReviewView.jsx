@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import QuestionBody from './QuestionBody.jsx';
 import { useEqualOptionHeights } from '../hooks/useEqualOptionHeights.js';
+import { useQuizShortcuts } from '../hooks/useQuizShortcuts.js';
 import { LETTERS } from '../lib/utils.js';
 
 /* Post-exam review: every answer visible, original option order (no
@@ -14,6 +15,11 @@ export default function ReviewView({
   const answer = answers[index];
 
   useEqualOptionHeights(optionsRef, [question]);
+  useQuizShortcuts({
+    optionCount: 0,
+    onPrev: () => { if (index > 0) setIndex(index - 1); },
+    onNext: () => { if (index < qIds.length - 1) setIndex(index + 1); },
+  });
 
   if (!question) {
     return (
@@ -53,12 +59,16 @@ export default function ReviewView({
           <div className="options" ref={optionsRef}>
             {question.options.map((opt, i) => {
               let cls = 'option disabled';
-              if (i === question.answer) cls += ' correct';
-              else if (wasAnswered && i === answer.selected) cls += ' incorrect';
+              let glyph = null;
+              let status = null;
+              if (i === question.answer) { cls += ' correct'; glyph = '✓'; status = 'Correct answer'; }
+              else if (wasAnswered && i === answer.selected) { cls += ' incorrect'; glyph = '✗'; status = 'Your answer, incorrect'; }
               return (
                 <div key={i} className={cls}>
-                  <div className="letter">{LETTERS[i]}</div>
-                  <div>{opt}</div>
+                  <span className="letter">{LETTERS[i]}</span>
+                  <span className="body">{opt}</span>
+                  {glyph ? <span className="mark" aria-hidden="true">{glyph}</span> : null}
+                  {status ? <span className="sr-only">{status}</span> : null}
                 </div>
               );
             })}

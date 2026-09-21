@@ -38,16 +38,17 @@ export default function ReportModal({ question, deviceId, onClose }) {
             overlayClass="report-overlay" modalClass="report-modal">
       <h3 id="report-title">🚩 Report a problem</h3>
       <p>Help us improve — what's wrong with this question?</p>
-      <div className="report-reasons">
+      <div className="report-reasons" role="group" aria-label="What is wrong with this question?">
         {REASONS.map((r) => (
-          <div key={r}
-               className={'report-reason' + (selected === r ? ' active' : '')}
-               onClick={() => setSelected(r)}>
+          <button type="button" key={r}
+                  className={'report-reason' + (selected === r ? ' active' : '')}
+                  aria-pressed={selected === r}
+                  onClick={() => setSelected(r)}>
             {r}
-          </div>
+          </button>
         ))}
       </div>
-      <textarea className="report-note" placeholder="Optional: add details…" maxLength={500}
+      <textarea className="report-note" aria-label="Details (optional)" placeholder="Optional: add details…" maxLength={500}
                 value={note} onChange={(e) => setNote(e.target.value)} />
       <div className="report-actions">
         <button className="btn" onClick={onClose}>Cancel</button>

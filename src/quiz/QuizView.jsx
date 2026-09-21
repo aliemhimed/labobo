@@ -19,7 +19,7 @@ export default function QuizView({
   return (
     <div className="container">
       <div className="page-header">
-        <button className="back-btn" onClick={onExit}>←</button>
+        <button className="back-btn" aria-label="Leave and go back to the menu" onClick={onExit}>←</button>
         <h1>{TITLES[quizMode] || 'Quiz'}</h1>
         <div className="ph-actions">
           {quizMode === 'exam' ? (

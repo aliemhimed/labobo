@@ -68,7 +68,8 @@ export default function Dashboard({ store, onHome, onOpen }) {
             <div>Date</div><div>Type</div><div>Qs</div><div>Subjects</div><div>Score</div>
           </div>
           {hist.map((r) => (
-            <div key={r.id} className="history-row" onClick={() => onOpen(r)}>
+            <button type="button" key={r.id} className="history-row" onClick={() => onOpen(r)}
+                    aria-label={`Open ${r.type === 'exam' ? 'exam' : 'practice'} from ${fmtDate(r.date)}, score ${r.score}%`}>
               <div>{fmtDate(r.date)}</div>
               <div>
                 <span className={'ht-type' + (r.type === 'exam' ? ' exam' : '')}>
@@ -84,7 +85,7 @@ export default function Dashboard({ store, onHome, onOpen }) {
                 ))}
               </div>
               <div className={'ht-score ' + scoreClass(r.score)}>{r.score}%</div>
-            </div>
+            </button>
           ))}
         </div>
       )}

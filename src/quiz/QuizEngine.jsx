@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar.jsx';
 import ReportModal from '../components/ReportModal.jsx';
 import { useLeaderboard } from '../components/Leaderboard.jsx';
 import { useMeme } from '../components/MemePopup.jsx';
+import { useConfirm } from '../components/Confirm.jsx';
 import { useToast } from '../components/Toast.jsx';
 import Welcome from './Welcome.jsx';
 import ModeHome from './ModeHome.jsx';
@@ -52,6 +53,7 @@ export default function QuizEngine({ config, questions, basePath }) {
   const go = useCallback((v, opts) => navigate(v === 'home' ? basePath : `${basePath}/${v}`, opts), [navigate, basePath]);
 
   const toast = useToast();
+  const { confirm, element: confirmEl } = useConfirm();
   const [user, setUserState] = useState(() => getUser());
   const [session, dispatch] = useReducer(sessionReducer, initialSession, () => restoreSession(config.storagePrefix, idToIndex));
   const [examLength, setExamLength] = useState(() => config.examLengths[Math.min(2, config.examLengths.length - 1)]);
@@ -106,8 +108,13 @@ export default function QuizEngine({ config, questions, basePath }) {
     commit({ type: 'reset' }, 'home');
   }, [dismissMeme, commit]);
 
-  function logout() {
-    if (!confirm('Switch user? Your saved progress will remain on this device.')) return;
+  async function logout() {
+    const ok = await confirm({
+      title: 'Switch user?',
+      message: 'Your saved progress will remain on this device.',
+      confirmLabel: 'Switch user',
+    });
+    if (!ok) return;
     clearUser();
     setUserState(null);
     commit({ type: 'reset' }, 'home');
@@ -223,19 +230,29 @@ export default function QuizEngine({ config, questions, basePath }) {
     commit({ type: 'finish', record: finished }, 'exam-results', { replace: true });
   }
 
-  function promptSubmitExam() {
+  async function promptSubmitExam() {
     const answered = answers.filter((a) => a.selected !== null).length;
     const blank = qIds.length - answered;
-    if (!confirm(`Submit exam now?\n\nAnswered: ${answered}\nBlank: ${blank}\n\nBlank questions will be marked wrong.`)) return;
-    finishExam();
+    const ok = await confirm({
+      title: 'Submit exam now?',
+      message: `Answered: ${answered}\nBlank: ${blank}\n\nBlank questions will be marked wrong.`,
+      confirmLabel: 'Submit exam',
+    });
+    if (ok) finishExam();
   }
 
-  function confirmExitQuiz() {
-    if (quizMode === 'exam') {
-      if (!confirm('Leave the exam? Your progress will be lost.')) return;
-    } else if (quizMode === 'practice' || quizMode === 'review-wrong') {
-      const answered = answers.filter((a) => a.selected !== null).length;
-      if (answered > 0 && !confirm('Leave this session? Your progress will not be saved.')) return;
+  async function confirmExitQuiz() {
+    const answered = answers.filter((a) => a.selected !== null).length;
+    const needsConfirm = quizMode === 'exam' || ((quizMode === 'practice' || quizMode === 'review-wrong') && answered > 0);
+    if (needsConfirm) {
+      const ok = await confirm({
+        title: quizMode === 'exam' ? 'Leave the exam?' : 'Leave this session?',
+        message: quizMode === 'exam' ? 'Your progress will be lost.' : 'Your progress will not be saved.',
+        confirmLabel: 'Leave',
+        cancelLabel: 'Stay',
+        danger: true,
+      });
+      if (!ok) return;
     }
     goHome();
   }
@@ -347,6 +364,7 @@ export default function QuizEngine({ config, questions, basePath }) {
       <div id="root">{body}</div>
       {memeEl}
       {leaderboard.element}
+      {confirmEl}
       {reportFor !== null && questions[reportFor] ? (
         <ReportModal question={questions[reportFor]} deviceId={user?.deviceId}
                      onClose={() => setReportFor(null)} />

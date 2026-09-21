@@ -144,3 +144,13 @@
 }
 .labobo-announce-btn:hover { opacity: 0.9; }
 .labobo-announce-btn:active { transform: scale(0.97); }
+
+.lb-btn-danger-solid {
+  background: var(--wrong, #dc2626); color: #fff; border-color: transparent;
+}
+.lb-btn-danger-solid:hover { background: var(--wrong, #dc2626); filter: brightness(0.92); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-overlay, .lb-modal, .labobo-announce-overlay, .labobo-announce-modal { animation: none; }
+  .lb-btn, .labobo-announce-btn, .lb-input { transition: none; }
+}

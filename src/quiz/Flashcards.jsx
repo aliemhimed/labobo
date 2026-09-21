@@ -225,13 +225,15 @@ export default function Flashcards({
       <div className="fc-stage">
         <div className="fc-prog"><div style={{ width: pct + '%' }} /></div>
         <div className={'fc-card' + (flipped ? ' flipped' : '')}
+             role="button" tabIndex={0}
+             aria-label={flipped ? 'Flashcard, answer showing' : 'Flashcard. Press Space or Enter to reveal the answer'}
              onClick={() => { if (!flipped) setFlipped(true); }}>
           <div className="fc-inner">
-            <div className="fc-face fc-front">
+            <div className="fc-face fc-front" aria-hidden={flipped}>
               <div className="fc-tag">{tag}</div>
               <div className="fc-q">{q.q}</div>
             </div>
-            <div className="fc-face fc-back">
+            <div className="fc-face fc-back" aria-hidden={!flipped} aria-live="polite">
               <div className="fc-tag">{tag}</div>
               <div className="fc-a-label">Answer</div>
               <div className="fc-a">{q.options[q.answer]}</div>

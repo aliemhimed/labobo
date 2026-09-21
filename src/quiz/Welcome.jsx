@@ -29,7 +29,7 @@ export default function Welcome({ config, totalQuestions, onReady }) {
           <p style={{ marginBottom: 14 }}>
             Exam scores and wrong-answer history are saved locally on this device.
           </p>
-          <input ref={inputRef} type="text" placeholder="Your name (e.g., Ali)" autoFocus
+          <input ref={inputRef} type="text" aria-label="Your name" placeholder="Your name (e.g., Ali)" autoFocus
                  onKeyDown={(e) => { if (e.key === 'Enter') register(); }} />
           <button className="btn primary lg" style={{ width: '100%', marginTop: 10 }} onClick={register}>
             Get Started →

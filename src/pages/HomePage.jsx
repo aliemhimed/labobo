@@ -91,7 +91,7 @@ export default function HomePage() {
                 Enter your name to track your scores and progress across sessions.
                 Or skip to study without saving.
               </p>
-              <input ref={inputRef} type="text" placeholder="Your name (e.g., Ali)"
+              <input ref={inputRef} type="text" aria-label="Your name" placeholder="Your name (e.g., Ali)"
                      autoComplete="off" autoFocus
                      onKeyDown={(e) => { if (e.key === 'Enter') start(); }} />
               <button className="btn-primary" onClick={start}>Get Started →</button>
