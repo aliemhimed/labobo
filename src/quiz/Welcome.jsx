@@ -27,7 +27,7 @@ export default function Welcome({ config, totalQuestions, onReady }) {
     <div className="container center-wrap">
       <div className="card welcome-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="welcome-hero">
-          <img src="/theme/full-body mascot.png" className="mascot-hero" alt="Labobo" />
+          <img src="/theme/mascot.webp" className="mascot-hero" alt="Labobo" width="92" height="92" />
           <h1>{config.title}</h1>
           <p>{totalQuestions} {config.tagline}</p>
         </div>

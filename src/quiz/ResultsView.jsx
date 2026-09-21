@@ -11,7 +11,7 @@ export default function ResultsView({ record, onHome, onReview }) {
   return (
     <div className="container">
       <div className={'results-hero ' + heroCls}>
-        <img src="/theme/full-body mascot.png" className="mascot-results" alt="Labobo" />
+        <img src="/theme/mascot.webp" className="mascot-results" alt="Labobo" width="72" height="72" decoding="async" />
         <div className="score-label">{record.type === 'exam' ? 'Exam' : 'Practice'} score</div>
         <div className="big-score">{score}%</div>
         <div style={{ opacity: 0.85, fontSize: 13.5, marginTop: 4 }}>

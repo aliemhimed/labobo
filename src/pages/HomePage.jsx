@@ -82,7 +82,7 @@ export default function HomePage() {
 
       <div className="wrap">
         <div className="brand">
-          <img src="/theme/app icon.png" className="brand-icon" alt="Labobo" />
+          <img src="/theme/app-icon.webp" className="brand-icon" alt="Labobo" width="68" height="68" />
           <div className="brand-words">
             <span className="brand-name">Studywith Labobo</span>
             <span className="brand-tagline">Study smart. Stay ahead. Ace together.</span>
@@ -92,7 +92,7 @@ export default function HomePage() {
         {!user ? (
           <>
             <div className="mascot-wrap">
-              <img src="/theme/full-body mascot.png" alt="Labobo mascot" draggable="false" />
+              <img src="/theme/mascot.webp" alt="Labobo mascot" draggable="false" width="85" height="128" />
             </div>
             <div className={'name-card' + (fading ? ' fade-out' : '')}>
               <h2>Welcome! 👋</h2>

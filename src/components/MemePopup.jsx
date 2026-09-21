@@ -6,13 +6,15 @@ import {
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-/* Preload once per session so the popup never shows a blank frame. */
-let preloaded = false;
-function preload() {
-  if (preloaded) return;
-  preloaded = true;
-  RIGHT_MEMES.forEach((n) => { new Image().src = RIGHT_DIR + n; });
-  WRONG_MEMES.forEach((n) => { new Image().src = WRONG_DIR + n; });
+/* Warm the cache for one meme of each kind, once per session, after the
+   first answer, so the popup rarely shows a blank frame without downloading
+   the whole set up front. Never runs in exam mode (no popups there). */
+const preloaded = new Set();
+function preloadOne(dir, list) {
+  const src = dir + pick(list);
+  if (preloaded.has(src)) return;
+  preloaded.add(src);
+  new Image().src = src;
 }
 
 /**
@@ -27,7 +29,6 @@ export function useMeme(quizMode) {
   const timer = useRef(null);
   const fadeTimer = useRef(null);
 
-  useEffect(() => { preload(); }, []);
   useEffect(() => () => { clearTimeout(timer.current); clearTimeout(fadeTimer.current); }, []);
 
   const dismiss = useCallback(() => {
@@ -43,6 +44,8 @@ export function useMeme(quizMode) {
 
   const trigger = useCallback((isCorrect) => {
     if (quizMode === 'exam') return;
+    preloadOne(RIGHT_DIR, RIGHT_MEMES);
+    preloadOne(WRONG_DIR, WRONG_MEMES);
     if (Math.random() > MEME_CONFIG.PROBABILITY) return;
     const src = isCorrect ? RIGHT_DIR + pick(RIGHT_MEMES) : WRONG_DIR + pick(WRONG_MEMES);
     const caption = pick(isCorrect ? RIGHT_CAPTIONS : WRONG_CAPTIONS);
@@ -63,7 +66,7 @@ export function useMeme(quizMode) {
            (leaving ? ' meme-exit' : '')
          }
          onClick={dismiss}>
-      <img src={meme.src} alt="" />
+      <img src={meme.src} alt="" decoding="async" />
       <div className="meme-caption">{meme.caption}</div>
     </div>
   ) : null;

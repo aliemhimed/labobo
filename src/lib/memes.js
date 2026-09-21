@@ -1,5 +1,6 @@
-/* Meme popup content. Drop new images into the matching folder under
-   public/ and add the filename here. */
+/* Meme popup content. Drop new images (WebP, ~500px wide; run
+   scripts/optimize_images.py on GIFs/JPGs) into public/memes/{right,wrong}/
+   and add the filename here. */
 
 export const MEME_CONFIG = {
   PROBABILITY: 0.35, // 0-1: chance of a popup per answer (never in exam mode)
@@ -7,36 +8,36 @@ export const MEME_CONFIG = {
   FADE_MS: 400,
 };
 
-export const RIGHT_DIR = '/right answer/';
-export const WRONG_DIR = '/wrong answer memes reactions/';
+export const RIGHT_DIR = '/memes/right/';
+export const WRONG_DIR = '/memes/wrong/';
 
 export const RIGHT_MEMES = [
-  '111.gif',
+  '111.webp',
   '4963.webp',
-  'c09490bb02f0eca38b0420eabaccb28c.jpg',
-  'cat-meme.gif',
-  'f20f149659887c02bafb1f1aa44fb42a.jpg',
-  'ogc.gif',
+  'c09490bb02f0eca38b0420eabaccb28c.webp',
+  'cat-meme.webp',
+  'f20f149659887c02bafb1f1aa44fb42a.webp',
+  'ogc.webp',
   'oip.webp',
 ];
 
 export const WRONG_MEMES = [
-  '111.gif',
-  '12.gif',
-  '123.gif',
-  '2178a0582649a6943cd4e3c631adec34.jpg',
-  '22f7aac9917c0ea83dc3a4afc666b3da.jpg',
-  '27c5b955640ecdba3219eac0cc66a5b7.jpg',
-  '2f299d1a82bc2a70a94ee15ab522d029.jpg',
-  '321f22b9f3f1a0095580573f4781e549.jpg',
+  '111.webp',
+  '12.webp',
+  '123.webp',
+  '2178a0582649a6943cd4e3c631adec34.webp',
+  '22f7aac9917c0ea83dc3a4afc666b3da.webp',
+  '27c5b955640ecdba3219eac0cc66a5b7.webp',
+  '2f299d1a82bc2a70a94ee15ab522d029.webp',
+  '321f22b9f3f1a0095580573f4781e549.webp',
   '427.webp',
   '462.webp',
   '5462.webp',
   '77.webp',
-  'ab6775700000ee85d9c655e3568d50620ddd5d5b.jpg',
-  'cat-reaction-images.jpg',
-  'e84a13a2-1a17-4b1e-9789-618f615a8e05._cr0,0,500,500_sx460_.jpg',
-  'oip (2).webp',
+  'ab6775700000ee85d9c655e3568d50620ddd5d5b.webp',
+  'cat-reaction-images.webp',
+  'e84a13a2-1a17-4b1e-9789-618f615a8e05-cr0-0-500-500-sx460.webp',
+  'oip-2.webp',
 ];
 
 export const WRONG_CAPTIONS = [

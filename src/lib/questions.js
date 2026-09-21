@@ -46,6 +46,11 @@ function normalizeAnswer(raw, options, originalOptions) {
   return 0;
 }
 
+/* The question rows still name the original .png/.jpg files; the medart
+   folder was converted to WebP (scripts/optimize_images.py), so point at the
+   converted file. Other folders (SVG diagrams) are untouched. */
+const webpIfLocal = (url) => (url.startsWith('/images/medart/') ? url.replace(/\.(png|jpe?g)$/i, '.webp') : url);
+
 function normalizeImages(row, imageBase) {
   const list = [];
   if (Array.isArray(row.images)) list.push(...row.images);
@@ -56,9 +61,10 @@ function normalizeImages(row, imageBase) {
     .map((name) => {
       // Absolute URLs and rooted paths are used as-is; bare filenames get
       // the subject's image folder prefixed.
-      if (/^(https?:)?\/\//.test(name) || name.startsWith('/')) return name;
-      if (name.includes('/')) return '/' + name.replace(/^\.?\//, '');
-      return (imageBase || '/images/') + name;
+      if (/^(https?:)?\/\//.test(name)) return name;
+      if (name.startsWith('/')) return webpIfLocal(name);
+      if (name.includes('/')) return webpIfLocal('/' + name.replace(/^\.?\//, ''));
+      return webpIfLocal((imageBase || '/images/') + name);
     });
 }
 

@@ -18,7 +18,7 @@ export default function TopBar({ subtitle, user, onBrandClick, onLogout }) {
     <div className="topbar">
       <div className="brand" onClick={onBrandClick} role="button" tabIndex={0}
            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onBrandClick?.(); } }}>
-        <img src="/theme/app icon.png" className="brand-logo" alt="Labobo" />
+        <img src="/theme/app-icon.webp" className="brand-logo" alt="Labobo" width="32" height="32" />
         <div className="brand-text">
           <span className="b1">Studywith Labobo</span>
           {subtitle ? <span className="b2">{subtitle}</span> : null}

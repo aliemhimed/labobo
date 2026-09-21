@@ -83,7 +83,7 @@ export default function QuestionCard({
           <div className="q-images">
             {question.images.map((src) => (
               <a key={src} className="q-image-link" href={src} target="_blank" rel="noreferrer">
-                <img src={src} alt="" loading="lazy" />
+                <img src={src} alt="" loading="lazy" decoding="async" />
               </a>
             ))}
           </div>
