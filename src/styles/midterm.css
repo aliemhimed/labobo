@@ -1,18 +1,5 @@
 /* Midterm review styles (from the original midterm-review.html). */
-/* ═════════ Design Tokens (matches Labobo dark v2) ═════════ */
-.midterm-page {
-  --brand:#2B7FFF; --brand-dark:#1D6AE5; --brand-soft:rgba(43,127,255,0.12);
-  --accent:#06B6D4;
-  --correct:#16A34A; --correct-soft:rgba(22,163,74,0.12);
-  --wrong:#DC2626;   --wrong-soft:rgba(220,38,38,0.12);
-  --review:#D97706;  --review-soft:rgba(217,119,6,0.12);
-  --bg:#0B1220; --surface:#111A2E; --surface-raised:#162035; --surface-float:#1C2940;
-  --border:#1E2D47; --border-strong:#243858;
-  --text:#E8EEFF; --text-soft:#8BA3CC; --text-muted:#8093B6;
-  --input-bg:#0D1624;
-  --radius:14px; --radius-sm:9px; --radius-xs:6px;
-  --shadow-md:0 4px 16px rgba(0,0,0,0.6); --shadow-lg:0 12px 40px rgba(0,0,0,0.7);
-}
+/* Design tokens: see tokens.css (this page is always dark: .theme-dark). */
 .midterm-page *, .midterm-page *::before, .midterm-page *::after {box-sizing:border-box;}
 .midterm-page {margin:0;padding:0;}
 .midterm-page {
@@ -71,20 +58,20 @@
 .midterm-page .btn-primary:active {transform:scale(0.985);}
 
 /* ═════════ Top header ═════════ */
-.midterm-page .topbar {
+.midterm-page .page-bar {
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 18px;border-bottom:1px solid var(--border);
   background:rgba(11,18,32,0.85);backdrop-filter:blur(20px);
   position:sticky;top:0;z-index:30;
 }
-.midterm-page .topbar-title {font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;}
-.midterm-page .topbar-title .badge {
+.midterm-page .page-bar-title {font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;}
+.midterm-page .page-bar-title .badge {
   display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.06em;
   background:var(--brand-soft);color:var(--brand);
   padding:3px 8px;border-radius:999px;text-transform:uppercase;margin-left:8px;
   vertical-align:middle;
 }
-.midterm-page .topbar-actions {display:flex;gap:8px;align-items:center;}
+.midterm-page .page-bar-actions {display:flex;gap:8px;align-items:center;}
 .midterm-page .btn-ghost {
   background:transparent;color:var(--text-soft);border:1px solid var(--border);
   padding:7px 12px;border-radius:var(--radius-xs);font-size:13px;
@@ -220,7 +207,7 @@
 .midterm-page .muted {color:var(--text-muted);font-size:12px;}
 
 /* Mobile tweaks */
-@media (max-width:560px){
+@media (max-width:479px){
   .midterm-page .shell {padding:16px 12px 80px;}
   .midterm-page .card {padding:22px 18px;}
   .midterm-page .qcard {padding:18px 16px;}

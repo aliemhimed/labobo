@@ -152,9 +152,9 @@ function AdminInner() {
 
   return (
     <div className="wrap">
-      <div className="topbar">
+      <div className="page-bar">
         <h1><span className="pulse"></span> Labobo Admin</h1>
-        <div className="topbar-right">
+        <div className="page-bar-right">
           <button className="btn btn-sm" onClick={() => setTick((t) => t + 1)}>↻ Refresh</button>
           <button className="btn btn-sm" onClick={toggleTheme}>Theme</button>
           <button className="btn btn-sm btn-danger" onClick={relock}>Lock</button>

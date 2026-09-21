@@ -53,7 +53,7 @@ function Gate({ onUnlock }) {
 
 export default function MidtermPage() {
   return (
-    <div className="midterm-page">
+    <div className="midterm-page theme-dark">
       <MidtermInner />
     </div>
   );
@@ -98,9 +98,9 @@ function MidtermInner() {
   if (!unlocked) return <Gate onUnlock={() => setUnlocked(true)} />;
 
   const topbar = (
-    <div className="topbar">
-      <div className="topbar-title">Midterm Review <span className="badge">Private</span></div>
-      <div className="topbar-actions">
+    <div className="page-bar">
+      <div className="page-bar-title">Midterm Review <span className="badge">Private</span></div>
+      <div className="page-bar-actions">
         <button className="btn-ghost" onClick={backToMenu}>Menu</button>
         <button className="btn-ghost" onClick={lock}>Lock</button>
       </div>

@@ -1,41 +1,5 @@
 /* Home / subject picker styles (from the original index.html). */
-/* ── Design Tokens ─────────────────────────────────────────────────────────── */
-:root {
-  --brand: #2B7FFF; --brand-dark: #1D6AE5; --brand-soft: rgba(43,127,255,0.12);
-  --accent: #06B6D4; --accent-soft: rgba(6,182,212,0.1);
-  --correct: #16A34A; --review: #D97706; --wrong: #DC2626;
-  --radius: 16px; --radius-sm: 10px; --radius-xs: 8px;
-}
-[data-theme="dark"] {
-  --bg: #0B1220;
-  --surface: #111A2E;
-  --surface-raised: #162035;
-  --border: #1E2D47;
-  --border-strong: #243858;
-  --text: #E8EEFF;
-  --text-soft: #8BA3CC;
-  --text-muted: #8093B6;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.55);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.65);
-  --glow-brand: 0 0 32px rgba(43,127,255,0.22);
-  --input-bg: #0E1828;
-}
-[data-theme="light"] {
-  --bg: #F0F4FF;
-  --surface: #FFFFFF;
-  --surface-raised: #F1F5F9;
-  --border: #D8E3F0;
-  --border-strong: #B8CCE4;
-  --text: #0F172A;
-  --text-soft: #475569;
-  --text-muted: #586A85;
-  --shadow-sm: 0 1px 3px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.04);
-  --shadow-md: 0 4px 12px rgba(15,23,42,0.09), 0 2px 4px rgba(15,23,42,0.04);
-  --shadow-lg: 0 12px 32px rgba(15,23,42,0.12), 0 4px 8px rgba(15,23,42,0.05);
-  --glow-brand: none;
-  --input-bg: #F8FAFC;
-}
+/* Design tokens: see tokens.css */
 
 /* ── Reset & Base ────────────────────────────────────────────────────────────  */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -253,7 +217,7 @@ input[type=text]:focus {
 .subject-desc { font-size: 11.5px; color: var(--text-soft); line-height: 1.5; }
 
 /* ── Responsive ─────────────────────────────────────────────────────────────  */
-@media (max-width: 520px) {
+@media (max-width: 479px) {
   .subject-grid { grid-template-columns: 1fr; }
   .brand-icon { width: 56px; height: 56px; border-radius: 14px; }
   .brand-name { font-size: 22px; }
@@ -261,9 +225,15 @@ input[type=text]:focus {
   .name-card { padding: 22px; }
   .wrap { padding: 56px 16px 32px; }
 }
-@media (max-width: 360px) {
+@media (max-width: 359px) {
   .brand { flex-direction: column; text-align: center; }
   .brand-words { align-items: center; }
+}
+
+/* ── Tablet and up: wider subject grid ─────────────────────────────────────  */
+@media (min-width: 768px) {
+  .subject-wrap { max-width: 760px; }
+  .subject-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ── Fade animation ─────────────────────────────────────────────────────────  */

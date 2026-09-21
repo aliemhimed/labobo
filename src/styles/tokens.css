@@ -1,0 +1,78 @@
+/* ============================================================
+   Design tokens: the single source for colour, radius and shadow.
+   Every page reads these; nothing else should redefine them.
+
+   Themes
+     dark   default; also `.theme-dark` to force it on one subtree
+            (the private Midterm page is always dark)
+     light  [data-theme="light"], set on <html> by lib/theme.js
+
+   Breakpoints (custom properties can't be used inside @media, so the
+   values are repeated in the stylesheets; keep to this scale):
+     360   tiny phones     @media (max-width: 359px)
+     480   phones          @media (max-width: 479px)
+     768   tablets         @media (max-width: 767px)  /  (min-width: 768px)
+     1024  desktops        @media (min-width: 1024px)
+   ============================================================ */
+
+:root {
+  /* Brand */
+  --brand:        #2B7FFF;
+  --brand-dark:   #1D6AE5;
+  --brand-soft:   rgba(43,127,255,0.12);
+  --accent:       #06B6D4;
+  --accent-soft:  rgba(6,182,212,0.10);
+  /* Semantic */
+  --correct:      #16A34A;
+  --correct-soft: rgba(22,163,74,0.12);
+  --review:       #D97706;
+  --review-soft:  rgba(217,119,6,0.12);
+  --wrong:        #DC2626;
+  --wrong-soft:   rgba(220,38,38,0.12);
+  /* Radii */
+  --radius:    16px;
+  --radius-sm: 10px;
+  --radius-xs:  8px;
+}
+
+/* ── Dark (default) ───────────────────────────────────────────────── */
+:root, [data-theme="dark"], .theme-dark {
+  color-scheme: dark;
+  --bg:             #0B1220;
+  --surface:        #111A2E;
+  --surface-raised: #162035;
+  --surface-float:  #1C2940;
+  --border:         #1E2D47;
+  --border-strong:  #243858;
+  --text:           #E8EEFF;
+  --text-soft:      #8BA3CC;
+  --text-muted:     #8093B6;  /* >= 4.5:1 on every dark surface */
+  --input-bg:       #0E1828;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.55);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.65);
+  --glow-brand:   0 0 32px rgba(43,127,255,0.22);
+  --glow-correct: 0 0 20px rgba(22,163,74,0.28);
+  --glow-wrong:   0 0 20px rgba(220,38,38,0.28);
+}
+
+/* ── Light ────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg:             #F0F4FF;
+  --surface:        #FFFFFF;
+  --surface-raised: #F1F5F9;
+  --surface-float:  #EBF1FF;
+  --border:         #D8E3F0;
+  --border-strong:  #B8CCE4;
+  --text:           #0F172A;
+  --text-soft:      #475569;
+  --text-muted:     #586A85;  /* >= 4.5:1 on every light surface */
+  --input-bg:       #F8FAFC;
+  --shadow-sm:  0 1px 3px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md:  0 4px 12px rgba(15,23,42,0.09), 0 2px 4px rgba(15,23,42,0.04);
+  --shadow-lg:  0 12px 32px rgba(15,23,42,0.12), 0 4px 8px rgba(15,23,42,0.05);
+  --glow-brand:   none;
+  --glow-correct: none;
+  --glow-wrong:   none;
+}

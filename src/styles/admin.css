@@ -1,23 +1,5 @@
 /* Admin dashboard styles (from the original admin.html). */
-.admin-page {
-  --brand: #2B7FFF; --brand-dark: #1D6AE5; --brand-soft: rgba(43,127,255,0.12);
-  --correct: #16A34A; --review: #D97706; --wrong: #DC2626;
-  --radius: 14px; --radius-sm: 10px;
-}
-[data-theme="dark"] .admin-page {
-  --bg: #0B1220; --surface: #111A2E; --surface-raised: #162035;
-  --border: #1E2D47; --border-strong: #243858;
-  --text: #E8EEFF; --text-soft: #8BA3CC; --text-muted: #8093B6;
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.55);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.65);
-}
-[data-theme="light"] .admin-page {
-  --bg: #F0F4FF; --surface: #FFFFFF; --surface-raised: #F1F5F9;
-  --border: #D8E3F0; --border-strong: #B8CCE4;
-  --text: #0F172A; --text-soft: #475569; --text-muted: #586A85;
-  --shadow-md: 0 4px 12px rgba(15,23,42,0.09);
-  --shadow-lg: 0 12px 32px rgba(15,23,42,0.12);
-}
+/* Design tokens: see tokens.css */
 .admin-page *, .admin-page *::before, .admin-page *::after { box-sizing: border-box; margin: 0; padding: 0; }
 .admin-page {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -27,21 +9,21 @@
 .admin-page .wrap { max-width: 1280px; margin: 0 auto; padding: 24px 20px 80px; }
 
 /* Top bar */
-.admin-page .topbar {
+.admin-page .page-bar {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 24px; gap: 12px; flex-wrap: wrap;
 }
-.admin-page .topbar h1 {
+.admin-page .page-bar h1 {
   font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700;
   display: flex; align-items: center; gap: 10px;
 }
-.admin-page .topbar h1 .pulse {
+.admin-page .page-bar h1 .pulse {
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--correct); box-shadow: 0 0 12px var(--correct);
   animation: pulse 2s infinite;
 }
 @keyframes pulse{ 50% { opacity: 0.5; } }
-.admin-page .topbar-right { display: flex; gap: 8px; align-items: center; }
+.admin-page .page-bar-right { display: flex; gap: 8px; align-items: center; }
 
 .admin-page .btn {
   padding: 9px 14px; border-radius: 9px; font-size: 13px; font-weight: 600;
@@ -220,7 +202,7 @@
 .admin-page .ann-status-active { color: var(--correct); }
 .admin-page .ann-status-inactive { color: var(--text-muted); }
 
-@media (max-width: 720px){
+@media (max-width: 767px){
   .admin-page .ann-form { grid-template-columns: 1fr; }
 }
 
