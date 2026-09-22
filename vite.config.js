@@ -14,7 +14,18 @@ const FUNCTIONS_ORIGIN = process.env.FUNCTIONS_ORIGIN || 'http://localhost:8888'
    they aren't, callers get a clean 503 and the terminal gets one line.
 
    The app already treats a failed /api/questions as "read Supabase directly",
-   so the quizzes work either way. */
+   so the quizzes work either way.
+
+   IMPORTANT — when running `npm run dev:netlify`, browse http://localhost:5173
+   (this Vite server), NOT http://localhost:8888 (Netlify Dev's outer proxy).
+   Netlify Dev applies netlify.toml's headers — including the CSP — to
+   everything it proxies through :8888, and that CSP blocks the inline
+   Fast-Refresh preamble @vitejs/plugin-react injects in dev, which crashes
+   every component module ("can't detect preamble"). :5173 has no such
+   header enforcement, and this very middleware already forwards its /api/*
+   requests to :8888 for you, so you get working functions AND a working app
+   from the one URL. This has no effect on `npm run build` / production,
+   which injects no preamble script at all. */
 function netlifyFunctionsDev() {
   let announced = false;
 

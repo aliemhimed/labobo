@@ -48,14 +48,13 @@
 # specifically so script-src can stay hash-free and match 'self' regardless
 # of how a dev server reformats the HTML.
 #
-# Dev-mode note: `netlify dev` enforces this CSP against Vite's dev server
-# too. Vite's React plugin injects its own INLINE preamble script for Fast
-# Refresh, which this CSP also blocks (harmless — full reloads still work,
-# you just lose Fast Refresh and may see a "can't detect preamble" console
-# error). This never happens in a production build, which has no preamble
-# script. If you want Fast Refresh, use `npm run dev` (plain Vite, no
-# netlify.toml headers) for frontend work and `npm run dev:netlify` only
-# when you need the Netlify Functions.
+# Dev-mode note: `netlify dev`'s outer proxy (:8888) enforces this CSP, and
+# it blocks the inline Fast-Refresh preamble @vitejs/plugin-react injects in
+# dev — which crashes the app, not just hot-reload (see vite.config.js).
+# Browse http://localhost:5173 (the Vite server underneath) instead of :8888
+# while `npm run dev:netlify` is running: no header enforcement there, and
+# vite.config.js already forwards its /api/* calls to :8888 for you. Never
+# an issue in a production build, which injects no preamble script.
 [[headers]]
   for = "/*"
   [headers.values]
