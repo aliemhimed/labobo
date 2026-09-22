@@ -2,12 +2,13 @@
    Routes (all but login need `Authorization: Bearer <token>`):
      POST   /api/admin?action=login                body: {password} -> {token}
      GET    /api/admin?action=stats
-     GET    /api/admin?action=reports
+     GET    /api/admin?action=reports[&status=open|resolved|all]  (default open)
      GET    /api/admin?action=leaderboard[&week=YYYY-MM-DD]
      GET    /api/admin?action=users
      GET    /api/admin?action=sessions[&limit=N]
      GET    /api/admin?action=announcements        (includes hidden ones)
      POST   /api/admin?action=announcement         body: {id,title,body,pub_date,active}
+     POST   /api/admin?action=report                body: {id,resolved}
      DELETE /api/admin?action=leaderboard&id=N
      DELETE /api/admin?action=report&id=N
      DELETE /api/admin?action=announcement&id=SLUG
@@ -147,7 +148,7 @@ exports.handler = async (event) => {
         const [users, sessions, reports, lbThisWeek, sessionsToday] = await Promise.all([
           countTable('users'),
           countTable('sessions'),
-          countTable('question_reports'),
+          countTable('question_reports', '&resolved=eq.false'),
           countTable('leaderboard_entries', `&week_start=eq.${weekStart}`),
           (async () => {
             const today = new Date().toISOString().slice(0, 10);
@@ -158,7 +159,12 @@ exports.handler = async (event) => {
       }
 
       if (action === 'reports') {
-        const rows = await rest('/question_reports?select=*&order=created_at.desc.nullslast,id.desc&limit=500', {}, true);
+        const status = params.status || 'open';
+        if (!['open', 'resolved', 'all'].includes(status)) return err(400, 'status must be open, resolved or all');
+        const filter = status === 'all' ? '' : `&resolved=eq.${status === 'resolved'}`;
+        const rows = await rest(
+          `/question_reports?select=*${filter}&order=created_at.desc.nullslast,id.desc&limit=500`, {}, true
+        );
         return ok({ rows });
       }
 
@@ -234,6 +240,20 @@ exports.handler = async (event) => {
         }, true);
 
         return ok({ saved: Array.isArray(saved) ? saved[0] : saved });
+      }
+
+      if (action === 'report') {
+        if (!adminHeaders()) return err(503, SERVICE_KEY_HINT);
+        const body = parseBody(event);
+        const id = Number(body?.id);
+        if (!Number.isFinite(id)) return err(400, 'Missing or invalid id');
+        const saved = await rest(`/question_reports?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: { Prefer: 'return=representation' },
+          body: JSON.stringify({ resolved: !!body.resolved }),
+        }, true);
+        if (!Array.isArray(saved) || !saved.length) return err(404, 'No report with that id');
+        return ok({ saved: saved[0] });
       }
 
       return err(400, `Unknown POST action: ${action}`);

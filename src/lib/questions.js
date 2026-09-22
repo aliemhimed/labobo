@@ -155,6 +155,27 @@ export async function loadQuestions(config, signal) {
   return questions;
 }
 
+/** Best-effort total row count across a subject's tables, for the home page
+    cards. Reads Supabase directly, the same as the offline fallback above —
+    a count is cheap and not sensitive, so it skips the /api/questions proxy.
+    A table that fails to count just contributes 0 rather than failing the
+    whole card. */
+export async function fetchQuestionCounts(sources, signal) {
+  const counts = await Promise.all(sources.map(async (source) => {
+    try {
+      const res = await fetch(`${SUPA_URL}/rest/v1/${source.table}?select=id`, {
+        signal,
+        headers: { ...SUPA_HEADERS, Prefer: 'count=exact', Range: '0-0' },
+      });
+      const total = parseInt((res.headers.get('content-range') || '').split('/')[1], 10);
+      return Number.isFinite(total) ? total : 0;
+    } catch {
+      return 0;
+    }
+  }));
+  return counts.reduce((a, b) => a + b, 0);
+}
+
 /** subject -> topic -> [indices into the questions array] */
 export function buildSubjectIndex(questions) {
   const index = {};

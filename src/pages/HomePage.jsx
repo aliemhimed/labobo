@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getUser } from '../lib/storage.js';
+import { getSubjectSummary } from '../lib/storage.js';
+import { fetchQuestionCounts } from '../lib/questions.js';
 import { toggleTheme } from '../lib/theme.js';
-import { registerUser, createGuest } from '../lib/user.js';
+import { ensureGuest, registerUser } from '../lib/user.js';
 import { SunIcon, MoonIcon } from '../components/ThemeIcons.jsx';
+import { useNamePrompt } from '../components/NamePrompt.jsx';
+import { SUBJECTS, MIDTERM } from '../lib/subjects.js';
 
 const MedArtIcon = () => (
   /* Paintbrush + stethoscope: the arms form a Y at the top, the tube curves
@@ -22,47 +25,81 @@ const MedArtIcon = () => (
   </svg>
 );
 
+// One glyph per storagePrefix — the color scheme for each lives in home.css
+// under the same name (.subject-card.<prefix>).
+const ICONS = {
+  gct: '🧬', bs: '🫀', chem: '⚗️', phys: '⚡', clin: '💉',
+  medart: <MedArtIcon />, midterm: '🎓',
+};
+
+const RESUME_LABEL = { practice: 'Practice', exam: 'Exam', 'review-wrong': 'Review Wrong Answers' };
+
+// Cards are built from the subject registry so this list can't drift from
+// what the subject pages actually offer. Midterm Review is bolted on: it's a
+// separate, password-gated page rather than a SUBJECTS entry.
 const CARDS = [
-  { to: '/gct', cls: 'gct', icon: '🧬', name: 'GCT I',
-    desc: 'Molecular Biology, Biochemistry, Histology & Medical Genetics' },
-  { to: '/body-systems', cls: 'bs', icon: '🫀', name: 'Body Systems',
-    desc: 'Anatomy, Physiology & Medical Imaging' },
-  { to: '/chemistry', cls: 'chem', icon: '⚗️', name: 'Medical Chemistry',
-    desc: 'Matter, Thermodynamics, Kinetics, Solutions, Acids & Bases' },
-  { to: '/physics', cls: 'phys', icon: '⚡', name: 'Medical Physics',
-    desc: 'Biomechanics, Waves, Sound, Hydrodynamics & more' },
-  { to: '/clinical', cls: 'clin', icon: '💉', name: 'Clinical & Prof. Skills 1',
-    desc: 'Injections, Infection Control, Drug Administration & Vital Signs' },
-  { to: '/medicine-art', cls: 'medart', icon: <MedArtIcon />, name: 'Medicine & Art',
-    desc: 'Art & Anatomy, Doctors in Art, Photography, AIDS Art & Healing' },
+  ...Object.entries(SUBJECTS).map(([key, cfg]) => ({
+    key,
+    to: `/${key}`,
+    cls: cfg.storagePrefix,
+    icon: ICONS[cfg.storagePrefix],
+    name: cfg.title.replace(/ MCQ$/, ''),
+    desc: cfg.description,
+    sources: cfg.sources,
+    storagePrefix: cfg.storagePrefix,
+  })),
+  {
+    key: 'midterm',
+    to: '/midterm-review',
+    cls: 'midterm',
+    icon: ICONS.midterm,
+    name: MIDTERM.title,
+    desc: MIDTERM.description,
+    sources: MIDTERM.sources,
+    storagePrefix: MIDTERM.storagePrefix,
+    locked: true,
+  },
 ];
 
 export default function HomePage() {
-  const [user, setUserState] = useState(() => getUser());
-  const [fading, setFading] = useState(false);
-  const inputRef = useRef(null);
+  const [user, setUserState] = useState(ensureGuest);
+  const [counts, setCounts] = useState({});
+  const [progress, setProgress] = useState({});
+  const namePrompt = useNamePrompt();
 
   useEffect(() => { document.title = 'Studywith Labobo'; }, []);
 
-  function reveal(u) {
-    setFading(true);
-    setTimeout(() => setUserState(u), 240);
+  // Progress is a handful of synchronous localStorage reads — cheap enough
+  // to just do on mount, and this page remounts fresh on every visit anyway.
+  useEffect(() => {
+    setProgress(Object.fromEntries(CARDS.map((c) => [c.key, getSubjectSummary(c.storagePrefix)])));
+  }, []);
+
+  // Counts come from Supabase directly (see fetchQuestionCounts) and can be
+  // slow on a cold connection, so they fill in after the grid is already usable.
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all(CARDS.map(async (c) => [c.key, await fetchQuestionCounts(c.sources)]))
+      .then((entries) => { if (!cancelled) setCounts(Object.fromEntries(entries)); })
+      .catch(() => { /* counts are a nice-to-have; the cards work without them */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  async function saveMyName() {
+    const name = await namePrompt.ask({
+      title: 'Save your name',
+      message: 'Your name is kept on this device only, to label your scores and history.',
+      confirmLabel: 'Save',
+      skipLabel: 'Cancel',
+    });
+    if (name) setUserState(registerUser(name));
   }
 
-  function start() {
-    const name = inputRef.current.value.trim();
-    if (!name) { inputRef.current.focus(); return; }
-    reveal(registerUser(name));
-  }
+  const greeting = user.name && user.name !== 'Guest'
+    ? `Hey ${user.name}, pick your subject 👇`
+    : 'Choose your subject';
 
-  function skip() {
-    reveal(createGuest());
-  }
-
-  const greeting =
-    user && user.name && user.name !== 'Guest'
-      ? `Hey ${user.name}, pick your subject 👇`
-      : 'Choose your subject';
+  const resumable = CARDS.filter((c) => progress[c.key]?.resumeMode);
 
   return (
     <>
@@ -80,40 +117,49 @@ export default function HomePage() {
           </div>
         </div>
 
-        {!user ? (
-          <>
-            <div className="mascot-wrap">
-              <img src="/theme/mascot.webp" alt="Labobo mascot" draggable="false" width="85" height="128" />
-            </div>
-            <div className={'name-card' + (fading ? ' fade-out' : '')}>
-              <h2>Welcome! 👋</h2>
-              <p>
-                Enter your name to track your scores and progress across sessions.
-                Or skip to study without saving.
-              </p>
-              <input ref={inputRef} type="text" aria-label="Your name" placeholder="Your name (e.g., Ali)"
-                     autoComplete="off" autoFocus
-                     onKeyDown={(e) => { if (e.key === 'Enter') start(); }} />
-              <button className="btn-primary" onClick={start}>Get Started →</button>
-              <button className="btn-ghost" onClick={skip}>Continue without saving</button>
-            </div>
-          </>
-        ) : (
-          <div className="subject-wrap visible">
-            <div className="subject-greeting">{greeting}</div>
-            <p className="subject-sub">Select what you want to study today</p>
-            <div className="subject-grid">
-              {CARDS.map((c) => (
-                <Link key={c.to} to={c.to} className={'subject-card ' + c.cls}>
-                  <div className="subject-icon">{c.icon}</div>
-                  <div className="subject-name">{c.name}</div>
-                  <div className="subject-desc">{c.desc}</div>
+        <div className="subject-wrap visible">
+          <div className="subject-greeting">
+            {greeting}
+            {!user.registered ? (
+              <button type="button" className="save-name-link" onClick={saveMyName}>Save your name</button>
+            ) : null}
+          </div>
+          <p className="subject-sub">Select what you want to study today</p>
+
+          {resumable.length ? (
+            <div className="resume-row" aria-label="Continue where you left off">
+              <span className="resume-label">Continue:</span>
+              {resumable.map((c) => (
+                <Link key={c.key} to={`${c.to}/${progress[c.key].resumeMode}`} className="resume-chip">
+                  {c.name} · {RESUME_LABEL[progress[c.key].resumeMode] || 'Resume'}
                 </Link>
               ))}
             </div>
+          ) : null}
+
+          <div className="subject-grid">
+            {CARDS.map((c) => {
+              const p = progress[c.key];
+              return (
+                <Link key={c.key} to={c.to} className={'subject-card ' + c.cls}>
+                  <div className="subject-icon">{c.icon}</div>
+                  <div className="subject-name">
+                    {c.name}
+                    {c.locked ? <span className="subject-lock" title="Password protected">🔒</span> : null}
+                  </div>
+                  <div className="subject-desc">{c.desc}</div>
+                  <div className="subject-meta">
+                    {counts[c.key] != null ? <span>{counts[c.key]} questions</span> : null}
+                    {p?.sessionsCount ? <span> · Last {p.lastScore}%</span> : null}
+                  </div>
+                  {p?.wrongCount ? <div className="subject-badge">{p.wrongCount} to review</div> : null}
+                </Link>
+              );
+            })}
           </div>
-        )}
+        </div>
       </div>
+      {namePrompt.element}
     </>
   );
 }

@@ -73,38 +73,14 @@ body::before {
 }
 .brand-tagline { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-/* ── Mascot ─────────────────────────────────────────────────────────────────  */
-.mascot-wrap {
-  height: 130px; display: flex; align-items: flex-end; justify-content: center;
-  margin-bottom: 4px; margin-top: 2px;
-  overflow: visible;
-}
-.mascot-wrap img {
-  height: 128px; width: auto; object-fit: contain;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.28));
-  animation: mascotFloat 4s ease-in-out infinite;
-  transition: opacity 0.3s;
-}
+/* mascotFloat is used by .mascot-results in quiz.css; kept here as it was
+   the original definition (CSS allows only one to actually apply). */
 @keyframes mascotFloat {
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-6px); }
 }
 
 /* ── Cards & Inputs ─────────────────────────────────────────────────────────  */
-.name-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
-  width: 100%; max-width: 420px;
-  box-shadow: var(--shadow-lg), var(--glow-brand);
-  transition: box-shadow 0.25s;
-}
-.name-card h2 {
-  font-family: 'Poppins', sans-serif;
-  font-size: 18px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 5px;
-}
-.name-card p { font-size: 13.5px; color: var(--text-soft); margin-bottom: 18px; line-height: 1.55; }
 input[type=text] {
   width: 100%;
   background: var(--input-bg); color: var(--text);
@@ -152,6 +128,29 @@ input[type=text]:focus {
   margin-bottom: 4px;
 }
 .subject-sub { font-size: 13.5px; color: var(--text-soft); margin-bottom: 20px; }
+
+.save-name-link {
+  display: inline-block; margin-left: 10px; vertical-align: middle;
+  background: none; border: none; cursor: pointer; padding: 0;
+  font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600;
+  color: var(--brand); text-decoration: underline; text-underline-offset: 2px;
+}
+.save-name-link:hover { color: var(--brand-dark); }
+
+.resume-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin-bottom: 16px;
+}
+.resume-label { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+.resume-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--brand-soft); border: 1px solid rgba(43,127,255,0.3);
+  color: var(--brand); font-size: 12.5px; font-weight: 600;
+  text-decoration: none; transition: background 0.15s, border-color 0.15s;
+}
+.resume-chip:hover { background: rgba(43,127,255,0.2); border-color: var(--brand); }
+
 .subject-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .subject-card {
   background: var(--surface);
@@ -189,6 +188,8 @@ input[type=text]:focus {
 .subject-card.clin::before { background: linear-gradient(90deg, #DC2626, #F97316); }
 .subject-card.medart:hover { border-color: rgba(236,72,153,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(236,72,153,0.14); }
 .subject-card.medart::before { background: linear-gradient(90deg, #EC4899, #F59E0B); }
+.subject-card.midterm:hover { border-color: rgba(202,138,4,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(202,138,4,0.14); }
+.subject-card.midterm::before { background: linear-gradient(90deg, #CA8A04, #78350F); }
 /* SOON state */
 .subject-card.soon { cursor: not-allowed; opacity: 0.45; pointer-events: none; }
 .soon-badge {
@@ -210,19 +211,29 @@ input[type=text]:focus {
 .subject-card.clin .subject-icon { background: linear-gradient(135deg, #DC2626, #F97316); }
 .subject-card.medart .subject-icon { background: linear-gradient(135deg, #EC4899 0%, #F59E0B 100%); }
 .subject-card.medart .subject-icon svg { width: 28px; height: 28px; color: #fff; }
+.subject-card.midterm .subject-icon { background: linear-gradient(135deg, #CA8A04 0%, #78350F 100%); }
 .subject-name {
   font-family: 'Poppins', sans-serif; font-size: 14.5px; font-weight: 700;
   letter-spacing: -0.01em; line-height: 1.2;
+  display: flex; align-items: center; gap: 6px;
 }
+.subject-lock { font-size: 12px; opacity: 0.8; }
 .subject-desc { font-size: 11.5px; color: var(--text-soft); line-height: 1.5; }
+.subject-meta { font-size: 10.5px; color: var(--text-muted); margin-top: -4px; }
+.subject-badge {
+  position: absolute; top: 13px; right: 13px;
+  background: var(--brand); color: #fff;
+  font-size: 9.5px; font-weight: 700;
+  padding: 3px 8px; border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 2px 8px rgba(43,127,255,0.4);
+}
 
 /* ── Responsive ─────────────────────────────────────────────────────────────  */
 @media (max-width: 479px) {
   .subject-grid { grid-template-columns: 1fr; }
   .brand-icon { width: 56px; height: 56px; border-radius: 14px; }
   .brand-name { font-size: 22px; }
-  .mascot-wrap img { height: 106px; }
-  .name-card { padding: 22px; }
   .wrap { padding: 56px 16px 32px; }
 }
 @media (max-width: 359px) {
@@ -235,10 +246,6 @@ input[type=text]:focus {
   .subject-wrap { max-width: 760px; }
   .subject-grid { grid-template-columns: repeat(3, 1fr); }
 }
-
-/* ── Fade animation ─────────────────────────────────────────────────────────  */
-.fade-out { animation: fadeDown 0.25s ease forwards; }
-@keyframes fadeDown { to { opacity: 0; transform: translateY(6px); } }
 
 /* ── Subject grid — refined look (additive polish) ──────────────────────────── */
 /* Gentle tinted surface so cards read with depth instead of looking flat. */

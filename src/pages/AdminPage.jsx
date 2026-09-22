@@ -146,7 +146,7 @@ function AdminInner() {
     { label: 'Users', value: stats.users, sub: 'total registered' },
     { label: 'Sessions', value: stats.sessions, sub: 'all time' },
     { label: 'Today', value: stats.sessions_today, sub: 'sessions in last 24h' },
-    { label: 'Reports', value: stats.reports, sub: 'question_reports' },
+    { label: 'Reports', value: stats.reports, sub: 'open (unresolved)' },
     { label: 'Leaderboard', value: stats.leaderboard_this_week, sub: `this week (${stats.week_start})` },
   ] : [];
 
@@ -233,11 +233,14 @@ function Panel({ state, empty, children }) {
   return children(rows, state.data);
 }
 
+const REPORT_STATUSES = [['open', 'Open'], ['resolved', 'Resolved'], ['all', 'All']];
+
 function ReportsTab({ tick, toast, refresh }) {
-  const state = useTabData('reports', {}, [tick]);
+  const [status, setStatus] = useState('open');
+  const state = useTabData('reports', { status }, [tick, status]);
 
   async function dismiss(id) {
-    if (!confirm('Dismiss this report?')) return;
+    if (!confirm('Dismiss this report? This deletes it — use Resolve instead to keep a record.')) return;
     try {
       await apiCall('DELETE', 'report', { params: { id } });
       toast('Report dismissed');
@@ -245,54 +248,79 @@ function ReportsTab({ tick, toast, refresh }) {
     } catch (e) { toast(e.message, true); }
   }
 
+  async function setResolved(id, resolved) {
+    try {
+      await apiCall('POST', 'report', { body: { id, resolved } });
+      toast(resolved ? 'Marked resolved' : 'Reopened');
+      refresh();
+    } catch (e) { toast(e.message, true); }
+  }
+
   return (
-    <Panel state={state} empty={<Empty icon="🎉">No reports — questions are clean.</Empty>}>
-      {(rows) => (
-        <div className="card">
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>When</th><th>Subject / Topic</th><th>Reason</th>
-                  <th>Question + Note</th><th>Device</th><th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id}>
-                    <td>
-                      <div>{fmtDate(r.created_at)}</div>
-                      <div className="muted">{timeAgo(r.created_at)}</div>
-                    </td>
-                    <td>
-                      <div><span className="pill">{r.subject || '—'}</span></div>
-                      {r.topic ? <div className="muted" style={{ marginTop: 4 }}>{r.topic}</div> : null}
-                    </td>
-                    <td>
-                      {r.reason ? <span className="pill pill-warn">{r.reason}</span>
-                                : <span className="muted">—</span>}
-                    </td>
-                    <td>
-                      {r.question_text ? (
-                        <div className="muted" style={{ marginBottom: 6 }}>
-                          {r.question_text.slice(0, 180)}{r.question_text.length > 180 ? '…' : ''}
-                        </div>
-                      ) : null}
-                      {r.note ? <div className="report-body">{r.note}</div> : null}
-                      {!r.question_text && !r.note ? <span className="muted">(no details)</span> : null}
-                    </td>
-                    <td className="mono">{(r.device_id || '').slice(0, 12)}</td>
-                    <td>
-                      <button className="btn btn-sm btn-danger" onClick={() => dismiss(r.id)}>Dismiss</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <>
+      <div className="tabs" style={{ marginBottom: 12 }}>
+        {REPORT_STATUSES.map(([key, label]) => (
+          <div key={key} className={'tab' + (status === key ? ' active' : '')}
+               onClick={() => setStatus(key)}>
+            {label}
           </div>
-        </div>
-      )}
-    </Panel>
+        ))}
+      </div>
+      <Panel state={state} empty={<Empty icon="🎉">
+        {status === 'resolved' ? 'No resolved reports yet.' : 'No reports — questions are clean.'}
+      </Empty>}>
+        {(rows) => (
+          <div className="card">
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>When</th><th>Subject / Topic</th><th>Reason</th>
+                    <th>Question + Note</th><th>Device</th><th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.id} style={r.resolved ? { opacity: 0.6 } : undefined}>
+                      <td>
+                        <div>{fmtDate(r.created_at)}</div>
+                        <div className="muted">{timeAgo(r.created_at)}</div>
+                      </td>
+                      <td>
+                        <div><span className="pill">{r.subject || '—'}</span></div>
+                        {r.topic ? <div className="muted" style={{ marginTop: 4 }}>{r.topic}</div> : null}
+                      </td>
+                      <td>
+                        {r.reason ? <span className="pill pill-warn">{r.reason}</span>
+                                  : <span className="muted">—</span>}
+                      </td>
+                      <td>
+                        {r.question_text ? (
+                          <div className="muted" style={{ marginBottom: 6 }}>
+                            {r.question_text.slice(0, 180)}{r.question_text.length > 180 ? '…' : ''}
+                          </div>
+                        ) : null}
+                        {r.note ? <div className="report-body">{r.note}</div> : null}
+                        {!r.question_text && !r.note ? <span className="muted">(no details)</span> : null}
+                      </td>
+                      <td className="mono">{(r.device_id || '').slice(0, 12)}</td>
+                      <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                        {r.resolved ? (
+                          <button className="btn btn-sm" onClick={() => setResolved(r.id, false)}>Reopen</button>
+                        ) : (
+                          <button className="btn btn-sm" onClick={() => setResolved(r.id, true)}>Resolve</button>
+                        )}
+                        <button className="btn btn-sm btn-danger" onClick={() => dismiss(r.id)}>Dismiss</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </Panel>
+    </>
   );
 }
 

@@ -41,7 +41,7 @@ export const SUBJECTS = {
   gct: {
     path: 'gct',
     title: 'GCT I MCQ',
-    tagline: 'questions · Molecular Biology, Biochemistry, Histology & Medical Genetics',
+    description: 'Molecular Biology, Biochemistry, Histology & Medical Genetics',
     docTitle: 'GCT I — Studywith Labobo',
     storagePrefix: 'gct',
     leaderboardSubject: 'GCT',
@@ -61,52 +61,10 @@ export const SUBJECTS = {
     ],
   },
 
-  chemistry: {
-    path: 'chemistry',
-    title: 'Medical Chemistry MCQ',
-    tagline: 'questions · Matter & Atoms, Thermodynamics, Kinetics, Solutions, Acids & Bases',
-    docTitle: 'Medical Chemistry — Studywith Labobo',
-    storagePrefix: 'chem',
-    leaderboardSubject: 'Medical Chemistry',
-    sessionSubject: 'Medical Chemistry',
-    examLengths: [10, 20, 30, 45, 60, 90, 120, 172],
-    ratio: { 'Medical Chemistry': 1 },
-    sources: [{ table: 'medical_chemistry', subject: 'Medical Chemistry' }],
-  },
-
-  physics: {
-    path: 'physics',
-    title: 'Medical Physics MCQ',
-    tagline: 'questions across Biomechanics, Waves, Sound, Hydrodynamics & more',
-    docTitle: 'Medical Physics — Studywith Labobo',
-    storagePrefix: 'phys',
-    leaderboardSubject: 'Medical Physics',
-    sessionSubject: 'Medical Physics',
-    examLengths: [10, 20, 30, 45, 60, 75, 90],
-    ratio: { 'Medical Physics': 1 },
-    sources: [{ table: 'medical_physics', subject: 'Medical Physics' }],
-  },
-
-  clinical: {
-    path: 'clinical',
-    title: 'Clinical & Professional Skills 1',
-    tagline: 'questions · Injections, Infection Control, Drug Administration, Vital Signs & more',
-    docTitle: 'Clinical & Professional Skills — Studywith Labobo',
-    storagePrefix: 'clin',
-    leaderboardSubject: 'Clinical & Professional Skills',
-    sessionSubject: 'Clinical & Professional Skills',
-    examLengths: [10, 20, 30, 45, 60, 75, 90, 120, 180, 203],
-    ratio: { 'Clinical & Professional Skills': 1 },
-    sources: [
-      // this table keeps a curated display_topic alongside the raw topic
-      { table: 'clinical_skills', subject: 'Clinical & Professional Skills', displayTopic: true },
-    ],
-  },
-
   'body-systems': {
     path: 'body-systems',
     title: 'Body Systems MCQ',
-    tagline: 'questions across Anatomy, Physiology & Medical Imaging',
+    description: 'Anatomy, Physiology & Medical Imaging',
     docTitle: 'Body Systems — Studywith Labobo',
     storagePrefix: 'bs',
     leaderboardSubject: 'Body Systems',
@@ -121,10 +79,52 @@ export const SUBJECTS = {
     ],
   },
 
+  chemistry: {
+    path: 'chemistry',
+    title: 'Medical Chemistry MCQ',
+    description: 'Matter & Atoms, Thermodynamics, Kinetics, Solutions, Acids & Bases',
+    docTitle: 'Medical Chemistry — Studywith Labobo',
+    storagePrefix: 'chem',
+    leaderboardSubject: 'Medical Chemistry',
+    sessionSubject: 'Medical Chemistry',
+    examLengths: [10, 20, 30, 45, 60, 90, 120, 172],
+    ratio: { 'Medical Chemistry': 1 },
+    sources: [{ table: 'medical_chemistry', subject: 'Medical Chemistry' }],
+  },
+
+  physics: {
+    path: 'physics',
+    title: 'Medical Physics MCQ',
+    description: 'Biomechanics, Waves, Sound, Hydrodynamics & more',
+    docTitle: 'Medical Physics — Studywith Labobo',
+    storagePrefix: 'phys',
+    leaderboardSubject: 'Medical Physics',
+    sessionSubject: 'Medical Physics',
+    examLengths: [10, 20, 30, 45, 60, 75, 90],
+    ratio: { 'Medical Physics': 1 },
+    sources: [{ table: 'medical_physics', subject: 'Medical Physics' }],
+  },
+
+  clinical: {
+    path: 'clinical',
+    title: 'Clinical & Professional Skills 1',
+    description: 'Injections, Infection Control, Drug Administration, Vital Signs & more',
+    docTitle: 'Clinical & Professional Skills — Studywith Labobo',
+    storagePrefix: 'clin',
+    leaderboardSubject: 'Clinical & Professional Skills',
+    sessionSubject: 'Clinical & Professional Skills',
+    examLengths: [10, 20, 30, 45, 60, 75, 90, 120, 180, 203],
+    ratio: { 'Clinical & Professional Skills': 1 },
+    sources: [
+      // this table keeps a curated display_topic alongside the raw topic
+      { table: 'clinical_skills', subject: 'Clinical & Professional Skills', displayTopic: true },
+    ],
+  },
+
   'medicine-art': {
     path: 'medicine-art',
     title: 'Medicine & Art',
-    tagline: 'questions · Art & Anatomy, Doctors in Art, History of Medicine, Photography, AIDS & more',
+    description: 'Art & Anatomy, Doctors in Art, History of Medicine, Photography, AIDS & more',
     docTitle: 'Medicine & Art — Studywith Labobo',
     storagePrefix: 'medart',
     leaderboardSubject: 'Medicine & Art',
@@ -140,6 +140,8 @@ export const SUBJECTS = {
 /* The midterm review page has its own (simpler) engine but pulls from
    the same kind of tables. */
 export const MIDTERM = {
+  title: 'Midterm Review',
+  description: 'Biochemistry, Molecular Biology, Genetics & Histology',
   storagePrefix: 'midterm',
   sources: [
     { table: 'midterm_biochemistry', subject: 'Biochemistry' },

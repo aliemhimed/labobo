@@ -11,6 +11,7 @@
 const USER_KEY = 'mcq.user';
 const THEME_KEY = 'mcq.theme';
 const LEADERBOARD_KEY = 'labobo_leaderboard';
+const SKIP_SAVE_PROMPT_KEY = 'mcq.skip_save_prompt';
 const SEEN_ANNOUNCEMENTS_KEY = 'labobo_seen_announcements';
 const ANNOUNCEMENTS_CACHE_KEY = 'labobo_announcements_cache_v1';
 const SCHEMA_VERSION = 2;
@@ -111,6 +112,15 @@ export function setTheme(t) {
   } catch { /* ignore */ }
 }
 
+/* Guests are asked once whether they want to name themselves so a finished
+   session can be saved; if they decline, don't ask again on this device. */
+export const getSkipSavePrompt = () => readRaw(SKIP_SAVE_PROMPT_KEY) === '1';
+export function setSkipSavePrompt() {
+  try {
+    localStorage.setItem(SKIP_SAVE_PROMPT_KEY, '1');
+  } catch { /* ignore */ }
+}
+
 /* ── leaderboard preferences (opt-in choice + public handle) ─────── */
 
 export const getLeaderboardPrefs = () => read(LEADERBOARD_KEY, {});
@@ -206,4 +216,21 @@ export function saveSession(prefix, session) {
     if (session) sessionStorage.setItem(sessionKey(prefix), JSON.stringify(session));
     else sessionStorage.removeItem(sessionKey(prefix));
   } catch { /* ignore */ }
+}
+
+/* ── home-page progress summary ──────────────────────────────────── */
+
+/** One subject's progress, for the home page cards: last score, session
+    count, wrong-answer count, and an in-progress session to resume (if any
+    exists and hasn't already finished into a result). */
+export function getSubjectSummary(prefix) {
+  const store = createSubjectStore(prefix);
+  const hist = store.getHistory();
+  const session = loadSession(prefix);
+  return {
+    lastScore: hist[0]?.score ?? null,
+    sessionsCount: hist.length,
+    wrongCount: Object.keys(store.getWrong()).length,
+    resumeMode: session?.mode && !session.record ? session.mode : null,
+  };
 }

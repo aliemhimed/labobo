@@ -5,8 +5,8 @@ import ReportModal from '../components/ReportModal.jsx';
 import { useLeaderboard } from '../components/Leaderboard.jsx';
 import { useMeme } from '../components/MemePopup.jsx';
 import { useConfirm } from '../components/Confirm.jsx';
+import { useNamePrompt } from '../components/NamePrompt.jsx';
 import { useToast } from '../components/Toast.jsx';
-import Welcome from './Welcome.jsx';
 import ModeHome from './ModeHome.jsx';
 import StudyView from './StudyView.jsx';
 import QuizView from './QuizView.jsx';
@@ -20,9 +20,10 @@ import { initialSession, restoreSession, serializeSession, sessionReducer } from
 import { useHistory, useWrong } from '../hooks/useStore.js';
 import { buildSubjectIndex } from '../lib/questions.js';
 import {
-  clearUser, createSubjectStore, getUser, onStorageError, saveSession,
+  clearUser, createSubjectStore, getSkipSavePrompt, onStorageError, saveSession, setSkipSavePrompt,
 } from '../lib/storage.js';
 import { supaInsert } from '../lib/supabase.js';
+import { ensureGuest, registerUser } from '../lib/user.js';
 import { buildQuizQuestions, distribute, shuffle, uid } from '../lib/utils.js';
 
 /* Which views need a quiz in progress, and which need a finished result. The
@@ -54,7 +55,8 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   const toast = useToast();
   const { confirm, element: confirmEl } = useConfirm();
-  const [user, setUserState] = useState(() => getUser());
+  const namePrompt = useNamePrompt();
+  const [user, setUserState] = useState(ensureGuest);
   const [session, dispatch] = useReducer(sessionReducer, initialSession, () => restoreSession(config.storagePrefix, idToIndex));
   const [examLength, setExamLength] = useState(() => config.examLengths[Math.min(2, config.examLengths.length - 1)]);
   const [reportFor, setReportFor] = useState(null);
@@ -116,7 +118,7 @@ export default function QuizEngine({ config, questions, basePath }) {
     });
     if (!ok) return;
     clearUser();
-    setUserState(null);
+    setUserState(ensureGuest());
     commit({ type: 'reset' }, 'home');
   }
 
@@ -161,7 +163,7 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   /* ── finishing ──────────────────────────────────────────────────── */
 
-  function finishExam() {
+  async function finishExam() {
     dismissMeme();
     let correct = 0, wrongCount = 0;
     const subjectStats = {};
@@ -195,7 +197,25 @@ export default function QuizEngine({ config, questions, basePath }) {
       subjectStats, topicStats,
     };
 
-    if (user?.registered) {
+    // Guests get their score shown either way; a name is only asked for right
+    // here, where skipping it would otherwise mean losing this result.
+    let effectiveUser = user;
+    if (!effectiveUser?.registered && !getSkipSavePrompt()) {
+      const name = await namePrompt.ask({
+        title: 'Save this result?',
+        message: 'Add your name to keep this score in your history and build your wrong-answer review.',
+        confirmLabel: 'Save my progress',
+        skipLabel: "Don't save",
+      });
+      if (name) {
+        effectiveUser = registerUser(name);
+        setUserState(effectiveUser);
+      } else {
+        setSkipSavePrompt();
+      }
+    }
+
+    if (effectiveUser?.registered) {
       store.setHistory([finished, ...store.getHistory()]);
 
       const wrongMap = { ...store.getWrong() };
@@ -212,7 +232,7 @@ export default function QuizEngine({ config, questions, basePath }) {
     }
 
     supaInsert('sessions', {
-      device_id: user?.deviceId,
+      device_id: effectiveUser?.deviceId,
       subject: config.sessionSubject,
       mode: finished.type,
       score: finished.correct,
@@ -279,12 +299,7 @@ export default function QuizEngine({ config, questions, basePath }) {
   };
 
   let body;
-  if (!user) {
-    body = (
-      <Welcome config={config} totalQuestions={questions.length}
-               onReady={(u) => { setUserState(u); go('home'); }} />
-    );
-  } else if (!VIEWS.has(view) || (NEEDS_QUIZ.has(view) && !qIds.length) || (NEEDS_RECORD.has(view) && !record)) {
+  if (!VIEWS.has(view) || (NEEDS_QUIZ.has(view) && !qIds.length) || (NEEDS_RECORD.has(view) && !record)) {
     // Unknown address, or a quiz/result screen with nothing to show (fresh tab,
     // shared link): land on the mode menu instead of an empty page.
     return <Navigate to={basePath} replace />;
@@ -365,6 +380,7 @@ export default function QuizEngine({ config, questions, basePath }) {
       {memeEl}
       {leaderboard.element}
       {confirmEl}
+      {namePrompt.element}
       {reportFor !== null && questions[reportFor] ? (
         <ReportModal question={questions[reportFor]} deviceId={user?.deviceId}
                      onClose={() => setReportFor(null)} />
