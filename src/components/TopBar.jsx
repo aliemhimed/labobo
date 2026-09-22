@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { toggleTheme } from '../lib/theme.js';
 import { SunIcon, MoonIcon } from './ThemeIcons.jsx';
+import ProfileMenu from './ProfileMenu.jsx';
 
-export default function TopBar({ subtitle, user, onBrandClick, onLogout }) {
+export default function TopBar({ subtitle, onBrandClick, onLogout }) {
   return (
     <div className="topbar">
       <div className="brand" onClick={onBrandClick} role="button" tabIndex={0}
@@ -24,15 +25,12 @@ export default function TopBar({ subtitle, user, onBrandClick, onLogout }) {
         <span>All Subjects</span>
       </Link>
       <div className="spacer"></div>
-      <span className="username">{user?.name ? `Hi, ${user.name}` : ''}</span>
       <button className="icon-btn" title="Toggle theme" aria-label="Toggle theme"
               style={{ position: 'relative' }} onClick={toggleTheme}>
         <SunIcon className="ico-sun" />
         <MoonIcon className="ico-moon" />
       </button>
-      {user ? (
-        <button className="icon-btn" title="Sign out" aria-label="Sign out" onClick={onLogout}>⎋</button>
-      ) : null}
+      <ProfileMenu onSignOut={onLogout} />
     </div>
   );
 }

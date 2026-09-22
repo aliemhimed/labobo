@@ -12,7 +12,7 @@ const FETCH_TIMEOUT_MS = 4000;
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const SHOW_DELAY_MS = 600;
 // Private pages don't get site announcements.
-const QUIET_PATHS = ['/admin', '/midterm-review'];
+const QUIET_PATHS = ['/admin', '/midterm-review', '/select-semester'];
 
 function freshCache() {
   const cache = getAnnouncementsCache();

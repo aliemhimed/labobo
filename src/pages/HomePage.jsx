@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getSubjectSummary } from '../lib/storage.js';
 import { fetchQuestionCounts } from '../lib/questions.js';
 import { toggleTheme } from '../lib/theme.js';
-import { useAuth, signOut } from '../lib/auth.jsx';
+import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import { SunIcon, MoonIcon } from '../components/ThemeIcons.jsx';
+import ProfileMenu from '../components/ProfileMenu.jsx';
 import { SUBJECTS, MIDTERM } from '../lib/subjects.js';
 
 const MedArtIcon = () => (
@@ -66,7 +67,6 @@ const ALL_CARDS = [
 ];
 
 export default function HomePage() {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { data: profile } = useProfile();
   const [counts, setCounts] = useState({});
@@ -94,21 +94,19 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.semester]);
 
-  async function handleSignOut() {
-    await signOut();
-    navigate('/', { replace: true });
-  }
-
   const displayName = profile?.username || user?.user_metadata?.full_name || user?.email || '';
   const greeting = displayName ? `Hey ${displayName.split(' ')[0]}, pick your subject 👇` : 'Choose your subject';
   const resumable = cards.filter((c) => progress[c.key]?.resumeMode);
 
   return (
     <>
-      <button className="theme-toggle" title="Toggle theme" aria-label="Toggle theme" onClick={toggleTheme}>
-        <SunIcon className="icon-sun" />
-        <MoonIcon className="icon-moon" />
-      </button>
+      <div className="home-actions">
+        <button className="theme-toggle" title="Toggle theme" aria-label="Toggle theme" onClick={toggleTheme}>
+          <SunIcon className="icon-sun" />
+          <MoonIcon className="icon-moon" />
+        </button>
+        <ProfileMenu />
+      </div>
 
       <div className="wrap">
         <div className="brand">
@@ -121,13 +119,7 @@ export default function HomePage() {
 
         <div className="subject-wrap visible">
           <div className="subject-greeting">{greeting}</div>
-          <p className="subject-sub">
-            Select what you want to study today · Semester {profile?.semester}
-            {' · '}
-            <Link to="/select-semester" className="save-name-link">Change semester</Link>
-            {' · '}
-            <button type="button" className="save-name-link" onClick={handleSignOut}>Sign out</button>
-          </p>
+          <p className="subject-sub">Select what you want to study today</p>
 
           {resumable.length ? (
             <div className="resume-row" aria-label="Continue where you left off">

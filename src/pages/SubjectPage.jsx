@@ -9,7 +9,7 @@ import { getSubject } from '../lib/subjects.js';
 function Shell({ config, children }) {
   return (
     <>
-      <TopBar subtitle={config.title.replace(/ MCQ$/, '')} user={null} />
+      <TopBar subtitle={config.title.replace(/ MCQ$/, '')} />
       <div id="root">{children}</div>
     </>
   );

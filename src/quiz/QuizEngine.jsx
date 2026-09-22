@@ -358,7 +358,7 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   return (
     <>
-      <TopBar subtitle={config.title.replace(/ MCQ$/, '')} user={user}
+      <TopBar subtitle={config.title.replace(/ MCQ$/, '')}
               onBrandClick={goHome} onLogout={logout} />
       <div id="root">{body}</div>
       {memeEl}

@@ -10,6 +10,23 @@ const GoogleIcon = () => (
   </svg>
 );
 
+/* Supabase's raw error text is written for a developer, not a student
+   (e.g. "AuthApiError: Email rate limit exceeded"). This maps the cases
+   worth explaining differently; anything else falls back to err.message. */
+function friendlyAuthError(err, mode) {
+  const status = err.status ?? err.code;
+  const msg = err.message || '';
+  if (status === 429 || /rate limit/i.test(msg)) {
+    return mode === 'signup'
+      ? "Too many sign-up attempts right now. Please wait a few minutes, or use Continue with Google instead — it doesn't send an email."
+      : 'Too many attempts. Please wait a few minutes and try again.';
+  }
+  if (/invalid login credentials/i.test(msg)) return 'Incorrect email or password.';
+  if (/already registered/i.test(msg)) return 'An account already exists for that email — try Log in instead.';
+  if (/email not confirmed/i.test(msg)) return 'Please confirm your email first — check your inbox for the confirmation link.';
+  return msg || 'Something went wrong. Please try again.';
+}
+
 /* The only way into the app: everyone signs in (Google or email/password)
    before reaching any subject content. AuthGate renders this whenever there
    is no session. */
@@ -28,7 +45,7 @@ export default function LoginPage() {
     const { error: err } = await signInWithGoogle();
     // A successful call navigates away to Google immediately; only a setup
     // problem (provider disabled, bad redirect URL) reports back here.
-    if (err) { setError(err.message); setBusy(false); }
+    if (err) { setError(friendlyAuthError(err, 'signin')); setBusy(false); }
   }
 
   async function submitEmail(e) {
@@ -40,7 +57,7 @@ export default function LoginPage() {
       ? await signUpWithPassword(email, password)
       : await signInWithPassword(email, password);
     setBusy(false);
-    if (err) { setError(err.message); return; }
+    if (err) { setError(friendlyAuthError(err, mode)); return; }
     if (mode === 'signup') setNotice('Check your email to confirm your account, then sign in.');
   }
 

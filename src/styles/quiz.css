@@ -96,7 +96,6 @@ input[type=text]:focus, input[type=email]:focus, input[type=password]:focus { bo
 }
 .subject-switcher svg { flex-shrink: 0; }
 @media (max-width: 479px) { .subject-switcher span { display: none; } .subject-switcher { padding: 5px 10px; } }
-.topbar .username { font-size: 13px; color: var(--text-muted); }
 .icon-btn {
   width: 34px; height: 34px; border-radius: 8px; background: transparent;
   display: flex; align-items: center; justify-content: center;
@@ -112,6 +111,43 @@ input[type=text]:focus, input[type=email]:focus, input[type=password]:focus { bo
 [data-theme="light"] .icon-btn .ico-sun  { opacity: 0; transform: rotate(90deg); }
 [data-theme="light"] .icon-btn .ico-moon { opacity: 1; transform: rotate(0deg); }
 #themeBtn { position: relative; }
+
+/* ── Profile menu ─────────────────────────────────────────────────── */
+.profile-menu { position: relative; flex-shrink: 0; }
+.profile-avatar {
+  width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  color: #fff; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px;
+  box-shadow: 0 2px 8px rgba(43,127,255,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.profile-avatar:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(43,127,255,0.45); }
+.profile-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 50;
+  width: 232px; padding: 8px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  animation: profileDropIn 0.16s ease;
+}
+@keyframes profileDropIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.profile-id { padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+.profile-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--text); }
+.profile-email { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; word-break: break-all; }
+.profile-semester {
+  margin: 0 10px 8px; padding: 4px 9px; display: inline-block;
+  font-size: 11px; font-weight: 700; color: var(--brand);
+  background: var(--brand-soft); border-radius: 999px;
+}
+.profile-item {
+  display: block; width: 100%; text-align: left; box-sizing: border-box;
+  padding: 9px 10px; border-radius: var(--radius-sm); border: none; background: transparent;
+  font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); text-decoration: none;
+  cursor: pointer; transition: background-color 0.12s;
+}
+.profile-item:hover { background: var(--surface-raised); }
+.profile-item.danger { color: var(--wrong); }
+@media (prefers-reduced-motion: reduce) { .profile-dropdown { animation: none; } }
 
 /* ── Layout containers ────────────────────────────────────────────── */
 .container   { max-width: 1080px; margin: 0 auto; padding: 24px; }
@@ -542,7 +578,7 @@ input[type=text]:focus, input[type=email]:focus, input[type=password]:focus { bo
   .history-row { grid-template-columns: 1fr 68px 56px 56px; font-size: 12.5px; padding: 10px 12px; }
   .history-row > :nth-child(4) { display: none; }
   .topbar { padding: 9px 13px; }
-  .topbar .username { display: none; }
+  .profile-dropdown { width: 200px; }
 }
 
 /* ── Meme popup ───────────────────────────────────────────────────── */
