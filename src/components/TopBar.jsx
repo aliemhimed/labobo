@@ -31,7 +31,7 @@ export default function TopBar({ subtitle, user, onBrandClick, onLogout }) {
         <MoonIcon className="ico-moon" />
       </button>
       {user ? (
-        <button className="icon-btn" title="Switch user" aria-label="Switch user" onClick={onLogout}>⎋</button>
+        <button className="icon-btn" title="Sign out" aria-label="Sign out" onClick={onLogout}>⎋</button>
       ) : null}
     </div>
   );

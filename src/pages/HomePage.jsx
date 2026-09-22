@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getSubjectSummary } from '../lib/storage.js';
 import { fetchQuestionCounts } from '../lib/questions.js';
 import { toggleTheme } from '../lib/theme.js';
-import { ensureGuest, registerUser } from '../lib/user.js';
+import { useAuth, signOut } from '../lib/auth.jsx';
+import { useProfile } from '../hooks/useProfile.js';
 import { SunIcon, MoonIcon } from '../components/ThemeIcons.jsx';
-import { useNamePrompt } from '../components/NamePrompt.jsx';
 import { SUBJECTS, MIDTERM } from '../lib/subjects.js';
 
 const MedArtIcon = () => (
@@ -28,16 +28,18 @@ const MedArtIcon = () => (
 // One glyph per storagePrefix — the color scheme for each lives in home.css
 // under the same name (.subject-card.<prefix>).
 const ICONS = {
-  gct: '🧬', bs: '🫀', chem: '⚗️', phys: '⚡', clin: '💉',
-  medart: <MedArtIcon />, midterm: '🎓',
+  gct: '🧬', bs: '🫀', chem: '⚗️', phys: '⚡', clin: '💉', medart: <MedArtIcon />,
+  gct2: '🧬', bs2: '🫀', clin2: '💉', medart2: <MedArtIcon />,
+  midterm: '🎓',
 };
 
 const RESUME_LABEL = { practice: 'Practice', exam: 'Exam', 'review-wrong': 'Review Wrong Answers' };
 
 // Cards are built from the subject registry so this list can't drift from
-// what the subject pages actually offer. Midterm Review is bolted on: it's a
-// separate, password-gated page rather than a SUBJECTS entry.
-const CARDS = [
+// what the subject pages actually offer, then filtered to the signed-in
+// user's semester. Midterm Review is bolted on: it's a separate,
+// password-gated page rather than a SUBJECTS entry, and counts as Semester 1.
+const ALL_CARDS = [
   ...Object.entries(SUBJECTS).map(([key, cfg]) => ({
     key,
     to: `/${key}`,
@@ -47,6 +49,7 @@ const CARDS = [
     desc: cfg.description,
     sources: cfg.sources,
     storagePrefix: cfg.storagePrefix,
+    semester: cfg.semester,
   })),
   {
     key: 'midterm',
@@ -57,49 +60,48 @@ const CARDS = [
     desc: MIDTERM.description,
     sources: MIDTERM.sources,
     storagePrefix: MIDTERM.storagePrefix,
+    semester: MIDTERM.semester,
     locked: true,
   },
 ];
 
 export default function HomePage() {
-  const [user, setUserState] = useState(ensureGuest);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: profile } = useProfile();
   const [counts, setCounts] = useState({});
   const [progress, setProgress] = useState({});
-  const namePrompt = useNamePrompt();
+
+  const cards = ALL_CARDS.filter((c) => c.semester === profile?.semester);
 
   useEffect(() => { document.title = 'Studywith Labobo'; }, []);
 
   // Progress is a handful of synchronous localStorage reads — cheap enough
   // to just do on mount, and this page remounts fresh on every visit anyway.
   useEffect(() => {
-    setProgress(Object.fromEntries(CARDS.map((c) => [c.key, getSubjectSummary(c.storagePrefix)])));
-  }, []);
+    setProgress(Object.fromEntries(cards.map((c) => [c.key, getSubjectSummary(c.storagePrefix)])));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.semester]);
 
   // Counts come from Supabase directly (see fetchQuestionCounts) and can be
   // slow on a cold connection, so they fill in after the grid is already usable.
   useEffect(() => {
     let cancelled = false;
-    Promise.all(CARDS.map(async (c) => [c.key, await fetchQuestionCounts(c.sources)]))
+    Promise.all(cards.map(async (c) => [c.key, await fetchQuestionCounts(c.sources)]))
       .then((entries) => { if (!cancelled) setCounts(Object.fromEntries(entries)); })
       .catch(() => { /* counts are a nice-to-have; the cards work without them */ });
     return () => { cancelled = true; };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.semester]);
 
-  async function saveMyName() {
-    const name = await namePrompt.ask({
-      title: 'Save your name',
-      message: 'Your name is kept on this device only, to label your scores and history.',
-      confirmLabel: 'Save',
-      skipLabel: 'Cancel',
-    });
-    if (name) setUserState(registerUser(name));
+  async function handleSignOut() {
+    await signOut();
+    navigate('/', { replace: true });
   }
 
-  const greeting = user.name && user.name !== 'Guest'
-    ? `Hey ${user.name}, pick your subject 👇`
-    : 'Choose your subject';
-
-  const resumable = CARDS.filter((c) => progress[c.key]?.resumeMode);
+  const displayName = profile?.username || user?.user_metadata?.full_name || user?.email || '';
+  const greeting = displayName ? `Hey ${displayName.split(' ')[0]}, pick your subject 👇` : 'Choose your subject';
+  const resumable = cards.filter((c) => progress[c.key]?.resumeMode);
 
   return (
     <>
@@ -118,13 +120,14 @@ export default function HomePage() {
         </div>
 
         <div className="subject-wrap visible">
-          <div className="subject-greeting">
-            {greeting}
-            {!user.registered ? (
-              <button type="button" className="save-name-link" onClick={saveMyName}>Save your name</button>
-            ) : null}
-          </div>
-          <p className="subject-sub">Select what you want to study today</p>
+          <div className="subject-greeting">{greeting}</div>
+          <p className="subject-sub">
+            Select what you want to study today · Semester {profile?.semester}
+            {' · '}
+            <Link to="/select-semester" className="save-name-link">Change semester</Link>
+            {' · '}
+            <button type="button" className="save-name-link" onClick={handleSignOut}>Sign out</button>
+          </p>
 
           {resumable.length ? (
             <div className="resume-row" aria-label="Continue where you left off">
@@ -138,8 +141,9 @@ export default function HomePage() {
           ) : null}
 
           <div className="subject-grid">
-            {CARDS.map((c) => {
+            {cards.map((c) => {
               const p = progress[c.key];
+              const empty = counts[c.key] === 0;
               return (
                 <Link key={c.key} to={c.to} className={'subject-card ' + c.cls}>
                   <div className="subject-icon">{c.icon}</div>
@@ -152,14 +156,14 @@ export default function HomePage() {
                     {counts[c.key] != null ? <span>{counts[c.key]} questions</span> : null}
                     {p?.sessionsCount ? <span> · Last {p.lastScore}%</span> : null}
                   </div>
-                  {p?.wrongCount ? <div className="subject-badge">{p.wrongCount} to review</div> : null}
+                  {empty ? <div className="subject-badge soon">Coming soon</div>
+                         : p?.wrongCount ? <div className="subject-badge">{p.wrongCount} to review</div> : null}
                 </Link>
               );
             })}
           </div>
         </div>
       </div>
-      {namePrompt.element}
     </>
   );
 }

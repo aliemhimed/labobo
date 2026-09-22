@@ -2,30 +2,37 @@
    Why: ad blockers (uBlock, AdGuard, Brave) block *.supabase.co directly, so
    the browser posts to our own domain instead.
 
-   POST /api/supa-insert   body: { table, data }
+   POST /api/supa-insert   (Authorization: Bearer <token>)   body: { table, data }
 
-   Only three tables are writable and only through the per-column rules below:
-   unknown columns are dropped, strings are length-capped, and one row per
-   request. Inserts use the service key (see _lib/common.js), so the tables
-   need no anon INSERT policy. */
+   Every caller must be a signed-in Supabase user (verified server-side, see
+   _lib/common#verifyUser). `device_id` is never taken from the client — it's
+   always overwritten with the caller's verified id, so nobody can write rows
+   under someone else's identity.
 
-const { SUPA_URL, dbHeaders, fail, parseBody } = require('./_lib/common');
+   Only the tables below are writable and only through their per-column
+   rules: unknown columns are dropped, strings are length-capped, and one row
+   per request. Inserts use the service key (see _lib/common.js), so the
+   tables need no anon INSERT policy.
+
+   `users` (the old device-registered-name bookkeeping) is intentionally not
+   writable here any more — `profiles` (one row per Supabase account,
+   created by a database trigger on signup) replaced it. */
+
+const { SUPA_URL, dbHeaders, fail, parseBody, verifyUser } = require('./_lib/common');
 
 const str = (max) => (v) => (typeof v === 'string' ? v.slice(0, max) : undefined);
 const int = (v) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Math.round(Number(v)) : undefined);
 const num = (v) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : undefined);
 const timestamp = (v) => (typeof v === 'string' && !isNaN(new Date(v)) ? new Date(v).toISOString() : undefined);
 
-// Allowed columns per table. ids and created_at come from the database.
+// Allowed columns per table. ids, created_at and device_id come from the
+// server, never the client (device_id is filled in from the verified caller
+// after cleaning — see below).
 const SCHEMAS = {
-  users: {
-    required: ['name'],
-    columns: { name: str(60), device_id: str(80), joined: timestamp },
-  },
   sessions: {
-    required: ['device_id'],
+    required: [],
     columns: {
-      device_id: str(80), subject: str(120), mode: str(30),
+      subject: str(120), mode: str(30),
       score: int, total: int, pct: num,
     },
   },
@@ -33,7 +40,7 @@ const SCHEMAS = {
     required: ['question_text', 'reason'],
     columns: {
       question_text: str(2000), subject: str(120), topic: str(200),
-      reason: str(100), note: str(500), device_id: str(80), reported_at: timestamp,
+      reason: str(100), note: str(500), reported_at: timestamp,
     },
   },
 };
@@ -53,6 +60,9 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, body: '' };
   if (event.httpMethod !== 'POST') return fail(405, 'Method not allowed');
 
+  const caller = await verifyUser(event);
+  if (!caller) return fail(401, 'Sign in required');
+
   const body = parseBody(event);
   if (!body) return fail(400, 'Body must be a JSON object');
 
@@ -64,6 +74,7 @@ exports.handler = async (event) => {
 
   const row = clean(schema, body.data);
   if (!row) return fail(400, 'Missing or invalid fields');
+  row.device_id = caller.id;
 
   try {
     const res = await fetch(`${SUPA_URL}/rest/v1/${body.table}`, {

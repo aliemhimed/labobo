@@ -25,6 +25,16 @@ const ALLOWED_TABLES = [
   'bs_physiology',
   'bs_imaging',
   'medicine_art',
+  // Semester 2 (empty until content is added)
+  'gct2_biochemistry',
+  'gct2_genetics',
+  'gct2_molecular_biology',
+  'gct2_histology',
+  'bs2_anatomy',
+  'bs2_physiology',
+  'bs2_imaging',
+  'clinical_skills_2',
+  'medicine_art_2',
   'midterm_biochemistry',
   'midterm_molecular_biology',
   'midterm_genetics',
@@ -48,7 +58,7 @@ const PAGE_SIZE = 1000;
 
 const BASE_COLS = 'id,ord,topic,q,options,answer,explanation,image,images';
 // Only clinical_skills has a display_topic column; asking for it elsewhere 400s.
-const TABLES_WITH_DISPLAY_TOPIC = ['clinical_skills'];
+const TABLES_WITH_DISPLAY_TOPIC = ['clinical_skills', 'clinical_skills_2'];
 
 function selectFor(table) {
   return TABLES_WITH_DISPLAY_TOPIC.includes(table) ? `${BASE_COLS},display_topic` : BASE_COLS;

@@ -11,7 +11,7 @@ const REASONS = [
   'Other',
 ];
 
-export default function ReportModal({ question, deviceId, onClose }) {
+export default function ReportModal({ question, onClose }) {
   const [selected, setSelected] = useState(null);
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
@@ -21,13 +21,14 @@ export default function ReportModal({ question, deviceId, onClose }) {
     if (!selected || sending) return;
     setSending(true);
     onClose();
+    // device_id is filled in server-side from the signed-in user's verified
+    // session (see netlify/functions/supa-insert.js) — never sent from here.
     const saved = await supaInsert('question_reports', {
       question_text: question.q,
       subject: question.subject,
       topic: question.topic,
       reason: selected,
       note: note.trim() || null,
-      device_id: deviceId || 'anon',
       reported_at: new Date().toISOString(),
     });
     toast(saved ? "Thanks! We'll review this question." : "Couldn't send your report. Please try again later.");

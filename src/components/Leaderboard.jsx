@@ -3,7 +3,9 @@ import Dialog from './Dialog.jsx';
 import { useToast } from './Toast.jsx';
 import { fetchBoard, fmtCountdown, fmtTime, submitScore } from '../lib/leaderboard.js';
 import { validateHandle } from '../lib/profanity.js';
-import { getLeaderboardPrefs, getUser, setLeaderboardPrefs } from '../lib/storage.js';
+import { getLeaderboardPrefs, setLeaderboardPrefs } from '../lib/storage.js';
+import { useAuth } from '../lib/auth.jsx';
+import { useProfile } from '../hooks/useProfile.js';
 import '../styles/overlays.css';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
@@ -15,7 +17,7 @@ function BoardDialog({ subject, onClose }) {
 
   useEffect(() => {
     const ctrl = new AbortController();
-    fetchBoard(subject, getUser()?.deviceId, ctrl.signal)
+    fetchBoard(subject, ctrl.signal)
       .then((data) => setState({ status: 'ready', data }))
       .catch((error) => {
         if (ctrl.signal.aborted) return;
@@ -158,6 +160,8 @@ function HandleDialog({ realName, onDone }) {
  */
 export function useLeaderboard(subject) {
   const toast = useToast();
+  const { user } = useAuth();
+  const { data: profile } = useProfile();
   const [dialog, setDialog] = useState(null); // { type, ...props }
   const pending = useRef(null); // resolver for the dialog that is waiting on an answer
 
@@ -177,11 +181,7 @@ export function useLeaderboard(subject) {
 
   const submitExam = useCallback(async ({ score_pct, total_questions, time_seconds }) => {
     if (Number(total_questions) !== 30) return;
-    const user = getUser();
-    if (!user?.deviceId) {
-      toast('Please register a name first to submit to the leaderboard.');
-      return;
-    }
+    if (!user) return; // AuthGate means this shouldn't happen, but be defensive
 
     let prefs = getLeaderboardPrefs();
     if (prefs.opt_in_pref === 'never') return;
@@ -195,15 +195,14 @@ export function useLeaderboard(subject) {
 
     let handle = prefs.handle;
     if (!handle) {
-      handle = await ask('handle', { realName: user.name });
+      const realName = profile?.username || user.user_metadata?.full_name || '';
+      handle = await ask('handle', { realName });
       if (!handle) return;
       setLeaderboardPrefs({ handle });
     }
 
     try {
-      const result = await submitScore({
-        device_id: user.deviceId, handle, subject, score_pct, total_questions, time_seconds,
-      });
+      const result = await submitScore({ handle, subject, score_pct, total_questions, time_seconds });
       toast(result.action === 'kept_existing'
         ? `Your best this week is still ${Number(result.entry.score_pct).toFixed(0)}%`
         : `Submitted! Rank #${result.my_rank} this week 🏆`);
@@ -212,7 +211,7 @@ export function useLeaderboard(subject) {
       console.error('[leaderboard] submit failed', e);
       toast(`Could not submit to the leaderboard: ${e.message}`);
     }
-  }, [ask, subject, toast]);
+  }, [ask, subject, toast, user, profile]);
 
   let element = null;
   if (dialog?.type === 'board') element = <BoardDialog subject={subject} onClose={() => setDialog(null)} />;

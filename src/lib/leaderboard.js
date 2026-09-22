@@ -1,17 +1,19 @@
-/* Client for /api/leaderboard. The server validates everything again; the
-   result of a submission is { action: 'inserted'|'updated'|'kept_existing',
-   entry, my_rank, week_start }. */
+/* Client for /api/leaderboard. Every call carries the signed-in user's
+   Supabase access token; the server verifies it and uses that as the
+   caller's identity — there is no client-supplied device_id any more (see
+   netlify/functions/leaderboard.js). The result of a submission is
+   { action: 'inserted'|'updated'|'kept_existing', entry, my_rank, week_start }. */
+import { authHeader } from './supabaseClient.js';
 
 async function request(url, init) {
-  const res = await fetch(url, init);
+  const res = await fetch(url, { ...init, headers: { ...(await authHeader()), ...(init?.headers || {}) } });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   return data;
 }
 
-export function fetchBoard(subject, deviceId, signal) {
+export function fetchBoard(subject, signal) {
   const qs = new URLSearchParams({ subject });
-  if (deviceId) qs.set('device_id', deviceId);
   return request(`/api/leaderboard?${qs}`, { signal });
 }
 

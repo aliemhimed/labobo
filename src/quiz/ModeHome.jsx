@@ -9,10 +9,8 @@ export default function ModeHome({ user, wrongCount, historyCount, onGo }) {
     { key: 'review-wrong', cls: 'review', icon: '🔁', title: 'Review Wrong Answers',
       desc: 'Redo questions you got wrong. Practice mode style.',
       disabled: wrongCount === 0, badge: wrongCount || null },
-    ...(user.registered
-      ? [{ key: 'dashboard', cls: 'dashboard', icon: '📊', title: 'Performance Dashboard',
-           desc: `${historyCount} past session${historyCount !== 1 ? 's' : ''}. Track scores over time.` }]
-      : []),
+    { key: 'dashboard', cls: 'dashboard', icon: '📊', title: 'Performance Dashboard',
+      desc: `${historyCount} past session${historyCount !== 1 ? 's' : ''}. Track scores over time.` },
     { key: 'flashcards', cls: 'flashcards', icon: '🗂️', title: 'Flashcards',
       desc: 'Active recall with spaced repetition. Flip the card, rate yourself — weak cards come back more often.' },
     { key: 'leaderboard', cls: 'leaderboard', icon: '🏆', title: 'Weekly Leaderboard',

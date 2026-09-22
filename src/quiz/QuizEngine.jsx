@@ -5,7 +5,6 @@ import ReportModal from '../components/ReportModal.jsx';
 import { useLeaderboard } from '../components/Leaderboard.jsx';
 import { useMeme } from '../components/MemePopup.jsx';
 import { useConfirm } from '../components/Confirm.jsx';
-import { useNamePrompt } from '../components/NamePrompt.jsx';
 import { useToast } from '../components/Toast.jsx';
 import ModeHome from './ModeHome.jsx';
 import StudyView from './StudyView.jsx';
@@ -19,11 +18,10 @@ import ExamDetail from './ExamDetail.jsx';
 import { initialSession, restoreSession, serializeSession, sessionReducer } from './session.js';
 import { useHistory, useWrong } from '../hooks/useStore.js';
 import { buildSubjectIndex } from '../lib/questions.js';
-import {
-  clearUser, createSubjectStore, getSkipSavePrompt, onStorageError, saveSession, setSkipSavePrompt,
-} from '../lib/storage.js';
+import { createSubjectStore, onStorageError, saveSession } from '../lib/storage.js';
 import { supaInsert } from '../lib/supabase.js';
-import { ensureGuest, registerUser } from '../lib/user.js';
+import { useAuth, signOut } from '../lib/auth.jsx';
+import { useProfile } from '../hooks/useProfile.js';
 import { buildQuizQuestions, distribute, shuffle, uid } from '../lib/utils.js';
 
 /* Which views need a quiz in progress, and which need a finished result. The
@@ -55,8 +53,15 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   const toast = useToast();
   const { confirm, element: confirmEl } = useConfirm();
-  const namePrompt = useNamePrompt();
-  const [user, setUserState] = useState(ensureGuest);
+  // Everyone reaching this component is already signed in (AuthGate) with a
+  // semester chosen (SemesterGate) — there is no guest mode any more.
+  const { user: authUser } = useAuth();
+  const { data: profile } = useProfile();
+  const user = useMemo(() => ({
+    name: profile?.username || authUser?.user_metadata?.full_name || authUser?.email || '',
+    deviceId: authUser?.id,
+    registered: true,
+  }), [authUser, profile]);
   const [session, dispatch] = useReducer(sessionReducer, initialSession, () => restoreSession(config.storagePrefix, idToIndex));
   const [examLength, setExamLength] = useState(() => config.examLengths[Math.min(2, config.examLengths.length - 1)]);
   const [reportFor, setReportFor] = useState(null);
@@ -112,14 +117,14 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   async function logout() {
     const ok = await confirm({
-      title: 'Switch user?',
-      message: 'Your saved progress will remain on this device.',
-      confirmLabel: 'Switch user',
+      title: 'Sign out?',
+      message: 'Your saved progress stays on this device for next time you sign in.',
+      confirmLabel: 'Sign out',
     });
     if (!ok) return;
-    clearUser();
-    setUserState(ensureGuest());
     commit({ type: 'reset' }, 'home');
+    await signOut();
+    // AuthGate re-renders to the login screen as soon as the session clears.
   }
 
   /* ── starting each mode ─────────────────────────────────────────── */
@@ -163,7 +168,7 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   /* ── finishing ──────────────────────────────────────────────────── */
 
-  async function finishExam() {
+  function finishExam() {
     dismissMeme();
     let correct = 0, wrongCount = 0;
     const subjectStats = {};
@@ -197,42 +202,21 @@ export default function QuizEngine({ config, questions, basePath }) {
       subjectStats, topicStats,
     };
 
-    // Guests get their score shown either way; a name is only asked for right
-    // here, where skipping it would otherwise mean losing this result.
-    let effectiveUser = user;
-    if (!effectiveUser?.registered && !getSkipSavePrompt()) {
-      const name = await namePrompt.ask({
-        title: 'Save this result?',
-        message: 'Add your name to keep this score in your history and build your wrong-answer review.',
-        confirmLabel: 'Save my progress',
-        skipLabel: "Don't save",
-      });
-      if (name) {
-        effectiveUser = registerUser(name);
-        setUserState(effectiveUser);
+    // Everyone is signed in, so every result is saved — no guest/skip flow.
+    store.setHistory([finished, ...store.getHistory()]);
+    const wrongMap = { ...store.getWrong() };
+    answers.forEach((a) => {
+      const q = questions[a.qIdx];
+      if (!q) return;
+      if (a.selected === null || a.selected !== q.answer) {
+        wrongMap[q.id] = [...(wrongMap[q.id] || []), { date: finished.date, examId: finished.id, selected: a.selected }];
       } else {
-        setSkipSavePrompt();
+        delete wrongMap[q.id];
       }
-    }
-
-    if (effectiveUser?.registered) {
-      store.setHistory([finished, ...store.getHistory()]);
-
-      const wrongMap = { ...store.getWrong() };
-      answers.forEach((a) => {
-        const q = questions[a.qIdx];
-        if (!q) return;
-        if (a.selected === null || a.selected !== q.answer) {
-          wrongMap[q.id] = [...(wrongMap[q.id] || []), { date: finished.date, examId: finished.id, selected: a.selected }];
-        } else {
-          delete wrongMap[q.id];
-        }
-      });
-      store.setWrong(wrongMap);
-    }
+    });
+    store.setWrong(wrongMap);
 
     supaInsert('sessions', {
-      device_id: effectiveUser?.deviceId,
       subject: config.sessionSubject,
       mode: finished.type,
       score: finished.correct,
@@ -380,10 +364,8 @@ export default function QuizEngine({ config, questions, basePath }) {
       {memeEl}
       {leaderboard.element}
       {confirmEl}
-      {namePrompt.element}
       {reportFor !== null && questions[reportFor] ? (
-        <ReportModal question={questions[reportFor]} deviceId={user?.deviceId}
-                     onClose={() => setReportFor(null)} />
+        <ReportModal question={questions[reportFor]} onClose={() => setReportFor(null)} />
       ) : null}
     </>
   );

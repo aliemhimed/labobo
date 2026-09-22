@@ -43,7 +43,7 @@ button {
   transition: background-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.12s, border-color 0.15s;
 }
 .option, .length-opt { touch-action: manipulation; }
-input[type=text] {
+input[type=text], input[type=email], input[type=password] {
   font-family: 'Inter', sans-serif; font-size: 15px;
   background: var(--input-bg); color: var(--text);
   border: 1.5px solid var(--border);
@@ -51,8 +51,8 @@ input[type=text] {
   padding: 12px 15px; width: 100%; outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-input[type=text]::placeholder { color: var(--text-muted); }
-input[type=text]:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+input[type=text]::placeholder, input[type=email]::placeholder, input[type=password]::placeholder { color: var(--text-muted); }
+input[type=text]:focus, input[type=email]:focus, input[type=password]:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
 
 /* ── Topbar ───────────────────────────────────────────────────────── */
 .topbar {

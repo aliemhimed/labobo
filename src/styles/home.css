@@ -190,6 +190,15 @@ input[type=text]:focus {
 .subject-card.medart::before { background: linear-gradient(90deg, #EC4899, #F59E0B); }
 .subject-card.midterm:hover { border-color: rgba(202,138,4,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(202,138,4,0.14); }
 .subject-card.midterm::before { background: linear-gradient(90deg, #CA8A04, #78350F); }
+/* Semester 2 (distinct hues from their Semester 1 counterparts) */
+.subject-card.gct2:hover   { border-color: rgba(139,92,246,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(139,92,246,0.12); }
+.subject-card.gct2::before   { background: linear-gradient(90deg, #8B5CF6, #D946EF); }
+.subject-card.bs2:hover    { border-color: rgba(14,165,233,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(14,165,233,0.12); }
+.subject-card.bs2::before    { background: linear-gradient(90deg, #0EA5E9, #6366F1); }
+.subject-card.clin2:hover  { border-color: rgba(217,70,239,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(217,70,239,0.12); }
+.subject-card.clin2::before  { background: linear-gradient(90deg, #D946EF, #DC2626); }
+.subject-card.medart2:hover { border-color: rgba(249,115,22,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(249,115,22,0.14); }
+.subject-card.medart2::before { background: linear-gradient(90deg, #F97316, #EF4444); }
 /* SOON state */
 .subject-card.soon { cursor: not-allowed; opacity: 0.45; pointer-events: none; }
 .soon-badge {
@@ -212,6 +221,11 @@ input[type=text]:focus {
 .subject-card.medart .subject-icon { background: linear-gradient(135deg, #EC4899 0%, #F59E0B 100%); }
 .subject-card.medart .subject-icon svg { width: 28px; height: 28px; color: #fff; }
 .subject-card.midterm .subject-icon { background: linear-gradient(135deg, #CA8A04 0%, #78350F 100%); }
+.subject-card.gct2 .subject-icon    { background: linear-gradient(135deg, #8B5CF6, #D946EF); }
+.subject-card.bs2 .subject-icon     { background: linear-gradient(135deg, #0EA5E9, #6366F1); }
+.subject-card.clin2 .subject-icon   { background: linear-gradient(135deg, #D946EF, #DC2626); }
+.subject-card.medart2 .subject-icon { background: linear-gradient(135deg, #F97316 0%, #EF4444 100%); }
+.subject-card.medart2 .subject-icon svg { width: 28px; height: 28px; color: #fff; }
 .subject-name {
   font-family: 'Poppins', sans-serif; font-size: 14.5px; font-weight: 700;
   letter-spacing: -0.01em; line-height: 1.2;
@@ -228,6 +242,7 @@ input[type=text]:focus {
   font-family: 'Poppins', sans-serif;
   box-shadow: 0 2px 8px rgba(43,127,255,0.4);
 }
+.subject-badge.soon { background: #D97706; box-shadow: 0 2px 8px rgba(217,119,6,0.4); }
 
 /* ── Responsive ─────────────────────────────────────────────────────────────  */
 @media (max-width: 479px) {

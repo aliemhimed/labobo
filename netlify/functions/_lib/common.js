@@ -49,6 +49,31 @@ function getWeekStart(date = new Date()) {
 
 const isIsoDate = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s));
 
+/** Verifies the caller's Supabase access token (sent as `Authorization:
+    Bearer <token>` by every signed-in request) against Supabase Auth itself,
+    and returns { id, email }, or null if it's missing/invalid/expired.
+    This is the ONLY trustworthy source of a user's identity in these
+    functions — never the device_id/user_id a client puts in a request body,
+    which is trivial to spoof. A plain fetch to the auth server (what the
+    Supabase SDK's getUser(token) also does under the hood) avoids adding the
+    SDK as a dependency here, matching how the rest of this file talks to
+    Supabase. */
+async function verifyUser(event) {
+  const auth = event.headers['authorization'] || event.headers['Authorization'] || '';
+  const token = auth.replace(/^Bearer\s+/i, '').trim();
+  if (!token) return null;
+  try {
+    const res = await fetch(`${SUPA_URL}/auth/v1/user`, {
+      headers: { apikey: SUPA_ANON_KEY, Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    const user = await res.json();
+    return user?.id ? { id: user.id, email: user.email || null } : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Parse a JSON body; returns null when it is missing, malformed or not an object. */
 function parseBody(event) {
   try {
@@ -62,5 +87,5 @@ function parseBody(event) {
 module.exports = {
   SUPA_URL, SUPA_ANON_KEY,
   dbHeaders, anonHeaders, serviceHeaders,
-  json, fail, getWeekStart, isIsoDate, parseBody,
+  json, fail, getWeekStart, isIsoDate, parseBody, verifyUser,
 };

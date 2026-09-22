@@ -1,15 +1,20 @@
 /* Netlify Function: weekly per-subject leaderboard
-   GET  /api/leaderboard?subject=GCT&device_id=xxx
+   GET  /api/leaderboard?subject=GCT           (Authorization: Bearer <token>)
      -> { top: [...top 10], my_rank: N, my_entry: {...}, week_start: 'YYYY-MM-DD' }
         Each top entry carries is_me instead of the device_id.
-   POST /api/leaderboard
-     body: { device_id, handle, subject, score_pct, total_questions, time_seconds }
+   POST /api/leaderboard                        (Authorization: Bearer <token>)
+     body: { handle, subject, score_pct, total_questions, time_seconds }
      -> upserts entry for current week; returns updated rank
+
+   Identity is never taken from the request body — every caller must be a
+   signed-in Supabase user, verified server-side (see _lib/common#verifyUser).
+   That verified id is what's stored in `device_id`, so it can't be spoofed
+   or used to overwrite someone else's score.
 
    All reads and writes use the service key (see _lib/common.js), so the
    leaderboard_entries table needs no anon policies. */
 
-const { SUPA_URL, dbHeaders, json, fail, getWeekStart, parseBody } = require('./_lib/common');
+const { SUPA_URL, dbHeaders, json, fail, getWeekStart, parseBody, verifyUser } = require('./_lib/common');
 const { validateHandle } = require('./_lib/profanity');
 
 // Keep in sync with `leaderboardSubject` in src/lib/subjects.js.
@@ -20,9 +25,12 @@ const SUBJECTS = [
   'Clinical & Professional Skills',
   'Body Systems',
   'Medicine & Art',
+  'GCT II',
+  'Body Systems II',
+  'Clinical & Professional Skills II',
+  'Medicine & Art II',
 ];
 const EXAM_QUESTIONS = 30;
-const DEVICE_ID_RE = /^[A-Za-z0-9_-]{6,80}$/;
 
 const rest = (path, init = {}) =>
   fetch(`${SUPA_URL}/rest/v1${path}`, {
@@ -123,22 +131,21 @@ exports.handler = async (event) => {
   // Same-origin only: no CORS headers, preflights get an empty 204.
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, body: '' };
 
+  const caller = await verifyUser(event);
+  if (!caller) return fail(401, 'Sign in required');
+
   try {
     if (event.httpMethod === 'GET') {
-      const { subject, device_id: deviceId } = event.queryStringParameters || {};
+      const { subject } = event.queryStringParameters || {};
       if (!SUBJECTS.includes(subject)) return fail(400, 'Unknown subject');
 
       const weekStart = getWeekStart();
       const top = await getWeeklyTop(subject, weekStart, 10);
-      let myEntry = null;
-      let myRank = null;
-      if (deviceId && DEVICE_ID_RE.test(deviceId)) {
-        myEntry = await getMyEntry(subject, weekStart, deviceId);
-        if (myEntry) myRank = await getMyRank(subject, weekStart, myEntry);
-      }
+      const myEntry = await getMyEntry(subject, weekStart, caller.id);
+      const myRank = myEntry ? await getMyRank(subject, weekStart, myEntry) : null;
       return json(200, {
         week_start: weekStart,
-        top: top.map((e) => ({ ...publicEntry(e), is_me: !!deviceId && e.device_id === deviceId })),
+        top: top.map((e) => ({ ...publicEntry(e), is_me: e.device_id === caller.id })),
         my_entry: publicEntry(myEntry),
         my_rank: myRank,
       });
@@ -148,9 +155,6 @@ exports.handler = async (event) => {
       const body = parseBody(event);
       if (!body) return fail(400, 'Body must be a JSON object');
 
-      if (typeof body.device_id !== 'string' || !DEVICE_ID_RE.test(body.device_id)) {
-        return fail(400, 'Invalid device_id');
-      }
       const handleError = validateHandle(body.handle);
       if (handleError) return fail(400, handleError);
       if (!SUBJECTS.includes(body.subject)) return fail(400, 'Unknown subject');
@@ -169,7 +173,7 @@ exports.handler = async (event) => {
 
       const weekStart = getWeekStart();
       const result = await upsertEntry({
-        device_id: body.device_id,
+        device_id: caller.id,
         handle: body.handle.trim(),
         subject: body.subject,
         score_pct: Math.round(score * 100) / 100,

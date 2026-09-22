@@ -8,10 +8,8 @@
    pass a fresh object to the matching setter. Writes notify subscribers, which
    is what keeps the dashboard and home counters current without manual ticks. */
 
-const USER_KEY = 'mcq.user';
 const THEME_KEY = 'mcq.theme';
 const LEADERBOARD_KEY = 'labobo_leaderboard';
-const SKIP_SAVE_PROMPT_KEY = 'mcq.skip_save_prompt';
 const SEEN_ANNOUNCEMENTS_KEY = 'labobo_seen_announcements';
 const ANNOUNCEMENTS_CACHE_KEY = 'labobo_announcements_cache_v1';
 const SCHEMA_VERSION = 2;
@@ -90,18 +88,7 @@ function write(key, value) {
   return true;
 }
 
-function remove(key) {
-  try {
-    localStorage.removeItem(key);
-  } catch { /* ignore */ }
-  notify();
-}
-
-/* ── user & theme ────────────────────────────────────────────────── */
-
-export const getUser = () => read(USER_KEY, null);
-export const setUser = (u) => write(USER_KEY, u);
-export const clearUser = () => remove(USER_KEY);
+/* ── theme ──────────────────────────────────────────────────────── */
 
 export function getTheme() {
   return readRaw(THEME_KEY) || 'dark';
@@ -109,15 +96,6 @@ export function getTheme() {
 export function setTheme(t) {
   try {
     localStorage.setItem(THEME_KEY, t);
-  } catch { /* ignore */ }
-}
-
-/* Guests are asked once whether they want to name themselves so a finished
-   session can be saved; if they decline, don't ask again on this device. */
-export const getSkipSavePrompt = () => readRaw(SKIP_SAVE_PROMPT_KEY) === '1';
-export function setSkipSavePrompt() {
-  try {
-    localStorage.setItem(SKIP_SAVE_PROMPT_KEY, '1');
   } catch { /* ignore */ }
 }
 
