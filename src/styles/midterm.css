@@ -17,45 +17,8 @@
 .midterm-page p {margin:0 0 12px;color:var(--text-soft);}
 .midterm-page button {font-family:'Inter',sans-serif;font-size:14px;cursor:pointer;border:none;outline:none;
   transition:background-color .15s, color .15s, box-shadow .15s, transform .12s, border-color .15s;}
-.midterm-page input[type=password], .midterm-page input[type=text] {
-  font-family:'Inter',sans-serif;font-size:15px;
-  background:var(--input-bg);color:var(--text);
-  border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  padding:12px 15px;width:100%;outline:none;
-  transition:border-color .15s, box-shadow .15s;
-}
-.midterm-page input[type=password]:focus, .midterm-page input[type=text]:focus {border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft);}
-
 /* ═════════ Layout ═════════ */
 .midterm-page .shell {max-width:840px;margin:0 auto;padding:24px 18px 80px;}
-.midterm-page .center-shell {min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-.midterm-page .card {
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:28px;
-  box-shadow:var(--shadow-md);
-}
-
-/* ═════════ Password Gate ═════════ */
-.midterm-page .gate {width:min(420px,100%);}
-.midterm-page .gate-icon {
-  width:48px;height:48px;border-radius:14px;
-  background:linear-gradient(135deg,var(--brand) 0%,var(--accent) 100%);
-  display:flex;align-items:center;justify-content:center;margin-bottom:18px;
-  box-shadow:0 8px 24px rgba(43,127,255,0.32);
-}
-.midterm-page .gate-icon svg {width:22px;height:22px;fill:#fff;}
-.midterm-page .gate h1 {font-size:22px;}
-.midterm-page .gate p {font-size:13.5px;}
-.midterm-page .gate-error {color:var(--wrong);font-size:13px;margin-top:8px;display:none;}
-.midterm-page .gate-error.show {display:block;animation:shake .35s;}
-@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
-.midterm-page .btn-primary {
-  background:var(--brand);color:#fff;
-  padding:11px 18px;border-radius:var(--radius-sm);
-  font-weight:600;font-size:14px;width:100%;margin-top:12px;
-}
-.midterm-page .btn-primary:hover {background:var(--brand-dark);}
-.midterm-page .btn-primary:active {transform:scale(0.985);}
 
 /* ═════════ Top header ═════════ */
 .midterm-page .page-bar {
@@ -65,12 +28,6 @@
   position:sticky;top:0;z-index:30;
 }
 .midterm-page .page-bar-title {font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;}
-.midterm-page .page-bar-title .badge {
-  display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.06em;
-  background:var(--brand-soft);color:var(--brand);
-  padding:3px 8px;border-radius:999px;text-transform:uppercase;margin-left:8px;
-  vertical-align:middle;
-}
 .midterm-page .page-bar-actions {display:flex;gap:8px;align-items:center;}
 .midterm-page .btn-ghost {
   background:transparent;color:var(--text-soft);border:1px solid var(--border);
@@ -209,7 +166,6 @@
 /* Mobile tweaks */
 @media (max-width:479px){
   .midterm-page .shell {padding:16px 12px 80px;}
-  .midterm-page .card {padding:22px 18px;}
   .midterm-page .qcard {padding:18px 16px;}
   .midterm-page .result-score {font-size:38px;}
 }

@@ -38,8 +38,8 @@ const RESUME_LABEL = { practice: 'Practice', exam: 'Exam', 'review-wrong': 'Revi
 
 // Cards are built from the subject registry so this list can't drift from
 // what the subject pages actually offer, then filtered to the signed-in
-// user's semester. Midterm Review is bolted on: it's a separate,
-// password-gated page rather than a SUBJECTS entry, and counts as Semester 1.
+// user's semester. Midterm Review is bolted on: it's a separate page rather
+// than a SUBJECTS entry, and counts as Semester 1.
 const ALL_CARDS = [
   ...Object.entries(SUBJECTS).map(([key, cfg]) => ({
     key,
@@ -62,7 +62,6 @@ const ALL_CARDS = [
     sources: MIDTERM.sources,
     storagePrefix: MIDTERM.storagePrefix,
     semester: MIDTERM.semester,
-    locked: true,
   },
 ];
 
@@ -139,10 +138,7 @@ export default function HomePage() {
               return (
                 <Link key={c.key} to={c.to} className={'subject-card ' + c.cls}>
                   <div className="subject-icon">{c.icon}</div>
-                  <div className="subject-name">
-                    {c.name}
-                    {c.locked ? <span className="subject-lock" title="Password protected">🔒</span> : null}
-                  </div>
+                  <div className="subject-name">{c.name}</div>
                   <div className="subject-desc">{c.desc}</div>
                   <div className="subject-meta">
                     {counts[c.key] != null ? <span>{counts[c.key]} questions</span> : null}

@@ -4,52 +4,7 @@ import { MIDTERM } from '../lib/subjects.js';
 import { LETTERS, shuffle } from '../lib/utils.js';
 import '../styles/midterm.css';
 
-/* Obfuscated check — not real security, the same as the original page.
-   Anyone can read it out of the bundle; the page is hidden by obscurity
-   (nothing on the main site links to it). Comparison ignores case and all
-   whitespace, so "aligotyourback123" and "Ali got your back 123" both work. */
-const PASSWORD = 'aligotyourback123';
-const SESSION_KEY = 'labobo_midterm_unlocked_v1';
-const normalize = (s) => (s || '').toLowerCase().replace(/\s+/g, '').trim();
-
 const SUBJECT_FILTERS = ['All', 'Biochemistry', 'Molecular Biology', 'Genetics', 'Histology'];
-
-function Gate({ onUnlock }) {
-  const [error, setError] = useState(false);
-  const [value, setValue] = useState('');
-
-  function submit(e) {
-    e.preventDefault();
-    if (normalize(value) === normalize(PASSWORD)) {
-      try { sessionStorage.setItem(SESSION_KEY, '1'); } catch { /* ignore */ }
-      onUnlock();
-    } else {
-      setError(true);
-      setValue('');
-      setTimeout(() => setError(false), 1800);
-    }
-  }
-
-  return (
-    <div className="center-shell">
-      <div className="card gate">
-        <div className="gate-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M18 8h-1V6a5 5 0 1 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9V6zm3 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" />
-          </svg>
-        </div>
-        <h1>Midterm Review</h1>
-        <p>This page is private. Enter the password to continue.</p>
-        <form onSubmit={submit} autoComplete="off">
-          <input type="password" aria-label="Password" placeholder="Password" autoFocus value={value}
-                 onChange={(e) => setValue(e.target.value)} />
-          <div className={'gate-error' + (error ? ' show' : '')} role="alert">{error ? 'Incorrect password.' : ''}</div>
-          <button className="btn-primary" type="submit">Unlock</button>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 export default function MidtermPage() {
   return (
@@ -60,9 +15,6 @@ export default function MidtermPage() {
 }
 
 function MidtermInner() {
-  const [unlocked, setUnlocked] = useState(() => {
-    try { return sessionStorage.getItem(SESSION_KEY) === '1'; } catch { return false; }
-  });
   const { questions, status, error, reload } = useQuestions(MIDTERM);
 
   const [subject, setSubject] = useState('All');
@@ -89,20 +41,11 @@ function MidtermInner() {
     setDone(false);
   }
 
-  function lock() {
-    try { sessionStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
-    setUnlocked(false);
-    backToMenu();
-  }
-
-  if (!unlocked) return <Gate onUnlock={() => setUnlocked(true)} />;
-
   const topbar = (
     <div className="page-bar">
-      <div className="page-bar-title">Midterm Review <span className="badge">Private</span></div>
+      <div className="page-bar-title">Midterm Review</div>
       <div className="page-bar-actions">
         <button className="btn-ghost" onClick={backToMenu}>Menu</button>
-        <button className="btn-ghost" onClick={lock}>Lock</button>
       </div>
     </div>
   );
