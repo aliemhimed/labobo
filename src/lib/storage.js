@@ -10,8 +10,6 @@
 
 const THEME_KEY = 'mcq.theme';
 const LEADERBOARD_KEY = 'labobo_leaderboard';
-const SEEN_ANNOUNCEMENTS_KEY = 'labobo_seen_announcements';
-const ANNOUNCEMENTS_CACHE_KEY = 'labobo_announcements_cache_v1';
 const SCHEMA_VERSION = 2;
 
 /* Growth caps, so a heavy user can't fill the ~5 MB quota. */
@@ -103,17 +101,6 @@ export function setTheme(t) {
 
 export const getLeaderboardPrefs = () => read(LEADERBOARD_KEY, {});
 export const setLeaderboardPrefs = (patch) => write(LEADERBOARD_KEY, { ...getLeaderboardPrefs(), ...patch });
-
-/* ── announcements ───────────────────────────────────────────────── */
-
-export const getSeenAnnouncements = () => read(SEEN_ANNOUNCEMENTS_KEY, []);
-export function markAnnouncementSeen(id) {
-  const seen = getSeenAnnouncements();
-  if (!seen.includes(id)) write(SEEN_ANNOUNCEMENTS_KEY, [...seen, id]);
-}
-/** { t: timestamp, items: [...] } or null. */
-export const getAnnouncementsCache = () => read(ANNOUNCEMENTS_CACHE_KEY, null);
-export const setAnnouncementsCache = (items) => write(ANNOUNCEMENTS_CACHE_KEY, { t: Date.now(), items });
 
 /* ── per-subject progress ────────────────────────────────────────── */
 

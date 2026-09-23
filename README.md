@@ -1,13 +1,13 @@
 # Labobo
 
-Labobo is a browser-based medical study and exam platform that helps learners practice subject-based MCQs, review mistakes, track performance, and compete on weekly leaderboards. It blends a React frontend with Netlify serverless functions and Supabase data access so question banks, announcements, and leaderboard data can be served without exposing backend secrets directly to the browser.
+Labobo is a browser-based medical study and exam platform that helps learners practice subject-based MCQs, review mistakes, track performance, and compete on weekly leaderboards. It blends a React frontend with Netlify serverless functions and Supabase data access so question banks and leaderboard data can be served without exposing backend secrets directly to the browser.
 
 ## Tech Stack
 
 - React + Vite for the client application
 - React Router for page navigation
 - Netlify Functions for lightweight server-side APIs
-- Supabase as the datastore for questions, sessions, leaderboard entries, and announcements
+- Supabase as the datastore for questions, sessions, leaderboard entries
 - JavaScript / JSX for frontend logic and UI
 - CSS custom styles for the app UI
 
@@ -18,7 +18,6 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 - Wrong-answer review flow to reinforce weak topics
 - Weekly leaderboard tracking by subject and device
 - User session and performance tracking
-- Public announcements API for site notices
 - Responsive single-page learning experience
 
 ## Repository Structure
@@ -28,7 +27,6 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 ├── dist/                         # Production build output
 ├── netlify/
 │   └── functions/               # Serverless APIs
-│       ├── announcements.js     # Public announcement read API
 │       ├── leaderboard.js       # Weekly leaderboard read/write API
 │       ├── questions.js         # Question-bank proxy API
 │       └── supa-insert.js       # Legacy or utility insertion endpoint
@@ -107,7 +105,7 @@ Key configuration points:
 
 - `netlify.toml` defines redirect rules and the local Netlify build settings.
 - `netlify/functions/*.js` contain the serverless API endpoints.
-- Supabase tables used by the app include question banks, session records, leaderboard entries, and announcements.
+- Supabase tables used by the app include question banks, session records, leaderboard entries.
 
 ## API Endpoints
 
@@ -117,7 +115,6 @@ Routes are defined via Netlify functions and mapped under `/api/*`.
 
 ```text
 GET /api/questions?tables=bs_anatomy,bs_physiology
-GET /api/announcements
 GET /api/leaderboard?subject=GCT&device_id=xxx
 POST /api/leaderboard
 ```

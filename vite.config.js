@@ -61,7 +61,7 @@ function netlifyFunctionsDev() {
             announced = true;
             server.config.logger.info(
               '\n  \x1b[33m➜\x1b[0m  /api/* is not served here — run `npm run dev:netlify` for the Netlify Functions.' +
-              '\n     Questions load straight from Supabase instead; announcements and the leaderboard need it.\n'
+              '\n     Questions load straight from Supabase instead; the leaderboard needs it.\n'
             );
           }
           res.statusCode = 503;

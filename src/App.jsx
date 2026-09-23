@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
 import SelectSemesterPage from './pages/SelectSemesterPage.jsx';
 import NotFound from './pages/NotFound.jsx';
-import AnnouncementBanner from './components/AnnouncementBanner.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { AuthGate, SemesterGate } from './components/AuthGate.jsx';
 import { SUBJECTS } from './lib/subjects.js';
@@ -48,7 +47,6 @@ function StudentApp() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        <AnnouncementBanner />
       </SemesterGate>
     </AuthGate>
   );
