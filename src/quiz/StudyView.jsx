@@ -1,23 +1,41 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import QuestionCard from './QuestionCard.jsx';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
 import { shuffle } from '../lib/utils.js';
 import { quizStats } from './stats.js';
+import { loadStudySession, saveStudySession } from '../lib/storage.js';
 
 /* Study mode owns its own little session: the pool is derived from the
-   filters, and answers/position reset whenever the pool is rebuilt. */
+   filters, and a new pool (new filters, or an explicit Shuffle) starts
+   fresh. Filters/pool/position are mirrored to sessionStorage so a refresh
+   resumes instead of losing the place (see storage.js's studyKey). */
 export default function StudyView({
-  questions, subjectIndex, getDisplayOrder, triggerMeme, onReport, onHome, dismissMeme,
+  questions, subjectIndex, getDisplayOrder, triggerMeme, onReport, onHome, dismissMeme, prefix,
 }) {
   const allTopicKeys = useTopicKeys(subjectIndex);
 
-  const [selectedTopics, setSelectedTopics] = useState(() => new Set(allTopicKeys));
-  const [search, setSearch] = useState('');
+  const [restored] = useState(() => loadStudySession(prefix));
+  const [restoredPool] = useState(() => {
+    if (!restored?.ids?.length) return null;
+    const idToIndex = new Map(questions.map((q, i) => [q.id, i]));
+    const qIdxs = restored.ids.map((id) => idToIndex.get(id)).filter((i) => i !== undefined);
+    return qIdxs.length ? { qIdxs, selected: restored.selected || [], index: restored.index || 0 } : null;
+  });
+
+  const [selectedTopics, setSelectedTopics] = useState(() => new Set(restored?.topics ?? allTopicKeys));
+  const [search, setSearch] = useState(() => restored?.search ?? '');
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [shuffleTick, setShuffleTick] = useState(0);
 
-  /* The shuffled pool for the current filters. */
+  /* The shuffled pool for the current filters — except the very first time,
+     when a restored pool (if any) is reused as-is so a refresh lands back
+     on the same questions in the same order instead of a fresh shuffle. */
+  const usedRestoreRef = useRef(false);
   const qIds = useMemo(() => {
+    if (!usedRestoreRef.current) {
+      usedRestoreRef.current = true;
+      if (restoredPool) return restoredPool.qIdxs;
+    }
     const term = search.trim().toLowerCase();
     const pool = [];
     questions.forEach((q, i) => {
@@ -30,12 +48,26 @@ export default function StudyView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions, selectedTopics, search, shuffleTick]);
 
-  /* Progress belongs to one pool; a new pool starts fresh. */
-  const [progress, setProgress] = useState({ pool: null, answers: [], index: 0 });
+  /* Progress belongs to one pool; a new pool starts fresh (or resumes the
+     restored one, on the very first render). */
+  const [progress, setProgress] = useState(() => {
+    if (!restoredPool) return { pool: null, answers: [], index: 0 };
+    return {
+      pool: restoredPool.qIdxs,
+      answers: restoredPool.qIdxs.map((_, i) => restoredPool.selected[i] ?? null),
+      index: Math.min(restoredPool.index, Math.max(0, restoredPool.qIdxs.length - 1)),
+    };
+  });
   const fresh = progress.pool === qIds ? progress : { pool: qIds, answers: qIds.map(() => null), index: 0 };
   const { index } = fresh;
   const answers = fresh.answers.map((selected, i) => ({ qIdx: qIds[i], selected }));
   const setIndex = (i) => setProgress({ ...fresh, index: i });
+
+  useEffect(() => {
+    const ids = qIds.map((i) => questions[i]?.id).filter(Boolean);
+    if (!ids.length) { saveStudySession(prefix, null); return; }
+    saveStudySession(prefix, { topics: Array.from(selectedTopics), search, ids, selected: fresh.answers, index: fresh.index });
+  }, [prefix, questions, qIds, selectedTopics, search, fresh]);
 
   function onSelect(slot, option) {
     const next = fresh.answers.slice();
@@ -60,7 +92,8 @@ export default function StudyView({
   return (
     <div className="container">
       <div className="page-header">
-        <button className="back-btn" aria-label="Back to menu" onClick={onHome}>←</button>
+        <button className="back-btn" aria-label="Back to menu"
+                onClick={() => { saveStudySession(prefix, null); onHome(); }}>←</button>
         <h1>Study Mode</h1>
       </div>
       <div className="filter-section">

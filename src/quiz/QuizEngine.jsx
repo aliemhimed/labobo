@@ -299,7 +299,7 @@ export default function QuizEngine({ config, questions, basePath }) {
         break;
       case 'study':
         body = (
-          <StudyView questions={questions} subjectIndex={subjectIndex}
+          <StudyView questions={questions} subjectIndex={subjectIndex} prefix={config.storagePrefix}
                      getDisplayOrder={getDisplayOrder} triggerMeme={triggerMeme}
                      onReport={shared.onReport} dismissMeme={dismissMeme} onHome={goHome} />
         );

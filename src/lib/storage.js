@@ -196,6 +196,24 @@ export function saveSession(prefix, session) {
   } catch { /* ignore */ }
 }
 
+/* Study Mode's pool/filters/position — same survives-a-refresh contract as
+   the quiz session above, kept under its own key so the two don't collide. */
+const studyKey = (prefix) => `labobo.study.${prefix}`;
+
+export function loadStudySession(prefix) {
+  try {
+    return JSON.parse(sessionStorage.getItem(studyKey(prefix)) || 'null');
+  } catch {
+    return null;
+  }
+}
+export function saveStudySession(prefix, session) {
+  try {
+    if (session) sessionStorage.setItem(studyKey(prefix), JSON.stringify(session));
+    else sessionStorage.removeItem(studyKey(prefix));
+  } catch { /* ignore */ }
+}
+
 /* ── home-page progress summary ──────────────────────────────────── */
 
 /** One subject's progress, for the home page cards: last score, session
