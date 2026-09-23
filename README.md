@@ -18,7 +18,6 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 - Wrong-answer review flow to reinforce weak topics
 - Weekly leaderboard tracking by subject and device
 - User session and performance tracking
-- Admin-only dashboard backend for managing reports, sessions, and announcements
 - Public announcements API for site notices
 - Responsive single-page learning experience
 
@@ -29,7 +28,6 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 ├── dist/                         # Production build output
 ├── netlify/
 │   └── functions/               # Serverless APIs
-│       ├── admin.js             # Admin-gated dashboard endpoints
 │       ├── announcements.js     # Public announcement read API
 │       ├── leaderboard.js       # Weekly leaderboard read/write API
 │       ├── questions.js         # Question-bank proxy API
@@ -80,13 +78,11 @@ npm install
 3. Configure environment variables. Create a `.env` file in the project root if you are running Netlify functions locally or using custom secrets:
 
 ```env
-ADMIN_PASSWORD=your-admin-password
 SUPA_SERVICE_KEY=your-supabase-service-role-key
 ```
 
 Notes:
-- `ADMIN_PASSWORD` protects admin dashboard endpoints.
-- `SUPA_SERVICE_KEY` is required for admin write actions such as creating or deleting announcements.
+- `SUPA_SERVICE_KEY` lets the Netlify functions write sessions, reports, and leaderboard entries server-side.
 - The public read endpoints use the publishable Supabase key exposed to the app and Netlify functions.
 
 4. Run the app locally:
@@ -112,11 +108,10 @@ Key configuration points:
 - `netlify.toml` defines redirect rules and the local Netlify build settings.
 - `netlify/functions/*.js` contain the serverless API endpoints.
 - Supabase tables used by the app include question banks, session records, leaderboard entries, and announcements.
-- Admin actions are gated by `X-Admin-Password` and require `SUPA_SERVICE_KEY`.
 
 ## API Endpoints
 
-Public and admin routes are defined via Netlify functions and mapped under `/api/*`.
+Routes are defined via Netlify functions and mapped under `/api/*`.
 
 ### Public endpoints
 
@@ -126,23 +121,6 @@ GET /api/announcements
 GET /api/leaderboard?subject=GCT&device_id=xxx
 POST /api/leaderboard
 ```
-
-### Admin endpoints
-
-```text
-GET /api/admin?action=stats
-GET /api/admin?action=reports
-GET /api/admin?action=leaderboard[&week=YYYY-MM-DD]
-GET /api/admin?action=users
-GET /api/admin?action=sessions[&limit=N]
-GET /api/admin?action=announcements
-POST /api/admin?action=announcement
-DELETE /api/admin?action=leaderboard&id=N
-DELETE /api/admin?action=report&id=N
-DELETE /api/admin?action=announcement&id=SLUG
-```
-
-Admin requests must send the `X-Admin-Password` header matching the configured `ADMIN_PASSWORD` value.
 
 ## Contributing
 

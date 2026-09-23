@@ -3,7 +3,7 @@
    require() them.
 
    The functions are only ever called same-origin (/api/* on our own domain),
-   so the write/admin endpoints send no CORS headers at all. */
+   so the write endpoints send no CORS headers at all. */
 
 const SUPA_URL = process.env.SUPA_URL || 'https://boukmowybmtfqkinuvqj.supabase.co';
 // The publishable (anon) key is public by design; see the RLS policies in
@@ -21,7 +21,6 @@ function dbHeaders() {
   return bearer(SUPA_SERVICE_KEY || SUPA_ANON_KEY);
 }
 const anonHeaders = () => bearer(SUPA_ANON_KEY);
-const serviceHeaders = () => (SUPA_SERVICE_KEY ? bearer(SUPA_SERVICE_KEY) : null);
 
 function json(statusCode, body, headers = {}) {
   return {
@@ -46,8 +45,6 @@ function getWeekStart(date = new Date()) {
   d.setUTCHours(0, 0, 0, 0);
   return d.toISOString().slice(0, 10);
 }
-
-const isIsoDate = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s));
 
 /** Verifies the caller's Supabase access token (sent as `Authorization:
     Bearer <token>` by every signed-in request) against Supabase Auth itself,
@@ -86,6 +83,6 @@ function parseBody(event) {
 
 module.exports = {
   SUPA_URL, SUPA_ANON_KEY,
-  dbHeaders, anonHeaders, serviceHeaders,
-  json, fail, getWeekStart, isIsoDate, parseBody, verifyUser,
+  dbHeaders, anonHeaders,
+  json, fail, getWeekStart, parseBody, verifyUser,
 };

@@ -35,7 +35,7 @@ function netlifyFunctionsDev() {
       server.middlewares.use('/api', async (req, res) => {
         const url = FUNCTIONS_ORIGIN + '/api' + req.url;
 
-        // Buffer the body so POSTs (supa-insert, admin) forward intact.
+        // Buffer the body so POSTs (supa-insert) forward intact.
         let body;
         if (req.method !== 'GET' && req.method !== 'HEAD') {
           const chunks = [];
@@ -61,7 +61,7 @@ function netlifyFunctionsDev() {
             announced = true;
             server.config.logger.info(
               '\n  \x1b[33m➜\x1b[0m  /api/* is not served here — run `npm run dev:netlify` for the Netlify Functions.' +
-              '\n     Questions load straight from Supabase instead; the admin page will not unlock.\n'
+              '\n     Questions load straight from Supabase instead; announcements and the leaderboard need it.\n'
             );
           }
           res.statusCode = 503;

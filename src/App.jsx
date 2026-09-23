@@ -10,14 +10,12 @@ import { SUBJECTS } from './lib/subjects.js';
 
 const SubjectPage = lazy(() => import('./pages/SubjectPage.jsx'));
 const MidtermPage = lazy(() => import('./pages/MidtermPage.jsx'));
-const AdminPage = lazy(() => import('./pages/AdminPage.jsx'));
 
 /* The old site was a folder of .html files. Keep those URLs working so
    existing links and bookmarks don't break. */
 const LEGACY = {
   '/index.html': '/',
   '/midterm-review.html': '/midterm-review',
-  '/admin.html': '/admin',
   ...Object.fromEntries(Object.keys(SUBJECTS).map((k) => [`/${k}.html`, `/${k}`])),
 };
 
@@ -25,9 +23,6 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
-        {/* Admin keeps its own separate staff password gate — it is not part
-            of the student sign-in flow below. */}
-        <Route path="/admin" element={<Suspense fallback={null}><AdminPage /></Suspense>} />
         <Route path="/*" element={<StudentApp />} />
       </Routes>
     </ErrorBoundary>

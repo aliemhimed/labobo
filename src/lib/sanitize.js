@@ -1,4 +1,4 @@
-/* Announcements are authored in the admin dashboard with a little inline HTML
+/* Announcements are authored in Supabase with a little inline HTML
    (<strong>, links). That HTML reaches every visitor, so it is filtered down to
    a small allowlist before it is ever put into the DOM: unknown tags are
    unwrapped to their text, and every attribute is dropped except a safe

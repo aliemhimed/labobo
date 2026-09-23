@@ -14,8 +14,7 @@ function Splash() {
   );
 }
 
-/** No session -> the login screen. A session -> children. Wraps everything
-    except /admin, which keeps its own separate staff password gate. */
+/** No session -> the login screen. A session -> children. */
 export function AuthGate({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <Splash />;

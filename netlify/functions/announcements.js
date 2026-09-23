@@ -7,8 +7,7 @@
    expects (`const items = await res.json(); if (Array.isArray(items))`).
 
    Only active rows are returned; `active = false` hides an announcement
-   without deleting it. Writes go through /api/admin, which uses the
-   service_role key — this endpoint is read-only and uses the publishable
+   without deleting it. This endpoint is read-only and uses the publishable
    key, whose RLS policy already restricts it to active rows. */
 
 const { SUPA_URL, anonHeaders, json, fail } = require('./_lib/common');

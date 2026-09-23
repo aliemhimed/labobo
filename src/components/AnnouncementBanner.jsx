@@ -12,7 +12,7 @@ const FETCH_TIMEOUT_MS = 4000;
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const SHOW_DELAY_MS = 600;
 // Private pages don't get site announcements.
-const QUIET_PATHS = ['/admin', '/midterm-review', '/select-semester'];
+const QUIET_PATHS = ['/midterm-review', '/select-semester'];
 
 function freshCache() {
   const cache = getAnnouncementsCache();
@@ -54,7 +54,7 @@ export default function AnnouncementBanner() {
             overlayClass="labobo-announce-overlay" modalClass="labobo-announce-modal">
       <div className="labobo-announce-badge">What's new</div>
       <h3 id="ann-title">{next.title}</h3>
-      {/* Authored in the admin dashboard with a little inline HTML; filtered to a
+      {/* Authored in Supabase with a little inline HTML; filtered to a
           small allowlist before it reaches the DOM. */}
       <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(next.body) }} />
       <div className="labobo-announce-meta">
