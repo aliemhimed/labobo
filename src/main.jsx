@@ -6,7 +6,7 @@ import App from './App.jsx';
 import { AuthProvider } from './lib/auth.jsx';
 import { initTheme } from './lib/theme.js';
 import './styles/tokens.css';
-import './styles/quiz.css';
+import './styles/base.css';
 import './styles/home.css';
 
 initTheme();

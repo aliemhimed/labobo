@@ -5,6 +5,7 @@ import TopBar from '../components/TopBar.jsx';
 import { ToastProvider } from '../components/Toast.jsx';
 import { useQuestions } from '../hooks/useQuestions.js';
 import { getSubject } from '../lib/subjects.js';
+import '../styles/quiz.css';
 
 function Shell({ config, children }) {
   return (
