@@ -24,6 +24,7 @@ export default function ReportModal({ question, onClose }) {
     // device_id is filled in server-side from the signed-in user's verified
     // session (see netlify/functions/supa-insert.js) — never sent from here.
     const saved = await supaInsert('question_reports', {
+      question_id: question.id,
       question_text: question.q,
       subject: question.subject,
       topic: question.topic,

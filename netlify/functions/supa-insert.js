@@ -24,6 +24,8 @@ const str = (max) => (v) => (typeof v === 'string' ? v.slice(0, max) : undefined
 const int = (v) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Math.round(Number(v)) : undefined);
 const num = (v) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : undefined);
 const timestamp = (v) => (typeof v === 'string' && !isNaN(new Date(v)) ? new Date(v).toISOString() : undefined);
+// "<table>:<row id>", the app's stable question id (src/lib/questions.js).
+const questionId = (v) => (typeof v === 'string' && /^[a-z0-9_]{1,63}:\d{1,19}$/.test(v) ? v : undefined);
 
 // Allowed columns per table. ids, created_at and device_id come from the
 // server, never the client (device_id is filled in from the verified caller
@@ -39,7 +41,7 @@ const SCHEMAS = {
   question_reports: {
     required: ['question_text', 'reason'],
     columns: {
-      question_text: str(2000), subject: str(120), topic: str(200),
+      question_id: questionId, question_text: str(2000), subject: str(120), topic: str(200),
       reason: str(100), note: str(500), reported_at: timestamp,
     },
   },
