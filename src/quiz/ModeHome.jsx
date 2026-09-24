@@ -1,40 +1,60 @@
-export default function ModeHome({ user, wrongCount, historyCount, onGo }) {
-  const cards = [
-    { key: 'study', cls: 'study', icon: '📚', title: 'Study Mode',
-      desc: 'Browse by subject & topic. Instant feedback. No score saved.' },
-    { key: 'practice-config', cls: 'practice', icon: '🎯', title: 'Practice Mode',
-      desc: 'Mixed question set. See answers right away. Results saved.' },
-    { key: 'exam-config', cls: 'exam', icon: '📝', title: 'Exam Mode',
-      desc: 'Real-exam simulation. Answers hidden until the end. Score tracked.' },
-    { key: 'review-wrong', cls: 'review', icon: '🔁', title: 'Review Wrong Answers',
-      desc: 'Redo questions you got wrong. Practice mode style.',
-      disabled: wrongCount === 0, badge: wrongCount || null },
-    { key: 'dashboard', cls: 'dashboard', icon: '📊', title: 'Performance Dashboard',
-      desc: `${historyCount} past session${historyCount !== 1 ? 's' : ''}. Track scores over time.` },
-    { key: 'flashcards', cls: 'flashcards', icon: '🗂️', title: 'Flashcards',
-      desc: 'Active recall with spaced repetition. Flip the card, rate yourself — weak cards come back more often.' },
-    { key: 'leaderboard', cls: 'leaderboard', icon: '🏆', title: 'Weekly Leaderboard',
-      desc: 'Compete on 30-Q exam scores. Resets every Monday.' },
+import { ChevronRight } from '../components/Icons.jsx';
+
+const MODES = [
+  { key: 'study', name: 'Study',
+    desc: 'Browse by topic with each answer shown as you go. Nothing is scored.' },
+  { key: 'practice-config', name: 'Practice',
+    desc: 'A mixed set with the answer after every question. Saved to your history.' },
+  { key: 'exam-config', name: 'Exam',
+    desc: 'A full set with answers held back until you submit, then scored.' },
+];
+
+export default function ModeHome({ title, questionCount, topicCount, wrongCount, historyCount, onGo }) {
+  const tools = [
+    { key: 'review-wrong', name: 'Review wrong answers',
+      meta: wrongCount ? `${wrongCount} question${wrongCount !== 1 ? 's' : ''}` : 'None yet',
+      disabled: wrongCount === 0, flagged: wrongCount > 0 },
+    { key: 'flashcards', name: 'Flashcards', meta: 'Spaced repetition by topic' },
+    { key: 'dashboard', name: 'Performance',
+      meta: historyCount ? `${historyCount} session${historyCount !== 1 ? 's' : ''}` : 'No sessions yet' },
+    { key: 'leaderboard', name: 'Weekly leaderboard', meta: 'Best 30-question exam' },
   ];
 
   return (
     <div className="container">
-      <div className="home-header">
-        <h1>Hi, {user.name} 👋</h1>
-        <p>Choose how you'd like to study today.</p>
-      </div>
-      <div className="mode-grid">
-        {cards.map((c) => (
-          <button key={c.key}
-                  className={`mode-card ${c.cls}${c.disabled ? ' disabled' : ''}`}
-                  onClick={() => { if (!c.disabled) onGo(c.key); }}>
-            <div className="mode-icon">{c.icon}</div>
-            <h3>{c.title}</h3>
-            <p>{c.desc}</p>
-            {c.badge ? <div className="badge">{c.badge}</div> : null}
-          </button>
-        ))}
-      </div>
+      <header className="subject-head">
+        <h1>{title}</h1>
+        <p className="lede">
+          {questionCount.toLocaleString()} questions across {topicCount} topic{topicCount !== 1 ? 's' : ''}
+        </p>
+      </header>
+
+      <section aria-labelledby="modes-title">
+        <h2 id="modes-title" className="section-title">Answer questions</h2>
+        <div className="modes">
+          {MODES.map((m) => (
+            <button type="button" key={m.key} className="mode" onClick={() => onGo(m.key)}>
+              <span className="mode-name">{m.name}</span>
+              <span className="mode-desc">{m.desc}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="tools-section" aria-labelledby="tools-title">
+        <h2 id="tools-title" className="section-title">Your progress</h2>
+        <ul className="tools">
+          {tools.map((t) => (
+            <li key={t.key}>
+              <button type="button" className="tool" disabled={t.disabled} onClick={() => onGo(t.key)}>
+                <span className="tool-name">{t.name}</span>
+                <span className={'tool-meta' + (t.flagged ? ' flagged' : '')}>{t.meta}</span>
+                <ChevronRight />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

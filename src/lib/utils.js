@@ -34,7 +34,7 @@ export function fmtDate(iso) {
   const d = new Date(iso);
   return (
     d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) +
-    ' · ' +
+    ', ' +
     d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
   );
 }
@@ -66,18 +66,6 @@ export function distribute(total, ratio) {
     i++;
   }
   return dist;
-}
-
-/* Human-readable version of the ratio, e.g.
-   "Anatomy 50%, Physiology 30%, Medical Imaging 20%".
-   The old pages hard-coded a GCT-specific sentence on every subject. */
-export function describeRatio(ratio) {
-  const subjects = Object.keys(ratio);
-  if (subjects.length <= 1) return '';
-  const ratioTotal = subjects.reduce((sum, s) => sum + ratio[s], 0) || 1;
-  return subjects
-    .map((s) => `${s} ${Math.round((100 * ratio[s]) / ratioTotal)}%`)
-    .join(', ');
 }
 
 /* Pick question indices matching a per-subject distribution. */

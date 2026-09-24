@@ -246,7 +246,9 @@ export default function QuizEngine({ config, questions, basePath }) {
     const blank = qIds.length - answered;
     const ok = await confirm({
       title: 'Submit exam now?',
-      message: `Answered: ${answered}\nBlank: ${blank}\n\nBlank questions will be marked wrong.`,
+      message: blank
+        ? `You've answered ${answered} of ${qIds.length}. The ${blank} blank question${blank === 1 ? '' : 's'} will be marked wrong.`
+        : `You've answered all ${qIds.length} questions.`,
       confirmLabel: 'Submit exam',
     });
     if (ok) finishExam();
@@ -268,14 +270,26 @@ export default function QuizEngine({ config, questions, basePath }) {
     goHome();
   }
 
-  /* Re-open a saved record for review. Records store question ids, so a
-     question deleted from the database since is simply skipped. */
-  function openReview(rec) {
+  /* Re-open a saved record for review, optionally at question `at` of the
+     record. Records store question ids, so a question deleted from the
+     database since is simply skipped. */
+  function openReview(rec, at = 0) {
     const slots = (rec.questionIds || [])
-      .map((id, i) => ({ qIdx: idToIndex.get(id), selected: rec.answers[i] }))
+      .map((id, i) => ({ qIdx: idToIndex.get(id), selected: rec.answers[i], at: i }))
       .filter((s) => s.qIdx !== undefined);
-    commit({ type: 'review', slots, record: rec }, 'review-after-exam', { state: { from: view } });
+    const index = Math.max(0, slots.findIndex((s) => s.at === at));
+    commit({ type: 'review', slots, record: rec, index }, 'review-after-exam', { state: { from: view } });
   }
+
+  /* Right/wrong per question of a finished record, for the results sheet. */
+  const recordMarks = (rec) => (rec?.questionIds || []).map((id, i) => {
+    const q = questions[idToIndex.get(id)];
+    if (!q) return null;
+    return rec.answers[i] === q.answer ? 'correct' : 'wrong';
+  });
+
+  const subjectTitle = config.title.replace(/ MCQ$/, '');
+  const topicCount = Object.values(subjectIndex).reduce((n, topics) => n + Object.keys(topics).length, 0);
 
   /* ── rendering ──────────────────────────────────────────────────── */
 
@@ -297,7 +311,9 @@ export default function QuizEngine({ config, questions, basePath }) {
     switch (view) {
       case 'home':
         body = (
-          <ModeHome user={user}
+          <ModeHome title={subjectTitle}
+                    questionCount={questions.length}
+                    topicCount={topicCount}
                     wrongCount={Object.keys(wrong).length}
                     historyCount={history.length}
                     onGo={handleGo} />
@@ -305,7 +321,8 @@ export default function QuizEngine({ config, questions, basePath }) {
         break;
       case 'study':
         body = (
-          <StudyView questions={questions} subjectIndex={subjectIndex} prefix={config.storagePrefix}
+          <StudyView questions={questions} subjectIndex={subjectIndex} subjectTitle={subjectTitle}
+                     prefix={config.storagePrefix}
                      getDisplayOrder={getDisplayOrder} triggerMeme={triggerMeme}
                      onReport={shared.onReport} dismissMeme={dismissMeme} onHome={goHome} />
         );
@@ -330,11 +347,15 @@ export default function QuizEngine({ config, questions, basePath }) {
         );
         break;
       case 'exam-results':
-        body = <ResultsView record={record} onHome={goHome} onReview={() => openReview(record)} />;
+        body = (
+          <ResultsView record={record} marks={recordMarks(record)} subjectTitle={subjectTitle}
+                       onHome={goHome} onReview={(at) => openReview(record, at)} />
+        );
         break;
       case 'review-after-exam':
         body = (
           <ReviewView {...shared}
+                      backLabel={location.state?.from === 'exam-detail' ? 'Session details' : 'Results'}
                       onBack={() => go(location.state?.from === 'exam-detail' ? 'exam-detail' : 'exam-results')} />
         );
         break;
@@ -342,6 +363,7 @@ export default function QuizEngine({ config, questions, basePath }) {
       case 'flashcards':
         body = (
           <Flashcards questions={questions} subjectIndex={subjectIndex} store={store}
+                      subjectTitle={subjectTitle}
                       started={view === 'flashcards'}
                       onStart={() => go('flashcards')}
                       onConfig={() => go('flashcards-config')}
@@ -350,7 +372,7 @@ export default function QuizEngine({ config, questions, basePath }) {
         break;
       case 'dashboard':
         body = (
-          <Dashboard store={store} onHome={goHome}
+          <Dashboard store={store} subjectTitle={subjectTitle} onHome={goHome}
                      onOpen={(rec) => commit({ type: 'view-record', record: rec }, 'exam-detail')} />
         );
         break;
@@ -364,8 +386,7 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   return (
     <>
-      <TopBar subtitle={config.title.replace(/ MCQ$/, '')}
-              onBrandClick={goHome} onLogout={logout} />
+      <TopBar subtitle={subjectTitle} onBrandClick={goHome} onLogout={logout} />
       <div id="root">{body}</div>
       {memeEl}
       {leaderboard.element}

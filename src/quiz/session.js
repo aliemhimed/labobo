@@ -32,6 +32,7 @@ export function sessionReducer(state, action) {
         mode: 'review-after-exam',
         qIds: action.slots.map((s) => s.qIdx),
         answers: action.slots,
+        index: Math.min(action.index || 0, Math.max(0, action.slots.length - 1)),
         record: action.record,
       };
     case 'reset':

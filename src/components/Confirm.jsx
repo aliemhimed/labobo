@@ -25,11 +25,11 @@ export function useConfirm() {
 
   const element = request ? (
     <Dialog onClose={() => answer(false)} labelledBy="confirm-title">
-      <h3 id="confirm-title">{request.title}</h3>
-      <p style={{ whiteSpace: 'pre-line' }}>{request.message}</p>
-      <div className="lb-actions">
-        <button className="lb-btn" onClick={() => answer(false)}>{request.cancelLabel || 'Cancel'}</button>
-        <button className={'lb-btn ' + (request.danger ? 'lb-btn-danger-solid' : 'lb-btn-primary')}
+      <h2 id="confirm-title">{request.title}</h2>
+      <p className="dialog-text">{request.message}</p>
+      <div className="dialog-actions">
+        <button type="button" className="btn" onClick={() => answer(false)}>{request.cancelLabel || 'Cancel'}</button>
+        <button type="button" className={'btn ' + (request.danger ? 'danger' : 'primary')}
                 onClick={() => answer(true)}>
           {request.confirmLabel || 'OK'}
         </button>

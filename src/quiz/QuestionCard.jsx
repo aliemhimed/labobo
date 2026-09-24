@@ -3,10 +3,13 @@ import QuestionBody from './QuestionBody.jsx';
 import { useEqualOptionHeights } from '../hooks/useEqualOptionHeights.js';
 import { useQuizShortcuts } from '../hooks/useQuizShortcuts.js';
 import { LETTERS } from '../lib/utils.js';
+import { Check, Cross } from '../components/Icons.jsx';
 
-/* Options are rendered in a shuffled order so the correct answer isn't
-   always in the same slot; `displayOrder` maps display position -> the
-   option's original index, which is what `answer` refers to. */
+/* One question on the answer sheet. Options are rendered in a shuffled order
+   so the correct answer isn't always in the same slot; `displayOrder` maps
+   display position -> the option's original index, which is what `answer`
+   refers to. Choosing an option fills its bubble; in practice and study the
+   bubbles then show right and wrong. */
 export default function QuestionCard({
   question,
   displayOrder,
@@ -14,7 +17,7 @@ export default function QuestionCard({
   total,
   answer,
   quizMode,
-  stats,
+  subjectTitle,
   onSelect,
   onPrev,
   onNext,
@@ -30,6 +33,7 @@ export default function QuestionCard({
 
   const isLast = index === total - 1;
   const correctDisplayPos = displayOrder.indexOf(question.answer);
+  const gotItRight = answered && answer.selected === question.answer;
 
   /* Once an answer is chosen the question is locked in every mode. */
   const locked = answered;
@@ -42,95 +46,60 @@ export default function QuestionCard({
   });
 
   return (
-    <>
-      <div className="quiz-progress-bar">
-        <div className="qpb-stat">
-          <span className="qpb-label">Question</span>
-          <span className="qpb-value">{index + 1} / {total}</span>
-        </div>
-        {!isExam ? (
-          <>
-            <div className="qpb-stat">
-              <span className="qpb-label">Correct</span>
-              <span className="qpb-value good">{stats.correct}</span>
-            </div>
-            <div className="qpb-stat">
-              <span className="qpb-label">Wrong</span>
-              <span className="qpb-value bad">{stats.wrong}</span>
-            </div>
-            <div className="qpb-stat">
-              <span className="qpb-label">Accuracy</span>
-              <span className="qpb-value">{stats.accuracy !== null ? stats.accuracy + '%' : '—'}</span>
-            </div>
-          </>
+    <article className="question">
+      <QuestionBody question={question} subjectTitle={subjectTitle} onReport={onReport} />
+
+      <div className="options" ref={optionsRef}>
+        {displayOrder.map((origIdx, displayPos) => {
+          let cls = 'option';
+          let mark = null;
+          let status = null; // spoken by screen readers; the mark is the visual twin
+          if (locked) cls += ' disabled';
+          if (isExam) {
+            if (answered && origIdx === answer.selected) { cls += ' selected'; status = 'Your answer'; }
+          } else if (showFeedback) {
+            if (origIdx === question.answer) { cls += ' correct'; mark = <Check />; status = 'Correct answer'; }
+            else if (origIdx === answer.selected) { cls += ' incorrect'; mark = <Cross />; status = 'Your answer, incorrect'; }
+          }
+          return (
+            <button type="button" key={origIdx} className={cls} data-i={origIdx}
+                    aria-disabled={locked || undefined}
+                    onClick={() => { if (!locked) onSelect(origIdx); }}>
+              <span className="bubble" aria-hidden="true">{LETTERS[displayPos]}</span>
+              <span className="option-text">{question.options[origIdx]}</span>
+              {mark ? <span className="mark" aria-hidden="true">{mark}</span> : null}
+              <span className="sr-only">Option {LETTERS[displayPos]}{status ? `, ${status}` : ''}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Announced as soon as an answer is chosen. */}
+      <div role="status" aria-live="polite">
+        {showFeedback ? (
+          <div className={'explanation ' + (gotItRight ? 'good' : 'bad')}>
+            <p className="verdict">
+              {gotItRight ? 'Correct.' : `Incorrect. The answer is ${LETTERS[correctDisplayPos]}.`}
+            </p>
+            {question.explanation ? <p className="explanation-text">{question.explanation}</p> : null}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="q-nav">
+        <button type="button" className="btn" disabled={index === 0} onClick={onPrev}>Previous</button>
+        {isLast && isExam ? (
+          <button type="button" className="btn primary" onClick={onFinish}>Submit exam</button>
+        ) : isLast && (quizMode === 'practice' || quizMode === 'review-wrong') ? (
+          <button type="button" className="btn primary" onClick={onFinish}>See results</button>
         ) : (
-          <div className="qpb-stat">
-            <span className="qpb-label">Answered</span>
-            <span className="qpb-value">{stats.answered} / {total}</span>
-          </div>
+          <button type="button" className="btn primary" disabled={isLast} onClick={onNext}>Next question</button>
         )}
-        <div className="qpb-fill"><div style={{ width: `${(100 * (index + 1)) / total}%` }} /></div>
       </div>
-
-      <div className="question-card">
-        <QuestionBody question={question} index={index} onReport={onReport} />
-
-        <div className="options" ref={optionsRef}>
-          {displayOrder.map((origIdx, displayPos) => {
-            let cls = 'option';
-            let glyph = null;
-            let status = null; // spoken by screen readers; the glyph is the visual twin
-            if (locked) cls += ' disabled';
-            if (isExam) {
-              if (answered && origIdx === answer.selected) { cls += ' selected'; status = 'Your answer'; }
-            } else if (showFeedback) {
-              if (origIdx === question.answer) { cls += ' correct'; glyph = '✓'; status = 'Correct answer'; }
-              else if (origIdx === answer.selected) { cls += ' incorrect'; glyph = '✗'; status = 'Your answer, incorrect'; }
-            }
-            return (
-              <button type="button" key={origIdx} className={cls} data-i={origIdx}
-                      aria-disabled={locked || undefined}
-                      onClick={() => { if (!locked) onSelect(origIdx); }}>
-                <span className="letter">{LETTERS[displayPos]}</span>
-                <span className="body">{question.options[origIdx]}</span>
-                {glyph ? <span className="mark" aria-hidden="true">{glyph}</span> : null}
-                {status ? <span className="sr-only">{status}</span> : null}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Announced as soon as an answer is chosen. */}
-        <div role="status" aria-live="polite">
-          {showFeedback ? (
-            <div className={'explanation ' + (answer.selected === question.answer ? 'good' : 'bad')}>
-              <strong>
-                {answer.selected === question.answer
-                  ? '✓ Correct'
-                  : `✗ Incorrect — Correct answer: ${LETTERS[correctDisplayPos]}`}.
-              </strong>
-              {question.explanation ? ' ' + question.explanation : ''}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="actions">
-          <button className="btn" disabled={index === 0} onClick={onPrev}>← Previous</button>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {isLast && isExam ? (
-              <button className="btn primary" onClick={onFinish}>Submit Exam</button>
-            ) : isLast && (quizMode === 'practice' || quizMode === 'review-wrong') ? (
-              <button className="btn primary" onClick={onFinish}>Finish &amp; See Results</button>
-            ) : (
-              <button className="btn primary" disabled={isLast} onClick={onNext}>Next →</button>
-            )}
-          </div>
-        </div>
-        <div className="shortcut-hint" aria-hidden="true">
-          Keys: <kbd>1</kbd>–<kbd>{displayOrder.length}</kbd> or <kbd>A</kbd>–<kbd>{LETTERS[displayOrder.length - 1]}</kbd> to answer
-          · <kbd>←</kbd> <kbd>→</kbd> to move
-        </div>
-      </div>
-    </>
+      <p className="shortcut-hint" aria-hidden="true">
+        Press <kbd>1</kbd>–<kbd>{displayOrder.length}</kbd> or <kbd>A</kbd>–<kbd>{LETTERS[displayOrder.length - 1]}</kbd> to
+        answer, <kbd>←</kbd> <kbd>→</kbd> to move between questions.
+      </p>
+    </article>
   );
 }

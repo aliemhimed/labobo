@@ -25,15 +25,15 @@ export default function SubjectPage({ subjectKey }) {
   }, [config]);
 
   if (!config) return <p>Unknown subject.</p>;
+  const name = config.title.replace(/ MCQ$/, '');
 
   if (status === 'loading') {
     return (
       <Shell config={config}>
-        <div className="container center-wrap">
-          <div className="card" style={{ textAlign: 'center', padding: 34 }}>
-            <div style={{ fontSize: 38, marginBottom: 10 }}>📚</div>
-            <h2>Loading questions…</h2>
-            <p style={{ color: 'var(--text-soft)' }}>Fetching the {config.title} bank.</p>
+        <div className="container">
+          <div className="state loading-state" role="status">
+            <h1>{name}</h1>
+            <p>Loading the questions</p>
           </div>
         </div>
       </Shell>
@@ -43,16 +43,13 @@ export default function SubjectPage({ subjectKey }) {
   if (status === 'error') {
     return (
       <Shell config={config}>
-        <div className="container center-wrap">
-          <div className="card" style={{ textAlign: 'center', padding: 34 }}>
-            <div style={{ fontSize: 38, marginBottom: 10 }}>⚠️</div>
-            <h2>Couldn't load the questions</h2>
-            <p style={{ color: 'var(--text-soft)' }}>
-              {String(error?.message || error)}
-            </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
+        <div className="container">
+          <div className="state" role="alert">
+            <h1>Couldn't load the questions</h1>
+            <p>Check your connection and try again. ({String(error?.message || error)})</p>
+            <div className="state-actions">
               <button className="btn primary" onClick={reload}>Try again</button>
-              <Link className="btn ghost" to="/">All subjects</Link>
+              <Link className="btn" to="/">All subjects</Link>
             </div>
           </div>
         </div>
@@ -63,18 +60,13 @@ export default function SubjectPage({ subjectKey }) {
   if (status === 'empty') {
     return (
       <Shell config={config}>
-        <div className="container center-wrap">
-          <div className="card" style={{ textAlign: 'center', padding: 34 }}>
-            <div style={{ fontSize: 38, marginBottom: 10 }}>🗃️</div>
-            <h2>No questions yet</h2>
-            <p style={{ color: 'var(--text-soft)' }}>
-              The {config.title} bank is empty. Add rows to{' '}
-              {config.sources.map((s) => s.table).join(', ')} in Supabase and they'll show up here —
-              no redeploy needed.
-            </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
-              <button className="btn" onClick={reload}>Check again</button>
-              <Link className="btn ghost" to="/">All subjects</Link>
+        <div className="container">
+          <div className="state empty-bank">
+            <img src="/theme/mascot.webp" alt="" width="64" height="96" />
+            <h1>{name} is coming soon</h1>
+            <p>Questions for this subject haven’t been added yet. They’ll appear here as soon as they are.</p>
+            <div className="state-actions">
+              <Link className="btn primary" to="/">All subjects</Link>
             </div>
           </div>
         </div>

@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
+import PageHead from '../components/PageHead.jsx';
 import { useHistory, useWrong } from '../hooks/useStore.js';
 import { Breakdown } from './Breakdown.jsx';
 import { fmtDate, scoreClass } from '../lib/utils.js';
 
-export default function Dashboard({ store, onHome, onOpen }) {
+export default function Dashboard({ store, subjectTitle, onHome, onOpen }) {
   const hist = useHistory(store);
   const wrongMap = useWrong(store);
   const { wrong, avg, totalAnswered, bySubj, worst } = useMemo(() => {
@@ -21,7 +22,7 @@ export default function Dashboard({ store, onHome, onOpen }) {
     });
     const avg = totalAnswered > 0 ? Math.round((100 * totalCorrect) / totalAnswered) : 0;
 
-    let worst = '—', worstPct = 101;
+    let worst = null, worstPct = 101;
     Object.entries(bySubj).forEach(([s, st]) => {
       const p = st.total ? Math.round((100 * st.correct) / st.total) : 0;
       if (p < worstPct && st.total >= 5) { worstPct = p; worst = s; }
@@ -29,65 +30,65 @@ export default function Dashboard({ store, onHome, onOpen }) {
     return { wrong, avg, totalAnswered, bySubj, worst };
   }, [hist, wrongMap]);
 
+  // Per-subject figures only say something when a set spans several banks.
+  const multiSubject = Object.keys(bySubj).length > 1;
+
   return (
     <div className="container">
-      <div className="page-header">
-        <button className="back-btn" aria-label="Back to menu" onClick={onHome}>←</button>
-        <h1>Performance Dashboard</h1>
-      </div>
-      <div className="dash-grid">
-        <div className="stat-tile"><div className="tile-val">{hist.length}</div><div className="tile-label">Sessions</div></div>
-        <div className="stat-tile">
-          <div className={'tile-val ' + scoreClass(avg)}>{hist.length ? avg + '%' : '—'}</div>
-          <div className="tile-label">Average score</div>
-        </div>
-        <div className="stat-tile"><div className="tile-val">{totalAnswered}</div><div className="tile-label">Total questions</div></div>
-        <div className="stat-tile"><div className="tile-val bad">{wrong}</div><div className="tile-label">In wrong-answer pool</div></div>
-        <div className="stat-tile">
-          <div className="tile-val" style={{ fontSize: 15 }}>{worst}</div>
-          <div className="tile-label">Weakest subject</div>
-        </div>
-      </div>
-
-      {Object.keys(bySubj).length > 0 ? (
-        <div className="bd-section" style={{ marginBottom: 18 }}>
-          <h3>Lifetime accuracy by subject</h3>
-          <Breakdown stats={bySubj} />
-        </div>
-      ) : null}
+      <PageHead backLabel={subjectTitle} onBack={onHome} title="Performance" />
 
       {hist.length === 0 ? (
-        <div className="card empty-state">
-          <div className="ico">📋</div>
-          <h3>No sessions yet</h3>
-          <p>Take a Practice or Exam to see your history here.</p>
+        <div className="state">
+          <p>Finish a practice set or an exam and your results will appear here.</p>
         </div>
       ) : (
-        <div className="history-table">
-          <div className="history-row header">
-            <div>Date</div><div>Type</div><div>Qs</div><div>Subjects</div><div>Score</div>
-          </div>
-          {hist.map((r) => (
-            <button type="button" key={r.id} className="history-row" onClick={() => onOpen(r)}
-                    aria-label={`Open ${r.type === 'exam' ? 'exam' : 'practice'} from ${fmtDate(r.date)}, score ${r.score}%`}>
-              <div>{fmtDate(r.date)}</div>
-              <div>
-                <span className={'ht-type' + (r.type === 'exam' ? ' exam' : '')}>
-                  {r.type === 'exam' ? 'Exam' : 'Practice'}
-                </span>
+        <>
+          <dl className="figures">
+            <div className="figure"><dt>Sessions</dt><dd>{hist.length}</dd></div>
+            <div className="figure">
+              <dt>Average score</dt><dd className={'score-' + scoreClass(avg)}>{avg}%</dd>
+            </div>
+            <div className="figure"><dt>Questions answered</dt><dd>{totalAnswered.toLocaleString()}</dd></div>
+            <div className="figure"><dt>In your wrong-answer list</dt><dd>{wrong}</dd></div>
+            {multiSubject && worst ? (
+              <div className="figure"><dt>Weakest subject</dt><dd className="figure-text">{worst}</dd></div>
+            ) : null}
+          </dl>
+
+          {multiSubject ? (
+            <section className="bd-section" aria-labelledby="dash-subject-title">
+              <h2 id="dash-subject-title" className="section-title">Accuracy by subject, all sessions</h2>
+              <Breakdown stats={bySubj} />
+            </section>
+          ) : null}
+
+          <section className="bd-section" aria-labelledby="dash-history-title">
+            <h2 id="dash-history-title" className="section-title">History</h2>
+            <div className={'history' + (multiSubject ? ' with-subjects' : '')}>
+              <div className="history-row header" aria-hidden="true">
+                <span>Date</span><span>Type</span><span className="ht-num">Questions</span>
+                {multiSubject ? <span className="ht-subjects">By subject</span> : null}
+                <span className="ht-score">Score</span>
               </div>
-              <div>{r.questionCount}</div>
-              <div>
-                {Object.entries(r.subjectStats || {}).map(([s, st]) => (
-                  <small key={s} style={{ color: 'var(--text-muted)', marginRight: 6 }}>
-                    {s.slice(0, 3)}: {st.correct}/{st.total}
-                  </small>
-                ))}
-              </div>
-              <div className={'ht-score ' + scoreClass(r.score)}>{r.score}%</div>
-            </button>
-          ))}
-        </div>
+              {hist.map((r) => (
+                <button type="button" key={r.id} className="history-row" onClick={() => onOpen(r)}
+                        aria-label={`Open the ${r.type === 'exam' ? 'exam' : 'practice set'} from ${fmtDate(r.date)}, score ${r.score}%`}>
+                  <span>{fmtDate(r.date)}</span>
+                  <span className={'ht-type' + (r.type === 'exam' ? ' exam' : '')}>
+                    {r.type === 'exam' ? 'Exam' : 'Practice'}
+                  </span>
+                  <span className="ht-num">{r.questionCount}</span>
+                  {multiSubject ? (
+                    <span className="ht-subjects">
+                      {Object.entries(r.subjectStats || {}).map(([s, st]) => `${s} ${st.correct}/${st.total}`).join(', ')}
+                    </span>
+                  ) : null}
+                  <span className={'ht-score score-' + scoreClass(r.score)}>{r.score}%</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        </>
       )}
     </div>
   );

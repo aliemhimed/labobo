@@ -145,7 +145,7 @@ export const SUBJECTS = {
   'gct-2': {
     path: 'gct-2',
     title: 'GCT II MCQ',
-    description: 'Molecular Biology, Biochemistry, Histology & Medical Genetics — Semester 2',
+    description: 'Molecular Biology, Biochemistry, Histology & Medical Genetics',
     docTitle: 'GCT II — Studywith Labobo',
     storagePrefix: 'gct2',
     leaderboardSubject: 'GCT II',
@@ -169,7 +169,7 @@ export const SUBJECTS = {
   'body-systems-2': {
     path: 'body-systems-2',
     title: 'Body Systems II MCQ',
-    description: 'Anatomy, Physiology & Medical Imaging — Semester 2',
+    description: 'Anatomy, Physiology & Medical Imaging',
     docTitle: 'Body Systems II — Studywith Labobo',
     storagePrefix: 'bs2',
     leaderboardSubject: 'Body Systems II',
@@ -188,7 +188,7 @@ export const SUBJECTS = {
   'clinical-2': {
     path: 'clinical-2',
     title: 'Clinical & Professional Skills 2',
-    description: 'Semester 2 clinical & professional skills — content coming soon',
+    description: 'Clinical procedures, communication & professional practice',
     docTitle: 'Clinical & Professional Skills II — Studywith Labobo',
     storagePrefix: 'clin2',
     leaderboardSubject: 'Clinical & Professional Skills II',
@@ -204,7 +204,7 @@ export const SUBJECTS = {
   'medicine-art-2': {
     path: 'medicine-art-2',
     title: 'Medicine & Art II',
-    description: 'Semester 2 medicine & art — content coming soon',
+    description: 'Medicine through art, imaging & history',
     docTitle: 'Medicine & Art II — Studywith Labobo',
     storagePrefix: 'medart2',
     leaderboardSubject: 'Medicine & Art II',

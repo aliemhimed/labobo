@@ -89,7 +89,7 @@ function write(key, value) {
 /* ── theme ──────────────────────────────────────────────────────── */
 
 export function getTheme() {
-  return readRaw(THEME_KEY) || 'dark';
+  return readRaw(THEME_KEY) || 'auto';
 }
 export function setTheme(t) {
   try {

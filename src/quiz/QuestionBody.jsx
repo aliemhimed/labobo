@@ -1,4 +1,5 @@
 import { displaySrc } from '../lib/questions.js';
+import { Flag } from '../components/Icons.jsx';
 
 /* If a display copy is missing (an image added without re-running
    scripts/optimize_images.py), fall back to the full-size file once. */
@@ -8,20 +9,25 @@ function fallBackToOriginal(e) {
   if (original && img.getAttribute('src') !== original) img.src = original;
 }
 
-/* The top of a question card, shared by the live quiz and the post-exam
-   review: subject/topic line, report button, question text and any images. */
-export default function QuestionBody({ question, index, onReport }) {
+/* The top of a question, shared by the live quiz and the post-exam review:
+   where it comes from, the report button, the question and any images.
+   The bank name is shown only when it adds something to the page title
+   (GCT's Biochemistry, Genetics…), not when it repeats it. */
+export default function QuestionBody({ question, onReport, subjectTitle = '' }) {
+  const showSubject = question.subject && !subjectTitle.startsWith(question.subject);
   return (
     <>
-      <div className="q-meta">
-        <span>{question.subject} · {question.topic}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span className="q-tag">Q{index + 1}</span>
-          <button className="report-btn" title="Report a problem" onClick={onReport}>🚩 Report</button>
-        </div>
+      <div className="q-head">
+        <p className="q-source">
+          {showSubject ? <span className="q-subject">{question.subject}</span> : null}
+          <span className="q-topic">{question.topic}</span>
+        </p>
+        <button type="button" className="report-btn" onClick={onReport}>
+          <Flag />Report a problem
+        </button>
       </div>
 
-      <div className="q-text">{question.q}</div>
+      <p className="q-text">{question.q}</p>
 
       {question.images?.length ? (
         <div className="q-images">

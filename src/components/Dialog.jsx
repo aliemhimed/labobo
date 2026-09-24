@@ -6,9 +6,9 @@ const FOCUSABLE =
 
 /* Accessible modal: role="dialog", Escape and backdrop click close it, Tab
    stays inside, focus moves in on open and returns to whatever opened it.
-   `overlayClass` / `modalClass` let existing stylesheets keep their look. */
+   Styled by overlays.css (.dialog-scrim / .dialog). */
 export default function Dialog({
-  onClose, label, labelledBy, overlayClass = 'lb-overlay', modalClass = 'lb-modal', children,
+  onClose, label, labelledBy, children,
 }) {
   const modalRef = useRef(null);
   const closeRef = useRef(onClose);
@@ -43,9 +43,9 @@ export default function Dialog({
   }, []);
 
   return createPortal(
-    <div className={overlayClass}
+    <div className="dialog-scrim"
          onMouseDown={(e) => { if (e.target === e.currentTarget) closeRef.current?.(); }}>
-      <div ref={modalRef} className={modalClass} role="dialog" aria-modal="true"
+      <div ref={modalRef} className="dialog" role="dialog" aria-modal="true"
            aria-label={label} aria-labelledby={labelledBy} tabIndex={-1}>
         {children}
       </div>

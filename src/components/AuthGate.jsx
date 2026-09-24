@@ -3,15 +3,9 @@ import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import LoginPage from '../pages/LoginPage.jsx';
 
+/* Usually gone within a moment; the text only fades in if it isn't. */
 function Splash() {
-  return (
-    <div className="container center-wrap">
-      <div className="card" style={{ textAlign: 'center', padding: 34 }}>
-        <div style={{ fontSize: 38, marginBottom: 10 }}>🐰</div>
-        <h2>Loading…</h2>
-      </div>
-    </div>
-  );
+  return <div className="splash" role="status">Loading</div>;
 }
 
 /** No session -> the login screen. A session -> children. */
@@ -31,12 +25,13 @@ export function SemesterGate({ children }) {
   if (isLoading) return <Splash />;
   if (isError) {
     return (
-      <div className="container center-wrap">
-        <div className="card" style={{ textAlign: 'center', padding: 34 }}>
-          <div style={{ fontSize: 38, marginBottom: 10 }}>⚠️</div>
-          <h2>Couldn't load your profile</h2>
-          <p style={{ color: 'var(--text-soft)' }}>{error.message}</p>
-          <button className="btn primary" style={{ marginTop: 12 }} onClick={() => refetch()}>Try again</button>
+      <div className="center-wrap">
+        <div className="state" role="alert">
+          <h1>Couldn't load your profile</h1>
+          <p>{error.message}</p>
+          <div className="state-actions">
+            <button className="btn primary" onClick={() => refetch()}>Try again</button>
+          </div>
         </div>
       </div>
     );

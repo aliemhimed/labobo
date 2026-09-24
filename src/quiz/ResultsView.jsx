@@ -1,51 +1,42 @@
-import { useState } from 'react';
+import SheetMap from './SheetMap.jsx';
 import { Breakdown, TopicBreakdown } from './Breakdown.jsx';
 
-export default function ResultsView({ record, onHome, onReview }) {
-  const [shown, setShown] = useState(false);
+/* The marked sheet: what you scored in words, every question as a right or
+   wrong bubble (tap one to review it), then where the marks were lost. */
+export default function ResultsView({ record, marks, subjectTitle, onHome, onReview }) {
   if (!record) { onHome(); return null; }
 
-  const score = record.score;
-  const heroCls = score >= 75 ? 'pass' : score >= 50 ? '' : 'fail';
+  const kind = record.type === 'exam' ? 'exam' : 'practice set';
+  const subjects = Object.keys(record.subjectStats || {});
+  const missed = record.questionCount - record.correct;
 
   return (
-    <div className="container">
-      <div className={'results-hero ' + heroCls}>
-        <img src="/theme/mascot.webp" className="mascot-results" alt="Labobo" width="72" height="72" decoding="async" />
-        <div className="score-label">{record.type === 'exam' ? 'Exam' : 'Practice'} score</div>
-        <div className="big-score">{score}%</div>
-        <div style={{ opacity: 0.85, fontSize: 13.5, marginTop: 4 }}>
-          {record.correct} correct · {record.wrong} wrong · {record.questionCount} total
-        </div>
+    <div className="container narrow results">
+      <h1>You got {record.correct} of {record.questionCount} right.</h1>
+      <p className="lede results-sub">
+        That’s {record.score}% on this {kind}.{' '}
+        {missed === 0
+          ? 'Nothing to review.'
+          : `The ${missed === 1 ? 'question' : `${missed} questions`} you missed ${missed === 1 ? 'is' : 'are'} now in your wrong-answer list.`}
+      </p>
+
+      <SheetMap marks={marks} wrap onJump={(i) => onReview(i)} label="Your answers, tap one to review it" />
+
+      <div className="results-actions">
+        <button type="button" className="btn primary" onClick={() => onReview(0)}>Review answers</button>
+        <button type="button" className="btn" onClick={onHome}>Back to {subjectTitle}</button>
       </div>
 
-      <div className="results-stats">
-        <div className="stat-tile"><div className="tile-val">{record.questionCount}</div><div className="tile-label">Questions</div></div>
-        <div className="stat-tile"><div className="tile-val good">{record.correct}</div><div className="tile-label">Correct</div></div>
-        <div className="stat-tile"><div className="tile-val bad">{record.wrong}</div><div className="tile-label">Wrong</div></div>
-        <div className="stat-tile"><div className="tile-val">{score}%</div><div className="tile-label">Accuracy</div></div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 18 }}>
-        <button className="btn primary" onClick={() => setShown((s) => !s)}>
-          {shown ? 'Hide Detailed Breakdown' : 'View Detailed Breakdown'}
-        </button>
-        <button className="btn" onClick={onReview}>Review Answers</button>
-        <button className="btn ghost" onClick={onHome}>Back to Home</button>
-      </div>
-
-      {shown ? (
-        <div>
-          <div className="bd-section">
-            <h3>Performance by Subject</h3>
-            <Breakdown stats={record.subjectStats || {}} />
-          </div>
-          <div className="bd-section">
-            <h3>Performance by Topic</h3>
-            <TopicBreakdown topicStats={record.topicStats || {}} />
-          </div>
-        </div>
+      {subjects.length > 1 ? (
+        <section className="bd-section" aria-labelledby="bd-subject-title">
+          <h2 id="bd-subject-title" className="section-title">By subject</h2>
+          <Breakdown stats={record.subjectStats} />
+        </section>
       ) : null}
+      <section className="bd-section" aria-labelledby="bd-topic-title">
+        <h2 id="bd-topic-title" className="section-title">By topic, weakest first</h2>
+        <TopicBreakdown topicStats={record.topicStats || {}} showSubjects={subjects.length > 1} />
+      </section>
     </div>
   );
 }

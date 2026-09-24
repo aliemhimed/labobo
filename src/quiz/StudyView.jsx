@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import QuestionCard from './QuestionCard.jsx';
+import SheetMap, { liveMarks } from './SheetMap.jsx';
+import PageHead from '../components/PageHead.jsx';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
 import { shuffle } from '../lib/utils.js';
 import { quizStats } from './stats.js';
@@ -10,7 +12,7 @@ import { loadStudySession, saveStudySession } from '../lib/storage.js';
    fresh. Filters/pool/position are mirrored to sessionStorage so a refresh
    resumes instead of losing the place (see storage.js's studyKey). */
 export default function StudyView({
-  questions, subjectIndex, getDisplayOrder, triggerMeme, onReport, onHome, dismissMeme, prefix,
+  questions, subjectIndex, subjectTitle, getDisplayOrder, triggerMeme, onReport, onHome, dismissMeme, prefix,
 }) {
   const allTopicKeys = useTopicKeys(subjectIndex);
 
@@ -26,6 +28,9 @@ export default function StudyView({
   const [search, setSearch] = useState(() => restored?.search ?? '');
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [shuffleTick, setShuffleTick] = useState(0);
+  // Filters sit beside the question on wide screens; on phones they start
+  // folded away so the question comes first.
+  const [filtersOpen, setFiltersOpen] = useState(() => window.matchMedia('(min-width: 768px)').matches);
 
   /* The shuffled pool for the current filters — except the very first time,
      when a restored pool (if any) is reused as-is so a refresh lands back
@@ -88,26 +93,27 @@ export default function StudyView({
   const stats = quizStats(answers, qIds, questions);
   const qIdx = qIds[index];
   const question = questions[qIdx];
+  const goTo = (i) => { dismissMeme(); setIndex(i); };
 
   return (
     <div className="container">
-      <div className="page-header">
-        <button className="back-btn" aria-label="Back to menu"
-                onClick={() => { saveStudySession(prefix, null); onHome(); }}>←</button>
-        <h1>Study Mode</h1>
-      </div>
-      <div className="filter-section">
-        <div className="card">
-          <div className="filter-search">
-            <input type="search" aria-label="Search questions" placeholder="Search questions…" value={search}
-                   onChange={(e) => setSearch(e.target.value)} />
-          </div>
+      <PageHead backLabel={subjectTitle} onBack={() => { saveStudySession(prefix, null); onHome(); }}
+                title="Study" />
+      <div className="study">
+        <button type="button" className="btn filters-toggle" aria-expanded={filtersOpen}
+                aria-controls="study-filters" onClick={() => setFiltersOpen((o) => !o)}>
+          {filtersOpen ? 'Hide topics and search' : `Topics and search (${qIds.length} questions)`}
+        </button>
+        <aside id="study-filters" className={'study-filters' + (filtersOpen ? ' open' : '')}
+               aria-label="Choose which questions to study">
+          <input type="search" aria-label="Search questions" placeholder="Search questions" value={search}
+                 onChange={(e) => setSearch(e.target.value)} />
           <div className="filter-actions">
-            <button className="btn" onClick={() => setSelectedTopics(new Set(allTopicKeys))}>All</button>
-            <button className="btn" onClick={() => setSelectedTopics(new Set())}>Clear</button>
-            <button className="btn" onClick={() => setShuffleTick((t) => t + 1)}>Shuffle</button>
+            <button type="button" className="btn sm" onClick={() => setSelectedTopics(new Set(allTopicKeys))}>All topics</button>
+            <button type="button" className="btn sm" onClick={() => setSelectedTopics(new Set())}>Clear</button>
+            <button type="button" className="btn sm" onClick={() => setShuffleTick((t) => t + 1)}>Shuffle</button>
           </div>
-          <div id="filters">
+          <div className="filter-groups">
             {Object.keys(subjectIndex).map((subject) => {
               const topics = subjectIndex[subject];
               const total = Object.values(topics).reduce((n, arr) => n + arr.length, 0);
@@ -120,7 +126,7 @@ export default function StudyView({
                             if (next.has(subject)) next.delete(subject); else next.add(subject);
                             return next;
                           })}>
-                    <span className="arrow" aria-hidden="true">▶</span>{subject}<span className="count">{total}</span>
+                    <span className="arrow" aria-hidden="true" />{subject}<span className="count">{total}</span>
                   </button>
                   <div className="topics">
                     {Object.keys(topics).map((topic) => {
@@ -129,7 +135,7 @@ export default function StudyView({
                         <label key={key} className="topic-row">
                           <input type="checkbox" checked={selectedTopics.has(key)}
                                  onChange={(e) => toggleTopic(key, e.target.checked)} />
-                          <span style={{ flex: 1 }}>{topic}</span>
+                          <span className="topic-name">{topic}</span>
                           <span className="tc">{topics[topic].length}</span>
                         </label>
                       );
@@ -139,16 +145,22 @@ export default function StudyView({
               );
             })}
           </div>
-        </div>
-        <div className="main">
-          <div id="quizArea">
-            {qIds.length === 0 ? (
-              <div className="card empty-state">
-                <div className="ico">🔍</div>
-                <h3>No questions match</h3>
-                <p>Adjust your filters or clear the search to see questions.</p>
+        </aside>
+        <div className="study-main">
+          {qIds.length === 0 ? (
+            <div className="state">
+              <h2>No questions match</h2>
+              <p>Choose at least one topic, or clear the search.</p>
+            </div>
+          ) : question ? (
+            <>
+              <div className="sheet-head">
+                <p className="sheet-count">Question {index + 1} of {qIds.length}</p>
+                <p className="sheet-score">
+                  <span className="good">{stats.correct} right</span>, <span className="bad">{stats.wrong} wrong</span>
+                </p>
               </div>
-            ) : question ? (
+              <SheetMap marks={liveMarks(answers, qIds, questions, true)} current={index} onJump={goTo} />
               <QuestionCard
                 question={question}
                 displayOrder={getDisplayOrder(qIdx)}
@@ -156,15 +168,15 @@ export default function StudyView({
                 total={qIds.length}
                 answer={answers[index]}
                 quizMode="study"
-                stats={stats}
+                subjectTitle={subjectTitle}
                 onSelect={(opt) => onSelect(index, opt)}
-                onPrev={() => { dismissMeme(); setIndex(index - 1); }}
-                onNext={() => { dismissMeme(); setIndex(index + 1); }}
+                onPrev={() => goTo(index - 1)}
+                onNext={() => goTo(index + 1)}
                 onFinish={() => {}}
                 onReport={() => onReport(qIdx)}
               />
-            ) : null}
-          </div>
+            </>
+          ) : null}
         </div>
       </div>
     </div>

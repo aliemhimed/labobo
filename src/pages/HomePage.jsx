@@ -3,49 +3,24 @@ import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getSubjectSummary } from '../lib/storage.js';
 import { fetchTableCounts } from '../lib/questions.js';
-import { toggleTheme } from '../lib/theme.js';
-import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
-import { SunIcon, MoonIcon } from '../components/ThemeIcons.jsx';
+import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import { SUBJECTS } from '../lib/subjects.js';
 import { questionsQuery } from '../hooks/useQuestions.js';
 import { loadSubjectPage } from './loadSubjectPage.js';
 
-const MedArtIcon = () => (
-  /* Paintbrush + stethoscope: the arms form a Y at the top, the tube curves
-     down into a brush handle with the ferrule and bristles bottom-right. */
-  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8"
-       strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="7" cy="4" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="17" cy="4" r="1.6" fill="currentColor" stroke="none" />
-    <path d="M7 5.5v4.5a5 5 0 0 0 10 0V5.5" />
-    <path d="M12 14.5v3.5a4 4 0 0 0 4 4l4.2 0" />
-    <rect x="19.5" y="20.6" width="5" height="3" rx="0.7" transform="rotate(45 22 22.1)"
-          fill="currentColor" stroke="none" />
-    <path d="M23.5 22.5l5.5 5.5M22 23.8l5.2 5.2M20.6 25.3l4 4" strokeWidth="1.6" strokeLinecap="round" />
-    <circle cx="27.5" cy="20" r="0.9" fill="currentColor" stroke="none" opacity="0.65" />
-    <circle cx="29" cy="22.7" r="0.55" fill="currentColor" stroke="none" opacity="0.45" />
-  </svg>
-);
-
-// One glyph per storagePrefix — the color scheme for each lives in home.css
-// under the same name (.subject-card.<prefix>).
-const ICONS = {
-  gct: '🧬', bs: '🫀', chem: '⚗️', phys: '⚡', clin: '💉', medart: <MedArtIcon />,
-  gct2: '🧬', bs2: '🫀', clin2: '💉', medart2: <MedArtIcon />,
+const RESUME_LABEL = {
+  practice: 'Practice in progress',
+  exam: 'Exam in progress',
+  'review-wrong': 'Wrong-answer review in progress',
 };
 
-const RESUME_LABEL = { practice: 'Practice', exam: 'Exam', 'review-wrong': 'Review Wrong Answers' };
-
-// Cards are built from the subject registry so this list can't drift from
-// what the subject pages actually offer, then filtered to the signed-in
-// user's semester.
-const ALL_CARDS = Object.entries(SUBJECTS).map(([key, cfg]) => ({
+// Built from the subject registry so this list can't drift from what the
+// subject pages actually offer, then filtered to the user's semester.
+const ALL_SUBJECTS = Object.entries(SUBJECTS).map(([key, cfg]) => ({
   key,
   to: `/${key}`,
-  cls: cfg.storagePrefix,
-  icon: ICONS[cfg.storagePrefix],
   name: cfg.title.replace(/ MCQ$/, ''),
   desc: cfg.description,
   sources: cfg.sources,
@@ -54,15 +29,15 @@ const ALL_CARDS = Object.entries(SUBJECTS).map(([key, cfg]) => ({
 }));
 
 export default function HomePage() {
-  const { user } = useAuth();
   const { data: profile } = useProfile();
   const [progress, setProgress] = useState({});
 
-  const cards = ALL_CARDS.filter((c) => c.semester === profile?.semester);
+  const semester = profile?.semester;
+  const subjects = ALL_SUBJECTS.filter((s) => s.semester === semester);
 
   useEffect(() => { document.title = 'Studywith Labobo'; }, []);
 
-  // Every card leads to the subject page, so fetch its code once the home
+  // Every row leads to the subject page, so fetch its code once the home
   // page has settled rather than after the click.
   useEffect(() => {
     const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1500));
@@ -71,7 +46,7 @@ export default function HomePage() {
     return () => cancel(id);
   }, []);
 
-  // Start downloading a subject's bank as soon as a card is hovered, focused
+  // Start downloading a subject's bank as soon as its row is hovered, focused
   // or touched; the subject page then usually finds it already cached.
   const queryClient = useQueryClient();
   const prefetch = (key) => () => { queryClient.prefetchQuery(questionsQuery(SUBJECTS[key])); };
@@ -80,85 +55,78 @@ export default function HomePage() {
   // Progress is a handful of synchronous localStorage reads — cheap enough
   // to just do on mount, and this page remounts fresh on every visit anyway.
   useEffect(() => {
-    setProgress(Object.fromEntries(cards.map((c) => [c.key, getSubjectSummary(c.storagePrefix)])));
+    setProgress(Object.fromEntries(subjects.map((s) => [s.key, getSubjectSummary(s.storagePrefix)])));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.semester]);
+  }, [semester]);
 
   // One request for every table on the page, cached for a few minutes so
   // coming back to the home page shows the counts straight away. They fill in
-  // after the grid is already usable either way.
-  const tables = cards.flatMap((c) => c.sources.map((s) => s.table));
+  // after the list is already usable either way.
+  const tables = subjects.flatMap((s) => s.sources.map((src) => src.table));
   const { data: tableCounts } = useQuery({
     queryKey: ['question-counts', tables],
     queryFn: ({ signal }) => fetchTableCounts(tables, signal),
     enabled: tables.length > 0,
     staleTime: 5 * 60_000,
   });
-  // A card's count is the sum of its tables; a table that couldn't be
-  // counted contributes 0, as before.
+  // A subject's count is the sum of its tables; a table that couldn't be
+  // counted contributes 0.
   const counts = tableCounts
-    ? Object.fromEntries(cards.map((c) => [c.key, c.sources.reduce((n, s) => n + (tableCounts[s.table] ?? 0), 0)]))
+    ? Object.fromEntries(subjects.map((s) => [s.key, s.sources.reduce((n, src) => n + (tableCounts[src.table] ?? 0), 0)]))
     : {};
 
-  const displayName = profile?.username || user?.user_metadata?.full_name || user?.email || '';
-  const greeting = displayName ? `Hey ${displayName.split(' ')[0]}, pick your subject 👇` : 'Choose your subject';
-  const resumable = cards.filter((c) => progress[c.key]?.resumeMode);
+  const resumable = subjects.filter((s) => progress[s.key]?.resumeMode);
 
   return (
     <>
-      <div className="home-actions">
-        <button className="theme-toggle" title="Toggle theme" aria-label="Toggle theme" onClick={toggleTheme}>
-          <SunIcon className="icon-sun" />
-          <MoonIcon className="icon-moon" />
-        </button>
-        <ProfileMenu />
-      </div>
-
-      <div className="wrap">
-        <div className="brand">
-          <img src="/theme/app-icon.webp" className="brand-icon" alt="Labobo" width="68" height="68" />
-          <div className="brand-words">
-            <span className="brand-name">Studywith Labobo</span>
-            <span className="brand-tagline">Study smart. Stay ahead. Ace together.</span>
-          </div>
+      <header className="appbar">
+        <span className="wordmark">Labobo</span>
+        <div className="appbar-actions">
+          <ThemeToggle />
+          <ProfileMenu />
         </div>
+      </header>
 
-        <div className="subject-wrap visible">
-          <div className="subject-greeting">{greeting}</div>
-          <p className="subject-sub">Select what you want to study today</p>
+      <main className="home">
+        <h1>Semester {semester}</h1>
 
-          {resumable.length ? (
-            <div className="resume-row" aria-label="Continue where you left off">
-              <span className="resume-label">Continue:</span>
-              {resumable.map((c) => (
-                <Link key={c.key} to={`${c.to}/${progress[c.key].resumeMode}`} className="resume-chip" {...intent(c.key)}>
-                  {c.name} · {RESUME_LABEL[progress[c.key].resumeMode] || 'Resume'}
+        {resumable.length ? (
+          <section className="resume" aria-labelledby="resume-title">
+            <h2 id="resume-title" className="section-title">Pick up where you left off</h2>
+            <div className="resume-list">
+              {resumable.map((s) => (
+                <Link key={s.key} to={`${s.to}/${progress[s.key].resumeMode}`} className="resume-link" {...intent(s.key)}>
+                  <span className="resume-subject">{s.name}</span>
+                  <span className="resume-mode">{RESUME_LABEL[progress[s.key].resumeMode] || 'In progress'}</span>
                 </Link>
               ))}
             </div>
-          ) : null}
+          </section>
+        ) : null}
 
-          <div className="subject-grid">
-            {cards.map((c) => {
-              const p = progress[c.key];
-              const empty = counts[c.key] === 0;
-              return (
-                <Link key={c.key} to={c.to} className={'subject-card ' + c.cls} {...intent(c.key)}>
-                  <div className="subject-icon">{c.icon}</div>
-                  <div className="subject-name">{c.name}</div>
-                  <div className="subject-desc">{c.desc}</div>
-                  <div className="subject-meta">
-                    {counts[c.key] != null ? <span>{counts[c.key]} questions</span> : null}
-                    {p?.sessionsCount ? <span> · Last {p.lastScore}%</span> : null}
-                  </div>
-                  {empty ? <div className="subject-badge soon">Coming soon</div>
-                         : p?.wrongCount ? <div className="subject-badge">{p.wrongCount} to review</div> : null}
+        <h2 className="section-title contents-title">Subjects</h2>
+        <ul className="contents">
+          {subjects.map((s) => {
+            const p = progress[s.key];
+            const n = counts[s.key];
+            return (
+              <li key={s.key}>
+                <Link to={s.to} className="contents-row" {...intent(s.key)}>
+                  <span className="cr-name">{s.name}</span>
+                  <span className="cr-count">
+                    {n == null ? '' : n === 0 ? 'Coming soon' : `${n.toLocaleString()} questions`}
+                  </span>
+                  <span className="cr-desc">{s.desc}</span>
+                  <span className="cr-progress">
+                    {p?.sessionsCount ? <span>Last score {p.lastScore}%</span> : null}
+                    {p?.wrongCount ? <span className="cr-review">{p.wrongCount} to review</span> : null}
+                  </span>
                 </Link>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+              </li>
+            );
+          })}
+        </ul>
+      </main>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { shuffle } from '../lib/utils.js';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
+import PageHead from '../components/PageHead.jsx';
 
 const DAY = 86400000;
 
@@ -26,7 +27,7 @@ function grade(card, rating) {
 }
 
 export default function Flashcards({
-  questions, subjectIndex, store, started, onStart, onConfig, onHome,
+  questions, subjectIndex, store, subjectTitle, started, onStart, onConfig, onHome,
 }) {
   const allKeys = useTopicKeys(subjectIndex);
 
@@ -118,19 +119,22 @@ export default function Flashcards({
   /* ── config screen ──────────────────────────────────────────────── */
   if (!started) {
     return (
-      <div className="container">
-        <div className="page-header">
-          <button className="back-btn" aria-label="Go back" onClick={onHome}>←</button>
-          <h1>Flashcards</h1>
-        </div>
-        <div className="card" style={{ padding: 20 }}>
-          <div className="fc-count">
-            <strong>{selected.length}</strong> card{selected.length !== 1 ? 's' : ''} selected ·{' '}
-            <strong>{dueCount}</strong> due today
-          </div>
-          <div className="fc-actions">
-            <button className="btn" onClick={() => setTopics(new Set(allKeys))}>Select all</button>
-            <button className="btn" onClick={() => setTopics(new Set())}>Clear</button>
+      <div className="container narrow">
+        <PageHead backLabel={subjectTitle} onBack={onHome} title="Flashcards" />
+        <p className="lede">
+          Choose the topics to study. Rate each card after you see the answer; the ones you find
+          hard come back sooner.
+        </p>
+        <div className="fc-setup">
+          <div className="fc-setup-head">
+            <p className="fc-count">
+              <strong>{selected.length}</strong> card{selected.length !== 1 ? 's' : ''} selected,{' '}
+              <strong>{dueCount}</strong> due today
+            </p>
+            <div className="fc-actions">
+              <button type="button" className="btn sm" onClick={() => setTopics(new Set(allKeys))}>Select all</button>
+              <button type="button" className="btn sm" onClick={() => setTopics(new Set())}>Clear</button>
+            </div>
           </div>
           <div className="fc-topics">
             {Object.keys(subjectIndex).map((s) => {
@@ -173,11 +177,11 @@ export default function Flashcards({
               );
             })}
           </div>
-          <button className="btn primary lg" style={{ width: '100%', marginTop: 16 }}
-                  disabled={selected.length === 0} onClick={start}>
-            Start studying →
-          </button>
         </div>
+        <button type="button" className="btn primary lg fc-start"
+                disabled={selected.length === 0} onClick={start}>
+          Start flashcards
+        </button>
       </div>
     );
   }
@@ -185,22 +189,17 @@ export default function Flashcards({
   /* ── deck complete ──────────────────────────────────────────────── */
   if (!queue.length || pos >= queue.length) {
     return (
-      <div className="container">
-        <div className="page-header">
-          <button className="back-btn" aria-label="Go back" onClick={onConfig}>←</button>
-          <h1>Flashcards</h1>
-        </div>
-        <div className="card" style={{ textAlign: 'center', padding: 34 }}>
-          <div style={{ fontSize: 42, marginBottom: 8 }}>🎉</div>
-          <h2>Deck complete</h2>
+      <div className="container narrow">
+        <PageHead backLabel="Topics" onBack={onConfig} title="Deck finished" />
+        <div className="state">
           <p>
-            You reviewed <strong>{total}</strong> card{total !== 1 ? 's' : ''}.
+            You went through {total} card{total !== 1 ? 's' : ''}.
             {again ? ` ${again} came back for another look.` : ''}
           </p>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
-            <button className="btn primary" onClick={start}>Study more →</button>
-            <button className="btn" onClick={onConfig}>Change topics</button>
-            <button className="btn" onClick={onHome}>Home</button>
+          <div className="state-actions">
+            <button type="button" className="btn primary" onClick={start}>Study more</button>
+            <button type="button" className="btn" onClick={onConfig}>Change topics</button>
+            <button type="button" className="btn ghost" onClick={onHome}>Back to {subjectTitle}</button>
           </div>
         </div>
       </div>
@@ -211,17 +210,18 @@ export default function Flashcards({
   const q = questions[queue[pos]];
   if (!q) return null;
   const pct = Math.round((100 * pos) / queue.length);
-  const tag = `${q.subject} · ${q.topic}`;
+  const tag = (
+    <p className="fc-tag"><span className="q-subject">{q.subject}</span><span className="q-topic">{q.topic}</span></p>
+  );
 
   return (
-    <div className="container">
-      <div className="page-header">
-        <button className="back-btn" aria-label="Go back" onClick={onConfig}>←</button>
-        <h1>Flashcards{cram ? ' · Cram' : ''}</h1>
-        <div className="ph-actions" style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-          {pos + 1} / {queue.length}
-        </div>
-      </div>
+    <div className="container narrow">
+      <PageHead backLabel="Topics" onBack={onConfig} title="Flashcards">
+        <span className="fc-position">Card {pos + 1} of {queue.length}</span>
+      </PageHead>
+      {cram ? (
+        <p className="config-note fc-cram">Nothing is due yet, so this is an extra round of random cards.</p>
+      ) : null}
       <div className="fc-stage">
         <div className="fc-prog"><div style={{ width: pct + '%' }} /></div>
         <div className={'fc-card' + (flipped ? ' flipped' : '')}
@@ -230,25 +230,25 @@ export default function Flashcards({
              onClick={() => { if (!flipped) setFlipped(true); }}>
           <div className="fc-inner">
             <div className="fc-face fc-front" aria-hidden={flipped}>
-              <div className="fc-tag">{tag}</div>
-              <div className="fc-q">{q.q}</div>
+              {tag}
+              <p className="fc-q">{q.q}</p>
             </div>
             <div className="fc-face fc-back" aria-hidden={!flipped} aria-live="polite">
-              <div className="fc-tag">{tag}</div>
-              <div className="fc-a-label">Answer</div>
-              <div className="fc-a">{q.options[q.answer]}</div>
-              {q.explanation ? <div className="fc-expl">{q.explanation}</div> : null}
+              {tag}
+              <p className="fc-a-label">Answer</p>
+              <p className="fc-a">{q.options[q.answer]}</p>
+              {q.explanation ? <p className="fc-expl">{q.explanation}</p> : null}
             </div>
           </div>
         </div>
         {flipped ? (
           <div className="fc-rate">
-            <button className="again" onClick={() => answer('again')}>Again<small>&lt; 1 min</small></button>
-            <button className="good" onClick={() => answer('good')}>Good<small>days</small></button>
-            <button className="easy" onClick={() => answer('easy')}>Easy<small>longer</small></button>
+            <button type="button" className="again" onClick={() => answer('again')}>Again<small>Show it again soon</small></button>
+            <button type="button" className="good" onClick={() => answer('good')}>Good<small>In a few days</small></button>
+            <button type="button" className="easy" onClick={() => answer('easy')}>Easy<small>Much later</small></button>
           </div>
         ) : (
-          <div className="fc-hint">Tap the card or press <strong>Space</strong> to reveal</div>
+          <p className="fc-hint">Tap the card or press <kbd>Space</kbd> to see the answer.</p>
         )}
       </div>
     </div>

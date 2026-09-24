@@ -27,25 +27,21 @@ export default function SelectSemesterPage() {
   }
 
   return (
-    <div className="container center-wrap" style={{ maxWidth: 620 }}>
-      <div className="card" style={{ padding: 28, textAlign: 'center' }}>
-        <h1 style={{ marginBottom: 4 }}>Which semester are you in?</h1>
-        <p style={{ color: 'var(--text-soft)', marginBottom: 20 }}>
-          You can switch this later from the home page.
-        </p>
-        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-          {SEMESTERS.map((s) => (
-            <button key={s.id} type="button" className="btn primary lg"
-                    style={{ flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', height: 'auto', padding: 18, gap: 6 }}
-                    disabled={setSemester.isPending}
-                    onClick={() => choose(s.id)}>
-              <strong style={{ fontSize: 16 }}>{s.label}</strong>
-              <span style={{ fontWeight: 400, fontSize: 12.5, opacity: 0.9 }}>{s.desc}</span>
-            </button>
-          ))}
-        </div>
-        <div role="alert" style={{ color: 'var(--wrong)', fontSize: 13, marginTop: 16 }}>{error}</div>
+    <main className="semester">
+      <h1>Which semester are you in?</h1>
+      <p className="lede">
+        This decides which subjects you see. You can change it later from your profile menu.
+      </p>
+      <div className="semester-options">
+        {SEMESTERS.map((s) => (
+          <button key={s.id} type="button" className="semester-option"
+                  disabled={setSemester.isPending} onClick={() => choose(s.id)}>
+            <span className="so-name">{s.label}</span>
+            <span className="so-subjects">{s.desc}</span>
+          </button>
+        ))}
       </div>
-    </div>
+      <p className="form-error" role="alert">{error}</p>
+    </main>
   );
 }

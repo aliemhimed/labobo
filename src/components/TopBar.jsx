@@ -1,36 +1,29 @@
 import { Link } from 'react-router-dom';
-import { toggleTheme } from '../lib/theme.js';
-import { SunIcon, MoonIcon } from './ThemeIcons.jsx';
+import { ThemeToggle } from './ThemeIcons.jsx';
 import ProfileMenu from './ProfileMenu.jsx';
 
+/* Labobo / <subject>: the wordmark leads to all subjects, the subject name
+   back to this subject's menu. */
 export default function TopBar({ subtitle, onBrandClick, onLogout }) {
   return (
-    <div className="topbar">
-      <div className="brand" onClick={onBrandClick} role="button" tabIndex={0}
-           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onBrandClick?.(); } }}>
-        <img src="/theme/app-icon.webp" className="brand-logo" alt="Labobo" width="32" height="32" />
-        <div className="brand-text">
-          <span className="b1">Studywith Labobo</span>
-          {subtitle ? <span className="b2">{subtitle}</span> : null}
-        </div>
+    <header className="appbar">
+      <nav className="crumbs" aria-label="Breadcrumb">
+        <Link to="/" className="wordmark">Labobo</Link>
+        {subtitle ? (
+          <>
+            <span className="crumb-sep" aria-hidden="true">/</span>
+            {onBrandClick ? (
+              <button type="button" className="crumb-current" onClick={onBrandClick}>{subtitle}</button>
+            ) : (
+              <span className="crumb-current">{subtitle}</span>
+            )}
+          </>
+        ) : null}
+      </nav>
+      <div className="appbar-actions">
+        <ThemeToggle />
+        <ProfileMenu onSignOut={onLogout} />
       </div>
-      <Link to="/" className="subject-switcher">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
-             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="3" width="7" height="7" rx="1" />
-          <rect x="3" y="14" width="7" height="7" rx="1" />
-          <rect x="14" y="14" width="7" height="7" rx="1" />
-        </svg>
-        <span>All Subjects</span>
-      </Link>
-      <div className="spacer"></div>
-      <button className="icon-btn" title="Toggle theme" aria-label="Toggle theme"
-              style={{ position: 'relative' }} onClick={toggleTheme}>
-        <SunIcon className="ico-sun" />
-        <MoonIcon className="ico-moon" />
-      </button>
-      <ProfileMenu onSignOut={onLogout} />
-    </div>
+    </header>
   );
 }

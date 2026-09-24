@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { signInWithGoogle, signInWithPassword, signUpWithPassword } from '../lib/auth.jsx';
 
 const GoogleIcon = () => (
@@ -39,6 +39,8 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
 
+  useEffect(() => { document.title = 'Sign in — Studywith Labobo'; }, []);
+
   async function google() {
     setError('');
     setBusy(true);
@@ -62,52 +64,58 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container center-wrap">
-      <div className="card" style={{ padding: 28, textAlign: 'center' }}>
-        <img src="/theme/mascot.webp" alt="" width="72" height="72" style={{ margin: '0 auto 12px' }} />
-        <h1 style={{ marginBottom: 4 }}>Studywith Labobo</h1>
-        <p style={{ color: 'var(--text-soft)', marginBottom: 20 }}>Sign in to continue</p>
+    <main className="login">
+      <div className="login-panel">
+        <img className="login-mascot" src="/theme/mascot.webp" alt="" width="80" height="120" />
+        <p className="wordmark login-wordmark">Studywith Labobo</p>
+        <h1>Practice questions for first-year medicine.</h1>
+        <p className="lede">
+          Study a topic with the answers in view, work through practice sets with feedback on
+          every question, or sit a full exam and review what you missed.
+        </p>
 
-        <button type="button" className="btn primary lg" style={{ width: '100%', gap: 10 }}
-                disabled={busy} onClick={google}>
-          <GoogleIcon /> Continue with Google
-        </button>
-
-        {!showEmail ? (
-          <button type="button" className="btn ghost" style={{ width: '100%', marginTop: 10 }}
-                  onClick={() => setShowEmail(true)}>
-            Sign up / Log in with email
+        <div className="login-actions">
+          <button type="button" className="btn lg block" disabled={busy} onClick={google}>
+            <GoogleIcon /> Continue with Google
           </button>
-        ) : (
-          <form onSubmit={submitEmail} style={{ marginTop: 16, textAlign: 'left' }}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <button type="button" className={'btn' + (mode === 'signin' ? ' primary' : '')}
-                      style={{ flex: 1 }} onClick={() => setMode('signin')}>Log in</button>
-              <button type="button" className={'btn' + (mode === 'signup' ? ' primary' : '')}
-                      style={{ flex: 1 }} onClick={() => setMode('signup')}>Sign up</button>
-            </div>
-            <label htmlFor="login-email" className="sr-only">Email</label>
-            <input id="login-email" type="email" placeholder="you@example.com" autoComplete="email"
-                   value={email} onChange={(e) => setEmail(e.target.value)}
-                   style={{ marginBottom: 10 }} required />
-            <label htmlFor="login-password" className="sr-only">Password</label>
-            <input id="login-password" type="password" placeholder="Password"
-                   autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                   value={password} onChange={(e) => setPassword(e.target.value)}
-                   minLength={6} style={{ marginBottom: 12 }} required />
-            <button type="submit" className="btn primary" style={{ width: '100%' }} disabled={busy}>
-              {mode === 'signup' ? 'Create account' : 'Log in'}
-            </button>
-          </form>
-        )}
 
-        <div role="alert" style={{ color: 'var(--wrong)', fontSize: 13, marginTop: 14, minHeight: 16 }}>
-          {error}
+          {!showEmail ? (
+            <button type="button" className="btn ghost block" onClick={() => setShowEmail(true)}>
+              Use email instead
+            </button>
+          ) : (
+            <form className="login-form" onSubmit={submitEmail}>
+              <div className="segmented" role="group" aria-label="Log in or create an account">
+                <button type="button" aria-pressed={mode === 'signin'} onClick={() => setMode('signin')}>
+                  Log in
+                </button>
+                <button type="button" aria-pressed={mode === 'signup'} onClick={() => setMode('signup')}>
+                  Create account
+                </button>
+              </div>
+              <div className="field">
+                <label htmlFor="login-email" className="field-label">Email</label>
+                <input id="login-email" type="email" placeholder="you@example.com" autoComplete="email"
+                       value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </div>
+              <div className="field">
+                <label htmlFor="login-password" className="field-label">Password</label>
+                <input id="login-password" type="password"
+                       placeholder={mode === 'signup' ? 'At least 6 characters' : ''}
+                       autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                       value={password} onChange={(e) => setPassword(e.target.value)}
+                       minLength={6} required />
+              </div>
+              <button type="submit" className="btn primary block" disabled={busy}>
+                {mode === 'signup' ? 'Create account' : 'Log in'}
+              </button>
+            </form>
+          )}
         </div>
-        {notice ? (
-          <div role="status" style={{ color: 'var(--correct)', fontSize: 13, marginTop: -8 }}>{notice}</div>
-        ) : null}
+
+        <p className="form-error" role="alert">{error}</p>
+        {notice ? <p className="form-notice" role="status">{notice}</p> : null}
       </div>
-    </div>
+    </main>
   );
 }

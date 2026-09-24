@@ -8,8 +8,6 @@ import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import '../styles/overlays.css';
 
-const MEDALS = ['🥇', '🥈', '🥉'];
-
 /* ── the board ───────────────────────────────────────────────────── */
 
 function BoardDialog({ subject, onClose }) {
@@ -30,20 +28,14 @@ function BoardDialog({ subject, onClose }) {
   const { data } = state;
   let body;
   if (state.status === 'loading') {
-    body = <div className="lb-empty"><div className="lb-empty-icon">⏳</div>Loading leaderboard…</div>;
+    body = <p className="lb-empty">Loading this week’s scores</p>;
   } else if (state.status === 'error') {
     body = (
-      <div className="lb-empty">
-        <div className="lb-empty-icon">⚠️</div>
-        Couldn't load the leaderboard.<br /><small>{state.message}</small>
-      </div>
+      <p className="lb-empty">Couldn’t load the leaderboard. Try again in a moment. ({state.message})</p>
     );
   } else if (!data.top?.length) {
     body = (
-      <div className="lb-empty">
-        <div className="lb-empty-icon">🌱</div>
-        No entries yet this week.<br />Be the first — take a 30-question exam!
-      </div>
+      <p className="lb-empty">No scores yet this week. Finish a 30-question exam to be the first.</p>
     );
   } else {
     body = (
@@ -51,17 +43,17 @@ function BoardDialog({ subject, onClose }) {
         <table className="lb-table">
           <thead>
             <tr>
-              <th>Rank</th><th>Handle</th>
-              <th style={{ textAlign: 'right' }}>Score</th><th style={{ textAlign: 'right' }}>Time</th>
+              <th className="lb-rank">Rank</th><th>Handle</th>
+              <th className="lb-score">Score</th><th className="lb-time">Time</th>
             </tr>
           </thead>
           <tbody>
             {data.top.map((entry, i) => (
               <tr key={i} className={entry.is_me ? 'lb-me' : ''}>
-                <td className="lb-rank">{MEDALS[i] ? <span className="lb-medal">{MEDALS[i]}</span> : i + 1}</td>
+                <td className="lb-rank">{i + 1}</td>
                 <td className="lb-handle">
                   {entry.handle}
-                  {entry.is_me ? <span style={{ fontSize: 11, color: 'var(--brand, #2563eb)' }}> (you)</span> : null}
+                  {entry.is_me ? <span className="lb-you"> (you)</span> : null}
                 </td>
                 <td className="lb-score">{Number(entry.score_pct).toFixed(0)}%</td>
                 <td className="lb-time">{fmtTime(entry.time_seconds)}</td>
@@ -70,16 +62,13 @@ function BoardDialog({ subject, onClose }) {
           </tbody>
         </table>
         {data.my_entry && data.my_rank > 10 ? (
-          <div className="lb-myrank">
-            Your rank: <strong>#{data.my_rank}</strong> &nbsp;·&nbsp;
-            {Number(data.my_entry.score_pct).toFixed(0)}% &nbsp;·&nbsp; {fmtTime(data.my_entry.time_seconds)}
-          </div>
+          <p className="lb-myrank">
+            You’re <strong>number {data.my_rank}</strong> with {Number(data.my_entry.score_pct).toFixed(0)}%
+            {data.my_entry.time_seconds != null ? ` in ${fmtTime(data.my_entry.time_seconds)}` : ''}.
+          </p>
         ) : null}
         {!data.my_entry ? (
-          <div className="lb-myrank"
-               style={{ background: 'transparent', borderStyle: 'dashed', color: 'var(--text-muted, #6b7280)' }}>
-            You haven't submitted a 30-question exam this week.
-          </div>
+          <p className="lb-myrank none">You haven’t submitted a 30-question exam this week.</p>
         ) : null}
       </>
     );
@@ -87,12 +76,12 @@ function BoardDialog({ subject, onClose }) {
 
   return (
     <Dialog onClose={onClose} labelledBy="lb-title">
-      <h3 id="lb-title">🏆 Weekly Leaderboard — {subject}</h3>
-      <div className="lb-sub">{data ? fmtCountdown(data.week_start) : state.status === 'loading' ? 'Loading…' : ' '}</div>
+      <h2 id="lb-title">Weekly leaderboard</h2>
+      <p className="lb-sub">{subject}{data ? `. ${fmtCountdown(data.week_start)}` : ''}</p>
       <div aria-live="polite">{body}</div>
       <div className="lb-meta">
-        <span>30-question exams only</span>
-        <button className="lb-btn" onClick={onClose}>Close</button>
+        <span>Only 30-question exams count.</span>
+        <button type="button" className="btn" onClick={onClose}>Close</button>
       </div>
     </Dialog>
   );
@@ -103,16 +92,18 @@ function BoardDialog({ subject, onClose }) {
 function OptInDialog({ onChoose }) {
   return (
     <Dialog onClose={() => onChoose(null)} labelledBy="lb-optin-title">
-      <h3 id="lb-optin-title">🏆 Submit to the weekly leaderboard?</h3>
-      <div className="lb-sub">Your score will be visible to all players on this subject's board until Sunday night.</div>
-      <p>Compete by your <strong>highest 30-question exam score</strong> this week. Each subject has its own board, resetting every Monday.</p>
-      <p style={{ fontSize: 13, color: 'var(--text-muted, #6b7280)' }}>
-        You'll pick a public handle (e.g. <code>MedGenius</code>). Your real name stays private.
+      <h2 id="lb-optin-title">Add this score to the weekly leaderboard?</h2>
+      <p className="dialog-text">
+        Each subject has its own board, ranked by everyone’s best 30-question exam this week. It
+        resets every Monday.
       </p>
-      <div className="lb-actions">
-        <button className="lb-btn" onClick={() => onChoose('never')}>No, never ask again</button>
-        <button className="lb-btn" onClick={() => onChoose('once')}>Yes, just this one</button>
-        <button className="lb-btn lb-btn-primary" onClick={() => onChoose('always')}>Yes, every time</button>
+      <p className="dialog-text">
+        Your score appears under a handle you choose. Your real name stays private.
+      </p>
+      <div className="dialog-actions">
+        <button type="button" className="btn ghost" onClick={() => onChoose('never')}>Don’t ask again</button>
+        <button type="button" className="btn" onClick={() => onChoose('once')}>Add this score</button>
+        <button type="button" className="btn primary" onClick={() => onChoose('always')}>Always add my scores</button>
       </div>
     </Dialog>
   );
@@ -130,21 +121,21 @@ function HandleDialog({ realName, onDone }) {
 
   return (
     <Dialog onClose={() => onDone(null)} labelledBy="lb-handle-title">
-      <h3 id="lb-handle-title">Choose your leaderboard handle</h3>
-      <div className="lb-sub">3–20 characters. Letters, numbers, _ and - only.</div>
-      <p style={{ fontSize: 13.5 }}>
-        This is the only name shown publicly. Your real name (
-        {realName ? <strong>{realName}</strong> : 'from registration'}) stays private.
+      <h2 id="lb-handle-title">Choose a leaderboard handle</h2>
+      <p className="dialog-text">
+        This is the only name other students see.
+        {realName ? <> Your real name, {realName}, stays private.</> : ' Your real name stays private.'}
       </p>
-      <label htmlFor="lb-handle-input" className="sr-only">Leaderboard handle</label>
+      <label htmlFor="lb-handle-input" className="field-label">Handle</label>
       <input id="lb-handle-input" type="text" className="lb-input" value={value} maxLength={20}
              placeholder="e.g. MedGenius99" autoComplete="off"
              onChange={(e) => { setValue(e.target.value); setError(''); }}
              onKeyDown={(e) => { if (e.key === 'Enter') save(); }} />
-      <div className="lb-error" role="alert">{error}</div>
-      <div className="lb-actions">
-        <button className="lb-btn" onClick={() => onDone(null)}>Cancel</button>
-        <button className="lb-btn lb-btn-primary" onClick={save}>Save handle</button>
+      <p className="lb-hint">3 to 20 characters: letters, numbers, _ and -.</p>
+      <p className="lb-error" role="alert">{error}</p>
+      <div className="dialog-actions">
+        <button type="button" className="btn" onClick={() => onDone(null)}>Cancel</button>
+        <button type="button" className="btn primary" onClick={save}>Save handle</button>
       </div>
     </Dialog>
   );
@@ -205,7 +196,7 @@ export function useLeaderboard(subject) {
       const result = await submitScore({ handle, subject, score_pct, total_questions, time_seconds });
       toast(result.action === 'kept_existing'
         ? `Your best this week is still ${Number(result.entry.score_pct).toFixed(0)}%`
-        : `Submitted! Rank #${result.my_rank} this week 🏆`);
+        : `Score added. You’re number ${result.my_rank} this week.`);
       setTimeout(() => setDialog({ type: 'board' }), 1500);
     } catch (e) {
       console.error('[leaderboard] submit failed', e);
