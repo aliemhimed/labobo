@@ -6,8 +6,9 @@ import NotFound from './pages/NotFound.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { AuthGate, SemesterGate } from './components/AuthGate.jsx';
 import { SUBJECTS } from './lib/subjects.js';
+import { loadSubjectPage } from './pages/loadSubjectPage.js';
 
-const SubjectPage = lazy(() => import('./pages/SubjectPage.jsx'));
+const SubjectPage = lazy(loadSubjectPage);
 
 /* The old site was a folder of .html files. Keep those URLs working so
    existing links and bookmarks don't break. */

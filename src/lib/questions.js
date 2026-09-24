@@ -51,6 +51,12 @@ function normalizeAnswer(raw, options, originalOptions) {
    converted file. Other folders (SVG diagrams) are untouched. */
 const webpIfLocal = (url) => (url.startsWith('/images/medart/') ? url.replace(/\.(png|jpe?g)$/i, '.webp') : url);
 
+/** The quiz shows images in a box at most 520x360, so medart images have a
+    display copy in /images/medart/sm/ (fitted to 1040x720, see
+    scripts/optimize_images.py). The full-size file stays for the "open
+    image" link. Anything else is shown as-is. */
+export const displaySrc = (url) => (/^\/images\/medart\/[^/]+$/.test(url) ? url.replace('/images/medart/', '/images/medart/sm/') : url);
+
 function normalizeImages(row, imageBase) {
   const list = [];
   if (Array.isArray(row.images)) list.push(...row.images);

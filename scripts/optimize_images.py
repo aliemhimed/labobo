@@ -3,6 +3,9 @@
     python scripts/optimize_images.py
 
 - public/images/medart/*.{png,jpg,jpeg} -> .webp, max 1600px wide
+- public/images/medart/*.webp -> sm/<same name>.webp, fitted to 1040x720:
+  the size the quiz actually shows (2x its 520x360 image box). The full
+  file stays for the "open image" link. Re-run after adding medart images.
 - public/theme/* -> right-sized WebP/PNG icons with clean filenames
 - meme GIF/JPG/WebP folders -> public/memes/{right,wrong}/<kebab-name>.webp
   (animated GIFs stay animated)
@@ -10,7 +13,7 @@
 Originals are deleted afterwards; they remain in git history. Prints the meme
 filename mapping so src/lib/memes.js can be updated.
 """
-import os, re, sys
+import os, re, shutil, sys
 from pathlib import Path
 from PIL import Image
 
@@ -58,6 +61,27 @@ for f in sorted((PUB / 'images' / 'medart').iterdir()):
         b, a = convert(f, dest, quality=80, max_w=1600)
         report(f.name, b, a)
         f.unlink()
+
+# Display copies for the quiz (see the docstring). Images that already fit
+# are copied as-is so every image has an sm/ twin.
+print('medart display copies')
+SM = PUB / 'images' / 'medart' / 'sm'
+SM.mkdir(exist_ok=True)
+for f in sorted((PUB / 'images' / 'medart').glob('*.webp')):
+    dest = SM / f.name
+    if dest.exists() and dest.stat().st_mtime >= f.stat().st_mtime:
+        continue
+    with Image.open(f) as im:
+        w, h = im.size
+        fits = w <= 1040 and h <= 720
+    if fits:
+        shutil.copyfile(f, dest)
+    else:
+        with Image.open(f) as im:
+            save_static(im, dest, quality=80, max_w=1040, max_h=720)
+        if dest.stat().st_size >= f.stat().st_size:  # re-encoding didn't pay off
+            shutil.copyfile(f, dest)
+    report(f'sm/{f.name}', kb(f), kb(dest))
 
 # ---- theme ---------------------------------------------------------------
 if (PUB / 'theme' / 'full-body mascot.png').exists():  # skip on re-runs

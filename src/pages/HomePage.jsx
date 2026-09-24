@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getSubjectSummary } from '../lib/storage.js';
 import { fetchTableCounts } from '../lib/questions.js';
 import { toggleTheme } from '../lib/theme.js';
@@ -9,6 +9,8 @@ import { useProfile } from '../hooks/useProfile.js';
 import { SunIcon, MoonIcon } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import { SUBJECTS } from '../lib/subjects.js';
+import { questionsQuery } from '../hooks/useQuestions.js';
+import { loadSubjectPage } from './loadSubjectPage.js';
 
 const MedArtIcon = () => (
   /* Paintbrush + stethoscope: the arms form a Y at the top, the tube curves
@@ -59,6 +61,21 @@ export default function HomePage() {
   const cards = ALL_CARDS.filter((c) => c.semester === profile?.semester);
 
   useEffect(() => { document.title = 'Studywith Labobo'; }, []);
+
+  // Every card leads to the subject page, so fetch its code once the home
+  // page has settled rather than after the click.
+  useEffect(() => {
+    const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1500));
+    const cancel = window.cancelIdleCallback || clearTimeout;
+    const id = idle(() => { loadSubjectPage().catch(() => { /* the route retries on click */ }); });
+    return () => cancel(id);
+  }, []);
+
+  // Start downloading a subject's bank as soon as a card is hovered, focused
+  // or touched; the subject page then usually finds it already cached.
+  const queryClient = useQueryClient();
+  const prefetch = (key) => () => { queryClient.prefetchQuery(questionsQuery(SUBJECTS[key])); };
+  const intent = (key) => ({ onPointerEnter: prefetch(key), onFocus: prefetch(key), onTouchStart: prefetch(key) });
 
   // Progress is a handful of synchronous localStorage reads — cheap enough
   // to just do on mount, and this page remounts fresh on every visit anyway.
@@ -114,7 +131,7 @@ export default function HomePage() {
             <div className="resume-row" aria-label="Continue where you left off">
               <span className="resume-label">Continue:</span>
               {resumable.map((c) => (
-                <Link key={c.key} to={`${c.to}/${progress[c.key].resumeMode}`} className="resume-chip">
+                <Link key={c.key} to={`${c.to}/${progress[c.key].resumeMode}`} className="resume-chip" {...intent(c.key)}>
                   {c.name} · {RESUME_LABEL[progress[c.key].resumeMode] || 'Resume'}
                 </Link>
               ))}
@@ -126,7 +143,7 @@ export default function HomePage() {
               const p = progress[c.key];
               const empty = counts[c.key] === 0;
               return (
-                <Link key={c.key} to={c.to} className={'subject-card ' + c.cls}>
+                <Link key={c.key} to={c.to} className={'subject-card ' + c.cls} {...intent(c.key)}>
                   <div className="subject-icon">{c.icon}</div>
                   <div className="subject-name">{c.name}</div>
                   <div className="subject-desc">{c.desc}</div>

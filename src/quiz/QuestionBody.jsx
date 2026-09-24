@@ -1,3 +1,13 @@
+import { displaySrc } from '../lib/questions.js';
+
+/* If a display copy is missing (an image added without re-running
+   scripts/optimize_images.py), fall back to the full-size file once. */
+function fallBackToOriginal(e) {
+  const img = e.currentTarget;
+  const original = img.dataset.original;
+  if (original && img.getAttribute('src') !== original) img.src = original;
+}
+
 /* The top of a question card, shared by the live quiz and the post-exam
    review: subject/topic line, report button, question text and any images. */
 export default function QuestionBody({ question, index, onReport }) {
@@ -17,7 +27,8 @@ export default function QuestionBody({ question, index, onReport }) {
         <div className="q-images">
           {question.images.map((src, n) => (
             <a key={src} className="q-image-link" href={src} target="_blank" rel="noreferrer">
-              <img src={src} alt={`Image ${n + 1} for this question`} loading="lazy" decoding="async" />
+              <img src={displaySrc(src)} data-original={src} onError={fallBackToOriginal}
+                   alt={`Image ${n + 1} for this question`} loading="lazy" decoding="async" />
             </a>
           ))}
         </div>
