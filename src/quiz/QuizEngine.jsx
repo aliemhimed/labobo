@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import TopBar from '../components/TopBar.jsx';
 import ReportModal from '../components/ReportModal.jsx';
@@ -18,11 +18,11 @@ import ExamDetail from './ExamDetail.jsx';
 import { initialSession, restoreSession, serializeSession, sessionReducer } from './session.js';
 import { useHistory, useWrong } from '../hooks/useStore.js';
 import { buildSubjectIndex } from '../lib/questions.js';
-import { createSubjectStore, onStorageError, saveSession } from '../lib/storage.js';
+import { createSubjectStore, loadOptionSeed, onStorageError, saveOptionSeed, saveSession } from '../lib/storage.js';
 import { supaInsert } from '../lib/supabase.js';
 import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
-import { buildQuizQuestions, distribute, shuffle, uid } from '../lib/utils.js';
+import { buildQuizQuestions, distribute, seededShuffle, shuffle, uid } from '../lib/utils.js';
 
 /* Which views need a quiz in progress, and which need a finished result. The
    view itself lives in the URL (/gct/exam, /gct/dashboard …) so the browser's
@@ -82,15 +82,22 @@ export default function QuizEngine({ config, questions, basePath }) {
     toast("Couldn't save your progress: browser storage is full or blocked.");
   }), [toast]);
 
-  /* Option shuffling is stable for as long as a question stays on screen. */
-  const optionOrders = useRef(new Map());
+  /* Each question's option order is derived from a per-session seed and the
+     question id, so it stays put across a refresh (the seed is kept in
+     sessionStorage) and only changes when a new session picks a new seed.
+     The cache hands back the same array each render, which QuestionCard's
+     effects rely on. */
+  const [optionSeed, setOptionSeed] = useState(() => loadOptionSeed(config.storagePrefix) || uid());
+  useEffect(() => { saveOptionSeed(config.storagePrefix, optionSeed); }, [config.storagePrefix, optionSeed]);
+  const optionOrders = useMemo(() => new Map(), [questions, optionSeed]);
   const getDisplayOrder = useCallback((qIdx) => {
-    if (!optionOrders.current.has(qIdx)) {
-      const n = questions[qIdx]?.options.length || 0;
-      optionOrders.current.set(qIdx, shuffle(Array.from({ length: n }, (_, i) => i)));
+    if (!optionOrders.has(qIdx)) {
+      const q = questions[qIdx];
+      const n = q?.options.length || 0;
+      optionOrders.set(qIdx, seededShuffle(Array.from({ length: n }, (_, i) => i), `${optionSeed}:${q?.id}`));
     }
-    return optionOrders.current.get(qIdx);
-  }, [questions]);
+    return optionOrders.get(qIdx);
+  }, [questions, optionSeed, optionOrders]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
@@ -130,7 +137,7 @@ export default function QuizEngine({ config, questions, basePath }) {
   /* ── starting each mode ─────────────────────────────────────────── */
 
   function startSession(mode, picked) {
-    optionOrders.current.clear();
+    setOptionSeed(uid());
     commit({ type: 'start', mode, qIds: picked }, mode);
   }
 
@@ -267,7 +274,6 @@ export default function QuizEngine({ config, questions, basePath }) {
     const slots = (rec.questionIds || [])
       .map((id, i) => ({ qIdx: idToIndex.get(id), selected: rec.answers[i] }))
       .filter((s) => s.qIdx !== undefined);
-    optionOrders.current.clear();
     commit({ type: 'review', slots, record: rec }, 'review-after-exam', { state: { from: view } });
   }
 

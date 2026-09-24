@@ -183,6 +183,24 @@ export function saveSession(prefix, session) {
   } catch { /* ignore */ }
 }
 
+/* Seed for the shuffled answer-option order (see QuizEngine's
+   getDisplayOrder), so a refresh shows each question's options in the same
+   A–D slots. */
+const optionSeedKey = (prefix) => `labobo.optseed.${prefix}`;
+
+export function loadOptionSeed(prefix) {
+  try {
+    return sessionStorage.getItem(optionSeedKey(prefix));
+  } catch {
+    return null;
+  }
+}
+export function saveOptionSeed(prefix, seed) {
+  try {
+    sessionStorage.setItem(optionSeedKey(prefix), seed);
+  } catch { /* ignore */ }
+}
+
 /* Study Mode's pool/filters/position — same survives-a-refresh contract as
    the quiz session above, kept under its own key so the two don't collide. */
 const studyKey = (prefix) => `labobo.study.${prefix}`;
