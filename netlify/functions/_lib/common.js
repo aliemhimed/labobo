@@ -82,7 +82,7 @@ function parseBody(event) {
 }
 
 module.exports = {
-  SUPA_URL, SUPA_ANON_KEY,
+  SUPA_URL,
   dbHeaders, anonHeaders,
   json, fail, getWeekStart, parseBody, verifyUser,
 };

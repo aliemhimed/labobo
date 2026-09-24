@@ -16,7 +16,7 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 - Subject-based question banks for medical and preclinical learning
 - Study, practice, and exam modes with different feedback patterns
 - Wrong-answer review flow to reinforce weak topics
-- Weekly leaderboard tracking by subject and device
+- Weekly leaderboard tracking by subject and account
 - User session and performance tracking
 - Responsive single-page learning experience
 
@@ -105,19 +105,21 @@ Key configuration points:
 
 - `netlify.toml` defines redirect rules and the local Netlify build settings.
 - `netlify/functions/*.js` contain the serverless API endpoints.
-- Supabase tables used by the app include question banks, session records, leaderboard entries.
+- Supabase tables used by the app include question banks, user profiles, session records, question reports, and leaderboard entries.
+- `leaderboard_entries`, `sessions`, and `question_reports` have no policies for the publishable key; only the functions (using `SUPA_SERVICE_KEY`) can read or write them.
 
 ## API Endpoints
 
 Routes are defined via Netlify functions and mapped under `/api/*`.
 
-### Public endpoints
-
 ```text
-GET /api/questions?tables=bs_anatomy,bs_physiology
-GET /api/leaderboard?subject=GCT&device_id=xxx
-POST /api/leaderboard
+GET  /api/questions?tables=bs_anatomy,bs_physiology   # public
+GET  /api/leaderboard?subject=GCT                    # signed in
+POST /api/leaderboard                                # signed in
+POST /api/supa-insert                                # signed in (sessions, question_reports)
 ```
+
+Signed-in endpoints take the Supabase access token as `Authorization: Bearer <token>` and derive the user from it server-side; any user id in the request is ignored.
 
 ## Contributing
 
