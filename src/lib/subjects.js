@@ -142,6 +142,26 @@ export const SUBJECTS = {
     sources: [{ table: 'medicine_art', subject: 'Medicine & Art' }],
   },
 
+  'midterm-review': {
+    path: 'midterm-review',
+    title: 'Midterm Review',
+    description: 'Biochemistry, Molecular Biology, Genetics & Histology',
+    docTitle: 'Midterm Review — Studywith Labobo',
+    storagePrefix: 'midterm',
+    leaderboardSubject: 'Midterm Review',
+    semester: '1',
+    sessionSubject: 'Midterm Review',
+    examLengths: [30, 60, 90, 120, 180, 240],
+    // roughly the size of each bank (165 / 110 / 84 / 103 questions)
+    ratio: { Biochemistry: 8, 'Molecular Biology': 5, Genetics: 4, Histology: 5 },
+    sources: [
+      { table: 'midterm_biochemistry', subject: 'Biochemistry' },
+      { table: 'midterm_molecular_biology', subject: 'Molecular Biology' },
+      { table: 'midterm_genetics', subject: 'Genetics' },
+      { table: 'midterm_histology', subject: 'Histology' },
+    ],
+  },
+
   'gct-2': {
     path: 'gct-2',
     title: 'GCT II MCQ',
@@ -217,27 +237,9 @@ export const SUBJECTS = {
   },
 };
 
-/* The midterm review page has its own (simpler) engine but pulls from
-   the same kind of tables. */
-export const MIDTERM = {
-  semester: '1',
-  title: 'Midterm Review',
-  description: 'Biochemistry, Molecular Biology, Genetics & Histology',
-  storagePrefix: 'midterm',
-  sources: [
-    { table: 'midterm_biochemistry', subject: 'Biochemistry' },
-    { table: 'midterm_molecular_biology', subject: 'Molecular Biology' },
-    { table: 'midterm_genetics', subject: 'Genetics' },
-    { table: 'midterm_histology', subject: 'Histology' },
-  ],
-};
-
 /* Every table the question API is allowed to read. The allowlist in
    netlify/functions/questions.js must match this list. */
-export const ALL_QUESTION_TABLES = [
-  ...Object.values(SUBJECTS).flatMap((s) => s.sources.map((x) => x.table)),
-  ...MIDTERM.sources.map((x) => x.table),
-];
+export const ALL_QUESTION_TABLES = Object.values(SUBJECTS).flatMap((s) => s.sources.map((x) => x.table));
 
 export function getSubject(key) {
   return SUBJECTS[key] || null;

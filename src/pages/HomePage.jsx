@@ -7,7 +7,7 @@ import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import { SunIcon, MoonIcon } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
-import { SUBJECTS, MIDTERM } from '../lib/subjects.js';
+import { SUBJECTS } from '../lib/subjects.js';
 
 const MedArtIcon = () => (
   /* Paintbrush + stethoscope: the arms form a Y at the top, the tube curves
@@ -38,32 +38,18 @@ const RESUME_LABEL = { practice: 'Practice', exam: 'Exam', 'review-wrong': 'Revi
 
 // Cards are built from the subject registry so this list can't drift from
 // what the subject pages actually offer, then filtered to the signed-in
-// user's semester. Midterm Review is bolted on: it's a separate page rather
-// than a SUBJECTS entry, and counts as Semester 1.
-const ALL_CARDS = [
-  ...Object.entries(SUBJECTS).map(([key, cfg]) => ({
-    key,
-    to: `/${key}`,
-    cls: cfg.storagePrefix,
-    icon: ICONS[cfg.storagePrefix],
-    name: cfg.title.replace(/ MCQ$/, ''),
-    desc: cfg.description,
-    sources: cfg.sources,
-    storagePrefix: cfg.storagePrefix,
-    semester: cfg.semester,
-  })),
-  {
-    key: 'midterm',
-    to: '/midterm-review',
-    cls: 'midterm',
-    icon: ICONS.midterm,
-    name: MIDTERM.title,
-    desc: MIDTERM.description,
-    sources: MIDTERM.sources,
-    storagePrefix: MIDTERM.storagePrefix,
-    semester: MIDTERM.semester,
-  },
-];
+// user's semester.
+const ALL_CARDS = Object.entries(SUBJECTS).map(([key, cfg]) => ({
+  key,
+  to: `/${key}`,
+  cls: cfg.storagePrefix,
+  icon: ICONS[cfg.storagePrefix],
+  name: cfg.title.replace(/ MCQ$/, ''),
+  desc: cfg.description,
+  sources: cfg.sources,
+  storagePrefix: cfg.storagePrefix,
+  semester: cfg.semester,
+}));
 
 export default function HomePage() {
   const { user } = useAuth();

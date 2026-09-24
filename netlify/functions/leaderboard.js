@@ -25,6 +25,7 @@ const SUBJECTS = [
   'Clinical & Professional Skills',
   'Body Systems',
   'Medicine & Art',
+  'Midterm Review',
   'GCT II',
   'Body Systems II',
   'Clinical & Professional Skills II',

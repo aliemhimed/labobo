@@ -8,13 +8,11 @@ import { AuthGate, SemesterGate } from './components/AuthGate.jsx';
 import { SUBJECTS } from './lib/subjects.js';
 
 const SubjectPage = lazy(() => import('./pages/SubjectPage.jsx'));
-const MidtermPage = lazy(() => import('./pages/MidtermPage.jsx'));
 
 /* The old site was a folder of .html files. Keep those URLs working so
    existing links and bookmarks don't break. */
 const LEGACY = {
   '/index.html': '/',
-  '/midterm-review.html': '/midterm-review',
   ...Object.fromEntries(Object.keys(SUBJECTS).map((k) => [`/${k}.html`, `/${k}`])),
 };
 
@@ -40,7 +38,6 @@ function StudentApp() {
             {Object.keys(SUBJECTS).map((key) => (
               <Route key={key} path={`/${key}/*`} element={<SubjectPage subjectKey={key} />} />
             ))}
-            <Route path="/midterm-review" element={<MidtermPage />} />
             {Object.entries(LEGACY).map(([from, to]) => (
               <Route key={from} path={from} element={<Navigate to={to} replace />} />
             ))}
