@@ -1,0 +1,100 @@
+name: Nightly database backup
+
+# The Supabase project is on the Free plan: it has no restorable backups and
+# is paused after a week without activity. Every night this pings the API to
+# keep it awake, then saves the schema and every question bank as a workflow
+# artifact (Actions -> this workflow -> a run -> Artifacts).
+#
+# This repo is public and so are its artifacts, so user data is never backed
+# up here: only table structure and question-bank rows, which the app already
+# serves publicly. Setup and restore steps: README.md, "Database backups".
+
+on:
+  schedule:
+    - cron: '17 2 * * *'   # daily, 02:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping the Supabase API
+        run: >-
+          curl --fail --silent --show-error --max-time 30 --output /dev/null
+          -H "apikey: sb_publishable_LLpEKdQRvePMYJ5b7loUKA_SeZ51lJs"
+          "https://boukmowybmtfqkinuvqj.supabase.co/rest/v1/medical_physics?select=id&limit=1"
+
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      PG_IMAGE: postgres:17   # must match the database's major version
+    steps:
+      - name: Require the connection-string secret
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Missing repository secret SUPABASE_DB_URL. See README.md, 'Database backups'."
+            exit 1
+          fi
+
+      - name: Dump the schema and the question banks
+        env:
+          # Question banks are the tables with an `answer` column. Selecting
+          # by shape is an allowlist: a table of user data can never be
+          # picked up, even one added later.
+          TABLES_SQL: >-
+            select c.table_name
+            from information_schema.columns c
+            join information_schema.tables t
+              on t.table_schema = c.table_schema and t.table_name = c.table_name
+            where c.table_schema = 'public' and c.column_name = 'answer'
+              and t.table_type = 'BASE TABLE'
+            order by 1
+        run: |
+          set -euo pipefail
+          pg() { docker run --rm "$PG_IMAGE" "$@"; }
+          mkdir -p backup
+
+          # Structure only (tables, constraints, policies, functions): no rows.
+          pg pg_dump "$SUPABASE_DB_URL" --schema-only --schema=public --no-owner > backup/schema.sql
+
+          mapfile -t tables < <(pg psql "$SUPABASE_DB_URL" -At -c "$TABLES_SQL")
+          args=()
+          for t in "${tables[@]}"; do
+            if [ -n "$t" ]; then args+=(-t "public.$t"); fi
+          done
+          if [ "${#args[@]}" -eq 0 ]; then
+            echo "::error::Found no question-bank tables"
+            exit 1
+          fi
+          pg pg_dump "$SUPABASE_DB_URL" --data-only --no-owner "${args[@]}" > backup/questions.sql
+
+      - name: Check the dump
+        run: |
+          set -euo pipefail
+          grep -q '^CREATE TABLE public.gct_biochemistry' backup/schema.sql
+          # Rows per table, counted from the COPY blocks; fail if there are none.
+          awk '
+            /^COPY public\./ { t = $2; n = 0; next }
+            /^\\\.$/         { if (t != "") { printf "%-32s %6d rows\n", t, n; total += n }; t = ""; next }
+            t != ""          { n++ }
+            END              { print "total rows: " total; if (total == 0) exit 1 }
+          ' backup/questions.sql
+
+      - name: Compress
+        id: pack
+        run: |
+          gzip -9 backup/schema.sql backup/questions.sql
+          echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ steps.pack.outputs.date }}
+          path: backup/
+          retention-days: 30
+          if-no-files-found: error

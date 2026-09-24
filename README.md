@@ -122,6 +122,26 @@ POST /api/supa-insert                                # signed in (sessions, ques
 
 Signed-in endpoints take the Supabase access token as `Authorization: Bearer <token>` and derive the user from it server-side; any user id in the request is ignored.
 
+## Database backups
+
+The Supabase project is on the Free plan, which has no restorable backups and pauses projects after a week without activity. `.github/workflows/db-backup.yml` runs nightly (and on demand from the Actions tab). It:
+
+- pings the Supabase API so the project stays awake, and
+- saves `schema.sql.gz` (every table, constraint, policy and function in `public`, no rows) and `questions.sql.gz` (all rows of every question bank) as an artifact kept for 30 days.
+
+This repository is public, so its workflow artifacts are too. The backup therefore **never includes user data** (profiles, quiz sessions, leaderboard entries, question reports): question-bank tables are picked as "tables with an `answer` column", so a user-data table can't be included by accident.
+
+**One-time setup:** in the Supabase dashboard open **Connect → Session pooler** and copy the connection URI with your database password filled in (the direct connection won't work from GitHub, which has no IPv6; reset the password under Database settings if you don't have it). Add it on GitHub under **Settings → Secrets and variables → Actions** as `SUPABASE_DB_URL`, then run the workflow once from the Actions tab.
+
+**Restoring** (into a new Supabase project, or the same one if the tables are gone): download the artifact from the workflow run, unzip it, `gunzip` both files, then:
+
+```bash
+psql "$SUPABASE_DB_URL" -f schema.sql
+psql "$SUPABASE_DB_URL" -f questions.sql
+```
+
+The schema dump covers `public` only, so in a new project also re-create the sign-up trigger (`on_auth_user_created` on `auth.users`) from `supabase/migrations/20260922020000_auth_profiles_semester2.sql`.
+
 ## Contributing
 
 Contributions are welcome.
