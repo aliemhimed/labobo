@@ -43,10 +43,6 @@ const ALLOWED_TABLES = [
   'bs2_imaging',
   'clinical_skills_2',
   'medicine_art_2',
-  'midterm_biochemistry',
-  'midterm_molecular_biology',
-  'midterm_genetics',
-  'midterm_histology',
 ];
 
 // Public, read-only data: any origin may fetch it.

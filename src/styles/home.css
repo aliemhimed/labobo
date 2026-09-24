@@ -185,8 +185,6 @@ input[type=text]:focus {
 .subject-card.clin::before { background: linear-gradient(90deg, #DC2626, #F97316); }
 .subject-card.medart:hover { border-color: rgba(236,72,153,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(236,72,153,0.14); }
 .subject-card.medart::before { background: linear-gradient(90deg, #EC4899, #F59E0B); }
-.subject-card.midterm:hover { border-color: rgba(202,138,4,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(202,138,4,0.14); }
-.subject-card.midterm::before { background: linear-gradient(90deg, #CA8A04, #78350F); }
 /* Semester 2 (distinct hues from their Semester 1 counterparts) */
 .subject-card.gct2:hover   { border-color: rgba(139,92,246,0.5); box-shadow: var(--shadow-md), 0 0 0 1px rgba(139,92,246,0.12); }
 .subject-card.gct2::before   { background: linear-gradient(90deg, #8B5CF6, #D946EF); }
@@ -217,7 +215,6 @@ input[type=text]:focus {
 .subject-card.clin .subject-icon { background: linear-gradient(135deg, #DC2626, #F97316); }
 .subject-card.medart .subject-icon { background: linear-gradient(135deg, #EC4899 0%, #F59E0B 100%); }
 .subject-card.medart .subject-icon svg { width: 28px; height: 28px; color: #fff; }
-.subject-card.midterm .subject-icon { background: linear-gradient(135deg, #CA8A04 0%, #78350F 100%); }
 .subject-card.gct2 .subject-icon    { background: linear-gradient(135deg, #8B5CF6, #D946EF); }
 .subject-card.bs2 .subject-icon     { background: linear-gradient(135deg, #0EA5E9, #6366F1); }
 .subject-card.clin2 .subject-icon   { background: linear-gradient(135deg, #D946EF, #DC2626); }

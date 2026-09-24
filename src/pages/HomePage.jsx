@@ -32,7 +32,6 @@ const MedArtIcon = () => (
 const ICONS = {
   gct: '🧬', bs: '🫀', chem: '⚗️', phys: '⚡', clin: '💉', medart: <MedArtIcon />,
   gct2: '🧬', bs2: '🫀', clin2: '💉', medart2: <MedArtIcon />,
-  midterm: '🎓',
 };
 
 const RESUME_LABEL = { practice: 'Practice', exam: 'Exam', 'review-wrong': 'Review Wrong Answers' };
