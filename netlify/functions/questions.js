@@ -8,7 +8,15 @@
      -> { tables: { bs_anatomy: [...], bs_physiology: [...] } }
 
    Rows come back ordered by `ord`, then `id`, so question indices are stable
-   between loads. Only the tables in ALLOWED_TABLES can be read. */
+   between loads. Only the tables in ALLOWED_TABLES can be read.
+
+   GET /api/questions?counts=1&tables=bs_anatomy,bs_physiology
+     -> { counts: { bs_anatomy: 120, bs_physiology: 95 } }
+
+   Row counts only, for the home page cards. Tiny and CDN-cached, so the
+   home page makes one request here instead of one Supabase count per table.
+   A table that fails to count comes back as null rather than failing the
+   whole response. */
 
 const { SUPA_URL, anonHeaders, fail } = require('./_lib/common');
 
@@ -84,19 +92,51 @@ async function fetchTable(table) {
   }
 }
 
+async function countTable(table) {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?select=id`, {
+      headers: { ...anonHeaders(), Prefer: 'count=exact', Range: '0-0' },
+    });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    const total = parseInt((res.headers.get('content-range') || '').split('/')[1], 10);
+    return Number.isFinite(total) ? total : null;
+  } catch (e) {
+    console.error(`[counts] ${table}`, e);
+    return null;
+  }
+}
+
+async function countsReply(tables) {
+  const results = await Promise.all(tables.map(countTable));
+  const counts = {};
+  tables.forEach((t, i) => { counts[t] = results[i]; });
+  // Don't let the CDN hold on to a partial answer.
+  const cache = results.includes(null)
+    ? 'no-store'
+    : 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400';
+  return {
+    statusCode: 200,
+    headers: { ...CORS, 'Content-Type': 'application/json', 'Cache-Control': cache },
+    body: JSON.stringify({ counts }),
+  };
+}
+
 exports.handler = async (event) => {
   const reply = (r) => ({ ...r, headers: { ...r.headers, ...CORS } });
 
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'GET') return reply(fail(405, 'Method not allowed'));
 
-  const raw = (event.queryStringParameters || {}).tables || '';
+  const params = event.queryStringParameters || {};
+  const raw = params.tables || '';
   const requested = [...new Set(raw.split(',').map((t) => t.trim()).filter(Boolean))];
 
   if (!requested.length) return reply(fail(400, 'Missing ?tables='));
-  if (requested.length > MAX_TABLES) return reply(fail(400, `Ask for at most ${MAX_TABLES} tables at a time`));
   const bad = requested.filter((t) => !ALLOWED_TABLES.includes(t));
   if (bad.length) return reply(fail(403, `Table not allowed: ${bad.join(', ')}`));
+  // Counts are a few bytes per table, so the MAX_TABLES size cap doesn't apply.
+  if (params.counts === '1') return countsReply(requested);
+  if (requested.length > MAX_TABLES) return reply(fail(400, `Ask for at most ${MAX_TABLES} tables at a time`));
 
   try {
     const results = await Promise.all(requested.map(fetchTable));

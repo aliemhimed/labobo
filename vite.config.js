@@ -79,5 +79,18 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: 'hidden', // maps are generated for debugging but not linked from the bundles
+    rollupOptions: {
+      output: {
+        /* Third-party code changes far less often than the app, so give it
+           its own fingerprinted files: a deploy that only touches src/ leaves
+           these cached in the browser. */
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom)\//.test(id)) return 'vendor-react';
+          if (id.includes('node_modules/@supabase/')) return 'vendor-supabase';
+          if (id.includes('node_modules/@tanstack/')) return 'vendor-query';
+        },
+      },
+    },
   },
 });

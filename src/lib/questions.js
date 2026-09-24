@@ -155,25 +155,37 @@ export async function loadQuestions(config, signal) {
   return questions;
 }
 
-/** Best-effort total row count across a subject's tables, for the home page
-    cards. Reads Supabase directly, the same as the offline fallback above —
-    a count is cheap and not sensitive, so it skips the /api/questions proxy.
-    A table that fails to count just contributes 0 rather than failing the
-    whole card. */
-export async function fetchQuestionCounts(sources, signal) {
-  const counts = await Promise.all(sources.map(async (source) => {
-    try {
-      const res = await fetch(`${SUPA_URL}/rest/v1/${source.table}?select=id`, {
-        signal,
-        headers: { ...SUPA_HEADERS, Prefer: 'count=exact', Range: '0-0' },
-      });
-      const total = parseInt((res.headers.get('content-range') || '').split('/')[1], 10);
-      return Number.isFinite(total) ? total : 0;
-    } catch {
-      return 0;
-    }
-  }));
-  return counts.reduce((a, b) => a + b, 0);
+/* Row count for one table straight from Supabase, or null if it can't be
+   counted. The fallback for fetchTableCounts below. */
+async function countDirect(table, signal) {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}?select=id`, {
+      signal,
+      headers: { ...SUPA_HEADERS, Prefer: 'count=exact', Range: '0-0' },
+    });
+    const total = parseInt((res.headers.get('content-range') || '').split('/')[1], 10);
+    return Number.isFinite(total) ? total : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Best-effort row counts for the home page cards: { table: count | null }.
+    One CDN-cached request to /api/questions?counts=1 covers every table;
+    if that endpoint isn't there (same cases as loadQuestions), each table is
+    counted against Supabase directly instead. A table that can't be counted
+    is null rather than failing the rest. */
+export async function fetchTableCounts(tables, signal) {
+  try {
+    const res = await fetch(`/api/questions?counts=1&tables=${encodeURIComponent(tables.join(','))}`, { signal });
+    if (!res.ok) throw new Error(`/api/questions?counts -> ${res.status}`);
+    const body = await res.json();
+    if (body && body.counts) return body.counts;
+  } catch (e) {
+    if (signal?.aborted) throw e;
+  }
+  const counts = await Promise.all(tables.map((t) => countDirect(t, signal)));
+  return Object.fromEntries(tables.map((t, i) => [t, counts[i]]));
 }
 
 /** subject -> topic -> [indices into the questions array] */

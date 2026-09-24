@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { getSubjectSummary } from '../lib/storage.js';
-import { fetchQuestionCounts } from '../lib/questions.js';
+import { fetchTableCounts } from '../lib/questions.js';
 import { toggleTheme } from '../lib/theme.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
@@ -54,7 +55,6 @@ const ALL_CARDS = Object.entries(SUBJECTS).map(([key, cfg]) => ({
 export default function HomePage() {
   const { user } = useAuth();
   const { data: profile } = useProfile();
-  const [counts, setCounts] = useState({});
   const [progress, setProgress] = useState({});
 
   const cards = ALL_CARDS.filter((c) => c.semester === profile?.semester);
@@ -68,16 +68,21 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.semester]);
 
-  // Counts come from Supabase directly (see fetchQuestionCounts) and can be
-  // slow on a cold connection, so they fill in after the grid is already usable.
-  useEffect(() => {
-    let cancelled = false;
-    Promise.all(cards.map(async (c) => [c.key, await fetchQuestionCounts(c.sources)]))
-      .then((entries) => { if (!cancelled) setCounts(Object.fromEntries(entries)); })
-      .catch(() => { /* counts are a nice-to-have; the cards work without them */ });
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.semester]);
+  // One request for every table on the page, cached for a few minutes so
+  // coming back to the home page shows the counts straight away. They fill in
+  // after the grid is already usable either way.
+  const tables = cards.flatMap((c) => c.sources.map((s) => s.table));
+  const { data: tableCounts } = useQuery({
+    queryKey: ['question-counts', tables],
+    queryFn: ({ signal }) => fetchTableCounts(tables, signal),
+    enabled: tables.length > 0,
+    staleTime: 5 * 60_000,
+  });
+  // A card's count is the sum of its tables; a table that couldn't be
+  // counted contributes 0, as before.
+  const counts = tableCounts
+    ? Object.fromEntries(cards.map((c) => [c.key, c.sources.reduce((n, s) => n + (tableCounts[s.table] ?? 0), 0)]))
+    : {};
 
   const displayName = profile?.username || user?.user_metadata?.full_name || user?.email || '';
   const greeting = displayName ? `Hey ${displayName.split(' ')[0]}, pick your subject 👇` : 'Choose your subject';
