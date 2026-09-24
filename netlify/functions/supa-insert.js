@@ -12,13 +12,10 @@
    Only the tables below are writable and only through their per-column
    rules: unknown columns are dropped, strings are length-capped, and one row
    per request. Inserts use the service key (see _lib/common.js), so the
-   tables need no anon INSERT policy.
+   tables need no anon INSERT policy. Each user is rate-limited per table
+   (RATE_LIMITS below). */
 
-   `users` (the old device-registered-name bookkeeping) is intentionally not
-   writable here any more — `profiles` (one row per Supabase account,
-   created by a database trigger on signup) replaced it. */
-
-const { SUPA_URL, dbHeaders, fail, parseBody, verifyUser } = require('./_lib/common');
+const { SUPA_URL, dbHeaders, fail, parseBody, verifyUser, allowRequest } = require('./_lib/common');
 
 const str = (max) => (v) => (typeof v === 'string' ? v.slice(0, max) : undefined);
 const int = (v) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Math.round(Number(v)) : undefined);
@@ -45,6 +42,12 @@ const SCHEMAS = {
       reason: str(100), note: str(500), reported_at: timestamp,
     },
   },
+};
+
+// Per user, per table: at most `max` rows every `windowSeconds`.
+const RATE_LIMITS = {
+  question_reports: { action: 'report', max: 20, windowSeconds: 3600 },
+  sessions: { action: 'session', max: 120, windowSeconds: 3600 },
 };
 
 function clean(schema, data) {
@@ -77,6 +80,11 @@ exports.handler = async (event) => {
   const row = clean(schema, body.data);
   if (!row) return fail(400, 'Missing or invalid fields');
   row.device_id = caller.id;
+
+  const limit = RATE_LIMITS[body.table];
+  if (!(await allowRequest(caller.id, limit.action, limit.max, limit.windowSeconds))) {
+    return fail(429, 'Too many requests — please try again later');
+  }
 
   try {
     const res = await fetch(`${SUPA_URL}/rest/v1/${body.table}`, {

@@ -73,14 +73,15 @@ cd labobo
 npm install
 ```
 
-3. Configure environment variables. Create a `.env` file in the project root if you are running Netlify functions locally or using custom secrets:
+3. Configure environment variables. Copy `.env.example` to `.env` in the project root if you are running Netlify functions locally:
 
 ```env
 SUPA_SERVICE_KEY=your-supabase-service-role-key
 ```
 
 Notes:
-- `SUPA_SERVICE_KEY` lets the Netlify functions write sessions, reports, and leaderboard entries server-side.
+- `SUPA_SERVICE_KEY` is required for the Netlify functions to write sessions, reports, and leaderboard entries. Without it those writes return a 500 and the function log says `SUPA_SERVICE_KEY is not set`.
+- Writes are rate-limited per user (reports 20/hour, quiz results 120/hour, leaderboard submissions 20/hour) and return 429 past the limit.
 - The public read endpoints use the publishable Supabase key exposed to the app and Netlify functions.
 
 4. Run the app locally:

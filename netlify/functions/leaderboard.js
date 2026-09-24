@@ -14,7 +14,7 @@
    All reads and writes use the service key (see _lib/common.js), so the
    leaderboard_entries table needs no anon policies. */
 
-const { SUPA_URL, dbHeaders, json, fail, getWeekStart, parseBody, verifyUser } = require('./_lib/common');
+const { SUPA_URL, dbHeaders, json, fail, getWeekStart, parseBody, verifyUser, allowRequest } = require('./_lib/common');
 const { validateHandle } = require('./_lib/profanity');
 
 // Keep in sync with `leaderboardSubject` in src/lib/subjects.js.
@@ -169,6 +169,10 @@ exports.handler = async (event) => {
         time = Math.round(Number(body.time_seconds));
         // A 30-question exam can't be finished in under a minute or take a day.
         if (!Number.isFinite(time) || time < 60 || time > 86400) time = null;
+      }
+
+      if (!(await allowRequest(caller.id, 'leaderboard_post', 20, 3600))) {
+        return fail(429, 'Too many submissions — please try again later');
       }
 
       const weekStart = getWeekStart();

@@ -13,12 +13,13 @@ const SUPA_SERVICE_KEY = process.env.SUPA_SERVICE_KEY || null;
 
 const bearer = (key) => ({ apikey: key, Authorization: `Bearer ${key}` });
 
-/** Headers for a server-side Supabase call. Prefers the service key so the
-    tables can be locked down to it; falls back to the anon key so the code is
-    safe to deploy before the lock-down migration runs. */
+/** Headers for a server-side Supabase call with the service key. The
+    user-linked tables have no policies for the anon key, so there is nothing
+    to fall back to: without the key every write would fail, so fail here with
+    the real reason (callers catch it and log it). */
 function dbHeaders() {
-  if (!SUPA_SERVICE_KEY) console.warn('[db] SUPA_SERVICE_KEY not set; using the anon key');
-  return bearer(SUPA_SERVICE_KEY || SUPA_ANON_KEY);
+  if (!SUPA_SERVICE_KEY) throw new Error('SUPA_SERVICE_KEY is not set');
+  return bearer(SUPA_SERVICE_KEY);
 }
 const anonHeaders = () => bearer(SUPA_ANON_KEY);
 
@@ -71,6 +72,26 @@ async function verifyUser(event) {
   }
 }
 
+/** Per-user rate limit: true if `userId` may do `action` again (and records
+    it), false once they've done it `max` times in the last `windowSeconds`.
+    Backed by the check_rate_limit() database function. Fails open: if the
+    limiter itself errors, the request is allowed rather than blocking
+    everyone. */
+async function allowRequest(userId, action, max, windowSeconds) {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/rpc/check_rate_limit`, {
+      method: 'POST',
+      headers: { ...dbHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_user: userId, p_action: action, p_max: max, p_window_seconds: windowSeconds }),
+    });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    return (await res.json()) !== false;
+  } catch (e) {
+    console.error(`[rate-limit] check failed for ${action}; allowing`, e);
+    return true;
+  }
+}
+
 /** Parse a JSON body; returns null when it is missing, malformed or not an object. */
 function parseBody(event) {
   try {
@@ -84,5 +105,5 @@ function parseBody(event) {
 module.exports = {
   SUPA_URL,
   dbHeaders, anonHeaders,
-  json, fail, getWeekStart, parseBody, verifyUser,
+  json, fail, getWeekStart, parseBody, verifyUser, allowRequest,
 };
