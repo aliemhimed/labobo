@@ -209,5 +209,3 @@ h1, h2, h3 { text-wrap: balance; }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
-.midterm-page .opt.correct::after { content: '✓'; margin-left: auto; padding-left: 8px; font-weight: 800; color: var(--correct); }
-.midterm-page .opt.wrong::after { content: '✗'; margin-left: auto; padding-left: 8px; font-weight: 800; color: var(--wrong); }
