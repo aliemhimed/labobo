@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useSetSemester } from '../hooks/useProfile.js';
 
 const SEMESTERS = [
-  { id: '1', label: 'Semester 1', desc: 'GCT I, Body Systems, Medical Chemistry, Medical Physics, Clinical & Professional Skills 1, Medicine & Art' },
-  { id: '2', label: 'Semester 2', desc: 'GCT II, Body Systems II, Clinical & Professional Skills 2, Medicine & Art II' },
+  { id: '1', label: 'Semester 1', fill: 'blue', tilt: -1.4,
+    desc: 'GCT I, Body Systems, Medical Chemistry, Medical Physics, Clinical & Professional Skills 1, Medicine & Art' },
+  { id: '2', label: 'Semester 2', fill: 'mint', tilt: 1.3,
+    desc: 'GCT II, Body Systems II, Clinical & Professional Skills 2, Medicine & Art II' },
 ];
 
 /** Shown once, right after signup/first login, until a semester is chosen.
@@ -33,8 +35,9 @@ export default function SelectSemesterPage() {
         This decides which subjects you see. You can change it later from your profile menu.
       </p>
       <div className="semester-options">
-        {SEMESTERS.map((s) => (
-          <button key={s.id} type="button" className="semester-option"
+        {SEMESTERS.map((s, i) => (
+          <button key={s.id} type="button" className={'semester-option fill-' + s.fill}
+                  style={{ '--tilt': s.tilt + 'deg', '--i': i }}
                   disabled={setSemester.isPending} onClick={() => choose(s.id)}>
             <span className="so-name">{s.label}</span>
             <span className="so-subjects">{s.desc}</span>

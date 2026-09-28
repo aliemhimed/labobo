@@ -8,7 +8,10 @@ export default function TopBar({ subtitle, onBrandClick, onLogout }) {
   return (
     <header className="appbar">
       <nav className="crumbs" aria-label="Breadcrumb">
-        <Link to="/" className="wordmark">Labobo</Link>
+        <Link to="/" className="wordmark">
+          <img src="/theme/app-icon.webp" alt="" width="40" height="40" />
+          <span className="wordmark-text">Labobo</span>
+        </Link>
         {subtitle ? (
           <>
             <span className="crumb-sep" aria-hidden="true">/</span>

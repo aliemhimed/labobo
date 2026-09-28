@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const SPOKEN = { correct: 'right', wrong: 'wrong', answered: 'answered' };
 
 /* The answer sheet: one numbered bubble per question, filled in as it is
    answered (and marked right or wrong where the mode reveals that). The
-   current question carries the eosin ring. `marks[i]` is 'correct' | 'wrong'
+   current question is highlighted yellow. `marks[i]` is 'correct' | 'wrong'
    | 'answered' | null. With `onJump` the bubbles navigate; `wrap` lays them
    out in rows instead of one scrolling strip. */
 export default function SheetMap({ marks, current = -1, onJump, wrap = false, label = 'Answer sheet' }) {
@@ -43,6 +43,26 @@ export default function SheetMap({ marks, current = -1, onJump, wrap = false, la
         })}
       </ol>
     </nav>
+  );
+}
+
+/* The sheet above a live question: where you are, the running score, and
+   the bubbles. Long sets scroll in one strip; "Show all" lays them out in rows. */
+export function AnswerSheet({ marks, current, onJump, score }) {
+  const [wrap, setWrap] = useState(false);
+  return (
+    <section className="answer-sheet" aria-label="Answer sheet">
+      <div className="sheet-head">
+        <p className="sheet-count">Question {current + 1} of {marks.length}</p>
+        <p className="sheet-score">{score}</p>
+        {marks.length > 12 ? (
+          <button type="button" className="sheet-toggle" aria-expanded={wrap} onClick={() => setWrap((w) => !w)}>
+            {wrap ? 'Show fewer' : 'Show all'}
+          </button>
+        ) : null}
+      </div>
+      <SheetMap marks={marks} current={current} onJump={onJump} wrap={wrap} label="Jump to a question" />
+    </section>
   );
 }
 

@@ -65,52 +65,61 @@ export default function LoginPage() {
 
   return (
     <main className="login">
+      <aside className="login-side">
+        <p className="say">I'm Labobo. Sign in and I'll keep your scores and streak for you.</p>
+        <img className="login-mascot" src="/theme/mascot-lg.webp" alt="" width="400" height="732" />
+      </aside>
       <div className="login-panel">
-        <img className="login-mascot" src="/theme/mascot.webp" alt="" width="80" height="120" />
-        <p className="wordmark login-wordmark">Studywith Labobo</p>
+        <p className="wordmark login-wordmark">
+          <img src="/theme/app-icon.webp" alt="" width="40" height="40" />
+          <span>Studywith <b>Labobo</b></span>
+        </p>
         <h1>Practice questions for first-year medicine.</h1>
         <p className="lede">
           Study a topic with the answers in view, work through practice sets with feedback on
           every question, or sit a full exam and review what you missed.
         </p>
 
-        <div className="login-actions">
-          <button type="button" className="btn lg block" disabled={busy} onClick={google}>
-            <GoogleIcon /> Continue with Google
-          </button>
-
-          {!showEmail ? (
-            <button type="button" className="btn ghost block" onClick={() => setShowEmail(true)}>
-              Use email instead
+        <div className="nametag">
+          <p className="nametag-band">Sign in to start studying</p>
+          <div className="nametag-body login-actions">
+            <button type="button" className="btn lg block" disabled={busy} onClick={google}>
+              <GoogleIcon /> Continue with Google
             </button>
-          ) : (
-            <form className="login-form" onSubmit={submitEmail}>
-              <div className="segmented" role="group" aria-label="Log in or create an account">
-                <button type="button" aria-pressed={mode === 'signin'} onClick={() => setMode('signin')}>
-                  Log in
-                </button>
-                <button type="button" aria-pressed={mode === 'signup'} onClick={() => setMode('signup')}>
-                  Create account
-                </button>
-              </div>
-              <div className="field">
-                <label htmlFor="login-email" className="field-label">Email</label>
-                <input id="login-email" type="email" placeholder="you@example.com" autoComplete="email"
-                       value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div className="field">
-                <label htmlFor="login-password" className="field-label">Password</label>
-                <input id="login-password" type="password"
-                       placeholder={mode === 'signup' ? 'At least 6 characters' : ''}
-                       autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                       value={password} onChange={(e) => setPassword(e.target.value)}
-                       minLength={6} required />
-              </div>
-              <button type="submit" className="btn primary block" disabled={busy}>
-                {mode === 'signup' ? 'Create account' : 'Log in'}
+
+            {!showEmail ? (
+              <button type="button" className="btn ghost block" onClick={() => setShowEmail(true)}>
+                Use email instead
               </button>
-            </form>
-          )}
+            ) : (
+              <form className="login-form" onSubmit={submitEmail}>
+                <div className="segmented" role="group" aria-label="Log in or create an account">
+                  <button type="button" aria-pressed={mode === 'signin'} onClick={() => setMode('signin')}>
+                    Log in
+                  </button>
+                  <button type="button" aria-pressed={mode === 'signup'} onClick={() => setMode('signup')}>
+                    Create account
+                  </button>
+                </div>
+                <div className="field">
+                  <label htmlFor="login-email" className="field-label">Email</label>
+                  <input id="login-email" type="email" placeholder="you@example.com" autoComplete="email"
+                         value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+                <div className="field">
+                  <label htmlFor="login-password" className="field-label">Password</label>
+                  <input id="login-password" type="password"
+                         placeholder={mode === 'signup' ? 'At least 6 characters' : ''}
+                         autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                         value={password} onChange={(e) => setPassword(e.target.value)}
+                         minLength={6} required />
+                </div>
+                <button type="submit" className="btn primary block" disabled={busy}>
+                  {mode === 'signup' ? 'Create account' : 'Log in'}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
 
         <p className="form-error" role="alert">{error}</p>

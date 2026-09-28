@@ -2,14 +2,15 @@
    Design tokens: the single source for colour, type, radius and
    elevation. Every stylesheet reads these; nothing redefines them.
 
-   The palette comes from the H&E stain every student meets in
-   histology: hematoxylin (deep blue-violet) is the ink of the app —
-   text, actions, a chosen answer — and eosin (pink) marks where you
-   are. Green and red are reserved for right and wrong.
+   The look is a deck of flashcards and stickers on a dotted study
+   desk: thick ink outlines, a hard offset "print" shadow instead of
+   soft blur, and bright card colours per subject. Cobalt is the ink
+   of actions and a chosen answer, the yellow highlighter marks where
+   you are, mint and coral are right and wrong.
 
    Themes
-     light  [data-theme="light"]   "slide": cool glass-white paper
-     dark   [data-theme="dark"]    "darkfield": deep violet night
+     light  [data-theme="light"]   bright desk
+     dark   [data-theme="dark"]    night desk (cobalt shadows)
      lib/theme.js sets data-theme (default: follow the OS).
 
    Breakpoints (custom properties can't be used inside @media, so the
@@ -20,11 +21,12 @@
    ============================================================ */
 
 :root {
-  /* Type: serif for what you study, sans for the interface. */
-  --font-read: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, 'Times New Roman', serif;
-  --font-ui:   'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Type: Bricolage for names and headlines, Figtree for everything you read. */
+  --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Figtree Variable', system-ui, sans-serif;
+  --font-read:    'Figtree Variable', 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ui:      'Figtree Variable', 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Scale (after Bringhurst's classical scale): 12 14 16 18 21 24 36 48 */
+  /* Scale: 12 14 16 18 21 24 36 48 */
   --t-12: 0.75rem;
   --t-14: 0.875rem;
   --t-16: 1rem;
@@ -34,71 +36,97 @@
   --t-36: 2.25rem;
   --t-48: 3rem;
 
-  /* Radii by rank: small controls, sheets. Bubbles are circles. */
-  --r-control: 8px;
-  --r-sheet:   12px;
+  /* Radii by rank: small controls, cards. Bubbles are circles. */
+  --r-control: 14px;
+  --r-sheet:   22px;
 
-  --measure: 44rem;        /* reading column, ~68 characters of question text */
-  --page:    56rem;        /* widest content column */
+  /* Sticker outline weight. */
+  --line: 2.5px;
+
+  --measure: 46rem;
+  --page:    72rem;
   --ease-out: cubic-bezier(.2, .7, .3, 1);
+  --ease-pop: cubic-bezier(.3, 1.4, .5, 1);
+
+  /* Card fills. Always paired with --card-ink text and a --card-ink edge,
+     in both themes, so they read like printed stickers. */
+  --card-ink:  #0B1233;
+  --fill-blue:   #8FB2FF;
+  --fill-mint:   #7DE3C3;
+  --fill-orange: #FFB36B;
+  --fill-violet: #C7ADFF;
+  --fill-coral:  #FF8F9C;
+  --fill-yellow: #FFE45C;
+  --marker:      #FFE45C;   /* you are here */
+  --band:        #FF4D5E;   /* name-tag band */
 }
 
-/* ── Light: "slide" ───────────────────────────────────────────────── */
+/* ── Light: bright desk ───────────────────────────────────────────── */
 :root, [data-theme="light"] {
   color-scheme: light;
-  --paper:        #F5F5F8;   /* page */
+  --paper:        #EDF0FF;   /* page */
+  --dot:          #C9D1F5;   /* desk dots */
   --sheet:        #FFFFFF;   /* surfaces */
-  --sheet-hover:  #F1F0F7;
-  --rule:         #DCDAE8;
-  --rule-strong:  #B9B5D2;
-  --ink:          #25213F;   /* text */
-  --ink-soft:     #5A5673;
-  --ink-muted:    #6E6A88;   /* >= 4.5:1 on paper and sheet */
+  --sheet-hover:  #F4F6FF;
+  --rule:         #CDD4F2;
+  --rule-strong:  #8C96C8;
+  --ink:          #0B1233;   /* text */
+  --ink-soft:     #46527F;
+  --ink-muted:    #56618D;   /* >= 4.5:1 on paper and sheet */
 
-  --hema:         #3F358F;   /* actions, chosen answer */
-  --hema-strong:  #2F2774;
-  --hema-wash:    #ECEAF8;
+  --edge:         #0B1233;   /* outline on stickers */
+  --hard:         #0B1233;   /* offset print shadow */
+
+  --hema:         #2F5BFF;   /* actions, chosen answer */
+  --hema-strong:  #1E45E0;
+  --hema-wash:    #E1E7FF;
   --on-hema:      #FFFFFF;
-  --eosin:        #C4417D;   /* you are here */
-  --eosin-wash:   #FBE9F1;
+  --eosin:        #D12A45;   /* flags and "you" */
+  --eosin-wash:   #FFF6C2;
+  --focus:        #2F5BFF;
 
-  --correct:      #1E7B4F;
-  --correct-wash: #E6F4EC;
-  --wrong:        #B3261E;
-  --wrong-wash:   #FBEAE8;
+  --correct:      #137A50;
+  --correct-wash: #DDF7EE;
+  --wrong:        #C4213A;
+  --wrong-wash:   #FFE3E7;
   --review:       #9A5B00;
-  --review-wash:  #FBF1E0;
+  --review-wash:  #FFF1D6;
 
-  --float-shadow: 0 12px 32px rgba(37, 33, 63, 0.14), 0 2px 6px rgba(37, 33, 63, 0.08);
-  --scrim:        rgba(37, 33, 63, 0.45);
+  --float-shadow: 6px 6px 0 var(--hard);
+  --scrim:        rgba(11, 18, 51, 0.5);
 }
 
-/* ── Dark: "darkfield" ────────────────────────────────────────────── */
+/* ── Dark: night desk ─────────────────────────────────────────────── */
 [data-theme="dark"] {
   color-scheme: dark;
-  --paper:        #15132A;
-  --sheet:        #1D1A36;
-  --sheet-hover:  #25213F;
-  --rule:         #332E55;
-  --rule-strong:  #4A4474;
-  --ink:          #EDEBF8;
-  --ink-soft:     #BAB6D4;
-  --ink-muted:    #9D98BF;   /* >= 4.5:1 on paper and sheet */
+  --paper:        #0A0F2B;
+  --dot:          #1A2350;
+  --sheet:        #151D45;
+  --sheet-hover:  #1C2556;
+  --rule:         #28336E;
+  --rule-strong:  #4A5A9E;
+  --ink:          #F1F4FF;
+  --ink-soft:     #B1BCE6;
+  --ink-muted:    #98A4D6;   /* >= 4.5:1 on paper and sheet */
 
-  --hema:         #A89CFF;
-  --hema-strong:  #C1B8FF;
-  --hema-wash:    #2C2752;
-  --on-hema:      #15132A;
-  --eosin:        #F08DBA;
-  --eosin-wash:   #3A2140;
+  --edge:         #5568B8;
+  --hard:         #3557FF;
 
-  --correct:      #63C894;
-  --correct-wash: #183A2B;
-  --wrong:        #F2877F;
-  --wrong-wash:   #43201F;
-  --review:       #E3B25B;
+  --hema:         #7D98FF;
+  --hema-strong:  #9DB2FF;
+  --hema-wash:    #1F2A66;
+  --on-hema:      #0A0F2B;
+  --eosin:        #FF8F9C;
+  --eosin-wash:   #3A3413;
+  --focus:        #FFE45C;
+
+  --correct:      #63D6A6;
+  --correct-wash: #133A33;
+  --wrong:        #FF8A96;
+  --wrong-wash:   #43202A;
+  --review:       #F2C05E;
   --review-wash:  #3B2E17;
 
-  --float-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
-  --scrim:        rgba(8, 6, 20, 0.6);
+  --float-shadow: 6px 6px 0 var(--hard);
+  --scrim:        rgba(4, 6, 20, 0.66);
 }
