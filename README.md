@@ -49,6 +49,10 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 └── vite.config.js
 ```
 
+## Admin dashboard
+
+Signed-in admins can open `/admin` to monitor users, quiz activity, question reports, question banks, leaderboards and system health (auto-refreshes every 30s; reports can be marked resolved). Access is controlled by the `ADMIN_EMAILS` environment variable (comma-separated, confirmed emails) in Netlify; the data comes from `netlify/functions/admin.js`.
+
 ## Getting Started / Prerequisites
 
 Before running the app locally, make sure you have the following installed:

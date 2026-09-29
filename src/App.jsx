@@ -9,6 +9,7 @@ import { SUBJECTS } from './lib/subjects.js';
 import { loadSubjectPage } from './pages/loadSubjectPage.js';
 
 const SubjectPage = lazy(loadSubjectPage);
+const AdminPage = lazy(() => import('./pages/AdminPage.jsx'));
 
 /* The old site was a folder of .html files. Keep those URLs working so
    existing links and bookmarks don't break. */
@@ -21,6 +22,8 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
+        {/* Admins skip the semester gate; the API itself enforces who may see data. */}
+        <Route path="/admin" element={<AuthGate><Suspense fallback={null}><AdminPage /></Suspense></AuthGate>} />
         <Route path="/*" element={<StudentApp />} />
       </Routes>
     </ErrorBoundary>

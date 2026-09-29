@@ -15,6 +15,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/admin"
+  to   = "/.netlify/functions/admin"
+  status = 200
+
+[[redirects]]
+  from = "/api/visit"
+  to   = "/.netlify/functions/visit"
+  status = 200
+
+[[redirects]]
   from = "/api/leaderboard"
   to   = "/.netlify/functions/leaderboard"
   status = 200

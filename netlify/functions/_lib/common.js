@@ -66,10 +66,23 @@ async function verifyUser(event) {
     });
     if (!res.ok) return null;
     const user = await res.json();
-    return user?.id ? { id: user.id, email: user.email || null } : null;
+    return user?.id
+      ? { id: user.id, email: user.email || null, emailConfirmed: !!(user.email_confirmed_at || user.confirmed_at) }
+      : null;
   } catch {
     return null;
   }
+}
+
+/** True if `caller` (from verifyUser) is an admin: their email is confirmed
+    and listed in the ADMIN_EMAILS env var (comma-separated). Deliberately not
+    a column on `profiles`: users may update their own row, so a flag there
+    would let anyone promote themselves. With the variable unset nobody is an
+    admin. */
+function isAdmin(caller) {
+  if (!caller?.email || !caller.emailConfirmed) return false;
+  const admins = (process.env.ADMIN_EMAILS || '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+  return admins.includes(caller.email.toLowerCase());
 }
 
 /** Per-user rate limit: true if `userId` may do `action` again (and records
@@ -105,5 +118,5 @@ function parseBody(event) {
 module.exports = {
   SUPA_URL,
   dbHeaders, anonHeaders,
-  json, fail, getWeekStart, parseBody, verifyUser, allowRequest,
+  json, fail, getWeekStart, parseBody, verifyUser, isAdmin, allowRequest,
 };

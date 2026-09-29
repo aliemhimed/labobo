@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { recordVisit } from '../lib/visit.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import LoginPage from '../pages/LoginPage.jsx';
@@ -11,6 +13,10 @@ function Splash() {
 /** No session -> the login screen. A session -> children. */
 export function AuthGate({ children }) {
   const { user, loading } = useAuth();
+  const userId = user?.id;
+  useEffect(() => {
+    if (userId) recordVisit();
+  }, [userId]);
   if (loading) return <Splash />;
   if (!user) return <LoginPage />;
   return children;
