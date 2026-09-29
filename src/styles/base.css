@@ -384,3 +384,41 @@ button.crumb-current:hover { color: var(--hema); }
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Install banner (components/InstallPrompt.jsx) ─────────────────── */
+
+.install-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(34rem, calc(100% - 32px));
+  padding: 14px 16px;
+  border: var(--line) solid var(--edge);
+  border-radius: var(--r-sheet);
+  background: var(--sheet);
+  color: var(--ink);
+  box-shadow: var(--float-shadow);
+  transform: translateX(-50%);
+  animation: install-in 0.35s var(--ease-pop);
+}
+@keyframes install-in {
+  from { opacity: 0; transform: translate(-50%, 24px); }
+}
+.install-icon { flex: none; border-radius: 12px; }
+.install-text { flex: 1; min-width: 0; display: grid; gap: 2px; font-size: var(--t-14); line-height: 1.4; }
+.install-text strong { font: 800 var(--t-16)/1.2 var(--font-display); }
+.install-text span { color: var(--ink-soft); }
+.install-share { display: inline-block; vertical-align: -3px; color: var(--hema); }
+.install-actions { display: flex; flex-direction: column; gap: 6px; flex: none; }
+
+@media (max-width: 479px) {
+  .install-banner { flex-wrap: wrap; }
+  .install-actions { flex-direction: row; width: 100%; justify-content: flex-end; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .install-banner { animation: none; }
+}

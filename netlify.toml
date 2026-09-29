@@ -68,6 +68,19 @@
 # Caching. Vite fingerprints everything under /assets, so it can be cached
 # forever. Images and icons keep their names, so give them a long but finite
 # lifetime and let the CDN revalidate.
+# The service worker and manifest must always be revalidated, or a deploy
+# could keep serving an old worker for a day.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+    Cache-Control = "no-cache"
+
 [[headers]]
   for = "/assets/*"
   [headers.values]

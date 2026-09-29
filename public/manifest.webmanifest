@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "Studywith Labobo",
+  "short_name": "Labobo",
+  "description": "Medical MCQ practice: study, exam and review modes with weekly leaderboards.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0A0F2B",
+  "theme_color": "#2F5BFF",
+  "categories": ["education", "medical"],
+  "icons": [
+    { "src": "/theme/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/theme/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/theme/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

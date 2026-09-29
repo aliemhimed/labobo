@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import { fetchIsAdmin } from '../lib/adminApi.js';
+import { promptInstall } from '../lib/install.js';
+import { useInstallMode } from './InstallPrompt.jsx';
 
 const SEMESTER_LABEL = { '1': 'Semester 1', '2': 'Semester 2' };
 
@@ -22,6 +24,7 @@ export default function ProfileMenu({ onSignOut }) {
     staleTime: 10 * 60_000,
     retry: false,
   });
+  const installMode = useInstallMode();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -70,6 +73,12 @@ export default function ProfileMenu({ onSignOut }) {
           <Link to="/select-semester" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
             Change semester
           </Link>
+          {installMode === 'prompt' ? (
+            <button type="button" className="profile-item" role="menuitem"
+                    onClick={() => { setOpen(false); promptInstall(); }}>
+              Install app
+            </button>
+          ) : null}
           {adminCheck?.admin ? (
             <Link to="/admin" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
               Admin dashboard

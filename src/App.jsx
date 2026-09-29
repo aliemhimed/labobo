@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage.jsx';
 import SelectSemesterPage from './pages/SelectSemesterPage.jsx';
 import NotFound from './pages/NotFound.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
+import InstallPrompt from './components/InstallPrompt.jsx';
 import { AuthGate, SemesterGate } from './components/AuthGate.jsx';
 import { SUBJECTS } from './lib/subjects.js';
 import { loadSubjectPage } from './pages/loadSubjectPage.js';
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/admin" element={<AuthGate><Suspense fallback={null}><AdminPage /></Suspense></AuthGate>} />
         <Route path="/*" element={<StudentApp />} />
       </Routes>
+      <InstallPrompt />
     </ErrorBoundary>
   );
 }
