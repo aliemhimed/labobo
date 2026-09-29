@@ -111,6 +111,7 @@
 .adm-sub { color: var(--ink-muted); font-size: var(--t-12); }
 .adm-back { margin-bottom: 14px; }
 .adm-user-head { margin-bottom: 20px; }
+.adm-user-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .adm-user-head h2 { font: 800 var(--t-24) var(--font-display); letter-spacing: -0.02em; margin: 0 0 4px; }
 .adm-user-head p { margin: 2px 0; color: var(--ink-soft); }
 

@@ -1,10 +1,14 @@
 /* Netlify Function: admin dashboard data
    GET  /api/admin                                (Authorization: Bearer <token>)
      -> one snapshot of everything the Overview tab shows
+   GET  /api/admin?view=me         -> { admin: true|false } for any signed-in
+                                      user (drives the profile-menu link)
    GET  /api/admin?view=users      -> every student with activity totals
    GET  /api/admin?user=<id>       -> one student's full insights
    POST /api/admin   body: { action: 'delete_report', id }
      -> removes a question report once it has been dealt with
+   POST /api/admin   body: { action: 'delete_user', id }
+     -> permanently deletes a student's account and all their data
 
    Only signed-in users whose confirmed email is listed in the ADMIN_EMAILS
    environment variable get in (see _lib/common#isAdmin); everyone else gets
@@ -362,7 +366,7 @@ async function userDetail(id) {
 
   const a = auth.get(id);
   return {
-    profile: { ...profile[0], provider: a?.provider ?? null, last_sign_in_at: a?.last_sign_in_at ?? null, confirmed: a?.confirmed ?? null },
+    profile: { ...profile[0], is_admin: isAdmin({ email: profile[0].email, emailConfirmed: true }), provider: a?.provider ?? null, last_sign_in_at: a?.last_sign_in_at ?? null, confirmed: a?.confirmed ?? null },
     totals: {
       quizzes: sessions.length,
       questions: sessions.reduce((n, s) => n + (s.total || 0), 0),
@@ -389,12 +393,45 @@ async function userDetail(id) {
   };
 }
 
+/* Permanently removes a student: the Supabase Auth account first (profiles
+   cascades from it), then their rows in the tables keyed by user id, which
+   have no foreign key. Admins can't be deleted here, so nobody can lock the
+   dashboard by removing themselves or a co-admin. */
+async function deleteUser(id, caller) {
+  if (!/^[0-9a-f-]{36}$/i.test(id || '')) return fail(400, 'Invalid user id');
+  if (id === caller.id) return fail(400, "You can't delete your own account");
+
+  const [profile] = await rows(`/profiles?id=eq.${encodeURIComponent(id)}&select=email`);
+  if (profile && isAdmin({ email: profile.email, emailConfirmed: true })) {
+    return fail(400, "Admin accounts can't be deleted here");
+  }
+
+  const res = await fetch(`${SUPA_URL}/auth/v1/admin/users/${id}`, { method: 'DELETE', headers: dbHeaders() });
+  if (!res.ok && res.status !== 404) return fail(502, 'Could not delete the account', `auth delete ${res.status} ${await res.text()}`);
+
+  const failed = [];
+  for (const [table, column] of [
+    ['sessions', 'device_id'], ['leaderboard_entries', 'device_id'], ['question_reports', 'device_id'],
+    ['daily_visits', 'user_id'], ['rate_limit_hits', 'user_id'], ['profiles', 'id'],
+  ]) {
+    const r = await rest(`/${table}?${column}=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
+    if (!r.ok) { failed.push(table); console.error('[admin] cleanup', table, r.status, await r.text()); }
+  }
+  return json(200, { ok: true, cleanup_failed: failed });
+}
+
 exports.handler = async (event) => {
   // Same-origin only: no CORS headers, preflights get an empty 204.
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, body: '' };
 
   const caller = await verifyUser(event);
   if (!caller) return fail(401, 'Sign in required');
+
+  // Answers any signed-in user, so the app can decide whether to show the link.
+  if (event.httpMethod === 'GET' && event.queryStringParameters?.view === 'me') {
+    return json(200, { admin: isAdmin(caller) });
+  }
+
   if (!isAdmin(caller)) return fail(403, 'Not allowed');
 
   try {
@@ -420,6 +457,7 @@ exports.handler = async (event) => {
         if (!res.ok) return fail(502, 'Could not delete', `${res.status} ${await res.text()}`);
         return json(200, { ok: true });
       }
+      if (body.action === 'delete_user') return deleteUser(body.id, caller);
       return fail(400, 'Unknown action');
     }
 

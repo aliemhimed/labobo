@@ -14,8 +14,12 @@ async function request(init, query = '') {
 }
 
 export const fetchSnapshot = (signal) => request({ signal });
+export const fetchIsAdmin = (signal) => request({ signal }, '?view=me');
 export const fetchUsers = (signal) => request({ signal }, '?view=users');
 export const fetchUser = (id, signal) => request({ signal }, `?user=${encodeURIComponent(id)}`);
+
+export const deleteUser = (id) =>
+  request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete_user', id }) });
 
 export const deleteReport = (id) =>
   request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete_report', id }) });

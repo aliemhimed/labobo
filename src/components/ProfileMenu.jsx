@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
+import { fetchIsAdmin } from '../lib/adminApi.js';
 
 const SEMESTER_LABEL = { '1': 'Semester 1', '2': 'Semester 2' };
 
@@ -12,6 +14,14 @@ const SEMESTER_LABEL = { '1': 'Semester 1', '2': 'Semester 2' };
 export default function ProfileMenu({ onSignOut }) {
   const { user } = useAuth();
   const { data: profile } = useProfile();
+  // Server-checked (ADMIN_EMAILS); non-admins and failures simply see no link.
+  const { data: adminCheck } = useQuery({
+    queryKey: ['is-admin', user?.id],
+    enabled: !!user,
+    queryFn: ({ signal }) => fetchIsAdmin(signal),
+    staleTime: 10 * 60_000,
+    retry: false,
+  });
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -60,6 +70,11 @@ export default function ProfileMenu({ onSignOut }) {
           <Link to="/select-semester" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
             Change semester
           </Link>
+          {adminCheck?.admin ? (
+            <Link to="/admin" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
+              Admin dashboard
+            </Link>
+          ) : null}
           <button type="button" className="profile-item danger" role="menuitem" onClick={handleSignOut}>
             Sign out
           </button>

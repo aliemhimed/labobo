@@ -1,5 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchUser } from '../../lib/adminApi.js';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchUser, deleteUser } from '../../lib/adminApi.js';
+import { useAuth } from '../../lib/auth.jsx';
+import { useConfirm } from '../Confirm.jsx';
 import { fmtTime } from '../../lib/leaderboard.js';
 import { Stat, Panel, DayBars, HBars, Table, Sparkline, ago, pct, num } from './parts.jsx';
 
@@ -11,6 +13,19 @@ export default function UserDetail({ id, onBack }) {
     queryKey: ['admin-user', id],
     queryFn: ({ signal }) => fetchUser(id, signal),
     refetchInterval: 60_000,
+  });
+
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const { confirm, element: confirmElement } = useConfirm();
+  const remove = useMutation({
+    mutationFn: () => deleteUser(id),
+    onSuccess: () => {
+      qc.removeQueries({ queryKey: ['admin-user', id] });
+      qc.invalidateQueries({ queryKey: ['admin-users'] });
+      qc.invalidateQueries({ queryKey: ['admin-snapshot'] });
+      onBack();
+    },
   });
 
   const back = <button type="button" className="back-link adm-back" onClick={onBack}>← All students</button>;
@@ -30,8 +45,26 @@ export default function UserDetail({ id, onBack }) {
   return (
     <>
       {back}
+      {confirmElement}
       <div className="adm-user-head">
-        <h2>{name}</h2>
+        <div className="adm-user-title">
+          <h2>{name}</h2>
+          {!p.is_admin && p.id !== user?.id ? (
+            <button type="button" className="btn danger sm" disabled={remove.isPending}
+                    onClick={async () => {
+                      const ok = await confirm({
+                        title: `Delete ${name}?`,
+                        message: `This permanently deletes their account and all their data: ${num(t.quizzes)} quizzes, ${num(t.visit_days)} visit days, ${num(t.leaderboard_entries)} leaderboard entries and ${num(t.reports)} reports. It can't be undone.`,
+                        confirmLabel: 'Delete permanently',
+                        danger: true,
+                      });
+                      if (ok) remove.mutate();
+                    }}>
+              {remove.isPending ? 'Deleting…' : 'Delete user'}
+            </button>
+          ) : null}
+        </div>
+        {remove.isError ? <p className="adm-error" role="alert">Couldn't delete: {remove.error.message}</p> : null}
         <p>
           {p.email}{p.semester ? ` · Semester ${p.semester}` : ' · no semester chosen'}
           {p.provider ? ` · ${p.provider === 'email' ? 'email & password' : p.provider}` : ''}
