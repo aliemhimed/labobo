@@ -57,3 +57,6 @@ target/
 .netlify/
 *.local
 deno.lock
+
+# graphify knowledge graph (regenerated locally by `graphify update .`)
+graphify-out/
