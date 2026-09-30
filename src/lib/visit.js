@@ -13,7 +13,14 @@ export async function recordVisit() {
     /* storage blocked: fall through and count this load */
   }
   try {
-    await fetch('/api/visit', { method: 'POST', headers: await authHeader() });
+    // The student's own time zone, so the visit lands on their calendar day.
+    let tz = null;
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || null; } catch { /* old browser */ }
+    await fetch('/api/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await authHeader()) },
+      body: JSON.stringify({ tz }),
+    });
   } catch {
     /* offline or functions not running */
   }

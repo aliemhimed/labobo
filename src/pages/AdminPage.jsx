@@ -5,6 +5,9 @@ import PageHead from '../components/PageHead.jsx';
 import UsersTab from '../components/admin/UsersTab.jsx';
 import UserDetail from '../components/admin/UserDetail.jsx';
 import QuestionsTab from '../components/admin/QuestionsTab.jsx';
+import AnnouncementsTab from '../components/admin/AnnouncementsTab.jsx';
+import LogTab from '../components/admin/LogTab.jsx';
+import { RetentionPanel, QuietPanel } from '../components/admin/Retention.jsx';
 import { Stat, Panel, DayBars, HBars, Table, ago, pct, num } from '../components/admin/parts.jsx';
 import { fetchSnapshot } from '../lib/adminApi.js';
 import { fmtTime } from '../lib/leaderboard.js';
@@ -17,6 +20,7 @@ const REFRESH_MS = 30_000;
    server's `counters` object. */
 const COUNTER_GROUPS = [
   ['Students', [['students', 'Total students'], ['signups_7d', 'New this week'], ['semester_1', 'Semester 1'], ['semester_2', 'Semester 2'], ['no_semester', 'No semester yet']]],
+  ['Retention', [['active_7d', 'Active this week'], ['returning_7d', 'Came back this week'], ['new_7d', 'New this week'], ['quiet', 'Not back in 7-30 days'], ['lapsed', 'Gone 30+ days']]],
   ['Visits', [['visitors_today', 'Visitors today'], ['visits_today', 'Visits today'], ['visitors_7d', 'Visitors, 7 days'], ['visits_30d', 'Visits, 30 days'], ['visitor_days_all', 'Visitor-days, all time']]],
   ['Quizzes', [['quizzes_24h', 'Last 24 hours'], ['quizzes_7d', 'Last 7 days'], ['quizzes_30d', 'Last 30 days'], ['quizzes_all', 'All time'], ['questions_answered_30d', 'Questions answered, 30 days']]],
   ['Content & community', [['questions_in_banks', 'Questions in banks'], ['subjects_stocked', 'Subjects stocked'], ['subjects_empty', 'Subjects empty'], ['reports_open', 'Open reports'], ['reports_7d', 'Reports this week'], ['leaderboard_week', 'Leaderboard, this week'], ['leaderboard_all', 'Leaderboard, all time'], ['rate_limit_hits_hour', 'Rate-limit hits, last hour']]],
@@ -45,11 +49,14 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
               <DayBars series={visits.by_day} label="Unique visitors per day, last 30 days" />
               <p className="adm-foot">
                 {visits.today} today ({visits.today_hits} visits) · {visits.unique_7d} different students in 7 days · {visits.unique_30d} in 30 days.
-                Counting started when this feature went live.
+                Each visit counts on the student’s own calendar day. Counting started when this feature went live.
               </p>
             </>
           ) : null}
         </Panel>
+
+        <RetentionPanel retention={data.retention} error={errors.retention} />
+        <QuietPanel retention={data.retention} error={errors.retention} onOpenUser={onOpenUser} />
 
         <Panel title="Counters" note="everything, at a glance" wide>
           <div className="adm-counters">
@@ -68,7 +75,6 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
 
         <Panel title="Quizzes per day" note="last 14 days" error={errors.sessions}>
           {sessions ? <DayBars series={sessions.by_day} label="Quiz sessions per day, last 14 days" /> : null}
-          {sessions?.capped ? <p className="adm-empty">Showing the most recent 5,000 sessions only.</p> : null}
         </Panel>
 
         <Panel title="New signups" note="last 30 days" error={errors.users}>
@@ -96,9 +102,8 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
                   {reports.by_reason.map((r) => <span key={r.key} className="adm-chip">{r.key} · {r.n}</span>)}
                 </div>
               ) : <p className="adm-empty">No open reports. 🎉</p>}
-              <button type="button" className="btn sm" onClick={onOpenQuestions}>
-                Review questions: reports, likely wrong keys, most missed
-              </button>
+              <button type="button" className="btn sm" onClick={onOpenQuestions}>Open the Questions tab</button>
+              <p className="adm-foot">Reports grouped by question, likely wrong answer keys and the most missed questions.</p>
             </>
           ) : null}
         </Panel>
@@ -164,7 +169,7 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
             <li><b>{system.db_ms} ms</b> · database round trip (all sections, in parallel)</li>
             <li><b>{system.rate_limits ? system.rate_limits.last_hour : '—'}</b> rate-limited requests recorded in the last hour
               {system.rate_limits ? ` (${system.rate_limits.total} still on file)` : ''}</li>
-            <li>Auto-refreshes every {REFRESH_MS / 1000}s.</li>
+            <li>Days follow your time zone ({data.tz}). Auto-refreshes every {REFRESH_MS / 1000}s.</li>
           </ul>
         </Panel>
       </div>
@@ -174,7 +179,7 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
 
 export default function AdminPage() {
   const [params, setParams] = useSearchParams();
-  const tab = ['users', 'questions'].includes(params.get('tab')) ? params.get('tab') : 'overview';
+  const tab = ['users', 'questions', 'announcements', 'log'].includes(params.get('tab')) ? params.get('tab') : 'overview';
   const studentId = params.get('u');
 
   const setView = (next) => setParams(next, { replace: false });
@@ -226,15 +231,22 @@ export default function AdminPage() {
           <button type="button" role="tab" aria-selected={tab === 'questions'} onClick={() => setView({ tab: 'questions' })}>
             Questions{data.counters.reports_open ? <span>{data.counters.reports_open} open</span> : null}
           </button>
+          <button type="button" role="tab" aria-selected={tab === 'announcements'} onClick={() => setView({ tab: 'announcements' })}>
+            Announcements
+          </button>
+          <button type="button" role="tab" aria-selected={tab === 'log'} onClick={() => setView({ tab: 'log' })}>
+            Log
+          </button>
         </div>
 
         {tab === 'users'
           ? (studentId
             ? <UserDetail id={studentId} onBack={() => setView({ tab: 'users' })} />
             : <UsersTab onOpen={openUser} />)
-          : tab === 'questions'
-            ? <QuestionsTab onOpenUser={openUser} />
-            : <Overview data={data} onOpenUser={openUser} onOpenQuestions={() => setView({ tab: 'questions' })} />}
+          : tab === 'questions' ? <QuestionsTab onOpenUser={openUser} />
+            : tab === 'announcements' ? <AnnouncementsTab />
+              : tab === 'log' ? <LogTab />
+                : <Overview data={data} onOpenUser={openUser} onOpenQuestions={() => setView({ tab: 'questions' })} />}
       </main>
     </>
   );

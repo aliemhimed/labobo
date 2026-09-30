@@ -8,6 +8,7 @@ import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
+import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
 import { SUBJECTS } from '../lib/subjects.js';
 import { questionsQuery } from '../hooks/useQuestions.js';
 import { loadSubjectPage } from './loadSubjectPage.js';
@@ -221,6 +222,7 @@ export default function HomePage() {
         </aside>
 
         <div className="home-main">
+          <AnnouncementBanner semester={semester} />
           <h1 className="home-title">{firstName ? `Hey ${firstName}, pick a deck.` : 'Pick a deck.'}</h1>
           <p className="home-sub">
             Semester {semester} subjects. Each one has study, practice and exam modes, plus

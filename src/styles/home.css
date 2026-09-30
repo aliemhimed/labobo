@@ -201,6 +201,31 @@
   line-height: 1.55;
 }
 
+/* Announcements from the admin dashboard (AnnouncementBanner.jsx) */
+.announcements { display: grid; gap: 12px; margin-bottom: 26px; }
+.announcement {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 14px 14px 18px;
+  border: var(--line) solid var(--edge);
+  border-radius: 16px;
+  background: var(--hema-wash);
+  box-shadow: 4px 4px 0 var(--hard);
+}
+.announcement.warning { background: var(--review-wash); }
+.announcement.success { background: var(--correct-wash); }
+.announcement p { flex: 1; margin: 0; line-height: 1.5; color: var(--ink); overflow-wrap: anywhere; white-space: pre-line; }
+.announcement b {
+  display: block; margin-bottom: 2px;
+  font: 800 var(--t-12) var(--font-ui); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft);
+}
+.announcement-close {
+  flex: none; display: grid; place-items: center;
+  width: 32px; height: 32px; padding: 0;
+  border: 0; border-radius: 50%; background: transparent; color: var(--ink-soft); cursor: pointer;
+}
+.announcement-close:hover { background: var(--sheet); }
+.announcement-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+
 /* Streak card */
 .log {
   align-self: stretch;

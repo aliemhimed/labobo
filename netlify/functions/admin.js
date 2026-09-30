@@ -4,16 +4,29 @@
    GET  /api/admin?view=me         -> { admin: true|false } for any signed-in
                                       user (drives the profile-menu link)
    GET  /api/admin?view=users      -> every student with activity totals
+   GET  /api/admin?view=users_csv  -> the same, as a CSV download (logged)
    GET  /api/admin?user=<id>       -> one student's full insights
    GET  /api/admin?view=questions  -> open reports grouped by question, each
                                       with the question itself and how often
                                       each option is picked; the questions
                                       most students get wrong
+   GET  /api/admin?view=announcements -> banners, newest first
+   GET  /api/admin?view=log        -> what admins did, newest first
    POST /api/admin   body: { action: 'resolve_reports', ids: [..] }
    POST /api/admin   body: { action: 'reopen_reports', ids: [..] }
      -> marks question reports dealt with (or not) — kept, not deleted
    POST /api/admin   body: { action: 'delete_user', id }
      -> permanently deletes a student's account and all their data
+   POST /api/admin   body: { action: 'create_announcement', message, tone, semester, ends_at }
+   POST /api/admin   body: { action: 'end_announcement', id }
+
+   Every GET takes `tz` (the admin's IANA time zone, e.g. Africa/Tripoli):
+   days in charts, "today" and streaks follow it. Missing or unknown -> UTC.
+
+   The counting happens in the database (admin_overview, admin_users,
+   admin_user_stats — see supabase/migrations), so totals aren't capped by
+   how many rows a function can download. Every change an admin makes is
+   written to admin_log.
 
    Only signed-in users whose confirmed email is listed in the ADMIN_EMAILS
    environment variable get in (see _lib/common#isAdmin); everyone else gets
@@ -40,9 +53,7 @@ const BANKS = [
 const BANK_TABLES = new Set(BANKS.flatMap((b) => b.tables));
 const TABLE_SUBJECT = new Map(BANKS.flatMap((b) => b.tables.map((t) => [t, b.subject])));
 
-const DAY = 86400000;
-const SESSION_CAP = 5000;
-const dayKey = (d) => new Date(d).toISOString().slice(0, 10);
+const UUID = /^[0-9a-f-]{36}$/i;
 
 const rest = (path, init = {}) =>
   fetch(`${SUPA_URL}/rest/v1${path}`, {
@@ -56,18 +67,39 @@ async function rows(path) {
   return res.json();
 }
 
+/** Exact row count; `filter` is extra query string, e.g. '&resolved_at=is.null'. */
 async function count(table, filter = '') {
-  const res = await rest(`/${table}?select=id${filter}`, { headers: { Prefer: 'count=exact', Range: '0-0' } });
+  const res = await rest(`/${table}?select=*${filter}`, { headers: { Prefer: 'count=exact', Range: '0-0' } });
   if (!res.ok) throw new Error(`count ${table} -> ${res.status}`);
   const n = parseInt((res.headers.get('content-range') || '').split('/')[1], 10);
   return Number.isFinite(n) ? n : 0;
 }
 
-/** Last `n` UTC days, oldest first, as [{ day, ...blank }]. */
-function lastDays(n, blank) {
-  const out = [];
-  for (let i = n - 1; i >= 0; i--) out.push({ day: dayKey(Date.now() - i * DAY), ...blank });
-  return out;
+async function rpc(fn, args) {
+  const res = await rest(`/rpc/${fn}`, { method: 'POST', body: JSON.stringify(args) });
+  if (!res.ok) throw new Error(`${fn} -> ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+/* An IANA zone name both Node and Postgres understand, or UTC. Postgres
+   rejects a zone it doesn't know, so a call that fails on the zone is
+   retried in UTC rather than blanking the dashboard. */
+function zone(tz) {
+  if (typeof tz !== 'string' || !/^[A-Za-z]+(?:[/_+-][A-Za-z0-9]+)*$/.test(tz) || tz.length > 64) return 'UTC';
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: tz });
+    return tz;
+  } catch {
+    return 'UTC';
+  }
+}
+async function rpcInZone(fn, args) {
+  try {
+    return await rpc(fn, args);
+  } catch (e) {
+    if (args.p_tz !== 'UTC' && /time zone/i.test(String(e.message))) return rpc(fn, { ...args, p_tz: 'UTC' });
+    throw e;
+  }
 }
 
 const tally = (list, keyOf) => {
@@ -78,9 +110,23 @@ const tally = (list, keyOf) => {
 
 const round1 = (n) => Math.round(n * 10) / 10;
 
-async function snapshot() {
-  const now = Date.now();
-  const since30 = new Date(now - 30 * DAY).toISOString();
+/* Record something an admin did. Never fails the action itself. */
+async function logAction(caller, action, target, details = {}) {
+  try {
+    const res = await rest('/admin_log', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ admin_email: caller.email, action, target: target == null ? null : String(target), details }),
+    });
+    if (!res.ok) console.error('[admin] log', res.status, await res.text());
+  } catch (e) {
+    console.error('[admin] log', e);
+  }
+}
+
+/* ── Overview ─────────────────────────────────────────────────────── */
+
+async function snapshot(tz) {
   const weekStart = getWeekStart();
 
   // Each section fails on its own so one broken table doesn't blank the page.
@@ -89,10 +135,12 @@ async function snapshot() {
   };
 
   const t0 = Date.now();
-  const [profiles, sessions, reports, board, banks, limits, visits, totals] = await Promise.all([
-    safe(() => rows('/profiles?select=id,username,email,semester,created_at&order=created_at.desc&limit=5000')),
-    safe(() => rows(`/sessions?select=device_id,subject,mode,score,total,pct,created_at&created_at=gte.${since30}&order=created_at.desc&limit=${SESSION_CAP}`)),
+  const [overview, recentUsers, recentSessions, reports, openReports, board, banks, limits, extras] = await Promise.all([
+    safe(() => rpcInZone('admin_overview', { p_tz: tz })),
+    safe(() => rows('/profiles?select=id,username,email,semester,created_at&order=created_at.desc&limit=15')),
+    safe(() => rows('/sessions?select=subject,mode,score,total,pct,created_at&order=created_at.desc&limit=15')),
     safe(() => rows('/question_reports?resolved_at=is.null&select=reason,created_at&order=created_at.desc&limit=1000')),
+    safe(() => count('question_reports', '&resolved_at=is.null')),
     safe(() => rows(`/leaderboard_entries?week_start=eq.${weekStart}&select=handle,subject,score_pct,total_questions,time_seconds,completed_at&order=score_pct.desc,time_seconds.asc&limit=500`)),
     safe(() => Promise.all(BANKS.map(async (b) => ({
       ...b,
@@ -100,79 +148,30 @@ async function snapshot() {
     })))),
     safe(async () => ({
       total: await count('rate_limit_hits'),
-      last_hour: await count('rate_limit_hits', `&created_at=gte.${new Date(now - 3600000).toISOString()}`),
+      last_hour: await count('rate_limit_hits', `&created_at=gte.${new Date(Date.now() - 3600000).toISOString()}`),
     })),
-    safe(() => rows(`/daily_visits?select=user_id,day,hits&day=gte.${dayKey(now - 29 * DAY)}&limit=20000`)),
-    safe(async () => ({
-      sessions: await count('sessions'),
-      leaderboard: await count('leaderboard_entries'),
-      reports: await count('question_reports', '&resolved_at=is.null'),
-      visitor_days: await count('daily_visits'),
-    })),
+    safe(async () => ({ leaderboard: await count('leaderboard_entries') })),
   ]);
   const dbMs = Date.now() - t0;
 
-  const out = { generated_at: new Date(now).toISOString(), week_start: weekStart, errors: {} };
+  const out = { generated_at: new Date().toISOString(), week_start: weekStart, tz, errors: {} };
 
-  if (profiles.ok) {
-    const list = profiles.data;
-    const days = lastDays(30, { n: 0 });
-    for (const p of list) {
-      const d = days.find((x) => x.day === dayKey(p.created_at));
-      if (d) d.n++;
-    }
-    out.users = {
-      total: list.length,
-      last_7d: list.filter((p) => now - new Date(p.created_at) < 7 * DAY).length,
-      no_semester: list.filter((p) => !p.semester).length,
-      by_semester: tally(list, (p) => p.semester || 'none'),
-      signups_by_day: days,
-      recent: list.slice(0, 15),
-    };
-  } else out.errors.users = profiles.error;
-
-  if (sessions.ok) {
-    const list = sessions.data;
-    const days = lastDays(14, { n: 0, users: 0 });
-    const perDayUsers = new Map(days.map((d) => [d.day, new Set()]));
-    for (const s of list) {
-      const k = dayKey(s.created_at);
-      const d = days.find((x) => x.day === k);
-      if (d) { d.n++; perDayUsers.get(k).add(s.device_id); }
-    }
-    days.forEach((d) => { d.users = perDayUsers.get(d.day).size; });
-
-    const within = (ms) => list.filter((s) => now - new Date(s.created_at) < ms);
-    const scored = list.filter((s) => s.pct !== null && s.pct !== undefined);
-    const bySubject = new Map();
-    for (const s of list) {
-      const k = s.subject || 'Unknown';
-      const cur = bySubject.get(k) || { subject: k, n: 0, sum: 0, scored: 0 };
-      cur.n++;
-      if (s.pct !== null && s.pct !== undefined) { cur.sum += Number(s.pct); cur.scored++; }
-      bySubject.set(k, cur);
-    }
-    out.sessions = {
-      last_24h: within(DAY).length,
-      last_7d: within(7 * DAY).length,
-      last_30d: list.length,
-      capped: list.length >= SESSION_CAP,
-      active_users_24h: new Set(within(DAY).map((s) => s.device_id)).size,
-      active_users_7d: new Set(within(7 * DAY).map((s) => s.device_id)).size,
-      avg_pct: scored.length ? round1(scored.reduce((a, s) => a + Number(s.pct), 0) / scored.length) : null,
-      by_day: days,
-      by_mode: tally(list, (s) => s.mode || 'unknown'),
-      by_subject: [...bySubject.values()]
-        .map((s) => ({ subject: s.subject, n: s.n, avg_pct: s.scored ? round1(s.sum / s.scored) : null }))
-        .sort((a, b) => b.n - a.n),
-      recent: list.slice(0, 15).map(({ device_id, ...s }) => s),
-    };
-  } else out.errors.sessions = sessions.error;
+  if (overview.ok) {
+    const o = overview.data;
+    out.today = o.today;
+    out.users = { ...o.students, recent: recentUsers.ok ? recentUsers.data : [] };
+    out.sessions = { ...o.sessions, recent: recentSessions.ok ? recentSessions.data : [] };
+    out.visits = o.visits;
+    out.retention = o.retention;
+  } else {
+    for (const k of ['users', 'sessions', 'visits', 'retention']) out.errors[k] = overview.error;
+  }
 
   if (reports.ok) {
+    const now = Date.now();
     out.reports = {
-      open: reports.data.length,
-      last_7d: reports.data.filter((r) => now - new Date(r.created_at) < 7 * DAY).length,
+      open: openReports.ok ? openReports.data : reports.data.length,
+      last_7d: reports.data.filter((r) => now - new Date(r.created_at) < 7 * 86400000).length,
       by_reason: tally(reports.data, (r) => r.reason),
     };
   } else out.errors.reports = reports.error;
@@ -199,24 +198,6 @@ async function snapshot() {
     }));
   } else out.errors.banks = banks.error;
 
-  if (visits.ok) {
-    const days = lastDays(30, { n: 0, hits: 0 });
-    const perDay = new Map(days.map((d) => [d.day, d]));
-    for (const v of visits.data) {
-      const d = perDay.get(String(v.day).slice(0, 10));
-      if (d) { d.n++; d.hits += v.hits; }
-    }
-    const recent = (n) => visits.data.filter((v) => String(v.day) >= dayKey(now - (n - 1) * DAY));
-    out.visits = {
-      today: days[days.length - 1].n,
-      today_hits: days[days.length - 1].hits,
-      unique_7d: new Set(recent(7).map((v) => v.user_id)).size,
-      unique_30d: new Set(visits.data.map((v) => v.user_id)).size,
-      hits_30d: visits.data.reduce((a, v) => a + v.hits, 0),
-      by_day: days,
-    };
-  } else out.errors.visits = visits.error;
-
   const sem = (k) => out.users?.by_semester.find((s) => s.key === k)?.n ?? 0;
   out.counters = {
     students: out.users?.total ?? null,
@@ -228,16 +209,21 @@ async function snapshot() {
     visitors_7d: out.visits?.unique_7d ?? null,
     visits_today: out.visits?.today_hits ?? null,
     visits_30d: out.visits?.hits_30d ?? null,
-    visitor_days_all: totals.ok ? totals.data.visitor_days : null,
-    quizzes_all: totals.ok ? totals.data.sessions : null,
+    visitor_days_all: out.visits?.all_time ?? null,
+    quizzes_all: out.sessions?.all_time ?? null,
     quizzes_30d: out.sessions?.last_30d ?? null,
     quizzes_7d: out.sessions?.last_7d ?? null,
     quizzes_24h: out.sessions?.last_24h ?? null,
-    questions_answered_30d: sessions.ok ? sessions.data.reduce((a, s) => a + (s.total || 0), 0) : null,
-    reports_open: totals.ok ? totals.data.reports : null,
+    questions_answered_30d: out.sessions?.questions_answered ?? null,
+    active_7d: out.retention?.active_7d ?? null,
+    returning_7d: out.retention?.returning_7d ?? null,
+    new_7d: out.retention?.new_7d ?? null,
+    quiet: out.retention?.quiet_count ?? null,
+    lapsed: out.retention?.lapsed_count ?? null,
+    reports_open: out.reports?.open ?? null,
     reports_7d: out.reports?.last_7d ?? null,
     leaderboard_week: out.leaderboard?.entries ?? null,
-    leaderboard_all: totals.ok ? totals.data.leaderboard : null,
+    leaderboard_all: extras.ok ? extras.data.leaderboard : null,
     questions_in_banks: out.banks ? out.banks.reduce((a, b) => a + b.total, 0) : null,
     subjects_stocked: out.banks ? out.banks.filter((b) => b.total > 0).length : null,
     subjects_empty: out.banks ? out.banks.filter((b) => b.total === 0).length : null,
@@ -391,160 +377,86 @@ async function questionsView() {
 async function setReportsResolved(ids, caller, resolved) {
   const list = Array.isArray(ids) ? ids.map(Number).filter((n) => Number.isInteger(n) && n > 0) : [];
   if (!list.length || list.length > 500) return fail(400, 'Invalid ids');
-  const res = await rest(`/question_reports?id=in.(${list.join(',')})`, {
+  const res = await rest(`/question_reports?id=in.(${list.join(',')})&select=id,question_id,question_text`, {
     method: 'PATCH',
-    headers: { Prefer: 'return=minimal' },
+    headers: { Prefer: 'return=representation' },
     body: JSON.stringify(resolved
       ? { resolved_at: new Date().toISOString(), resolved_by: caller.email }
       : { resolved_at: null, resolved_by: null }),
   });
   if (!res.ok) return fail(502, 'Could not update the reports', `${res.status} ${await res.text()}`);
+  const changed = (await res.json().catch(() => null)) || [];
+  if (changed.length) {
+    await logAction(caller, resolved ? 'resolve_reports' : 'reopen_reports', changed[0].question_id || null, {
+      ids: changed.map((r) => r.id),
+      question: String(changed[0].question_text || '').slice(0, 200),
+    });
+  }
   return json(200, { ok: true });
 }
 
 /* ── Students ─────────────────────────────────────────────────────── */
 
-const ALL_CAP = 20000;
+const usersView = async () => ({ users: await rpc('admin_users', {}) });
 
-/** Accounts from Supabase Auth (sign-in method, last sign-in), by id. */
-async function authUsers() {
-  const res = await fetch(`${SUPA_URL}/auth/v1/admin/users?page=1&per_page=1000`, { headers: dbHeaders() });
-  if (!res.ok) throw new Error(`auth users -> ${res.status}`);
-  const body = await res.json();
-  return new Map((body.users || []).map((u) => [u.id, {
-    last_sign_in_at: u.last_sign_in_at || null,
-    provider: u.app_metadata?.provider || null,
-    confirmed: !!u.email_confirmed_at,
-  }]));
+/* Spreadsheet-safe CSV: quoted where needed, and a cell that starts like a
+   formula (= + - @) is prefixed so Excel won't run it. */
+function csv(table) {
+  const cell = (v) => {
+    let s = v === null || v === undefined ? '' : String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return table.map((row) => row.map(cell).join(',')).join('\r\n');
 }
 
-async function usersView() {
-  const [profiles, sessions, visits, auth] = await Promise.all([
-    rows('/profiles?select=id,username,email,semester,created_at&order=created_at.desc&limit=5000'),
-    rows(`/sessions?select=device_id,subject,score,total,pct,created_at&order=created_at.desc&limit=${ALL_CAP}`),
-    rows(`/daily_visits?select=user_id,day,hits&limit=${ALL_CAP}`),
-    authUsers().catch((e) => { console.error('[admin]', e); return new Map(); }),
-  ]);
-
-  const stats = new Map();
-  for (const s of sessions) {
-    const u = stats.get(s.device_id) || { quizzes: 0, questions: 0, sum: 0, scored: 0, best: null, last: null, subjects: new Map() };
-    u.quizzes++;
-    u.questions += s.total || 0;
-    if (s.pct !== null && s.pct !== undefined) {
-      u.sum += Number(s.pct); u.scored++;
-      u.best = u.best === null ? Number(s.pct) : Math.max(u.best, Number(s.pct));
-    }
-    if (!u.last) u.last = s.created_at; // rows are newest first
-    const subject = s.subject || 'Unknown';
-    u.subjects.set(subject, (u.subjects.get(subject) || 0) + 1);
-    stats.set(s.device_id, u);
-  }
-  const vis = new Map();
-  for (const v of visits) {
-    const u = vis.get(v.user_id) || { days: 0, hits: 0, last: null };
-    u.days++; u.hits += v.hits;
-    if (!u.last || v.day > u.last) u.last = v.day;
-    vis.set(v.user_id, u);
-  }
-
-  const users = profiles.map((p) => {
-    const st = stats.get(p.id);
-    const v = vis.get(p.id);
-    const a = auth.get(p.id);
-    const top = st ? [...st.subjects].sort((x, y) => y[1] - x[1])[0] : null;
-    return {
-      ...p,
-      provider: a?.provider ?? null,
-      last_sign_in_at: a?.last_sign_in_at ?? null,
-      quizzes: st?.quizzes ?? 0,
-      questions: st?.questions ?? 0,
-      avg_pct: st?.scored ? round1(st.sum / st.scored) : null,
-      best_pct: st?.best ?? null,
-      last_quiz_at: st?.last ?? null,
-      top_subject: top ? top[0] : null,
-      visit_days: v?.days ?? 0,
-      visits: v?.hits ?? 0,
-      last_visit_day: v?.last ?? null,
-    };
-  });
-  return { users, capped: sessions.length >= ALL_CAP };
+async function usersCsv(caller) {
+  const users = await rpc('admin_users', {});
+  const head = ['Name', 'Email', 'Semester', 'Sign-in', 'Email confirmed', 'Joined', 'Last sign-in', 'Quizzes', 'Questions answered',
+    'Average %', 'Best %', 'Last quiz', 'Top subject', 'Visit days', 'Visits', 'Last visit'];
+  const body = users.map((u) => [u.username, u.email, u.semester, u.provider, u.confirmed ? 'yes' : 'no', u.created_at, u.last_sign_in_at,
+    u.quizzes, u.questions, u.avg_pct, u.best_pct, u.last_quiz_at, u.top_subject, u.visit_days, u.visits, u.last_visit_day]);
+  await logAction(caller, 'export_students', null, { rows: users.length });
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="labobo-students-${new Date().toISOString().slice(0, 10)}.csv"`,
+      'Cache-Control': 'no-store',
+    },
+    // BOM so Excel reads the file as UTF-8 (Arabic names, accents).
+    body: '﻿' + csv([head, ...body]),
+  };
 }
 
-async function userDetail(id) {
+async function userDetail(id, tz) {
   const q = encodeURIComponent(id);
-  const now = Date.now();
-  const [profile, sessions, visits, board, reports, auth] = await Promise.all([
+  const [profile, stats, board, reports, auth] = await Promise.all([
     rows(`/profiles?id=eq.${q}&select=id,username,email,semester,created_at`),
-    rows(`/sessions?device_id=eq.${q}&select=subject,mode,score,total,pct,created_at&order=created_at.desc&limit=2000`),
-    rows(`/daily_visits?user_id=eq.${q}&select=day,hits&order=day.desc&limit=400`),
+    rpcInZone('admin_user_stats', { p_user: id, p_tz: tz }),
     rows(`/leaderboard_entries?device_id=eq.${q}&select=handle,subject,score_pct,time_seconds,week_start,completed_at&order=week_start.desc&limit=100`),
     rows(`/question_reports?device_id=eq.${q}&select=id,reason,subject,note,created_at,resolved_at&order=created_at.desc&limit=100`),
-    authUsers().catch(() => new Map()),
+    fetch(`${SUPA_URL}/auth/v1/admin/users/${q}`, { headers: dbHeaders() })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null),
   ]);
   if (!profile[0]) return null;
 
-  const scored = sessions.filter((s) => s.pct !== null && s.pct !== undefined);
-  const groups = (keyOf) => {
-    const m = new Map();
-    for (const s of sessions) {
-      const k = keyOf(s);
-      const c = m.get(k) || { key: k, n: 0, sum: 0, scored: 0, best: null, last: null };
-      c.n++;
-      if (s.pct !== null && s.pct !== undefined) {
-        c.sum += Number(s.pct); c.scored++;
-        c.best = c.best === null ? Number(s.pct) : Math.max(c.best, Number(s.pct));
-      }
-      if (!c.last) c.last = s.created_at;
-      m.set(k, c);
-    }
-    return [...m.values()]
-      .map((c) => ({ key: c.key, n: c.n, avg_pct: c.scored ? round1(c.sum / c.scored) : null, best_pct: c.best, last: c.last }))
-      .sort((a, b) => b.n - a.n);
-  };
-
-  const days = lastDays(30, { n: 0 });
-  for (const s of sessions) {
-    const d = days.find((x) => x.day === dayKey(s.created_at));
-    if (d) d.n++;
-  }
-  const visitDays = lastDays(30, { n: 0 });
-  for (const v of visits) {
-    const d = visitDays.find((x) => x.day === String(v.day).slice(0, 10));
-    if (d) d.n = v.hits;
-  }
-
-  // Current streak: consecutive UTC days, ending today or yesterday, with a
-  // quiz or a visit.
-  const active = new Set([...sessions.map((s) => dayKey(s.created_at)), ...visits.map((v) => String(v.day).slice(0, 10))]);
-  let streak = 0;
-  let cursor = active.has(dayKey(now)) ? now : now - DAY;
-  while (active.has(dayKey(cursor))) { streak++; cursor -= DAY; }
-
-  const a = auth.get(id);
   return {
-    profile: { ...profile[0], is_admin: isAdmin({ email: profile[0].email, emailConfirmed: true }), provider: a?.provider ?? null, last_sign_in_at: a?.last_sign_in_at ?? null, confirmed: a?.confirmed ?? null },
-    totals: {
-      quizzes: sessions.length,
-      questions: sessions.reduce((n, s) => n + (s.total || 0), 0),
-      avg_pct: scored.length ? round1(scored.reduce((n, s) => n + Number(s.pct), 0) / scored.length) : null,
-      best_pct: scored.length ? Math.max(...scored.map((s) => Number(s.pct))) : null,
-      last_quiz_at: sessions[0]?.created_at ?? null,
-      first_quiz_at: sessions.length ? sessions[sessions.length - 1].created_at : null,
-      active_days: active.size,
-      visit_days: visits.length,
-      visits: visits.reduce((n, v) => n + v.hits, 0),
-      streak,
-      reports: reports.length,
-      leaderboard_entries: board.length,
+    profile: {
+      ...profile[0],
+      is_admin: isAdmin({ email: profile[0].email, emailConfirmed: true }),
+      provider: auth?.app_metadata?.provider ?? null,
+      last_sign_in_at: auth?.last_sign_in_at ?? null,
+      confirmed: auth ? !!auth.email_confirmed_at : null,
     },
-    by_subject: groups((s) => s.subject || 'Unknown'),
-    by_mode: groups((s) => s.mode || 'unknown'),
-    activity_by_day: days,
-    visits_by_day: visitDays,
-    // Oldest first, so it reads left to right as a trend.
-    trend: scored.slice(0, 30).reverse().map((s) => ({ pct: Number(s.pct), at: s.created_at, subject: s.subject })),
-    recent: sessions.slice(0, 20),
+    totals: { ...stats.totals, reports: reports.length, leaderboard_entries: board.length },
+    by_subject: stats.by_subject,
+    by_mode: stats.by_mode,
+    activity_by_day: stats.activity_by_day,
+    visits_by_day: stats.visits_by_day,
+    trend: stats.trend,
+    recent: stats.recent,
     leaderboard: board,
     reports,
   };
@@ -553,15 +465,16 @@ async function userDetail(id) {
 /* Permanently removes a student: the Supabase Auth account first (profiles
    cascades from it), then their rows in the tables keyed by user id, which
    have no foreign key. Admins can't be deleted here, so nobody can lock the
-   dashboard by removing themselves or a co-admin. */
+   dashboard by removing themselves or a co-admin. The log keeps who it was. */
 async function deleteUser(id, caller) {
-  if (!/^[0-9a-f-]{36}$/i.test(id || '')) return fail(400, 'Invalid user id');
+  if (!UUID.test(id || '')) return fail(400, 'Invalid user id');
   if (id === caller.id) return fail(400, "You can't delete your own account");
 
-  const [profile] = await rows(`/profiles?id=eq.${encodeURIComponent(id)}&select=email`);
+  const [profile] = await rows(`/profiles?id=eq.${encodeURIComponent(id)}&select=username,email,semester,created_at`);
   if (profile && isAdmin({ email: profile.email, emailConfirmed: true })) {
     return fail(400, "Admin accounts can't be deleted here");
   }
+  const quizzes = await count('sessions', `&device_id=eq.${encodeURIComponent(id)}`).catch(() => null);
 
   const res = await fetch(`${SUPA_URL}/auth/v1/admin/users/${id}`, { method: 'DELETE', headers: dbHeaders() });
   if (!res.ok && res.status !== 404) return fail(502, 'Could not delete the account', `auth delete ${res.status} ${await res.text()}`);
@@ -574,8 +487,72 @@ async function deleteUser(id, caller) {
     const r = await rest(`/${table}?${column}=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
     if (!r.ok) { failed.push(table); console.error('[admin] cleanup', table, r.status, await r.text()); }
   }
+  await logAction(caller, 'delete_user', id, {
+    username: profile?.username ?? null, email: profile?.email ?? null, semester: profile?.semester ?? null,
+    joined: profile?.created_at ?? null, quizzes, cleanup_failed: failed,
+  });
   return json(200, { ok: true, cleanup_failed: failed });
 }
+
+/* ── Announcements ────────────────────────────────────────────────── */
+
+const TONES = new Set(['info', 'warning', 'success']);
+
+async function announcementsView() {
+  const list = await rows('/announcements?select=id,message,tone,semester,starts_at,ends_at,created_at,created_by&order=created_at.desc&limit=50');
+  const now = Date.now();
+  return {
+    items: list.map((a) => ({
+      ...a,
+      live: new Date(a.starts_at) <= now && (!a.ends_at || new Date(a.ends_at) > now),
+    })),
+  };
+}
+
+async function createAnnouncement(body, caller) {
+  const message = typeof body.message === 'string' ? body.message.trim() : '';
+  if (!message || message.length > 500) return fail(400, 'The message must be 1-500 characters');
+  const tone = TONES.has(body.tone) ? body.tone : 'info';
+  const semester = body.semester === '1' || body.semester === '2' ? body.semester : null;
+  let endsAt = null;
+  if (body.ends_at) {
+    const d = new Date(body.ends_at);
+    if (isNaN(d) || d <= new Date()) return fail(400, 'The end date must be in the future');
+    endsAt = d.toISOString();
+  }
+  const res = await rest('/announcements', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ message, tone, semester, ends_at: endsAt, created_by: caller.email }),
+  });
+  if (!res.ok) return fail(502, 'Could not post the announcement', `${res.status} ${await res.text()}`);
+  const [row] = await res.json();
+  await logAction(caller, 'create_announcement', row?.id, { message, tone, semester, ends_at: endsAt });
+  return json(200, { ok: true, item: row });
+}
+
+async function endAnnouncement(id, caller) {
+  const n = Number(id);
+  if (!Number.isInteger(n) || n <= 0) return fail(400, 'Invalid id');
+  const now = new Date().toISOString();
+  const res = await rest(`/announcements?id=eq.${n}&or=(ends_at.is.null,ends_at.gt.${now})`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ ends_at: now }),
+  });
+  if (!res.ok) return fail(502, 'Could not end the announcement', `${res.status} ${await res.text()}`);
+  const [row] = await res.json();
+  if (row) await logAction(caller, 'end_announcement', n, { message: row.message });
+  return json(200, { ok: true });
+}
+
+/* ── Log ──────────────────────────────────────────────────────────── */
+
+const logView = async () => ({
+  items: await rows('/admin_log?select=id,at,admin_email,action,target,details&order=at.desc&limit=200'),
+});
+
+/* ── Handler ──────────────────────────────────────────────────────── */
 
 exports.handler = async (event) => {
   // Same-origin only: no CORS headers, preflights get an empty 204.
@@ -594,24 +571,32 @@ exports.handler = async (event) => {
   try {
     if (event.httpMethod === 'GET') {
       dbHeaders(); // throws with the real reason if SUPA_SERVICE_KEY is missing
-      const { view, user } = event.queryStringParameters || {};
+      const { view, user, tz: rawTz } = event.queryStringParameters || {};
+      const tz = zone(rawTz);
       if (view === 'users') return json(200, await usersView());
+      if (view === 'users_csv') return await usersCsv(caller);
       if (view === 'questions') return json(200, await questionsView());
+      if (view === 'announcements') return json(200, await announcementsView());
+      if (view === 'log') return json(200, await logView());
       if (user) {
-        if (!/^[0-9a-f-]{36}$/i.test(user)) return fail(400, 'Invalid user id');
-        const detail = await userDetail(user);
+        if (!UUID.test(user)) return fail(400, 'Invalid user id');
+        const detail = await userDetail(user, tz);
         return detail ? json(200, detail) : fail(404, 'No such student');
       }
-      return json(200, await snapshot());
+      return json(200, await snapshot(tz));
     }
 
     if (event.httpMethod === 'POST') {
       const body = parseBody(event);
       if (!body) return fail(400, 'Body must be a JSON object');
-      if (body.action === 'resolve_reports') return setReportsResolved(body.ids, caller, true);
-      if (body.action === 'reopen_reports') return setReportsResolved(body.ids, caller, false);
-      if (body.action === 'delete_user') return deleteUser(body.id, caller);
-      return fail(400, 'Unknown action');
+      switch (body.action) {
+        case 'resolve_reports': return await setReportsResolved(body.ids, caller, true);
+        case 'reopen_reports': return await setReportsResolved(body.ids, caller, false);
+        case 'delete_user': return await deleteUser(body.id, caller);
+        case 'create_announcement': return await createAnnouncement(body, caller);
+        case 'end_announcement': return await endAnnouncement(body.id, caller);
+        default: return fail(400, 'Unknown action');
+      }
     }
 
     return fail(405, 'Method not allowed');

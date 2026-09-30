@@ -52,7 +52,9 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 
 ## Admin dashboard
 
-Signed-in admins can open `/admin` to monitor users, quiz activity, question reports, question banks, leaderboards and system health (auto-refreshes every 30s). The Questions tab groups open reports by question and shows each question with its answer key and how often every option is picked (from `question_stats`, fed by `netlify/functions/answers.js`), flags questions where one wrong option is picked more than the keyed answer, and keeps resolved reports so they can be reopened. Access is controlled by the `ADMIN_EMAILS` environment variable (comma-separated, confirmed emails) in Netlify; the data comes from `netlify/functions/admin.js`.
+Signed-in admins can open `/admin` to monitor users, quiz activity, question reports, question banks, leaderboards and system health (auto-refreshes every 30s). The Questions tab groups open reports by question and shows each question with its answer key and how often every option is picked (from `question_stats`, fed by `netlify/functions/answers.js`), flags questions where one wrong option is picked more than the keyed answer, and keeps resolved reports so they can be reopened.
+
+The counting is done in the database (`admin_overview`, `admin_users`, `admin_user_stats`), so totals aren't capped by how many rows a function can download. Days follow the admin's time zone (sent by the browser); each visit is recorded on the student's own calendar day. The Overview also shows retention (returning vs new students, week-on-week) and the students who have gone quiet. Other tabs: **Announcements** (a banner on students' home page, optionally for one semester and with an end date) and **Log** (every deletion, report resolution, announcement and CSV export, in `admin_log`). The Users tab can download every student as a CSV. Access is controlled by the `ADMIN_EMAILS` environment variable (comma-separated, confirmed emails) in Netlify; the data comes from `netlify/functions/admin.js`.
 
 ## Getting Started / Prerequisites
 

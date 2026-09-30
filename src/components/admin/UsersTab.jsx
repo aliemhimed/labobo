@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchUsers } from '../../lib/adminApi.js';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { downloadStudentsCsv, fetchUsers } from '../../lib/adminApi.js';
 import { Stat, Panel, Table, ago, pct, num } from './parts.jsx';
 
 const SORTS = {
@@ -21,6 +21,11 @@ export default function UsersTab({ onOpen }) {
   const [search, setSearch] = useState('');
   const [semester, setSemester] = useState('all');
   const [sort, setSort] = useState('active');
+  const qc = useQueryClient();
+  const exporting = useMutation({
+    mutationFn: downloadStudentsCsv,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-log'] }),
+  });
 
   const list = useMemo(() => {
     if (!data) return [];
@@ -69,7 +74,12 @@ export default function UsersTab({ onOpen }) {
           <select className="adm-input" aria-label="Sort by" value={sort} onChange={(e) => setSort(e.target.value)}>
             {Object.entries(SORTS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}
           </select>
+          <button type="button" className="btn sm" disabled={exporting.isPending} onClick={() => exporting.mutate()}
+                  title="Every student, with their activity totals. Exports are recorded in the admin log.">
+            {exporting.isPending ? 'Preparing…' : 'Download CSV'}
+          </button>
         </div>
+        {exporting.isError ? <p className="adm-error" role="alert">Couldn't export: {exporting.error.message}</p> : null}
         {list.length === 0 ? <p className="adm-empty">No students match.</p> : (
           <Table head={['Student', 'Sem', 'Quizzes', 'Questions', 'Avg', 'Visit days', 'Last active', 'Joined']}>
             {list.map((u) => (
@@ -89,7 +99,6 @@ export default function UsersTab({ onOpen }) {
             ))}
           </Table>
         )}
-        {data.capped ? <p className="adm-empty">Totals are based on the most recent 20,000 quiz sessions.</p> : null}
       </Panel>
     </>
   );

@@ -35,6 +35,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/announcements"
+  to   = "/.netlify/functions/announcements"
+  status = 200
+
+[[redirects]]
   from = "/api/leaderboard"
   to   = "/.netlify/functions/leaderboard"
   status = 200
