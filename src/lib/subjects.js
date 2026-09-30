@@ -206,7 +206,7 @@ export const SUBJECTS = {
   'scientific-reasoning': {
     path: 'scientific-reasoning',
     title: 'Scientific Reasoning MCQ',
-    description: 'Research methods, Evidence & Critical thinking',
+    description: 'The Health Research Process',
     docTitle: 'Scientific Reasoning — Studywith Labobo',
     storagePrefix: 'sr',
     leaderboardSubject: 'Scientific Reasoning',

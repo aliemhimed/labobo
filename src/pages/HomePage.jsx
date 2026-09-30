@@ -48,7 +48,7 @@ const DECK_LOOK = {
   'gct-2': { glyph: '🧬', fill: 'blue', topics: ['Molecular Biology', 'Biochemistry', 'Histology', 'Medical Genetics'] },
   'body-systems-2': { glyph: '🫀', fill: 'mint', topics: ['Anatomy', 'Physiology', 'Medical Imaging'] },
   'clinical-2': { glyph: '💉', fill: 'coral', topics: ['Clinical procedures', 'Communication', 'Professional practice'] },
-  'scientific-reasoning': { glyph: '🔬', fill: 'violet', topics: ['Research methods', 'Evidence', 'Critical thinking'] },
+  'scientific-reasoning': { glyph: '🔬', fill: 'violet', topics: ['Health research process'] },
 };
 const FALLBACK_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];
 // Resting angle of each card in the deck, cycled.
