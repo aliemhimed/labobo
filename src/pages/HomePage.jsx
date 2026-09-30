@@ -9,7 +9,7 @@ import { useProfile } from '../hooks/useProfile.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
-import { SUBJECTS } from '../lib/subjects.js';
+import { SUBJECTS, inSemester } from '../lib/subjects.js';
 import { questionsQuery } from '../hooks/useQuestions.js';
 import { loadSubjectPage } from './loadSubjectPage.js';
 
@@ -48,7 +48,7 @@ const DECK_LOOK = {
   'gct-2': { glyph: '🧬', fill: 'blue', topics: ['Molecular Biology', 'Biochemistry', 'Histology', 'Medical Genetics'] },
   'body-systems-2': { glyph: '🫀', fill: 'mint', topics: ['Anatomy', 'Physiology', 'Medical Imaging'] },
   'clinical-2': { glyph: '💉', fill: 'coral', topics: ['Clinical procedures', 'Communication', 'Professional practice'] },
-  'medicine-art-2': { glyph: <MedArtIcon />, fill: 'yellow', topics: ['Art', 'Imaging', 'History of medicine'] },
+  'scientific-reasoning': { glyph: '🔬', fill: 'violet', topics: ['Research methods', 'Evidence', 'Critical thinking'] },
 };
 const FALLBACK_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];
 // Resting angle of each card in the deck, cycled.
@@ -140,7 +140,7 @@ export default function HomePage() {
   const quipIdx = useRef(-1);
 
   const semester = profile?.semester;
-  const subjects = ALL_SUBJECTS.filter((s) => s.semester === semester);
+  const subjects = ALL_SUBJECTS.filter((s) => inSemester(s, semester));
   // Re-read when progress changes, e.g. when the account sync brings in
   // quizzes finished on another device.
   const storageVersion = useSyncExternalStore(subscribe, getStorageVersion);

@@ -4,9 +4,9 @@ import { useSetSemester } from '../hooks/useProfile.js';
 
 const SEMESTERS = [
   { id: '1', label: 'Semester 1', fill: 'blue', tilt: -1.4,
-    desc: 'GCT I, Body Systems, Medical Chemistry, Medical Physics, Clinical & Professional Skills 1, Medicine & Art' },
+    desc: 'GCT I, Body Systems, Medical Chemistry, Medical Physics, Clinical & Professional Skills 1, Medicine & Art, Scientific Reasoning' },
   { id: '2', label: 'Semester 2', fill: 'mint', tilt: 1.3,
-    desc: 'GCT II, Body Systems II, Clinical & Professional Skills 2, Medicine & Art II' },
+    desc: 'GCT II, Body Systems II, Clinical & Professional Skills 2, Scientific Reasoning' },
 ];
 
 /** Shown once, right after signup/first login, until a semester is chosen.

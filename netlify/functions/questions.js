@@ -42,7 +42,8 @@ const ALLOWED_TABLES = [
   'bs2_physiology',
   'bs2_imaging',
   'clinical_skills_2',
-  'medicine_art_2',
+  // Both semesters
+  'scientific_reasoning',
 ];
 
 // Public, read-only data: any origin may fetch it.

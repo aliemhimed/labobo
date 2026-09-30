@@ -201,25 +201,31 @@ export const SUBJECTS = {
     ],
   },
 
-  'medicine-art-2': {
-    path: 'medicine-art-2',
-    title: 'Medicine & Art II',
-    description: 'Medicine through art, imaging & history',
-    docTitle: 'Medicine & Art II — Studywith Labobo',
-    storagePrefix: 'medart2',
-    leaderboardSubject: 'Medicine & Art II',
-    sessionSubject: 'Medicine & Art II',
-    semester: '2',
-    examLengths: [10, 20, 30, 45, 60, 90, 120, 180, 240],
-    ratio: { 'Medicine & Art II': 1 },
-    imageBase: '/images/medart/',
-    sources: [{ table: 'medicine_art_2', subject: 'Medicine & Art II' }],
+  // Taught in both semesters: one bank, one progress store and one
+  // leaderboard, listed on the home page of either semester.
+  'scientific-reasoning': {
+    path: 'scientific-reasoning',
+    title: 'Scientific Reasoning MCQ',
+    description: 'Research methods, Evidence & Critical thinking',
+    docTitle: 'Scientific Reasoning — Studywith Labobo',
+    storagePrefix: 'sr',
+    leaderboardSubject: 'Scientific Reasoning',
+    sessionSubject: 'Scientific Reasoning',
+    semester: ['1', '2'],
+    examLengths: [10, 20, 30, 45, 60, 75, 90],
+    ratio: { 'Scientific Reasoning': 1 },
+    sources: [{ table: 'scientific_reasoning', subject: 'Scientific Reasoning' }],
   },
 };
 
 /* Every table the question API is allowed to read. The allowlist in
    netlify/functions/questions.js must match this list. */
 export const ALL_QUESTION_TABLES = Object.values(SUBJECTS).flatMap((s) => s.sources.map((x) => x.table));
+
+/** `semester` is one id, or a list for a subject shared between semesters. */
+export function inSemester(cfg, semester) {
+  return [].concat(cfg.semester).includes(semester);
+}
 
 export function getSubject(key) {
   return SUBJECTS[key] || null;

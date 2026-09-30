@@ -28,7 +28,7 @@ const SUBJECTS = [
   'GCT II',
   'Body Systems II',
   'Clinical & Professional Skills II',
-  'Medicine & Art II',
+  'Scientific Reasoning',
 ];
 const EXAM_QUESTIONS = 30;
 
