@@ -21,5 +21,8 @@ export const fetchUser = (id, signal) => request({ signal }, `?user=${encodeURIC
 export const deleteUser = (id) =>
   request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete_user', id }) });
 
-export const deleteReport = (id) =>
-  request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete_report', id }) });
+export const fetchQuestions = (signal) => request({ signal }, '?view=questions');
+
+const post = (body) => request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+export const resolveReports = (ids) => post({ action: 'resolve_reports', ids });
+export const reopenReports = (ids) => post({ action: 'reopen_reports', ids });

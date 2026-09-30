@@ -20,6 +20,7 @@ import { useHistory, useWrong } from '../hooks/useStore.js';
 import { buildSubjectIndex } from '../lib/questions.js';
 import { createSubjectStore, loadOptionSeed, onStorageError, saveOptionSeed, saveSession } from '../lib/storage.js';
 import { supaInsert } from '../lib/supabase.js';
+import { recordAnswers } from '../lib/answers.js';
 import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import { buildQuizQuestions, distribute, seededShuffle, shuffle, uid } from '../lib/utils.js';
@@ -125,7 +126,7 @@ export default function QuizEngine({ config, questions, basePath }) {
   async function logout() {
     const ok = await confirm({
       title: 'Sign out?',
-      message: 'Your saved progress stays on this device for next time you sign in.',
+      message: 'Your progress is saved to your account, so it will be here next time you sign in.',
       confirmLabel: 'Sign out',
     });
     if (!ok) return;
@@ -212,6 +213,7 @@ export default function QuizEngine({ config, questions, basePath }) {
     // Everyone is signed in, so every result is saved — no guest/skip flow.
     store.setHistory([finished, ...store.getHistory()]);
     const wrongMap = { ...store.getWrong() };
+    const cleared = { ...store.getCleared() };
     answers.forEach((a) => {
       const q = questions[a.qIdx];
       if (!q) return;
@@ -219,9 +221,11 @@ export default function QuizEngine({ config, questions, basePath }) {
         wrongMap[q.id] = [...(wrongMap[q.id] || []), { date: finished.date, examId: finished.id, selected: a.selected }];
       } else {
         delete wrongMap[q.id];
+        cleared[q.id] = finished.date; // tells the account sync it was answered right since
       }
     });
     store.setWrong(wrongMap);
+    store.setCleared(cleared);
 
     supaInsert('sessions', {
       subject: config.sessionSubject,
@@ -230,6 +234,11 @@ export default function QuizEngine({ config, questions, basePath }) {
       total: finished.questionCount,
       pct: finished.score,
     });
+    // Per-question picks for the admin's "most missed" list. Review-wrong
+    // replays only questions this student already missed, which would skew it.
+    if (quizMode !== 'review-wrong') {
+      recordAnswers(answers.map((a) => ({ id: questions[a.qIdx]?.id, pick: a.selected })));
+    }
     if (finished.type === 'exam' && finished.questionCount === 30) {
       leaderboard.submitExam({
         score_pct: finished.score,

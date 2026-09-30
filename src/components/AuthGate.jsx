@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { recordVisit } from '../lib/visit.js';
+import { startProgressSync } from '../lib/progressSync.js';
 import { useAuth } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import LoginPage from '../pages/LoginPage.jsx';
@@ -17,6 +18,7 @@ export function AuthGate({ children }) {
   useEffect(() => {
     if (userId) recordVisit();
   }, [userId]);
+  useEffect(() => (userId ? startProgressSync(userId) : undefined), [userId]);
   if (loading) return <Splash />;
   if (!user) return <LoginPage />;
   return children;

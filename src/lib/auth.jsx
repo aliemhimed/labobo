@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from './supabaseClient.js';
+import { flushProgress } from './progressSync.js';
 
 /* Auth state is a live subscription, not a one-shot fetch, so it's a plain
    context rather than a React Query hook — everything downstream (AuthGate,
@@ -50,6 +51,8 @@ export function signUpWithPassword(email, password) {
   return supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo() } });
 }
 
-export function signOut() {
+/* Upload any progress not yet saved to the account first. */
+export async function signOut() {
+  await flushProgress();
   return supabase.auth.signOut();
 }

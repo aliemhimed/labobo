@@ -5,8 +5,13 @@
                                       user (drives the profile-menu link)
    GET  /api/admin?view=users      -> every student with activity totals
    GET  /api/admin?user=<id>       -> one student's full insights
-   POST /api/admin   body: { action: 'delete_report', id }
-     -> removes a question report once it has been dealt with
+   GET  /api/admin?view=questions  -> open reports grouped by question, each
+                                      with the question itself and how often
+                                      each option is picked; the questions
+                                      most students get wrong
+   POST /api/admin   body: { action: 'resolve_reports', ids: [..] }
+   POST /api/admin   body: { action: 'reopen_reports', ids: [..] }
+     -> marks question reports dealt with (or not) — kept, not deleted
    POST /api/admin   body: { action: 'delete_user', id }
      -> permanently deletes a student's account and all their data
 
@@ -31,6 +36,9 @@ const BANKS = [
   { subject: 'Clinical & Professional Skills II', semester: '2', tables: ['clinical_skills_2'] },
   { subject: 'Medicine & Art II', semester: '2', tables: ['medicine_art_2'] },
 ];
+
+const BANK_TABLES = new Set(BANKS.flatMap((b) => b.tables));
+const TABLE_SUBJECT = new Map(BANKS.flatMap((b) => b.tables.map((t) => [t, b.subject])));
 
 const DAY = 86400000;
 const SESSION_CAP = 5000;
@@ -84,7 +92,7 @@ async function snapshot() {
   const [profiles, sessions, reports, board, banks, limits, visits, totals] = await Promise.all([
     safe(() => rows('/profiles?select=id,username,email,semester,created_at&order=created_at.desc&limit=5000')),
     safe(() => rows(`/sessions?select=device_id,subject,mode,score,total,pct,created_at&created_at=gte.${since30}&order=created_at.desc&limit=${SESSION_CAP}`)),
-    safe(() => rows('/question_reports?select=id,question_id,question_text,subject,topic,reason,note,created_at&order=created_at.desc&limit=200')),
+    safe(() => rows('/question_reports?resolved_at=is.null&select=reason,created_at&order=created_at.desc&limit=1000')),
     safe(() => rows(`/leaderboard_entries?week_start=eq.${weekStart}&select=handle,subject,score_pct,total_questions,time_seconds,completed_at&order=score_pct.desc,time_seconds.asc&limit=500`)),
     safe(() => Promise.all(BANKS.map(async (b) => ({
       ...b,
@@ -98,7 +106,7 @@ async function snapshot() {
     safe(async () => ({
       sessions: await count('sessions'),
       leaderboard: await count('leaderboard_entries'),
-      reports: await count('question_reports'),
+      reports: await count('question_reports', '&resolved_at=is.null'),
       visitor_days: await count('daily_visits'),
     })),
   ]);
@@ -163,10 +171,9 @@ async function snapshot() {
 
   if (reports.ok) {
     out.reports = {
-      total: reports.data.length,
+      open: reports.data.length,
       last_7d: reports.data.filter((r) => now - new Date(r.created_at) < 7 * DAY).length,
       by_reason: tally(reports.data, (r) => r.reason),
-      items: reports.data,
     };
   } else out.errors.reports = reports.error;
 
@@ -243,6 +250,156 @@ async function snapshot() {
     failing: Object.keys(out.errors),
   };
   return out;
+}
+
+/* ── Questions: reports and answer stats ──────────────────────────── */
+
+const MIN_ATTEMPTS = 5; // fewer answers than this says nothing yet
+const LIST_MAX = 25;
+const ID_CHUNK = 150;   // ids per `id=in.(…)` request, keeps URLs short
+
+/** Bank rows for "<table>:<id>" question ids, as Map(id -> { table,
+    subject, row }). Unknown tables are skipped; a question deleted from its
+    bank is simply absent. */
+async function bankRows(ids, cols) {
+  const byTable = new Map();
+  for (const id of new Set(ids)) {
+    const [table, rowId] = String(id).split(':');
+    if (!BANK_TABLES.has(table) || !/^\d+$/.test(rowId || '')) continue;
+    if (!byTable.has(table)) byTable.set(table, []);
+    byTable.get(table).push(rowId);
+  }
+  const out = new Map();
+  await Promise.all([...byTable].flatMap(([table, list]) => {
+    const chunks = [];
+    for (let i = 0; i < list.length; i += ID_CHUNK) chunks.push(list.slice(i, i + ID_CHUNK));
+    return chunks.map(async (chunk) => {
+      for (const row of await rows(`/${table}?id=in.(${chunk.join(',')})&select=${cols}`)) {
+        out.set(`${table}:${row.id}`, { table, subject: TABLE_SUBJECT.get(table), row });
+      }
+    });
+  }));
+  return out;
+}
+
+/* Correct share and the most-picked wrong option, scored against the
+   current answer key. */
+function scoreStats(s, answer) {
+  const picks = s.picks || {};
+  const correct = Number(picks[String(answer)] || 0);
+  let top = null;
+  for (const [k, n] of Object.entries(picks)) {
+    if (k === 'blank' || k === String(answer)) continue;
+    if (!top || Number(n) > top.n) top = { option: Number(k), n: Number(n) };
+  }
+  return {
+    attempts: s.attempts,
+    correct,
+    picks,
+    correct_pct: s.attempts ? round1((100 * correct) / s.attempts) : null,
+    top_wrong: top ? { ...top, pct: round1((100 * top.n) / s.attempts) } : null,
+    // More students chose one particular wrong option than the keyed one:
+    // often a sign the key itself is wrong.
+    suspect: !!top && s.attempts >= MIN_ATTEMPTS && top.n > correct,
+  };
+}
+
+async function questionsView() {
+  const safe = async (fn) => {
+    try { return { ok: true, data: await fn() }; } catch (e) { console.error('[admin]', e); return { ok: false, error: String(e.message || e) }; }
+  };
+  const [open, resolved, stats, tracked] = await Promise.all([
+    safe(() => rows('/question_reports?resolved_at=is.null&select=id,question_id,question_text,subject,topic,reason,note,created_at,device_id&order=created_at.desc&limit=500')),
+    safe(() => rows('/question_reports?resolved_at=not.is.null&select=id,question_id,question_text,subject,reason,resolved_at,resolved_by&order=resolved_at.desc&limit=40')),
+    safe(() => rows(`/question_stats?attempts=gte.${MIN_ATTEMPTS}&select=question_id,attempts,picks&order=attempts.desc&limit=2000`)),
+    safe(() => count('question_stats')),
+  ]);
+  const errors = {};
+
+  // 1. Score every well-answered question against its current key.
+  let scored = [];
+  if (stats.ok) {
+    try {
+      const keys = await bankRows(stats.data.map((s) => s.question_id), 'id,answer');
+      scored = stats.data
+        .filter((s) => keys.has(s.question_id))
+        .map((s) => ({ question_id: s.question_id, ...scoreStats(s, keys.get(s.question_id).row.answer) }));
+    } catch (e) { errors.stats = String(e.message || e); }
+  } else errors.stats = stats.error;
+  const statsById = new Map(scored.map((s) => [s.question_id, s]));
+
+  // Suspects: biggest lead of a wrong option over the keyed one first.
+  const lead = (s) => s.top_wrong.n - s.correct;
+  const suspects = scored.filter((s) => s.suspect)
+    .sort((a, b) => lead(b) - lead(a) || a.correct_pct - b.correct_pct)
+    .slice(0, LIST_MAX);
+  const hardest = scored.filter((s) => !s.suspect)
+    .sort((a, b) => a.correct_pct - b.correct_pct || b.attempts - a.attempts)
+    .slice(0, LIST_MAX);
+
+  // 2. Open reports, one group per question (old reports without an id are
+  //    grouped by their text).
+  const groups = new Map();
+  if (open.ok) {
+    for (const r of open.data) {
+      const key = r.question_id || `text:${r.question_text}`;
+      const g = groups.get(key) || { key, question_id: r.question_id, question_text: r.question_text, subject: r.subject, topic: r.topic, reports: [], last_at: r.created_at };
+      g.reports.push({ id: r.id, reason: r.reason, note: r.note, created_at: r.created_at, user_id: r.device_id });
+      groups.set(key, g);
+    }
+  } else errors.reports = open.error;
+
+  // 3. The full question for everything about to be shown.
+  const wanted = [...suspects, ...hardest].map((s) => s.question_id)
+    .concat([...groups.values()].map((g) => g.question_id).filter(Boolean));
+  let full = new Map();
+  try {
+    full = await bankRows(wanted, 'id,topic,q,options,answer,explanation,image,images');
+  } catch (e) { errors.questions = String(e.message || e); }
+  const question = (id) => {
+    const hit = id && full.get(id);
+    return hit ? { id, table: hit.table, subject: hit.subject, row: hit.row } : null;
+  };
+  const withQuestion = (s) => ({ ...s, question: question(s.question_id) });
+
+  const reportGroups = [...groups.values()]
+    .map((g) => ({
+      ...g,
+      question: question(g.question_id),
+      stats: statsById.get(g.question_id) || null,
+      reasons: tally(g.reports, (r) => r.reason),
+    }))
+    // Most-reported first, then most recent.
+    .sort((a, b) => b.reports.length - a.reports.length || String(b.last_at).localeCompare(String(a.last_at)));
+
+  if (!resolved.ok) errors.resolved = resolved.error;
+  return {
+    min_attempts: MIN_ATTEMPTS,
+    reports: open.ok ? { open: open.data.length, groups: reportGroups } : null,
+    resolved: resolved.ok ? resolved.data : null,
+    stats: {
+      tracked: tracked.ok ? tracked.data : null,
+      scored: scored.length,
+      suspect_count: scored.filter((s) => s.suspect).length,
+      suspects: suspects.map(withQuestion),
+      hardest: hardest.map(withQuestion),
+    },
+    errors,
+  };
+}
+
+async function setReportsResolved(ids, caller, resolved) {
+  const list = Array.isArray(ids) ? ids.map(Number).filter((n) => Number.isInteger(n) && n > 0) : [];
+  if (!list.length || list.length > 500) return fail(400, 'Invalid ids');
+  const res = await rest(`/question_reports?id=in.(${list.join(',')})`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(resolved
+      ? { resolved_at: new Date().toISOString(), resolved_by: caller.email }
+      : { resolved_at: null, resolved_by: null }),
+  });
+  if (!res.ok) return fail(502, 'Could not update the reports', `${res.status} ${await res.text()}`);
+  return json(200, { ok: true });
 }
 
 /* ── Students ─────────────────────────────────────────────────────── */
@@ -322,7 +479,7 @@ async function userDetail(id) {
     rows(`/sessions?device_id=eq.${q}&select=subject,mode,score,total,pct,created_at&order=created_at.desc&limit=2000`),
     rows(`/daily_visits?user_id=eq.${q}&select=day,hits&order=day.desc&limit=400`),
     rows(`/leaderboard_entries?device_id=eq.${q}&select=handle,subject,score_pct,time_seconds,week_start,completed_at&order=week_start.desc&limit=100`),
-    rows(`/question_reports?device_id=eq.${q}&select=id,reason,subject,note,created_at&order=created_at.desc&limit=100`),
+    rows(`/question_reports?device_id=eq.${q}&select=id,reason,subject,note,created_at,resolved_at&order=created_at.desc&limit=100`),
     authUsers().catch(() => new Map()),
   ]);
   if (!profile[0]) return null;
@@ -412,7 +569,7 @@ async function deleteUser(id, caller) {
   const failed = [];
   for (const [table, column] of [
     ['sessions', 'device_id'], ['leaderboard_entries', 'device_id'], ['question_reports', 'device_id'],
-    ['daily_visits', 'user_id'], ['rate_limit_hits', 'user_id'], ['profiles', 'id'],
+    ['daily_visits', 'user_id'], ['rate_limit_hits', 'user_id'], ['user_progress', 'user_id'], ['profiles', 'id'],
   ]) {
     const r = await rest(`/${table}?${column}=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
     if (!r.ok) { failed.push(table); console.error('[admin] cleanup', table, r.status, await r.text()); }
@@ -439,6 +596,7 @@ exports.handler = async (event) => {
       dbHeaders(); // throws with the real reason if SUPA_SERVICE_KEY is missing
       const { view, user } = event.queryStringParameters || {};
       if (view === 'users') return json(200, await usersView());
+      if (view === 'questions') return json(200, await questionsView());
       if (user) {
         if (!/^[0-9a-f-]{36}$/i.test(user)) return fail(400, 'Invalid user id');
         const detail = await userDetail(user);
@@ -450,13 +608,8 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'POST') {
       const body = parseBody(event);
       if (!body) return fail(400, 'Body must be a JSON object');
-      if (body.action === 'delete_report') {
-        const id = Number(body.id);
-        if (!Number.isInteger(id) || id <= 0) return fail(400, 'Invalid id');
-        const res = await rest(`/question_reports?id=eq.${id}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
-        if (!res.ok) return fail(502, 'Could not delete', `${res.status} ${await res.text()}`);
-        return json(200, { ok: true });
-      }
+      if (body.action === 'resolve_reports') return setReportsResolved(body.ids, caller, true);
+      if (body.action === 'reopen_reports') return setReportsResolved(body.ids, caller, false);
       if (body.action === 'delete_user') return deleteUser(body.id, caller);
       return fail(400, 'Unknown action');
     }

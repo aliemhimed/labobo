@@ -1,11 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import TopBar from '../components/TopBar.jsx';
 import PageHead from '../components/PageHead.jsx';
 import UsersTab from '../components/admin/UsersTab.jsx';
 import UserDetail from '../components/admin/UserDetail.jsx';
+import QuestionsTab from '../components/admin/QuestionsTab.jsx';
 import { Stat, Panel, DayBars, HBars, Table, ago, pct, num } from '../components/admin/parts.jsx';
-import { fetchSnapshot, deleteReport } from '../lib/adminApi.js';
+import { fetchSnapshot } from '../lib/adminApi.js';
 import { fmtTime } from '../lib/leaderboard.js';
 import '../styles/admin.css';
 
@@ -21,42 +22,7 @@ const COUNTER_GROUPS = [
   ['Content & community', [['questions_in_banks', 'Questions in banks'], ['subjects_stocked', 'Subjects stocked'], ['subjects_empty', 'Subjects empty'], ['reports_open', 'Open reports'], ['reports_7d', 'Reports this week'], ['leaderboard_week', 'Leaderboard, this week'], ['leaderboard_all', 'Leaderboard, all time'], ['rate_limit_hits_hour', 'Rate-limit hits, last hour']]],
 ];
 
-function Reports({ data }) {
-  const qc = useQueryClient();
-  const del = useMutation({
-    mutationFn: deleteReport,
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
-  });
-  return (
-    <>
-      <div className="adm-chips">
-        {data.by_reason.map((r) => <span key={r.key} className="adm-chip">{r.key} · {r.n}</span>)}
-      </div>
-      {del.isError ? <p className="adm-error">{del.error.message}</p> : null}
-      {data.items.length === 0 ? <p className="adm-empty">No open reports. 🎉</p> : (
-        <ul className="adm-reports">
-          {data.items.map((r) => (
-            <li key={r.id}>
-              <div className="adm-report-head">
-                <strong>{r.reason}</strong>
-                <span>{[r.subject, r.topic].filter(Boolean).join(' · ')} · {ago(r.created_at)}</span>
-              </div>
-              <p className="adm-report-q">{r.question_text}</p>
-              {r.note ? <p className="adm-report-note">“{r.note}”</p> : null}
-              <div className="adm-report-foot">
-                {r.question_id ? <code>{r.question_id}</code> : <span />}
-                <button type="button" className="btn sm" disabled={del.isPending && del.variables === r.id}
-                        onClick={() => del.mutate(r.id)}>Mark resolved</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
-  );
-}
-
-function Overview({ data, onOpenUser }) {
+function Overview({ data, onOpenUser, onOpenQuestions }) {
   const { users, sessions, reports, leaderboard, banks, system, errors, visits, counters } = data;
   const emptyBanks = (banks || []).filter((b) => b.total === 0);
   const health = system.failing.length === 0 ? 'ok' : 'bad';
@@ -122,8 +88,19 @@ function Overview({ data, onOpenUser }) {
           {sessions ? <HBars items={sessions.by_mode} /> : null}
         </Panel>
 
-        <Panel title="Question reports" wide error={errors.reports}>
-          {reports ? <Reports data={reports} /> : null}
+        <Panel title="Question reports" note={reports ? `${num(reports.open)} open` : undefined} wide error={errors.reports}>
+          {reports ? (
+            <>
+              {reports.open ? (
+                <div className="adm-chips">
+                  {reports.by_reason.map((r) => <span key={r.key} className="adm-chip">{r.key} · {r.n}</span>)}
+                </div>
+              ) : <p className="adm-empty">No open reports. 🎉</p>}
+              <button type="button" className="btn sm" onClick={onOpenQuestions}>
+                Review questions: reports, likely wrong keys, most missed
+              </button>
+            </>
+          ) : null}
         </Panel>
 
         <Panel title="Question banks" note={emptyBanks.length ? `${emptyBanks.length} empty` : 'all stocked'} error={errors.banks}>
@@ -197,7 +174,7 @@ function Overview({ data, onOpenUser }) {
 
 export default function AdminPage() {
   const [params, setParams] = useSearchParams();
-  const tab = params.get('tab') === 'users' ? 'users' : 'overview';
+  const tab = ['users', 'questions'].includes(params.get('tab')) ? params.get('tab') : 'overview';
   const studentId = params.get('u');
 
   const setView = (next) => setParams(next, { replace: false });
@@ -246,13 +223,18 @@ export default function AdminPage() {
           <button type="button" role="tab" aria-selected={tab === 'users'} onClick={() => setView({ tab: 'users' })}>
             Users{data.counters.students != null ? <span>{data.counters.students}</span> : null}
           </button>
+          <button type="button" role="tab" aria-selected={tab === 'questions'} onClick={() => setView({ tab: 'questions' })}>
+            Questions{data.counters.reports_open ? <span>{data.counters.reports_open} open</span> : null}
+          </button>
         </div>
 
         {tab === 'users'
           ? (studentId
             ? <UserDetail id={studentId} onBack={() => setView({ tab: 'users' })} />
             : <UsersTab onOpen={openUser} />)
-          : <Overview data={data} onOpenUser={openUser} />}
+          : tab === 'questions'
+            ? <QuestionsTab onOpenUser={openUser} />
+            : <Overview data={data} onOpenUser={openUser} onOpenQuestions={() => setView({ tab: 'questions' })} />}
       </main>
     </>
   );

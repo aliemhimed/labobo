@@ -1,4 +1,5 @@
 import { SUPA_URL, SUPA_HEADERS } from './supabase.js';
+import { SUBJECTS } from './subjects.js';
 
 /* ============================================================
    QUESTION LOADER
@@ -87,6 +88,17 @@ function toQuestion(row, subject, topicMap, imageBase) {
     explanation: row.explanation || '',
     images: normalizeImages(row, imageBase),
   };
+}
+
+/** A raw bank row (as the admin API returns it) shaped exactly as students
+    see it: options, answer key, topic name and image paths resolved with
+    the owning subject's settings. */
+export function questionFromRow(row, table) {
+  for (const cfg of Object.values(SUBJECTS)) {
+    const src = cfg.sources.find((s) => s.table === table);
+    if (src) return toQuestion({ ...row, __table: table }, src.subject, cfg.topicMap, cfg.imageBase);
+  }
+  return toQuestion({ ...row, __table: table }, table, null, null);
 }
 
 let warnedAboutApi = false;

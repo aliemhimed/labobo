@@ -25,6 +25,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/progress"
+  to   = "/.netlify/functions/progress"
+  status = 200
+
+[[redirects]]
+  from = "/api/answers"
+  to   = "/.netlify/functions/answers"
+  status = 200
+
+[[redirects]]
   from = "/api/leaderboard"
   to   = "/.netlify/functions/leaderboard"
   status = 200

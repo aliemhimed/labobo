@@ -17,15 +17,30 @@ const HISTORY_MAX = 200;
 const WRONG_MAX = 1500;
 const WRONG_ATTEMPTS_MAX = 10;
 const FLASHCARDS_MAX = 4000;
+const CLEARED_MAX = 3000;
 
 /* ── change notification ─────────────────────────────────────────── */
 
 const listeners = new Set();
-const notify = () => listeners.forEach((l) => l());
+let version = 0;
+const notify = () => { version++; listeners.forEach((l) => l()); };
 
 export function subscribe(listener) {
   listeners.add(listener);
   return () => listeners.delete(listener);
+}
+
+/** Goes up on every write; a `useSyncExternalStore` snapshot for views that
+    read several keys at once (the home page). */
+export const getStorageVersion = () => version;
+
+/* Subject progress changed locally (not by the sync applying a download):
+   progressSync.js marks the subject for upload. */
+let changeListener = null;
+let applyingRemote = false;
+export function onProgressChange(cb) { changeListener = cb; }
+function changed(prefix) {
+  if (!applyingRemote && changeListener) changeListener(prefix);
 }
 
 // Another tab changed something.
@@ -141,28 +156,77 @@ function capMap(map, max, stamp) {
   );
 }
 
+const keysFor = (prefix) => ({
+  HISTORY: `${prefix}.history`,
+  WRONG: `${prefix}.wrong`,
+  // question id -> when it was last answered correctly (and so left the
+  // wrong-answer list). Lets the sync tell "answered right since" apart from
+  // "never synced here" when merging two devices' lists.
+  CLEARED: `${prefix}.cleared`,
+  FLASHCARDS: `labobo_fc_${prefix}`,
+});
+
 export function createSubjectStore(prefix) {
-  const HISTORY = `${prefix}.history`;
-  const WRONG = `${prefix}.wrong`;
-  const FLASHCARDS = `labobo_fc_${prefix}`;
+  const { HISTORY, WRONG, CLEARED, FLASHCARDS } = keysFor(prefix);
 
   migrate(prefix);
 
+  const save = (key, value) => {
+    const ok = write(key, value);
+    changed(prefix);
+    return ok;
+  };
+
   return {
     getHistory: () => read(HISTORY, []),
-    setHistory: (h) => write(HISTORY, h.slice(0, HISTORY_MAX)),
+    setHistory: (h) => save(HISTORY, h.slice(0, HISTORY_MAX)),
 
     getWrong: () => read(WRONG, {}, dropNumericKeys),
     setWrong: (w) => {
       const trimmed = {};
       Object.keys(w).forEach((id) => { trimmed[id] = w[id].slice(-WRONG_ATTEMPTS_MAX); });
       const newest = (attempts) => Date.parse(attempts[attempts.length - 1]?.date) || 0;
-      return write(WRONG, capMap(trimmed, WRONG_MAX, newest));
+      return save(WRONG, capMap(trimmed, WRONG_MAX, newest));
     },
 
+    getCleared: () => read(CLEARED, {}),
+    setCleared: (c) => save(CLEARED, capMap(c, CLEARED_MAX, (d) => Date.parse(d) || 0)),
+
     getFlashcards: () => read(FLASHCARDS, {}),
-    setFlashcards: (d) => write(FLASHCARDS, capMap(d, FLASHCARDS_MAX, (c) => c.last || 0)),
+    setFlashcards: (d) => save(FLASHCARDS, capMap(d, FLASHCARDS_MAX, (c) => c.last || 0)),
   };
+}
+
+/* ── whole-subject access, for the account sync ─────────────────── */
+
+/** One subject's progress as a plain object (see progressSync.js). */
+export function readProgress(prefix) {
+  const s = createSubjectStore(prefix);
+  return { history: s.getHistory(), wrong: s.getWrong(), cleared: s.getCleared(), flashcards: s.getFlashcards() };
+}
+
+/** Replace one subject's progress with `data` (already merged). Doesn't
+    count as a local change, so it isn't uploaded straight back. */
+export function applyProgress(prefix, data) {
+  const s = createSubjectStore(prefix);
+  applyingRemote = true;
+  try {
+    s.setHistory(data.history || []);
+    s.setWrong(data.wrong || {});
+    s.setCleared(data.cleared || {});
+    s.setFlashcards(data.flashcards || {});
+  } finally {
+    applyingRemote = false;
+  }
+}
+
+/** Forget one subject's progress on this device (another account signed in). */
+export function clearProgress(prefix) {
+  Object.values(keysFor(prefix)).forEach((k) => {
+    try { localStorage.removeItem(k); } catch { /* ignore */ }
+  });
+  saveSession(prefix, null);
+  notify();
 }
 
 /* ── in-progress session (survives a refresh, dies with the tab) ─── */

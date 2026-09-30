@@ -18,6 +18,7 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 - Wrong-answer review flow to reinforce weak topics
 - Weekly leaderboard tracking by subject and account
 - User session and performance tracking
+- Progress (history, wrong answers, flashcards) saved to the account and merged across devices (`src/lib/progressSync.js`, `netlify/functions/progress.js`)
 - Responsive single-page learning experience
 
 ## Repository Structure
@@ -51,7 +52,7 @@ Labobo is a browser-based medical study and exam platform that helps learners pr
 
 ## Admin dashboard
 
-Signed-in admins can open `/admin` to monitor users, quiz activity, question reports, question banks, leaderboards and system health (auto-refreshes every 30s; reports can be marked resolved). Access is controlled by the `ADMIN_EMAILS` environment variable (comma-separated, confirmed emails) in Netlify; the data comes from `netlify/functions/admin.js`.
+Signed-in admins can open `/admin` to monitor users, quiz activity, question reports, question banks, leaderboards and system health (auto-refreshes every 30s). The Questions tab groups open reports by question and shows each question with its answer key and how often every option is picked (from `question_stats`, fed by `netlify/functions/answers.js`), flags questions where one wrong option is picked more than the keyed answer, and keeps resolved reports so they can be reopened. Access is controlled by the `ADMIN_EMAILS` environment variable (comma-separated, confirmed emails) in Netlify; the data comes from `netlify/functions/admin.js`.
 
 ## Getting Started / Prerequisites
 

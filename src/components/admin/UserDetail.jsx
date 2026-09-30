@@ -143,9 +143,10 @@ export default function UserDetail({ id, onBack }) {
 
         {data.reports.length ? (
           <Panel title="Reports filed" wide>
-            <Table head={['Reason', 'Subject', 'Note', 'When']}>
+            <Table head={['Reason', 'Subject', 'Note', 'When', 'Status']}>
               {data.reports.map((r) => (
-                <tr key={r.id}><td>{r.reason}</td><td>{r.subject || '—'}</td><td>{r.note || '—'}</td><td>{ago(r.created_at)}</td></tr>
+                <tr key={r.id}><td>{r.reason}</td><td>{r.subject || '—'}</td><td>{r.note || '—'}</td><td>{ago(r.created_at)}</td>
+                  <td>{r.resolved_at ? `Resolved ${ago(r.resolved_at)}` : 'Open'}</td></tr>
               ))}
             </Table>
           </Panel>

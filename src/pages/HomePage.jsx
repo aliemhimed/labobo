@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getSubjectSummary } from '../lib/storage.js';
+import { getStorageVersion, getSubjectSummary, subscribe } from '../lib/storage.js';
 import { fetchTableCounts } from '../lib/questions.js';
 import { readStudyLog } from '../lib/streak.js';
 import { useAuth } from '../lib/auth.jsx';
@@ -140,7 +140,11 @@ export default function HomePage() {
 
   const semester = profile?.semester;
   const subjects = ALL_SUBJECTS.filter((s) => s.semester === semester);
-  const log = useMemo(() => readStudyLog(), []);
+  // Re-read when progress changes, e.g. when the account sync brings in
+  // quizzes finished on another device.
+  const storageVersion = useSyncExternalStore(subscribe, getStorageVersion);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const log = useMemo(() => readStudyLog(), [storageVersion]);
 
   useEffect(() => { document.title = 'Studywith Labobo'; }, []);
 
@@ -160,11 +164,11 @@ export default function HomePage() {
   const intent = (key) => ({ onPointerEnter: prefetch(key), onFocus: prefetch(key), onTouchStart: prefetch(key) });
 
   // Progress is a handful of synchronous localStorage reads — cheap enough
-  // to just do on mount, and this page remounts fresh on every visit anyway.
+  // to redo whenever storage changes.
   useEffect(() => {
     setProgress(Object.fromEntries(subjects.map((s) => [s.key, getSubjectSummary(s.storagePrefix)])));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [semester]);
+  }, [semester, storageVersion]);
 
   // One request for every table on the page, cached for a few minutes so
   // coming back to the home page shows the counts straight away. They fill in
