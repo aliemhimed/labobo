@@ -176,7 +176,7 @@ export const SUBJECTS = {
     sessionSubject: 'Body Systems II',
     semester: '2',
     examLengths: [30, 60, 90, 120, 150, 180, 210],
-    ratio: { Anatomy: 5, Physiology: 3, 'Medical Imaging': 2 },
+    ratio: { Anatomy: 2, Physiology: 2, 'Medical Imaging': 1 },
     topicMap: BS_TOPIC_MAP,
     sources: [
       { table: 'bs2_anatomy', subject: 'Anatomy' },
