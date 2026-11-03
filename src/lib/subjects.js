@@ -201,8 +201,6 @@ export const SUBJECTS = {
     ],
   },
 
-  // Taught in both semesters: one bank, one progress store and one
-  // leaderboard, listed on the home page of either semester.
   'scientific-reasoning': {
     path: 'scientific-reasoning',
     title: 'Scientific Reasoning MCQ',
@@ -211,7 +209,7 @@ export const SUBJECTS = {
     storagePrefix: 'sr',
     leaderboardSubject: 'Scientific Reasoning',
     sessionSubject: 'Scientific Reasoning',
-    semester: ['1', '2'],
+    semester: '2',
     examLengths: [10, 20, 30, 45, 60, 75, 90],
     ratio: { 'Scientific Reasoning': 1 },
     sources: [{ table: 'scientific_reasoning', subject: 'Scientific Reasoning' }],

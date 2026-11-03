@@ -42,7 +42,6 @@ const ALLOWED_TABLES = [
   'bs2_physiology',
   'bs2_imaging',
   'clinical_skills_2',
-  // Both semesters
   'scientific_reasoning',
 ];
 
