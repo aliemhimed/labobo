@@ -29,6 +29,7 @@ const SUBJECTS = [
   'Body Systems II',
   'Clinical & Professional Skills II',
   'Scientific Reasoning',
+  'History of Medicine',
 ];
 const EXAM_QUESTIONS = 30;
 
