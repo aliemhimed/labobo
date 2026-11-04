@@ -214,6 +214,22 @@ export const SUBJECTS = {
     ratio: { 'Scientific Reasoning': 1 },
     sources: [{ table: 'scientific_reasoning', subject: 'Scientific Reasoning' }],
   },
+
+  // Listed in both semesters: one bank, one progress store and one
+  // leaderboard, shown on the home page of either semester.
+  'history-of-medicine': {
+    path: 'history-of-medicine',
+    title: 'History of Medicine MCQ',
+    description: 'Prehistoric, Mesopotamia, Egypt, India, China & Greece',
+    docTitle: 'History of Medicine — Studywith Labobo',
+    storagePrefix: 'hom',
+    leaderboardSubject: 'History of Medicine',
+    sessionSubject: 'History of Medicine',
+    semester: ['1', '2'],
+    examLengths: [10, 20, 30, 45, 60, 90, 120, 180],
+    ratio: { 'History of Medicine': 1 },
+    sources: [{ table: 'history_of_medicine', subject: 'History of Medicine' }],
+  },
 };
 
 /* Every table the question API is allowed to read. The allowlist in

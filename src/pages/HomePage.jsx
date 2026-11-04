@@ -49,6 +49,7 @@ const DECK_LOOK = {
   'body-systems-2': { glyph: '🫀', fill: 'mint', topics: ['Anatomy', 'Physiology', 'Medical Imaging'] },
   'clinical-2': { glyph: '💉', fill: 'coral', topics: ['Clinical procedures', 'Communication', 'Professional practice'] },
   'scientific-reasoning': { glyph: '🔬', fill: 'violet', topics: ['Health research process'] },
+  'history-of-medicine': { glyph: '📜', fill: 'orange', topics: ['Prehistoric', 'Mesopotamia', 'Egypt', 'India', 'China', 'Greece'] },
 };
 const FALLBACK_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];
 // Resting angle of each card in the deck, cycled.

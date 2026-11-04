@@ -48,6 +48,7 @@ const BANKS = [
   { subject: 'Body Systems II', semester: '2', tables: ['bs2_anatomy', 'bs2_physiology', 'bs2_imaging'] },
   { subject: 'Clinical & Professional Skills II', semester: '2', tables: ['clinical_skills_2'] },
   { subject: 'Scientific Reasoning', semester: '2', tables: ['scientific_reasoning'] },
+  { subject: 'History of Medicine', semester: '1 & 2', tables: ['history_of_medicine'] },
 ];
 
 const BANK_TABLES = new Set(BANKS.flatMap((b) => b.tables));
