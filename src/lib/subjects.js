@@ -245,7 +245,7 @@ export const SUBJECTS = {
     sessionSubject: 'Body Systems IV',
     semester: '4',
     examLengths: [30, 60, 90, 120, 150, 180, 210],
-    ratio: { Anatomy: 1, Physiology: 1, 'Medical Imaging': 1 },
+    ratio: { Anatomy: 2, Physiology: 2, 'Medical Imaging': 1 },
     sources: [
       { table: 'bs4_anatomy', subject: 'Anatomy' },
       { table: 'bs4_physiology', subject: 'Physiology' },
