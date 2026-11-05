@@ -6,6 +6,7 @@ import { useTopicKeys } from '../hooks/useTopicKeys.js';
 import { shuffle } from '../lib/utils.js';
 import { quizStats } from './stats.js';
 import { loadStudySession, saveStudySession } from '../lib/storage.js';
+import { trackStudy } from '../lib/study.js';
 
 // Each subject's chips take a card colour, in the same order as the home deck.
 const CHIP_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];
@@ -76,11 +77,14 @@ export default function StudyView({
   }, [prefix, questions, qIds, selectedTopics, search, fresh]);
 
   function onSelect(slot, option) {
+    const first = fresh.answers[slot] === null || fresh.answers[slot] === undefined;
     const next = fresh.answers.slice();
     next[slot] = option;
     setProgress({ ...fresh, answers: next });
     const q = questions[qIds[slot]];
-    if (q) triggerMeme(option === q.answer);
+    if (!q) return;
+    triggerMeme(option === q.answer);
+    if (first) trackStudy('study', q, option === q.answer);
   }
 
   function toggleTopic(key, on) {
