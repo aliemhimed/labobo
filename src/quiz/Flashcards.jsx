@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { shuffle } from '../lib/utils.js';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
 import PageHead from '../components/PageHead.jsx';
+import { trackStudy } from '../lib/study.js';
 
 const DAY = 86400000;
 
@@ -89,6 +90,7 @@ export default function Flashcards({
     if (q) {
       const sched = store.getFlashcards();
       store.setFlashcards({ ...sched, [q.id]: grade(sched[q.id], rating) });
+      trackStudy('flashcards', q, rating !== 'again');
     }
     if (rating === 'again') {
       setAgain((a) => a + 1);

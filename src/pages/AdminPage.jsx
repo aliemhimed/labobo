@@ -23,6 +23,7 @@ const COUNTER_GROUPS = [
   ['Retention', [['active_7d', 'Active this week'], ['returning_7d', 'Came back this week'], ['new_7d', 'New this week'], ['quiet', 'Not back in 7-30 days'], ['lapsed', 'Gone 30+ days']]],
   ['Visits', [['visitors_today', 'Visitors today'], ['visits_today', 'Visits today'], ['visitors_7d', 'Visitors, 7 days'], ['visits_30d', 'Visits, 30 days'], ['visitor_days_all', 'Visitor-days, all time']]],
   ['Quizzes', [['quizzes_24h', 'Last 24 hours'], ['quizzes_7d', 'Last 7 days'], ['quizzes_30d', 'Last 30 days'], ['quizzes_all', 'All time'], ['questions_answered_30d', 'Questions answered, 30 days']]],
+  ['Study mode & flashcards', [['studied_today', 'Questions studied today'], ['studied_7d', 'Studied, 7 days'], ['studied_30d', 'Studied, 30 days'], ['studying_students_7d', 'Students studying, 7 days']]],
   ['Content & community', [['questions_in_banks', 'Questions in banks'], ['subjects_stocked', 'Subjects stocked'], ['subjects_empty', 'Subjects empty'], ['reports_open', 'Open reports'], ['reports_7d', 'Reports this week'], ['leaderboard_week', 'Leaderboard, this week'], ['leaderboard_all', 'Leaderboard, all time'], ['rate_limit_hits_hour', 'Rate-limit hits, last hour']]],
 ];
 
@@ -71,6 +72,37 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
               </div>
             ))}
           </div>
+        </Panel>
+
+        <Panel title="Studying per day" note="questions answered in study mode and flashcards, last 14 days" error={errors.study}>
+          {data.study ? (
+            <>
+              <DayBars series={data.study.by_day} label="Questions studied per day, last 14 days" />
+              <p className="adm-foot">
+                {num(data.study.students_today)} students studied today · {num(data.study.students_7d)} in 7 days.
+                Counting started when this feature went live.
+              </p>
+            </>
+          ) : null}
+        </Panel>
+
+        <Panel title="What students study" note="last 30 days" error={errors.study}>
+          {data.study ? (
+            <>
+              <HBars items={data.study.by_bank.map((b) => ({ key: b.label, n: b.answered, students: b.students }))}
+                     extra={(i) => ` · ${i.students} students`} />
+              {data.study.top_topics.length ? (
+                <Table head={['Top topics', 'Answered', 'Right', 'Students']}>
+                  {data.study.top_topics.map((t) => (
+                    <tr key={`${t.bank}:${t.topic}`}>
+                      <td>{t.topic}<div className="adm-sub">{t.label}</div></td>
+                      <td>{num(t.answered)}</td><td>{pct(t.answered ? (t.correct / t.answered) * 100 : null)}</td><td>{num(t.students)}</td>
+                    </tr>
+                  ))}
+                </Table>
+              ) : null}
+            </>
+          ) : null}
         </Panel>
 
         <Panel title="Quizzes per day" note="last 14 days" error={errors.sessions}>

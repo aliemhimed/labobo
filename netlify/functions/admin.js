@@ -56,6 +56,23 @@ const BANKS = [
 const BANK_TABLES = new Set(BANKS.flatMap((b) => b.tables));
 const TABLE_SUBJECT = new Map(BANKS.flatMap((b) => b.tables.map((t) => [t, b.subject])));
 
+// The part of a subject each table holds, for study stats ("GCT I · Genetics").
+const TABLE_PART = {
+  gct_biochemistry: 'Biochemistry', gct_genetics: 'Genetics', gct_molecular_biology: 'Molecular Biology', gct_histology: 'Histology',
+  gct2_biochemistry: 'Biochemistry', gct2_genetics: 'Genetics', gct2_molecular_biology: 'Molecular Biology', gct2_histology: 'Histology',
+  bs_anatomy: 'Anatomy', bs_physiology: 'Physiology', bs_imaging: 'Imaging',
+  bs2_anatomy: 'Anatomy', bs2_physiology: 'Physiology', bs2_imaging: 'Imaging',
+  gct4_immunology: 'Immunology', gct4_microbiology: 'Microbiology',
+  bs4_anatomy: 'Anatomy', bs4_physiology: 'Physiology', bs4_imaging: 'Imaging',
+};
+/** "Body Systems · Anatomy" for bs_anatomy; the subject alone for one-table subjects. */
+const bankLabel = (table) => {
+  const subject = TABLE_SUBJECT.get(table);
+  if (!subject) return table;
+  return TABLE_PART[table] ? `${subject} · ${TABLE_PART[table]}` : subject;
+};
+const withLabel = (list) => (list || []).map((x) => ({ ...x, label: bankLabel(x.bank) }));
+
 const UUID = /^[0-9a-f-]{36}$/i;
 
 const rest = (path, init = {}) =>
@@ -138,8 +155,9 @@ async function snapshot(tz) {
   };
 
   const t0 = Date.now();
-  const [overview, recentUsers, recentSessions, reports, openReports, board, banks, limits, extras] = await Promise.all([
+  const [overview, study, recentUsers, recentSessions, reports, openReports, board, banks, limits, extras] = await Promise.all([
     safe(() => rpcInZone('admin_overview', { p_tz: tz })),
+    safe(() => rpcInZone('admin_study_overview', { p_tz: tz })),
     safe(() => rows('/profiles?select=id,username,email,semester,created_at&order=created_at.desc&limit=15')),
     safe(() => rows('/sessions?select=subject,mode,score,total,pct,created_at&order=created_at.desc&limit=15')),
     safe(() => rows('/question_reports?resolved_at=is.null&select=reason,created_at&order=created_at.desc&limit=1000')),
@@ -169,6 +187,10 @@ async function snapshot(tz) {
   } else {
     for (const k of ['users', 'sessions', 'visits', 'retention']) out.errors[k] = overview.error;
   }
+
+  if (study.ok) {
+    out.study = { ...study.data, by_bank: withLabel(study.data.by_bank), top_topics: withLabel(study.data.top_topics) };
+  } else out.errors.study = study.error;
 
   if (reports.ok) {
     const now = Date.now();
@@ -219,6 +241,10 @@ async function snapshot(tz) {
     quizzes_7d: out.sessions?.last_7d ?? null,
     quizzes_24h: out.sessions?.last_24h ?? null,
     questions_answered_30d: out.sessions?.questions_answered ?? null,
+    studied_today: out.study?.answered_today ?? null,
+    studied_7d: out.study?.answered_7d ?? null,
+    studied_30d: out.study?.answered_30d ?? null,
+    studying_students_7d: out.study?.students_7d ?? null,
     active_7d: out.retention?.active_7d ?? null,
     returning_7d: out.retention?.returning_7d ?? null,
     new_7d: out.retention?.new_7d ?? null,
@@ -417,9 +443,11 @@ function csv(table) {
 async function usersCsv(caller) {
   const users = await rpc('admin_users', {});
   const head = ['Name', 'Email', 'Semester', 'Sign-in', 'Email confirmed', 'Joined', 'Last sign-in', 'Quizzes', 'Questions answered',
-    'Average %', 'Best %', 'Last quiz', 'Top subject', 'Visit days', 'Visits', 'Last visit'];
+    'Average %', 'Best %', 'Last quiz', 'Top subject', 'Visit days', 'Visits', 'Last visit',
+    'Studied (questions)', 'Study days', 'Last studied'];
   const body = users.map((u) => [u.username, u.email, u.semester, u.provider, u.confirmed ? 'yes' : 'no', u.created_at, u.last_sign_in_at,
-    u.quizzes, u.questions, u.avg_pct, u.best_pct, u.last_quiz_at, u.top_subject, u.visit_days, u.visits, u.last_visit_day]);
+    u.quizzes, u.questions, u.avg_pct, u.best_pct, u.last_quiz_at, u.top_subject, u.visit_days, u.visits, u.last_visit_day,
+    u.study_answered ?? 0, u.study_days ?? 0, u.last_study_at ?? null]);
   await logAction(caller, 'export_students', null, { rows: users.length });
   return {
     statusCode: 200,
@@ -431,6 +459,23 @@ async function usersCsv(caller) {
     // BOM so Excel reads the file as UTF-8 (Arabic names, accents).
     body: '﻿' + csv([head, ...body]),
   };
+}
+
+/* What one student studied (study mode and flashcards), with coverage: the
+   share of each bank's questions they've studied at least once. Its own
+   failure doesn't take the rest of the page down. */
+async function studyDetail(id, tz) {
+  try {
+    const s = await rpcInZone('admin_user_study', { p_user: id, p_tz: tz });
+    const banks = await Promise.all((s.by_bank || []).map(async (b) => {
+      const total = BANK_TABLES.has(b.bank) ? await count(b.bank).catch(() => null) : null;
+      return { ...b, label: bankLabel(b.bank), total, coverage_pct: total ? round1(Math.min(100, (b.seen / total) * 100)) : null };
+    }));
+    return { ...s, by_bank: banks, by_topic: withLabel(s.by_topic) };
+  } catch (e) {
+    console.error('[admin] study detail', e);
+    return { error: String(e.message || e) };
+  }
 }
 
 async function userDetail(id, tz) {
@@ -447,6 +492,7 @@ async function userDetail(id, tz) {
   if (!profile[0]) return null;
 
   return {
+    study: await studyDetail(id, tz),
     profile: {
       ...profile[0],
       is_admin: isAdmin({ email: profile[0].email, emailConfirmed: true }),
@@ -486,7 +532,8 @@ async function deleteUser(id, caller) {
   const failed = [];
   for (const [table, column] of [
     ['sessions', 'device_id'], ['leaderboard_entries', 'device_id'], ['question_reports', 'device_id'],
-    ['daily_visits', 'user_id'], ['rate_limit_hits', 'user_id'], ['user_progress', 'user_id'], ['profiles', 'id'],
+    ['daily_visits', 'user_id'], ['rate_limit_hits', 'user_id'], ['user_progress', 'user_id'],
+    ['study_activity', 'user_id'], ['study_seen', 'user_id'], ['profiles', 'id'],
   ]) {
     const r = await rest(`/${table}?${column}=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
     if (!r.ok) { failed.push(table); console.error('[admin] cleanup', table, r.status, await r.text()); }

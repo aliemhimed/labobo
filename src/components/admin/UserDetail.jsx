@@ -106,6 +106,39 @@ export default function UserDetail({ id, onBack }) {
           ) : <p className="adm-empty">Needs a couple of quizzes in a subject.</p>}
         </Panel>
 
+        <Panel title="Studying" note="study mode and flashcards" wide error={data.study?.error}>
+          {data.study && !data.study.error ? (
+            data.study.totals.answered === 0 ? <p className="adm-empty">Hasn't studied yet (or not since tracking started).</p> : (
+              <>
+                <div className="adm-stats">
+                  <Stat label="Questions studied" value={num(data.study.totals.answered)}
+                        hint={`${num(data.study.totals.study_answered)} study · ${num(data.study.totals.flashcards)} flashcards`} />
+                  <Stat label="Got right" value={pct((data.study.totals.correct / data.study.totals.answered) * 100)} />
+                  <Stat label="Different questions" value={num(data.study.totals.seen)} />
+                  <Stat label="Study days" value={num(data.study.totals.days)} hint={`last ${ago(data.study.totals.last_at)}`} />
+                </div>
+                <DayBars series={data.study.by_day} label="Questions this student studied per day" />
+                <Table head={['Subject', 'Answered', 'Right', 'Coverage', 'Last']}>
+                  {data.study.by_bank.map((b) => (
+                    <tr key={b.bank}>
+                      <td>{b.label}</td><td>{num(b.answered)}</td><td>{pct(b.answered ? (b.correct / b.answered) * 100 : null)}</td>
+                      <td>{b.coverage_pct === null ? '—' : `${pct(b.coverage_pct)} (${num(b.seen)}/${num(b.total)})`}</td><td>{ago(b.last_at)}</td>
+                    </tr>
+                  ))}
+                </Table>
+                <Table head={['Topic / lecture', 'Answered', 'Right', 'Last']}>
+                  {data.study.by_topic.map((t) => (
+                    <tr key={`${t.bank}:${t.topic}`}>
+                      <td>{t.topic}<div className="adm-sub">{t.label}</div></td>
+                      <td>{num(t.answered)}</td><td>{pct(t.answered ? (t.correct / t.answered) * 100 : null)}</td><td>{ago(t.last_at)}</td>
+                    </tr>
+                  ))}
+                </Table>
+              </>
+            )
+          ) : null}
+        </Panel>
+
         <Panel title="By subject" wide>
           {data.by_subject.length === 0 ? <p className="adm-empty">No quizzes yet.</p> : (
             <Table head={['Subject', 'Quizzes', 'Average', 'Best', 'Last']}>
