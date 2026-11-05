@@ -245,9 +245,7 @@ export const SUBJECTS = {
     sessionSubject: 'Body Systems IV',
     semester: '4',
     examLengths: [30, 60, 90, 120, 150, 180, 210],
-    // Imaging has no questions yet; add `'Medical Imaging': 1` here once it
-    // does, or exams would come up short by its share.
-    ratio: { Anatomy: 1, Physiology: 1 },
+    ratio: { Anatomy: 1, Physiology: 1, 'Medical Imaging': 1 },
     sources: [
       { table: 'bs4_anatomy', subject: 'Anatomy' },
       { table: 'bs4_physiology', subject: 'Physiology' },
