@@ -19,7 +19,7 @@ const REFRESH_MS = 30_000;
 /* Every counter the dashboard tracks, grouped. `k` is a key of the
    server's `counters` object. */
 const COUNTER_GROUPS = [
-  ['Students', [['students', 'Total students'], ['signups_7d', 'New this week'], ['semester_1', 'Semester 1'], ['semester_2', 'Semester 2'], ['no_semester', 'No semester yet']]],
+  ['Students', [['students', 'Total students'], ['signups_7d', 'New this week'], ['semester_1', 'Semester 1'], ['semester_2', 'Semester 2'], ['semester_4', 'Semester 4'], ['no_semester', 'No semester yet']]],
   ['Retention', [['active_7d', 'Active this week'], ['returning_7d', 'Came back this week'], ['new_7d', 'New this week'], ['quiet', 'Not back in 7-30 days'], ['lapsed', 'Gone 30+ days']]],
   ['Visits', [['visitors_today', 'Visitors today'], ['visits_today', 'Visits today'], ['visitors_7d', 'Visitors, 7 days'], ['visits_30d', 'Visits, 30 days'], ['visitor_days_all', 'Visitor-days, all time']]],
   ['Quizzes', [['quizzes_24h', 'Last 24 hours'], ['quizzes_7d', 'Last 7 days'], ['quizzes_30d', 'Last 30 days'], ['quizzes_all', 'All time'], ['questions_answered_30d', 'Questions answered, 30 days']]],

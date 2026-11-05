@@ -45,6 +45,12 @@ const ALLOWED_TABLES = [
   'scientific_reasoning',
   // Both semesters
   'history_of_medicine',
+  // Semester 4
+  'gct4_immunology',
+  'gct4_microbiology',
+  'bs4_anatomy',
+  'bs4_physiology',
+  'bs4_imaging',
 ];
 
 // Public, read-only data: any origin may fetch it.

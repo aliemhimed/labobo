@@ -49,6 +49,8 @@ const DECK_LOOK = {
   'body-systems-2': { glyph: '🫀', fill: 'mint', topics: ['Anatomy', 'Physiology', 'Medical Imaging'] },
   'clinical-2': { glyph: '💉', fill: 'coral', topics: ['Clinical procedures', 'Communication', 'Professional practice'] },
   'scientific-reasoning': { glyph: '🔬', fill: 'violet', topics: ['Health research process'] },
+  'gct-4': { glyph: '🦠', fill: 'violet', topics: ['Immunology', 'Microbiology'] },
+  'body-systems-4': { glyph: '🫀', fill: 'mint', topics: ['Endocrine', 'Reproductive', 'Anatomy', 'Physiology'] },
   'history-of-medicine': { glyph: '📜', fill: 'orange', topics: ['Prehistoric', 'Mesopotamia', 'Egypt', 'India', 'China', 'Greece'] },
 };
 const FALLBACK_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];

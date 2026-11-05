@@ -6,7 +6,7 @@ import { Panel, Table, ago } from './parts.jsx';
 
 const KEY = ['admin-announcements'];
 const TONES = { info: 'Announcement', warning: 'Heads up', success: 'Good news' };
-const AUDIENCE = { '': 'Everyone', 1: 'Semester 1', 2: 'Semester 2' };
+const AUDIENCE = { '': 'Everyone', 1: 'Semester 1', 2: 'Semester 2', 4: 'Semester 4' };
 const MAX = 500;
 
 const when = (iso) => (iso ? new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '');

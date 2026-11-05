@@ -30,6 +30,8 @@ const SUBJECTS = [
   'Clinical & Professional Skills II',
   'Scientific Reasoning',
   'History of Medicine',
+  'GCT IV',
+  'Body Systems IV',
 ];
 const EXAM_QUESTIONS = 30;
 

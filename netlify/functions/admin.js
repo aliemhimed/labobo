@@ -49,6 +49,8 @@ const BANKS = [
   { subject: 'Clinical & Professional Skills II', semester: '2', tables: ['clinical_skills_2'] },
   { subject: 'Scientific Reasoning', semester: '2', tables: ['scientific_reasoning'] },
   { subject: 'History of Medicine', semester: '1 & 2', tables: ['history_of_medicine'] },
+  { subject: 'GCT IV', semester: '4', tables: ['gct4_immunology', 'gct4_microbiology'] },
+  { subject: 'Body Systems IV', semester: '4', tables: ['bs4_anatomy', 'bs4_physiology', 'bs4_imaging'] },
 ];
 
 const BANK_TABLES = new Set(BANKS.flatMap((b) => b.tables));
@@ -204,6 +206,7 @@ async function snapshot(tz) {
     students: out.users?.total ?? null,
     semester_1: sem('1'),
     semester_2: sem('2'),
+    semester_4: sem('4'),
     no_semester: out.users?.no_semester ?? null,
     signups_7d: out.users?.last_7d ?? null,
     visitors_today: out.visits?.today ?? null,
@@ -514,7 +517,7 @@ async function createAnnouncement(body, caller) {
   const message = typeof body.message === 'string' ? body.message.trim() : '';
   if (!message || message.length > 500) return fail(400, 'The message must be 1-500 characters');
   const tone = TONES.has(body.tone) ? body.tone : 'info';
-  const semester = body.semester === '1' || body.semester === '2' ? body.semester : null;
+  const semester = ['1', '2', '4'].includes(body.semester) ? body.semester : null;
   let endsAt = null;
   if (body.ends_at) {
     const d = new Date(body.ends_at);

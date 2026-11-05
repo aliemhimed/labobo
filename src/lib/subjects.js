@@ -215,6 +215,43 @@ export const SUBJECTS = {
     sources: [{ table: 'scientific_reasoning', subject: 'Scientific Reasoning' }],
   },
 
+  'gct-4': {
+    path: 'gct-4',
+    title: 'GCT IV MCQ',
+    description: 'Immunology & Microbiology',
+    docTitle: 'GCT IV — Studywith Labobo',
+    storagePrefix: 'gct4',
+    leaderboardSubject: 'GCT IV',
+    sessionSubject: 'GCT IV',
+    semester: '4',
+    examLengths: [30, 60, 90, 120, 150, 180, 210],
+    ratio: { Immunology: 1, Microbiology: 1 },
+    sources: [
+      { table: 'gct4_immunology', subject: 'Immunology' },
+      { table: 'gct4_microbiology', subject: 'Microbiology' },
+    ],
+  },
+
+  'body-systems-4': {
+    path: 'body-systems-4',
+    title: 'Body Systems IV MCQ',
+    description: 'Endocrine, Renal & Reproductive — Anatomy, Physiology & Medical Imaging',
+    docTitle: 'Body Systems IV — Studywith Labobo',
+    storagePrefix: 'bs4',
+    leaderboardSubject: 'Body Systems IV',
+    sessionSubject: 'Body Systems IV',
+    semester: '4',
+    examLengths: [30, 60, 90, 120, 150, 180, 210],
+    // Imaging has no questions yet; add `'Medical Imaging': 1` here once it
+    // does, or exams would come up short by its share.
+    ratio: { Anatomy: 1, Physiology: 1 },
+    sources: [
+      { table: 'bs4_anatomy', subject: 'Anatomy' },
+      { table: 'bs4_physiology', subject: 'Physiology' },
+      { table: 'bs4_imaging', subject: 'Medical Imaging' },
+    ],
+  },
+
   // Listed in both semesters: one bank, one progress store and one
   // leaderboard, shown on the home page of either semester.
   'history-of-medicine': {

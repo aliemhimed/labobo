@@ -7,7 +7,7 @@ import { fetchIsAdmin } from '../lib/adminApi.js';
 import { promptInstall } from '../lib/install.js';
 import { useInstallMode } from './InstallPrompt.jsx';
 
-const SEMESTER_LABEL = { '1': 'Semester 1', '2': 'Semester 2' };
+const SEMESTER_LABEL = { '1': 'Semester 1', '2': 'Semester 2', '4': 'Semester 4' };
 
 /** Account menu: avatar button top-right, opening a small card with the
     signed-in user's name/email, their semester, and account actions.

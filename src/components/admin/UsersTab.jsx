@@ -57,6 +57,7 @@ export default function UsersTab({ onOpen }) {
         <Stat label="No semester yet" value={num(all.filter((u) => !u.semester).length)} />
         <Stat label="Semester 1" value={num(all.filter((u) => u.semester === '1').length)} />
         <Stat label="Semester 2" value={num(all.filter((u) => u.semester === '2').length)} />
+        <Stat label="Semester 4" value={num(all.filter((u) => u.semester === '4').length)} />
         <Stat label="Signed in with Google" value={num(all.filter((u) => u.provider === 'google').length)} />
         <Stat label="Email & password" value={num(all.filter((u) => u.provider === 'email').length)} />
       </div>
@@ -69,6 +70,7 @@ export default function UsersTab({ onOpen }) {
             <option value="all">Every semester</option>
             <option value="1">Semester 1</option>
             <option value="2">Semester 2</option>
+            <option value="4">Semester 4</option>
             <option value="none">No semester</option>
           </select>
           <select className="adm-input" aria-label="Sort by" value={sort} onChange={(e) => setSort(e.target.value)}>
