@@ -225,10 +225,7 @@ export const SUBJECTS = {
     sessionSubject: 'GCT IV',
     semester: '4',
     examLengths: [30, 60, 90, 120, 150, 180, 210],
-    // Microbiology has no questions yet; set this back to
-    // `{ Immunology: 1, Microbiology: 1 }` once it does, or exams would come
-    // up short by its share.
-    ratio: { Immunology: 1 },
+    ratio: { Immunology: 1, Microbiology: 1 },
     sources: [
       { table: 'gct4_immunology', subject: 'Immunology' },
       { table: 'gct4_microbiology', subject: 'Microbiology' },
