@@ -36,10 +36,13 @@ const USE_DAYS_KEY = 'labobo.useDays';
 const DISMISSED_KEY = 'labobo.review.dismissed';
 export const ASK_FROM_DAY = 3;
 
-/* Launch week: until this date every student is asked on their first visit,
-   however new they are. After it, only from the 3rd day of use. */
-const LAUNCH_UNTIL = new Date('2026-11-17T00:00:00');
-export const isReviewLaunch = (now = new Date()) => now < LAUNCH_UNTIL;
+/* Students who already had an account when reviews launched are asked
+   straight away; anyone who signs up after it waits until their 3rd day. */
+const REVIEWS_LAUNCHED = Date.parse('2026-11-10T01:00:00Z');
+export const joinedBeforeReviews = (createdAt) => {
+  const t = Date.parse(createdAt);
+  return Number.isFinite(t) && t < REVIEWS_LAUNCHED;
+};
 
 const today = () => {
   const d = new Date();
