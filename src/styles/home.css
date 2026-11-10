@@ -586,3 +586,30 @@
 @media (min-width: 768px) and (max-width: 860px) {
   .home-side:not(:has(.side-review)) { grid-template-areas: "mascot say say" "log log log"; }
 }
+
+/* After a review: ask which modules to add (Reviews.jsx ModuleRequest). */
+.module-request {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border: var(--line) dashed var(--edge);
+  border-radius: 16px;
+  background: var(--hema-wash);
+}
+.module-request p { line-height: 1.5; color: var(--ink); }
+.module-request p + p { margin-top: 8px; }
+.module-ig {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 10px 16px 10px 10px;
+  border: var(--line) solid var(--card-ink);
+  border-radius: var(--r-control);
+  background: linear-gradient(135deg, #FFD15C 0%, #FF6B6B 45%, #D63AAE 100%);
+  color: var(--card-ink);
+  text-decoration: none;
+  box-shadow: 3px 3px 0 var(--hard);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.module-ig:hover { transform: translate(-1px, -2px); box-shadow: 5px 5px 0 var(--hard); }
+.module-ig:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--hard); }

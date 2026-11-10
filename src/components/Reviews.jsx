@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Dialog from './Dialog.jsx';
 import { useAuth } from '../lib/auth.jsx';
-import { Cross } from './Icons.jsx';
+import { Cross, InstagramGlyph } from './Icons.jsx';
+import { INSTAGRAM_DM, INSTAGRAM_HANDLE } from '../lib/contact.js';
 import {
   ASK_FROM_DAY, dismissReviewCard, fetchApprovedReviews, fetchMyReview, joinedBeforeReviews, noteUseDay,
   onOpenReviewDialog, openReviewDialog, reviewCardDismissed, saveMyReview,
@@ -74,6 +75,7 @@ function ReviewBody({ mine, onCancel }) {
         <p className="review-mine"><StarRow n={saved.rating} /><span dir="auto">{saved.body}</span></p>
         <p className="review-status" role="status">{STATUS[saved.status] || STATUS.pending}</p>
         <button type="button" className="btn sm" onClick={() => setEditing(true)}>Edit my review</button>
+        <ModuleRequest />
       </>
     );
   }
@@ -104,6 +106,29 @@ function ReviewBody({ mine, onCancel }) {
       {!rating && body.trim() ? <p className="review-hint">Tap the stars to rate us.</p> : null}
       {save.isError ? <p className="form-error" role="alert">{save.error.message}</p> : null}
     </form>
+  );
+}
+
+/* Shown after a review is sent: ask for the modules they'd like added. */
+function ModuleRequest() {
+  return (
+    <div className="module-request">
+      <p>
+        <b>Missing a module?</b> If there's any module you'd like added to Labobo, message us on
+        Instagram and we will definitely add it for you.
+      </p>
+      <p lang="ar" dir="rtl">
+        <b>هل تبحث عن مادة غير موجودة؟</b> إذا كان هناك أي موديول تريد إضافته إلى لابوبو، راسلنا على
+        إنستغرام وسنضيفه لك بالتأكيد.
+      </p>
+      <a className="module-ig" href={INSTAGRAM_DM} target="_blank" rel="noopener noreferrer">
+        <span className="help-icon" aria-hidden="true"><InstagramGlyph /></span>
+        <span className="help-text">
+          <b>Message us on Instagram</b>
+          <span>@{INSTAGRAM_HANDLE}</span>
+        </span>
+      </a>
+    </div>
   );
 }
 
