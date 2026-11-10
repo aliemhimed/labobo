@@ -36,6 +36,11 @@ const USE_DAYS_KEY = 'labobo.useDays';
 const DISMISSED_KEY = 'labobo.review.dismissed';
 export const ASK_FROM_DAY = 3;
 
+/* Launch week: until this date every student is asked on their first visit,
+   however new they are. After it, only from the 3rd day of use. */
+const LAUNCH_UNTIL = new Date('2026-11-17T00:00:00');
+export const isReviewLaunch = (now = new Date()) => now < LAUNCH_UNTIL;
+
 const today = () => {
   const d = new Date();
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;

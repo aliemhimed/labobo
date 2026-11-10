@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Dialog from './Dialog.jsx';
 import { Cross } from './Icons.jsx';
 import {
-  ASK_FROM_DAY, dismissReviewCard, fetchApprovedReviews, fetchMyReview, noteUseDay,
+  ASK_FROM_DAY, dismissReviewCard, fetchApprovedReviews, fetchMyReview, isReviewLaunch, noteUseDay,
   onOpenReviewDialog, openReviewDialog, reviewCardDismissed, saveMyReview,
 } from '../lib/reviews.js';
 
@@ -119,6 +119,7 @@ function Band({ titleId, onClose }) {
 }
 
 /* On the home page, depending on where the student is:
+     - launch week (see reviews.js): everyone is asked once, on their first visit
      - fewer than 3 days of use, or already reviewed  -> nothing
      - 3rd day onwards, never closed the card         -> the full card, with an X
      - closed the card without reviewing              -> a small "Give us a review" button
@@ -133,7 +134,8 @@ export function ReviewPrompt({ activeDays = 0 }) {
   useEffect(() => { if (mine === null) setSentHere(false); }, [mine]);
 
   if (isLoading || isError) return null;
-  if (Math.max(useDays, activeDays) < ASK_FROM_DAY && !sentHere) return null;
+  const eligible = isReviewLaunch() || Math.max(useDays, activeDays) >= ASK_FROM_DAY;
+  if (!eligible && !sentHere) return null;
   if (mine && !sentHere) return null;
 
   if (dismissed && !sentHere) {
