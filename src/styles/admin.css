@@ -182,3 +182,9 @@ textarea.adm-input { min-height: 84px; padding: 10px 12px; resize: vertical; lin
   .adm-q-share { grid-column: 2; }
   .adm-q-opt em { display: block; margin: 2px 0 0; }
 }
+
+/* Reviews tab */
+.adm-review-head { margin: 0 0 4px; }
+.adm-stars { color: #E0A400; letter-spacing: 0.08em; }
+.adm-review-body { margin: 0; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; unicode-bidi: plaintext; }
+.adm-actions { display: flex; gap: 8px; flex: none; }

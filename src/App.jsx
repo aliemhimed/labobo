@@ -5,6 +5,8 @@ import SelectSemesterPage from './pages/SelectSemesterPage.jsx';
 import NotFound from './pages/NotFound.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import InstallPrompt from './components/InstallPrompt.jsx';
+import HelpButton from './components/HelpButton.jsx';
+import { ReviewDialogHost } from './components/Reviews.jsx';
 import { AuthGate, SemesterGate } from './components/AuthGate.jsx';
 import { SUBJECTS } from './lib/subjects.js';
 import { loadSubjectPage } from './pages/loadSubjectPage.js';
@@ -28,6 +30,7 @@ export default function App() {
         <Route path="/*" element={<StudentApp />} />
       </Routes>
       <InstallPrompt />
+      <HelpButton />
     </ErrorBoundary>
   );
 }
@@ -50,6 +53,7 @@ function StudentApp() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
+        <ReviewDialogHost />
       </SemesterGate>
     </AuthGate>
   );

@@ -385,6 +385,7 @@
   .home-side .say { grid-area: say; align-self: center; }
   .home-side .say::after { left: -12px; bottom: auto; top: calc(50% - 10px); transform: rotate(135deg); }
   .home-side .log { grid-area: log; }
+  .home-side .ig-card { grid-column: 1 / -1; }
   .home-title { max-width: none; }
 
   .login { grid-template-columns: minmax(0, 1fr); align-content: start; gap: 28px; padding-top: 32px; }
@@ -405,3 +406,137 @@
 @media (prefers-reduced-motion: reduce) {
   .deck, .nametag, .semester-option { animation: none; }
 }
+
+/* ── Instagram card under the streak ──────────────────────────────── */
+
+.ig-card {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: var(--line) solid var(--card-ink);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #FFD15C 0%, #FF6B6B 45%, #D63AAE 100%);
+  color: var(--card-ink);
+  text-decoration: none;
+  box-shadow: 5px 5px 0 var(--hard);
+  transform: rotate(-1deg);
+  transition: transform 0.15s var(--ease-pop), box-shadow 0.15s;
+}
+.ig-card:hover, .ig-card:focus-visible { transform: rotate(0) translate(-2px, -3px); box-shadow: 7px 8px 0 var(--hard); }
+.ig-card:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 var(--hard); }
+.ig-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: var(--line) solid var(--card-ink);
+  border-radius: 14px;
+  background: #fff;
+}
+.ig-badge svg { width: 26px; height: 26px; }
+.ig-text { display: grid; gap: 2px; min-width: 0; }
+.ig-text b { font: 800 var(--t-16)/1.2 var(--font-display); letter-spacing: -0.01em; }
+.ig-text span { font-size: var(--t-12); font-weight: 700; overflow-wrap: anywhere; }
+
+/* ── Reviews (components/Reviews.jsx) ─────────────────────────────── */
+
+.review-wall { margin-top: 64px; }
+.review-notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.review-note {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border: var(--line) solid var(--card-ink);
+  border-radius: 16px;
+  background: var(--fill);
+  color: var(--card-ink);
+  box-shadow: 5px 5px 0 var(--hard);
+  transform: rotate(var(--tilt));
+}
+.review-note p { flex: 1; font-weight: 600; line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; unicode-bidi: plaintext; }
+.review-note b { font: 800 var(--t-16)/1 var(--font-display); }
+.review-stars { color: #E0A400; font-size: 1.15rem; letter-spacing: 0.06em; }
+.review-stars span { color: rgba(11, 18, 51, 0.2); }
+.review-note .review-stars { color: var(--card-ink); }
+.review-note .review-stars span { color: rgba(11, 18, 51, 0.25); }
+
+.review-form {
+  margin-top: 56px;
+  overflow: hidden;
+  border: var(--line) solid var(--edge);
+  border-radius: var(--r-sheet);
+  background: var(--sheet);
+  box-shadow: 8px 8px 0 var(--hard);
+}
+.review-band {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px 12px;
+  border-bottom: var(--line) solid var(--edge);
+  background: var(--band);
+  color: #fff;
+}
+.review-band h2 { color: #fff; font-size: var(--t-24); }
+.review-band p { font-weight: 800; font-size: var(--t-18); }
+.review-inner { padding: 20px; }
+.review-lede { color: var(--ink-soft); line-height: 1.5; }
+.review-lede + .review-lede { margin-top: 6px; }
+.stars { display: flex; gap: 6px; margin: 16px 0 12px; }
+.star {
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: var(--rule-strong);
+  font-size: 2.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.12s var(--ease-pop), color 0.1s;
+}
+.star.on { color: #FFC21A; text-shadow: 2px 2px 0 var(--hard); }
+.star:hover { transform: scale(1.18) rotate(-8deg); }
+.review-form textarea { unicode-bidi: plaintext; }
+.review-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.review-count { margin-right: auto; color: var(--ink-soft); font-size: var(--t-12); }
+.review-hint { margin-top: 10px; color: var(--ink-soft); font-size: var(--t-14); }
+.review-mine { display: grid; gap: 6px; font-weight: 600; line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; unicode-bidi: plaintext; }
+.review-status { margin: 12px 0 14px; color: var(--correct); font-weight: 700; font-size: var(--t-14); }
+
+/* Announcements can carry an Arabic line under an English one. */
+.announcement p { unicode-bidi: plaintext; }
+
+/* The review card sits under the subtitle; the band carries a close button. */
+.home-main > .review-form { margin-top: 32px; }
+.review-band { position: relative; padding-right: 64px; }
+.review-close {
+  position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
+  display: grid; place-items: center; width: 38px; height: 38px; padding: 0;
+  border: 2px solid #fff; border-radius: 50%; background: transparent; color: #fff; cursor: pointer;
+}
+.review-close:hover { background: rgba(255, 255, 255, 0.2); }
+.review-close svg { width: 20px; height: 20px; }
+.review-form.in-dialog { margin: -28px; border: 0; border-radius: 0; box-shadow: none; }
+.review-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 22px; padding: 8px 14px;
+  border: var(--line) solid var(--card-ink); border-radius: 99px;
+  background: var(--marker); color: var(--card-ink);
+  font: 700 var(--t-14)/1 var(--font-display);
+  cursor: pointer; box-shadow: 3px 3px 0 var(--hard);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.review-pill:hover { transform: translate(-1px, -2px); box-shadow: 5px 5px 0 var(--hard); }
+.review-pill:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--hard); }
+@media (max-width: 479px) { .review-form.in-dialog { margin: -22px -18px; } }

@@ -56,6 +56,7 @@ export function readStudyLog(now = new Date()) {
   return {
     streak,
     studiedToday,
+    activeDays: days.size,
     week,
     recent,
     answered,

@@ -25,3 +25,15 @@ export const Cross = (p) => (
 export const Flag = (p) => (
   <svg {...base} {...p}><path d="M5 17.5V3.5m0 0h9l-2 3.5 2 3.5H5" /></svg>
 );
+
+export const InstagramGlyph = (p) => (
+  <svg {...base} {...p}>
+    <rect x="3" y="3" width="14" height="14" rx="4" />
+    <circle cx="10" cy="10" r="3.2" />
+    <circle cx="14" cy="6" r="0.6" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+export const Mail = (p) => (
+  <svg {...base} {...p}><rect x="2.5" y="4.5" width="15" height="11" rx="2" /><path d="m3 5.5 7 5.5 7-5.5" /></svg>
+);

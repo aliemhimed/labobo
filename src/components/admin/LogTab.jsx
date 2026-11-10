@@ -16,6 +16,12 @@ function describe(e) {
       return `Posted an announcement${d.semester ? ` for semester ${d.semester}` : ''}: “${d.message}”`;
     case 'end_announcement':
       return `Ended an announcement: “${d.message}”`;
+    case 'review_approved':
+      return `Approved ${d.name || 'a student'}'s ${d.rating}-star review`;
+    case 'review_hidden':
+      return `Hid ${d.name || 'a student'}'s ${d.rating}-star review`;
+    case 'review_pending':
+      return `Moved ${d.name || 'a student'}'s review back to waiting`;
     case 'export_students':
       return `Downloaded the students CSV (${d.rows} rows)`;
     default:

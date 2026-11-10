@@ -11,6 +11,7 @@
                                       each option is picked; the questions
                                       most students get wrong
    GET  /api/admin?view=announcements -> banners, newest first
+   GET  /api/admin?view=reviews    -> student reviews, waiting ones first
    GET  /api/admin?view=log        -> what admins did, newest first
    POST /api/admin   body: { action: 'resolve_reports', ids: [..] }
    POST /api/admin   body: { action: 'reopen_reports', ids: [..] }
@@ -19,6 +20,8 @@
      -> permanently deletes a student's account and all their data
    POST /api/admin   body: { action: 'create_announcement', message, tone, semester, ends_at }
    POST /api/admin   body: { action: 'end_announcement', id }
+   POST /api/admin   body: { action: 'set_review_status', id, status }
+     -> 'approved' shows a review on the home page, 'hidden' takes it off
 
    Every GET takes `tz` (the admin's IANA time zone, e.g. Africa/Tripoli):
    days in charts, "today" and streaks follow it. Missing or unknown -> UTC.
@@ -597,6 +600,32 @@ async function endAnnouncement(id, caller) {
   return json(200, { ok: true });
 }
 
+/* ── Reviews ──────────────────────────────────────────────────────── */
+
+const REVIEW_STATUSES = new Set(['approved', 'hidden', 'pending']);
+
+async function reviewsView() {
+  const list = await rows('/reviews?select=id,name,rating,body,status,created_at,updated_at,decided_at,decided_by&order=updated_at.desc&limit=200');
+  const rank = { pending: 0, approved: 1, hidden: 2 };
+  return { items: list.sort((a, b) => rank[a.status] - rank[b.status]) };
+}
+
+async function setReviewStatus(body, caller) {
+  const n = Number(body.id);
+  if (!Number.isInteger(n) || n <= 0) return fail(400, 'Invalid id');
+  if (!REVIEW_STATUSES.has(body.status)) return fail(400, 'Invalid status');
+  const res = await rest(`/reviews?id=eq.${n}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ status: body.status, decided_at: new Date().toISOString(), decided_by: caller.email }),
+  });
+  if (!res.ok) return fail(502, 'Could not update the review', `${res.status} ${await res.text()}`);
+  const [row] = await res.json();
+  if (!row) return fail(404, 'No such review');
+  await logAction(caller, `review_${body.status}`, n, { name: row.name, rating: row.rating });
+  return json(200, { ok: true });
+}
+
 /* ── Log ──────────────────────────────────────────────────────────── */
 
 const logView = async () => ({
@@ -628,6 +657,7 @@ exports.handler = async (event) => {
       if (view === 'users_csv') return await usersCsv(caller);
       if (view === 'questions') return json(200, await questionsView());
       if (view === 'announcements') return json(200, await announcementsView());
+      if (view === 'reviews') return json(200, await reviewsView());
       if (view === 'log') return json(200, await logView());
       if (user) {
         if (!UUID.test(user)) return fail(400, 'Invalid user id');
@@ -646,6 +676,7 @@ exports.handler = async (event) => {
         case 'delete_user': return await deleteUser(body.id, caller);
         case 'create_announcement': return await createAnnouncement(body, caller);
         case 'end_announcement': return await endAnnouncement(body.id, caller);
+        case 'set_review_status': return await setReviewStatus(body, caller);
         default: return fail(400, 'Unknown action');
       }
     }

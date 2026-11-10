@@ -5,6 +5,9 @@ import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import { fetchIsAdmin } from '../lib/adminApi.js';
 import { promptInstall } from '../lib/install.js';
+import { INSTAGRAM_PROFILE } from '../lib/contact.js';
+import { openReviewDialog } from '../lib/reviews.js';
+import { useMyReview } from './Reviews.jsx';
 import { useInstallMode } from './InstallPrompt.jsx';
 
 const SEMESTER_LABEL = { '1': 'Semester 1', '2': 'Semester 2', '4': 'Semester 4' };
@@ -25,6 +28,7 @@ export default function ProfileMenu({ onSignOut }) {
     retry: false,
   });
   const installMode = useInstallMode();
+  const { data: myReview } = useMyReview();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -79,6 +83,14 @@ export default function ProfileMenu({ onSignOut }) {
               Install app
             </button>
           ) : null}
+          <button type="button" className="profile-item" role="menuitem"
+                  onClick={() => { setOpen(false); openReviewDialog(); }}>
+            {myReview ? 'Edit my review' : 'Leave a review'}
+          </button>
+          <a href={INSTAGRAM_PROFILE} className="profile-item" role="menuitem" target="_blank"
+             rel="noopener noreferrer" onClick={() => setOpen(false)}>
+            Follow us on Instagram
+          </a>
           {adminCheck?.admin ? (
             <Link to="/admin" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
               Admin dashboard

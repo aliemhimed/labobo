@@ -9,6 +9,9 @@ import { useProfile } from '../hooks/useProfile.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
+import { ReviewPrompt, ReviewWall } from '../components/Reviews.jsx';
+import { InstagramGlyph } from '../components/Icons.jsx';
+import { INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/contact.js';
 import { SUBJECTS, inSemester } from '../lib/subjects.js';
 import { questionsQuery } from '../hooks/useQuestions.js';
 import { loadSubjectPage } from './loadSubjectPage.js';
@@ -222,6 +225,13 @@ export default function HomePage() {
                  width="400" height="732" alt="" draggable="false" />
           </button>
           <StudyLog log={log} />
+          <a className="ig-card" href={INSTAGRAM_PROFILE} target="_blank" rel="noopener noreferrer">
+            <span className="ig-badge" aria-hidden="true"><InstagramGlyph /></span>
+            <span className="ig-text">
+              <b>Follow us on Instagram</b>
+              <span>@{INSTAGRAM_HANDLE} for new questions first</span>
+            </span>
+          </a>
         </aside>
 
         <div className="home-main">
@@ -231,6 +241,8 @@ export default function HomePage() {
             Semester {semester} subjects. Each one has study, practice and exam modes, plus
             flashcards and a weekly leaderboard.
           </p>
+
+          <ReviewPrompt activeDays={log.activeDays} />
 
           {resumable.length ? (
             <section className="resume" aria-labelledby="resume-title">
@@ -272,6 +284,8 @@ export default function HomePage() {
               );
             })}
           </div>
+
+          <ReviewWall />
         </div>
       </main>
     </>

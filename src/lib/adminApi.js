@@ -36,6 +36,7 @@ export const fetchUser = (id, signal) => request({ signal }, `?user=${encodeURIC
 export const fetchQuestions = (signal) => request({ signal }, '?view=questions');
 export const fetchAnnouncements = (signal) => request({ signal }, '?view=announcements');
 export const fetchLog = (signal) => request({ signal }, '?view=log');
+export const fetchReviews = (signal) => request({ signal }, '?view=reviews');
 
 const post = (body) => request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 export const deleteUser = (id) => post({ action: 'delete_user', id });
@@ -43,6 +44,7 @@ export const resolveReports = (ids) => post({ action: 'resolve_reports', ids });
 export const reopenReports = (ids) => post({ action: 'reopen_reports', ids });
 export const createAnnouncement = (a) => post({ action: 'create_announcement', ...a });
 export const endAnnouncement = (id) => post({ action: 'end_announcement', id });
+export const setReviewStatus = (id, status) => post({ action: 'set_review_status', id, status });
 
 /** Downloads every student as a CSV file (the server logs the export). */
 export async function downloadStudentsCsv() {
