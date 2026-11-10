@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Dialog from './Dialog.jsx';
 import { Cross } from './Icons.jsx';
@@ -176,15 +176,34 @@ function ReviewDialog({ onClose }) {
   );
 }
 
-/* Approved reviews as sticky notes, at the bottom of the home page. */
-export function ReviewWall() {
-  const { data } = useQuery({
+function useApprovedReviews() {
+  return useQuery({
     queryKey: ['reviews'],
     queryFn: ({ signal }) => fetchApprovedReviews(signal),
     staleTime: 5 * 60_000,
     retry: false,
-  });
-  const items = data || [];
+  }).data || [];
+}
+
+/* One approved review under the streak card (desktop and iPad; CSS hides it
+   on phones). A different one, picked at random, each time the page opens. */
+export function ReviewNote() {
+  const items = useApprovedReviews();
+  const pick = useMemo(() => Math.random(), []);
+  if (items.length < MIN_TO_SHOW) return null;
+  const r = items[Math.floor(pick * items.length)];
+  return (
+    <figure className="side-review">
+      <StarRow n={r.rating} />
+      <blockquote dir="auto">{r.body}</blockquote>
+      <figcaption>{r.name}</figcaption>
+    </figure>
+  );
+}
+
+/* Approved reviews as sticky notes, at the bottom of the home page. */
+export function ReviewWall() {
+  const items = useApprovedReviews();
   if (items.length < MIN_TO_SHOW) return null;
 
   return (

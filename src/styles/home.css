@@ -179,7 +179,7 @@
   align-items: start;
 }
 .home-side {
-  position: sticky;
+  position: static;
   top: 96px;
   display: flex;
   flex-direction: column;
@@ -386,6 +386,7 @@
   .home-side .say::after { left: -12px; bottom: auto; top: calc(50% - 10px); transform: rotate(135deg); }
   .home-side .log { grid-area: log; }
   .home-side .ig-card { grid-column: 1 / -1; }
+  .home-side .side-review { display: none; }
   .home-title { max-width: none; }
 
   .login { grid-template-columns: minmax(0, 1fr); align-content: start; gap: 28px; padding-top: 32px; }
@@ -540,3 +541,48 @@
 .review-pill:hover { transform: translate(-1px, -2px); box-shadow: 5px 5px 0 var(--hard); }
 .review-pill:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--hard); }
 @media (max-width: 479px) { .review-form.in-dialog { margin: -22px -18px; } }
+
+/* The sidebar follows the page while there's room for all of it; on shorter
+   screens it scrolls normally so the cards at its bottom stay reachable. */
+@media (min-width: 861px) and (min-height: 1000px) {
+  .home-side { position: sticky; }
+}
+
+/* One review under the streak (components/Reviews.jsx ReviewNote). */
+.side-review {
+  align-self: stretch;
+  margin: 0;
+  padding: 14px 16px 14px;
+  border: var(--line) solid var(--card-ink);
+  border-radius: 16px;
+  background: var(--fill-yellow);
+  color: var(--card-ink);
+  box-shadow: 5px 5px 0 var(--hard);
+  transform: rotate(1.2deg);
+}
+.side-review .review-stars { color: var(--card-ink); }
+.side-review .review-stars span { color: rgba(11, 18, 51, 0.25); }
+.side-review blockquote {
+  margin: 8px 0 10px;
+  font-weight: 600;
+  line-height: 1.45;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.side-review figcaption { font: 800 var(--t-16)/1 var(--font-display); }
+
+/* iPad portrait: the sidebar is stacked above the subjects, so the review
+   sits beside the streak card instead of under it. */
+@media (min-width: 768px) and (max-width: 860px) {
+  .home-side { grid-template-columns: 104px 1fr 1fr; grid-template-areas: "mascot say say" "log log note"; align-items: stretch; }
+  .home-side .mascot, .home-side .say { align-self: center; }
+  .home-side .side-review { display: block; grid-area: note; }
+}
+@media (min-width: 768px) and (max-width: 860px) {
+  .home-side:not(:has(.side-review)) { grid-template-areas: "mascot say say" "log log log"; }
+}

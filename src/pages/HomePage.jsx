@@ -9,7 +9,7 @@ import { useProfile } from '../hooks/useProfile.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
-import { ReviewPrompt, ReviewWall } from '../components/Reviews.jsx';
+import { ReviewNote, ReviewPrompt, ReviewWall } from '../components/Reviews.jsx';
 import { InstagramGlyph } from '../components/Icons.jsx';
 import { INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/contact.js';
 import { SUBJECTS, inSemester } from '../lib/subjects.js';
@@ -225,6 +225,7 @@ export default function HomePage() {
                  width="400" height="732" alt="" draggable="false" />
           </button>
           <StudyLog log={log} />
+          <ReviewNote />
           <a className="ig-card" href={INSTAGRAM_PROFILE} target="_blank" rel="noopener noreferrer">
             <span className="ig-badge" aria-hidden="true"><InstagramGlyph /></span>
             <span className="ig-text">
