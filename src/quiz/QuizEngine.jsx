@@ -95,7 +95,10 @@ export default function QuizEngine({ config, questions, basePath }) {
     if (!optionOrders.has(qIdx)) {
       const q = questions[qIdx];
       const n = q?.options.length || 0;
-      optionOrders.set(qIdx, seededShuffle(Array.from({ length: n }, (_, i) => i), `${optionSeed}:${q?.id}`));
+      const order = seededShuffle(Array.from({ length: n }, (_, i) => i), `${optionSeed}:${q?.id}`);
+      // "All of the above" / "None of the above" only make sense in last place.
+      const isAbove = (i) => /\bof the above\b/i.test(String(q?.options[i] ?? ''));
+      optionOrders.set(qIdx, [...order.filter((i) => !isAbove(i)), ...order.filter(isAbove)]);
     }
     return optionOrders.get(qIdx);
   }, [questions, optionSeed, optionOrders]);

@@ -255,7 +255,7 @@ export const SUBJECTS = {
   'history-of-medicine': {
     path: 'history-of-medicine',
     title: 'History of Medicine MCQ',
-    description: 'Prehistoric, Mesopotamia, Egypt, India, China & Greece',
+    description: 'Prehistoric to Rome, plus a mock exam',
     docTitle: 'History of Medicine — Studywith Labobo',
     storagePrefix: 'hom',
     leaderboardSubject: 'History of Medicine',
