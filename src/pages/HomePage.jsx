@@ -54,7 +54,7 @@ const DECK_LOOK = {
   'scientific-reasoning': { glyph: '🔬', fill: 'violet', topics: ['Health research process'] },
   'gct-4': { glyph: '🦠', fill: 'violet', topics: ['Immunology', 'Microbiology'] },
   'body-systems-4': { glyph: '🫀', fill: 'mint', topics: ['Anatomy', 'Physiology', 'Medical Imaging'] },
-  'history-of-medicine': { glyph: '📜', fill: 'orange', topics: ['Prehistoric', 'Mesopotamia', 'Egypt', 'India', 'China', 'Greece'] },
+  'history-of-medicine': { glyph: '📜', fill: 'orange', topics: ['Prehistoric', 'Mesopotamia', 'Egypt', 'India', 'China', 'Greece', 'Rome'] },
 };
 const FALLBACK_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];
 // Resting angle of each card in the deck, cycled.
