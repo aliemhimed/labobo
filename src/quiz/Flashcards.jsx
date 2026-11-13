@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { shuffle } from '../lib/utils.js';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
 import PageHead from '../components/PageHead.jsx';
+import { LockedNote, LockedTopics } from '../components/Plan.jsx';
 import { trackStudy } from '../lib/study.js';
 
 const DAY = 86400000;
@@ -175,10 +176,12 @@ export default function Flashcards({
                       </label>
                     );
                   })}
+                  <LockedTopics subject={s} as="row" />
                 </div>
               );
             })}
           </div>
+          <LockedNote />
         </div>
         <button type="button" className="btn primary lg fc-start"
                 disabled={selected.length === 0} onClick={start}>

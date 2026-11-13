@@ -18,11 +18,12 @@ export async function fetchMyReview(signal) {
   return (await read(res)).review || null;
 }
 
-export async function saveMyReview({ rating, body }) {
+/** `anonymous` shows the review as "A student" instead of their first name. */
+export async function saveMyReview({ rating, body, anonymous = false }) {
   const res = await fetch('/api/reviews', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await authHeader()) },
-    body: JSON.stringify({ rating, body }),
+    body: JSON.stringify({ rating, body, anonymous }),
   });
   return (await read(res)).review;
 }

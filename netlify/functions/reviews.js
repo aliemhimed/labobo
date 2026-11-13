@@ -2,13 +2,14 @@
    GET  /api/reviews                 -> { items: [{ id, name, rating, body, updated_at }] }
         the approved reviews, newest first. Public, cached for a minute.
    GET  /api/reviews?mine=1          (Authorization: Bearer <token>)
-        -> { review: { rating, body, status, updated_at } | null }
-   POST /api/reviews   body: { rating, body }   (Authorization: Bearer <token>)
+        -> { review: { rating, body, anonymous, status, updated_at } | null }
+   POST /api/reviews   body: { rating, body, anonymous }   (Authorization: Bearer <token>)
         -> { review }   saves the caller's one review, replacing any earlier
            one, and sends it back to 'pending' until an admin approves it.
 
    The name shown is the first word of the student's profile name, read on
-   the server; nothing in the request decides whose review it is. */
+   the server, or "A student" when they chose to post anonymously; nothing
+   in the request decides whose review it is. */
 
 const { SUPA_URL, dbHeaders, json, fail, parseBody, verifyUser, allowRequest } = require('./_lib/common');
 const { containsProfanity } = require('./_lib/profanity');
@@ -43,7 +44,7 @@ exports.handler = async (event) => {
     if (!caller) return fail(401, 'Sign in required');
 
     if (event.httpMethod === 'GET') {
-      const res = await rest(`/reviews?user_id=eq.${encodeURIComponent(caller.id)}&select=rating,body,status,updated_at`);
+      const res = await rest(`/reviews?user_id=eq.${encodeURIComponent(caller.id)}&select=rating,body,anonymous,status,updated_at`);
       if (!res.ok) return fail(502, 'Could not load your review', `${res.status} ${await res.text()}`);
       const [review] = await res.json();
       return json(200, { review: review || null }, { 'Cache-Control': 'private, no-store' });
@@ -63,18 +64,21 @@ exports.handler = async (event) => {
         return fail(429, 'You have edited your review a lot in the last hour. Try again later.');
       }
 
+      const anonymous = input.anonymous === true;
       const now = new Date().toISOString();
       const res = await rest('/reviews?on_conflict=user_id', {
         method: 'POST',
         headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify({
-          user_id: caller.id, name: await displayName(caller.id), rating, body,
+          user_id: caller.id, name: anonymous ? 'A student' : await displayName(caller.id), anonymous, rating, body,
           status: 'pending', updated_at: now, decided_at: null, decided_by: null,
         }),
       });
       if (!res.ok) return fail(502, 'Could not save your review', `${res.status} ${await res.text()}`);
       const [row] = await res.json();
-      return json(200, { review: { rating: row.rating, body: row.body, status: row.status, updated_at: row.updated_at } });
+      return json(200, {
+        review: { rating: row.rating, body: row.body, anonymous: row.anonymous, status: row.status, updated_at: row.updated_at },
+      });
     }
 
     return fail(405, 'Method not allowed');

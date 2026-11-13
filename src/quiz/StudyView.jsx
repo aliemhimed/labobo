@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import QuestionCard from './QuestionCard.jsx';
 import { AnswerSheet, liveMarks } from './SheetMap.jsx';
 import PageHead from '../components/PageHead.jsx';
+import { LockedNote, LockedTopics } from '../components/Plan.jsx';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
 import { shuffle } from '../lib/utils.js';
 import { quizStats } from './stats.js';
@@ -159,10 +160,12 @@ export default function StudyView({
                         </button>
                       );
                     })}
+                    <LockedTopics subject={subject} />
                   </div>
                 </div>
               );
             })}
+            <LockedNote />
           </div>
         ) : null}
       </section>

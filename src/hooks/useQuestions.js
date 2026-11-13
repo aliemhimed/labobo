@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { loadQuestions } from '../lib/questions.js';
 
 const NO_QUESTIONS = [];
+const NOTHING_LOCKED = [];
 
 /** Query options for a subject's bank. Shared with the home page, which
     prefetches a bank when a subject card is hovered or touched, so the
@@ -21,17 +22,21 @@ export function questionsQuery(config) {
   };
 }
 
-/** Fetches a subject's question bank. Returns { questions, status, error, reload }.
+/** Fetches a subject's question bank.
+    Returns { questions, locked, status, error, reload }; `locked` lists the
+    lectures the student's plan leaves out (see loadQuestions).
 
     Cached by React Query for the life of the page, so going home and back
     into a subject doesn't re-download its bank. The bank is never refetched
     in the background (staleTime: Infinity): question indices must stay stable
     while a quiz session is in progress, and a full page load picks up any
-    edits anyway. */
+    edits anyway. A change of plan (a trial started, a pass switched on)
+    invalidates it explicitly, see src/components/Plan.jsx. */
 export function useQuestions(config) {
   const query = useQuery({ ...questionsQuery(config), enabled: !!config });
 
-  const questions = query.data ?? NO_QUESTIONS;
+  const questions = query.data?.questions ?? NO_QUESTIONS;
+  const locked = query.data?.locked ?? NOTHING_LOCKED;
   // A manual reload shows the loading screen again, as it did before caching.
   let status;
   if (query.isPending || (query.isFetching && !questions.length)) status = 'loading';
@@ -40,6 +45,7 @@ export function useQuestions(config) {
 
   return {
     questions,
+    locked,
     status,
     error: status === 'error' ? query.error : null,
     reload: () => query.refetch(),

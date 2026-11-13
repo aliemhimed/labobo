@@ -188,3 +188,38 @@ textarea.adm-input { min-height: 84px; padding: 10px 12px; resize: vertical; lin
 .adm-stars { color: #E0A400; letter-spacing: 0.08em; }
 .adm-review-body { margin: 0; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; unicode-bidi: plaintext; }
 .adm-actions { display: flex; gap: 8px; flex: none; }
+
+/* ── Subscription (student detail) ────────────────────────────────── */
+.adm-pass-status { margin: 0 0 14px; color: var(--ink-soft); line-height: 1.5; }
+.adm-pass-status b { color: var(--ink); }
+.adm-field { display: grid; gap: 4px; font: 700 var(--t-12) var(--font-ui); color: var(--ink-muted); }
+.adm-field.grow { flex: 1 1 220px; }
+.adm-filters .adm-field + .btn, .adm-filters .btn + .btn { align-self: end; }
+.adm-pass-tag {
+  display: inline-block; margin-left: 8px; padding: 1px 8px;
+  border: 2px solid var(--card-ink); border-radius: 999px;
+  background: var(--fill-mint); color: var(--card-ink);
+  font: 800 var(--t-12) var(--font-ui);
+}
+
+/* ── Payments ─────────────────────────────────────────────────────── */
+.adm-payments { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.adm-payment {
+  display: grid; grid-template-columns: minmax(140px, 220px) minmax(0, 1fr); gap: 18px;
+  padding-bottom: 18px; border-bottom: 2px dashed var(--rule);
+}
+.adm-payment:last-child { padding-bottom: 0; border-bottom: 0; }
+.adm-payment-receipt img {
+  display: block; width: 100%; max-height: 300px; object-fit: contain; object-position: top left;
+  border: 1.5px solid var(--rule-strong); border-radius: 10px; background: var(--sheet-hover);
+}
+.adm-payment-ref { margin: 10px 0 14px; }
+.adm-payment-ref code, .adm-sub code {
+  padding: 2px 8px; border-radius: 6px; background: var(--hema-wash); color: var(--ink);
+  font: 700 var(--t-14) ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.04em;
+}
+.adm-sub code { font-size: var(--t-12); }
+.adm-pay-status { margin-left: 6px; font: 800 var(--t-12) var(--font-ui); }
+.adm-pay-status.approved { color: var(--correct); }
+.adm-pay-status.rejected { color: var(--wrong); }
+@media (max-width: 640px) { .adm-payment { grid-template-columns: minmax(0, 1fr); } }

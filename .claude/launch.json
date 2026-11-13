@@ -8,6 +8,12 @@
       "port": 5173
     },
     {
+      "name": "labobo-functions",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:netlify"],
+      "port": 5173
+    },
+    {
       "name": "labobo-preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "preview", "--", "--port", "4173", "--strictPort"],

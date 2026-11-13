@@ -7,6 +7,7 @@ import { fetchIsAdmin } from '../lib/adminApi.js';
 import { promptInstall } from '../lib/install.js';
 import { INSTAGRAM_PROFILE } from '../lib/contact.js';
 import { openReviewDialog } from '../lib/reviews.js';
+import { openSubscribeDialog } from '../lib/access.js';
 import { useMyReview } from './Reviews.jsx';
 import { useInstallMode } from './InstallPrompt.jsx';
 
@@ -77,6 +78,10 @@ export default function ProfileMenu({ onSignOut }) {
           <Link to="/select-semester" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
             Change semester
           </Link>
+          <button type="button" className="profile-item" role="menuitem"
+                  onClick={() => { setOpen(false); openSubscribeDialog(); }}>
+            Subscription
+          </button>
           {installMode === 'prompt' ? (
             <button type="button" className="profile-item" role="menuitem"
                     onClick={() => { setOpen(false); promptInstall(); }}>

@@ -18,6 +18,15 @@
      -> marks question reports dealt with (or not) — kept, not deleted
    POST /api/admin   body: { action: 'delete_user', id }
      -> permanently deletes a student's account and all their data
+   POST /api/admin   body: { action: 'grant_pass', id, expires_at, note }
+     -> gives a student full access until expires_at (replaces an earlier pass)
+   POST /api/admin   body: { action: 'revoke_pass', id }
+   GET  /api/admin?view=payments   -> uploaded receipts, waiting ones first,
+                                      each with a one-hour link to the file
+   POST /api/admin   body: { action: 'approve_payment', id, expires_at }
+     -> switches the student's pass on and closes the request
+   POST /api/admin   body: { action: 'reject_payment', id, note }
+     -> closes it; the student sees the note and can send another receipt
    POST /api/admin   body: { action: 'create_announcement', message, tone, semester, ends_at }
    POST /api/admin   body: { action: 'end_announcement', id }
    POST /api/admin   body: { action: 'set_review_status', id, status }
@@ -430,7 +439,17 @@ async function setReportsResolved(ids, caller, resolved) {
 
 /* ── Students ─────────────────────────────────────────────────────── */
 
-const usersView = async () => ({ users: await rpc('admin_users', {}) });
+/* Each student with `pass_until`: when their pass ends, or null without a
+   live one. A failed pass lookup leaves the list usable. */
+async function usersView() {
+  const [users, passes] = await Promise.all([
+    rpc('admin_users', {}),
+    rows(`/subscriptions?expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=user_id,expires_at`)
+      .catch((e) => { console.error('[admin] passes', e); return []; }),
+  ]);
+  const until = new Map(passes.map((p) => [p.user_id, p.expires_at]));
+  return { users: users.map((u) => ({ ...u, pass_until: until.get(u.id) ?? null })) };
+}
 
 /* Spreadsheet-safe CSV: quoted where needed, and a cell that starts like a
    formula (= + - @) is prefixed so Excel won't run it. */
@@ -483,8 +502,10 @@ async function studyDetail(id, tz) {
 
 async function userDetail(id, tz) {
   const q = encodeURIComponent(id);
-  const [profile, stats, board, reports, auth] = await Promise.all([
+  const [profile, pass, trial, stats, board, reports, auth] = await Promise.all([
     rows(`/profiles?id=eq.${q}&select=id,username,email,semester,created_at`),
+    rows(`/subscriptions?user_id=eq.${q}&select=expires_at,granted_at,granted_by,note`),
+    rows(`/trials?user_id=eq.${q}&select=email,started_at,expires_at`),
     rpcInZone('admin_user_stats', { p_user: id, p_tz: tz }),
     rows(`/leaderboard_entries?device_id=eq.${q}&select=handle,subject,score_pct,time_seconds,week_start,completed_at&order=week_start.desc&limit=100`),
     rows(`/question_reports?device_id=eq.${q}&select=id,reason,subject,note,created_at,resolved_at&order=created_at.desc&limit=100`),
@@ -502,6 +523,11 @@ async function userDetail(id, tz) {
       provider: auth?.app_metadata?.provider ?? null,
       last_sign_in_at: auth?.last_sign_in_at ?? null,
       confirmed: auth ? !!auth.email_confirmed_at : null,
+    },
+    // `live` says whether it still gives access; an expired pass stays listed.
+    plan: {
+      pass: pass[0] ? { ...pass[0], live: new Date(pass[0].expires_at) > new Date() } : null,
+      trial: trial[0] ? { ...trial[0], live: new Date(trial[0].expires_at) > new Date() } : null,
     },
     totals: { ...stats.totals, reports: reports.length, leaderboard_entries: board.length },
     by_subject: stats.by_subject,
@@ -528,9 +554,20 @@ async function deleteUser(id, caller) {
     return fail(400, "Admin accounts can't be deleted here");
   }
   const quizzes = await count('sessions', `&device_id=eq.${encodeURIComponent(id)}`).catch(() => null);
+  // Their payment rows go with the account (foreign key); the receipt files
+  // are in storage and have to be removed by name, so note the names first.
+  const receipts = await rows(`/payment_requests?user_id=eq.${encodeURIComponent(id)}&select=receipt_path`).catch(() => []);
 
   const res = await fetch(`${SUPA_URL}/auth/v1/admin/users/${id}`, { method: 'DELETE', headers: dbHeaders() });
   if (!res.ok && res.status !== 404) return fail(502, 'Could not delete the account', `auth delete ${res.status} ${await res.text()}`);
+
+  if (receipts.length) {
+    await fetch(`${SUPA_URL}/storage/v1/object/receipts`, {
+      method: 'DELETE',
+      headers: { ...dbHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prefixes: receipts.map((r) => r.receipt_path) }),
+    }).catch((e) => console.error('[admin] receipt cleanup', e));
+  }
 
   const failed = [];
   for (const [table, column] of [
@@ -546,6 +583,121 @@ async function deleteUser(id, caller) {
     joined: profile?.created_at ?? null, quizzes, cleanup_failed: failed,
   });
   return json(200, { ok: true, cleanup_failed: failed });
+}
+
+/* ── Passes ───────────────────────────────────────────────────────── */
+
+/* A pass is what a student pays for: full access until a date. Granting one
+   replaces any earlier pass for that student, so the same action renews or
+   corrects it. Payments happen outside the site (Instagram, email), so this
+   is the record of who has paid. */
+async function grantPass(body, caller) {
+  if (!UUID.test(body.id || '')) return fail(400, 'Invalid user id');
+  const expires = new Date(body.expires_at);
+  if (isNaN(expires) || expires <= new Date()) return fail(400, 'The end date must be in the future');
+  const note = typeof body.note === 'string' ? body.note.trim().slice(0, 300) || null : null;
+
+  const [profile] = await rows(`/profiles?id=eq.${encodeURIComponent(body.id)}&select=username,email`);
+  if (!profile) return fail(404, 'No such student');
+
+  const res = await rest('/subscriptions?on_conflict=user_id', {
+    method: 'POST',
+    headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+    body: JSON.stringify({
+      user_id: body.id, expires_at: expires.toISOString(), granted_at: new Date().toISOString(),
+      granted_by: caller.email, note,
+    }),
+  });
+  if (!res.ok) return fail(502, 'Could not save the pass', `${res.status} ${await res.text()}`);
+  const [row] = await res.json();
+  await logAction(caller, 'grant_pass', body.id, { username: profile.username, email: profile.email, expires_at: row.expires_at, note });
+  return json(200, { ok: true, pass: { ...row, live: true } });
+}
+
+async function revokePass(id, caller) {
+  if (!UUID.test(id || '')) return fail(400, 'Invalid user id');
+  const res = await rest(`/subscriptions?user_id=eq.${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: { Prefer: 'return=representation' },
+  });
+  if (!res.ok) return fail(502, 'Could not remove the pass', `${res.status} ${await res.text()}`);
+  const [row] = await res.json();
+  if (row) await logAction(caller, 'revoke_pass', id, { expires_at: row.expires_at, note: row.note });
+  return json(200, { ok: true });
+}
+
+/* ── Payments ─────────────────────────────────────────────────────── */
+
+const RECEIPTS = 'receipts';
+const RECEIPT_LINK_SECONDS = 3600;
+
+/* A link to one receipt that works for an hour. The bucket is private, so
+   this is the only way a receipt is ever shown; null if it can't be made. */
+async function receiptLink(path) {
+  try {
+    const res = await fetch(`${SUPA_URL}/storage/v1/object/sign/${RECEIPTS}/${path}`, {
+      method: 'POST',
+      headers: { ...dbHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expiresIn: RECEIPT_LINK_SECONDS }),
+    });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    const { signedURL } = await res.json();
+    return signedURL ? `${SUPA_URL}/storage/v1${signedURL}` : null;
+  } catch (e) {
+    console.error('[admin] receipt link', path, e);
+    return null;
+  }
+}
+
+/* Receipts students uploaded, waiting ones first, each with who sent it. */
+async function paymentsView() {
+  const list = await rows('/payment_requests?select=id,user_id,reference,receipt_path,status,created_at,decided_at,decided_by,note&order=created_at.desc&limit=200');
+  const ids = [...new Set(list.map((p) => p.user_id))];
+  const profiles = ids.length ? await rows(`/profiles?id=in.(${ids.join(',')})&select=id,username,email,semester`) : [];
+  const who = new Map(profiles.map((p) => [p.id, p]));
+  const items = await Promise.all(list.map(async (p) => ({
+    id: p.id, user_id: p.user_id, reference: p.reference, status: p.status,
+    created_at: p.created_at, decided_at: p.decided_at, decided_by: p.decided_by, note: p.note,
+    username: who.get(p.user_id)?.username ?? null,
+    email: who.get(p.user_id)?.email ?? null,
+    semester: who.get(p.user_id)?.semester ?? null,
+    is_pdf: p.receipt_path.endsWith('.pdf'),
+    // Only waiting receipts need looking at; skip the signing for the rest.
+    receipt_url: p.status === 'pending' ? await receiptLink(p.receipt_path) : null,
+  })));
+  const rank = { pending: 0, approved: 1, rejected: 2 };
+  return { items: items.sort((a, b) => rank[a.status] - rank[b.status]) };
+}
+
+/* Approving a receipt switches the student's pass on until `expires_at` and
+   closes the request; rejecting closes it with a note the student sees. */
+async function decidePayment(body, caller, approve) {
+  const n = Number(body.id);
+  if (!Number.isInteger(n) || n <= 0) return fail(400, 'Invalid id');
+  const [request] = await rows(`/payment_requests?id=eq.${n}&select=id,user_id,reference,status`);
+  if (!request) return fail(404, 'No such payment');
+  if (request.status !== 'pending') return fail(409, 'This payment has already been dealt with');
+
+  const note = typeof body.note === 'string' ? body.note.trim().slice(0, 300) || null : null;
+  let pass = null;
+  if (approve) {
+    const granted = await grantPass({ id: request.user_id, expires_at: body.expires_at, note: `Receipt ${request.reference}` }, caller);
+    if (granted.statusCode !== 200) return granted;
+    pass = JSON.parse(granted.body).pass;
+  }
+
+  const res = await rest(`/payment_requests?id=eq.${n}&status=eq.pending`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      status: approve ? 'approved' : 'rejected', decided_at: new Date().toISOString(), decided_by: caller.email, note,
+    }),
+  });
+  if (!res.ok) return fail(502, 'Could not update the payment', `${res.status} ${await res.text()}`);
+  await logAction(caller, approve ? 'approve_payment' : 'reject_payment', request.user_id, {
+    reference: request.reference, expires_at: pass?.expires_at ?? null, note,
+  });
+  return json(200, { ok: true });
 }
 
 /* ── Announcements ────────────────────────────────────────────────── */
@@ -604,10 +756,22 @@ async function endAnnouncement(id, caller) {
 
 const REVIEW_STATUSES = new Set(['approved', 'hidden', 'pending']);
 
+/* Each review with `author`: who wrote it, whatever name it is shown under.
+   An anonymous review is anonymous to other students, not to the admins who
+   decide whether it goes on the home page. */
 async function reviewsView() {
-  const list = await rows('/reviews?select=id,name,rating,body,status,created_at,updated_at,decided_at,decided_by&order=updated_at.desc&limit=200');
+  const list = await rows('/reviews?select=id,user_id,name,anonymous,rating,body,status,created_at,updated_at,decided_at,decided_by&order=updated_at.desc&limit=200');
+  const ids = [...new Set(list.map((r) => r.user_id).filter(Boolean))];
+  const profiles = ids.length
+    ? await rows(`/profiles?id=in.(${ids.join(',')})&select=id,username,email`).catch(() => [])
+    : [];
+  const who = new Map(profiles.map((p) => [p.id, p.username || p.email]));
   const rank = { pending: 0, approved: 1, hidden: 2 };
-  return { items: list.sort((a, b) => rank[a.status] - rank[b.status]) };
+  return {
+    items: list
+      .map(({ user_id: userId, ...r }) => ({ ...r, author: who.get(userId) ?? null }))
+      .sort((a, b) => rank[a.status] - rank[b.status]),
+  };
 }
 
 async function setReviewStatus(body, caller) {
@@ -658,6 +822,7 @@ exports.handler = async (event) => {
       if (view === 'questions') return json(200, await questionsView());
       if (view === 'announcements') return json(200, await announcementsView());
       if (view === 'reviews') return json(200, await reviewsView());
+      if (view === 'payments') return json(200, await paymentsView());
       if (view === 'log') return json(200, await logView());
       if (user) {
         if (!UUID.test(user)) return fail(400, 'Invalid user id');
@@ -674,6 +839,10 @@ exports.handler = async (event) => {
         case 'resolve_reports': return await setReportsResolved(body.ids, caller, true);
         case 'reopen_reports': return await setReportsResolved(body.ids, caller, false);
         case 'delete_user': return await deleteUser(body.id, caller);
+        case 'grant_pass': return await grantPass(body, caller);
+        case 'revoke_pass': return await revokePass(body.id, caller);
+        case 'approve_payment': return await decidePayment(body, caller, true);
+        case 'reject_payment': return await decidePayment(body, caller, false);
         case 'create_announcement': return await createAnnouncement(body, caller);
         case 'end_announcement': return await endAnnouncement(body.id, caller);
         case 'set_review_status': return await setReviewStatus(body, caller);

@@ -677,3 +677,17 @@ button.history-row:hover { background: var(--sheet); }
   .mode { animation: none; }
   .map-bubble.current { transform: none; }
 }
+
+/* Locked lectures inside the topic pickers: listed next to the open ones,
+   dashed and muted, and opening the subscribe dialog when tapped. */
+.sf-chip.is-locked { border-style: dashed; border-color: var(--rule-strong); color: var(--ink-muted); }
+.sf-chip.is-locked:hover { border-color: var(--edge); color: var(--ink); }
+.sf-chip.is-locked svg, .fc-topic.is-locked svg { flex: none; }
+.fc-topic.is-locked {
+  width: 100%; padding-left: 2px; border: 0; background: none;
+  color: var(--ink-muted); font-family: inherit; text-align: left;
+}
+.fc-topic.is-locked svg { margin: 3px 2px 0 0; }
+.fc-topic.is-locked:hover { color: var(--ink); }
+.sf-chip.is-locked.more, .fc-topic.is-locked.more { border-style: solid; color: var(--hema); font-weight: 700; }
+.fc-topic.is-locked.more { padding-left: 28px; }

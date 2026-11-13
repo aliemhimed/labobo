@@ -5,6 +5,7 @@ import TopBar from '../components/TopBar.jsx';
 import { ToastProvider } from '../components/Toast.jsx';
 import { useQuestions } from '../hooks/useQuestions.js';
 import { getSubject } from '../lib/subjects.js';
+import { LockedContext } from '../components/Plan.jsx';
 import '../styles/quiz.css';
 
 function Shell({ config, children }) {
@@ -18,7 +19,7 @@ function Shell({ config, children }) {
 
 export default function SubjectPage({ subjectKey }) {
   const config = getSubject(subjectKey);
-  const { questions, status, error, reload } = useQuestions(config);
+  const { questions, locked, status, error, reload } = useQuestions(config);
 
   useEffect(() => {
     if (config) document.title = config.docTitle;
@@ -76,7 +77,9 @@ export default function SubjectPage({ subjectKey }) {
 
   return (
     <ToastProvider>
-      <QuizEngine config={config} questions={questions} basePath={`/${subjectKey}`} />
+      <LockedContext.Provider value={locked}>
+        <QuizEngine config={config} questions={questions} basePath={`/${subjectKey}`} />
+      </LockedContext.Provider>
     </ToastProvider>
   );
 }

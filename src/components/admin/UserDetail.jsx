@@ -1,11 +1,69 @@
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchUser, deleteUser } from '../../lib/adminApi.js';
+import { DEFAULT_PASS_END, fetchUser, deleteUser, grantPass, revokePass } from '../../lib/adminApi.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useConfirm } from '../Confirm.jsx';
 import { fmtTime } from '../../lib/leaderboard.js';
 import { Stat, Panel, DayBars, HBars, Table, Sparkline, ago, pct, num } from './parts.jsx';
 
 const date = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
+
+/* The student's plan, and the two things an admin does about it: switch a
+   pass on once the student has paid (or change its end date), and take it
+   off again. Students pay outside the site, so this is where a payment
+   becomes access. */
+function PassPanel({ id, plan }) {
+  const qc = useQueryClient();
+  const [day, setDay] = useState(() => (plan.pass?.live ? plan.pass.expires_at.slice(0, 10) : DEFAULT_PASS_END));
+  const [note, setNote] = useState(plan.pass?.note || '');
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ['admin-user', id] });
+    qc.invalidateQueries({ queryKey: ['admin-users'] });
+  };
+  // The pass runs to the end of the chosen day, in the admin's own time zone.
+  const grant = useMutation({
+    mutationFn: () => grantPass(id, new Date(`${day}T23:59:59`).toISOString(), note),
+    onSuccess: refresh,
+  });
+  const revoke = useMutation({ mutationFn: () => revokePass(id), onSuccess: refresh });
+  const busy = grant.isPending || revoke.isPending;
+  const { pass, trial } = plan;
+
+  let status = 'Free plan: the first two lectures of each subject.';
+  if (pass?.live) status = `Pass on until ${date(pass.expires_at)}.`;
+  else if (trial?.live) status = `Free trial running until ${date(trial.expires_at)}.`;
+  else if (pass) status = `Pass ended on ${date(pass.expires_at)}. Free plan now.`;
+
+  return (
+    <Panel title="Subscription" note={pass?.live ? 'Paid' : trial?.live ? 'Trial' : 'Free'} wide>
+      <p className="adm-pass-status">
+        <b>{status}</b>
+        {pass ? ` Switched on ${date(pass.granted_at)}${pass.granted_by ? ` by ${pass.granted_by}` : ''}.` : ''}
+        {trial && !trial.live ? ` Trial used (${trial.email}, ended ${date(trial.expires_at)}).` : ''}
+      </p>
+      <div className="adm-filters">
+        <label className="adm-field">
+          <span>Pass runs until</span>
+          <input type="date" className="adm-input" value={day} onChange={(e) => setDay(e.target.value)} />
+        </label>
+        <label className="adm-field grow">
+          <span>Note (how they paid, optional)</span>
+          <input type="text" className="adm-input" maxLength={300} value={note} onChange={(e) => setNote(e.target.value)} />
+        </label>
+        <button type="button" className="btn sm primary" disabled={busy || !day} onClick={() => grant.mutate()}>
+          {grant.isPending ? 'Saving…' : pass?.live ? 'Update pass' : 'Switch pass on'}
+        </button>
+        {pass ? (
+          <button type="button" className="btn sm danger" disabled={busy} onClick={() => revoke.mutate()}>
+            {revoke.isPending ? 'Removing…' : 'Remove pass'}
+          </button>
+        ) : null}
+      </div>
+      {grant.isError ? <p className="adm-error" role="alert">Couldn't save the pass: {grant.error.message}</p> : null}
+      {revoke.isError ? <p className="adm-error" role="alert">Couldn't remove the pass: {revoke.error.message}</p> : null}
+    </Panel>
+  );
+}
 
 /* Everything the admin knows about one student. */
 export default function UserDetail({ id, onBack }) {
@@ -74,6 +132,8 @@ export default function UserDetail({ id, onBack }) {
           Joined {date(p.created_at)} · last sign-in {ago(p.last_sign_in_at)} · first quiz {date(t.first_quiz_at)}
         </p>
       </div>
+
+      {data.plan ? <PassPanel key={data.plan.pass?.expires_at || 'none'} id={id} plan={data.plan} /> : null}
 
       <div className="adm-stats">
         <Stat label="Quizzes" value={num(t.quizzes)} hint={`last ${ago(t.last_quiz_at)}`} />

@@ -50,6 +50,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/access"
+  to   = "/.netlify/functions/access"
+  status = 200
+
+[[redirects]]
+  from = "/api/payments"
+  to   = "/.netlify/functions/payments"
+  status = 200
+
+[[redirects]]
   from = "/api/leaderboard"
   to   = "/.netlify/functions/leaderboard"
   status = 200

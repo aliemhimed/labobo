@@ -1,4 +1,5 @@
 import { SUPA_URL, SUPA_HEADERS } from './supabase.js';
+import { authHeader } from './supabaseClient.js';
 import { SUBJECTS } from './subjects.js';
 
 /* ============================================================
@@ -103,12 +104,18 @@ export function questionFromRow(row, table) {
 
 let warnedAboutApi = false;
 
+/* The token rides along because, once subscriptions have started, the server
+   answers by plan: the whole bank with a pass or trial, otherwise the free
+   lectures plus the names of the locked ones (see netlify/functions/questions.js). */
 async function viaApi(tables, signal) {
-  const res = await fetch(`/api/questions?tables=${encodeURIComponent(tables.join(','))}`, { signal });
+  const res = await fetch(`/api/questions?tables=${encodeURIComponent(tables.join(','))}`, {
+    signal,
+    headers: await authHeader(),
+  });
   if (!res.ok) throw new Error(`/api/questions -> ${res.status}`);
   const body = await res.json();
   if (!body || !body.tables) throw new Error('/api/questions returned no tables');
-  return body.tables;
+  return body;
 }
 
 async function viaSupabaseDirect(sources, signal) {
@@ -143,13 +150,19 @@ async function viaSupabaseDirect(sources, signal) {
 /**
  * Load and flatten every table a subject draws from.
  * @param {{sources: {table: string, subject: string}[], topicMap?: object, imageBase?: string}} config
- * @returns {Promise<Array>} questions in a stable order
+ * @returns {Promise<{questions: Array, locked: {subject: string, topic: string, n: number}[]}>}
+ *   `questions` in a stable order; `locked` names the lectures this student's
+ *   plan does not include, with how many questions each holds (empty when
+ *   they have everything).
  */
 export async function loadQuestions(config, signal) {
   const tables = config.sources.map((s) => s.table);
   let byTable;
+  let lockedByTable = {};
   try {
-    byTable = await viaApi(tables, signal);
+    const body = await viaApi(tables, signal);
+    byTable = body.tables;
+    lockedByTable = body.locked || {};
   } catch (e) {
     if (signal?.aborted) throw e;
     if (!warnedAboutApi) {
@@ -157,6 +170,17 @@ export async function loadQuestions(config, signal) {
       console.info('[questions] /api/questions unavailable — reading Supabase directly.', e.message);
     }
     byTable = await viaSupabaseDirect(config.sources, signal);
+  }
+
+  const locked = [];
+  for (const src of config.sources) {
+    for (const item of lockedByTable[src.table] || []) {
+      locked.push({
+        subject: src.subject,
+        topic: (config.topicMap && config.topicMap[item.topic]) || item.topic || 'General',
+        n: item.n,
+      });
+    }
   }
 
   const questions = [];
@@ -170,7 +194,7 @@ export async function loadQuestions(config, signal) {
       if (q.q && q.options.length >= 2) questions.push(q);
     }
   }
-  return questions;
+  return { questions, locked };
 }
 
 /* Row count for one table straight from Supabase, or null if it can't be

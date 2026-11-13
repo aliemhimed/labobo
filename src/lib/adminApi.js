@@ -59,3 +59,17 @@ export async function downloadStudentsCsv() {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+/** Gives a student full access until `expiresAt` (ISO); replaces an earlier pass. */
+export const grantPass = (id, expiresAt, note) => post({ action: 'grant_pass', id, expires_at: expiresAt, note });
+export const revokePass = (id) => post({ action: 'revoke_pass', id });
+
+/* The day a new pass runs to unless the admin picks another: the end of the
+   current semester. Change it here when a new semester starts. */
+export const DEFAULT_PASS_END = '2027-02-28';
+
+export const fetchPayments = (signal) => request({ signal }, '?view=payments');
+/** Switches the student's pass on until `expiresAt` (ISO) and closes the receipt. */
+export const approvePayment = (id, expiresAt) => post({ action: 'approve_payment', id, expires_at: expiresAt });
+/** Closes the receipt; the student sees `note` and can send another. */
+export const rejectPayment = (id, note) => post({ action: 'reject_payment', id, note });

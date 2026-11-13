@@ -9,6 +9,7 @@ import { useProfile } from '../hooks/useProfile.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
+import { PlanStrip } from '../components/Plan.jsx';
 import { ReviewNote, ReviewPrompt, ReviewWall } from '../components/Reviews.jsx';
 import { InstagramGlyph } from '../components/Icons.jsx';
 import { INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/contact.js';
@@ -237,6 +238,7 @@ export default function HomePage() {
 
         <div className="home-main">
           <AnnouncementBanner semester={semester} />
+          <PlanStrip />
           <h1 className="home-title">{firstName ? `Hey ${firstName}, pick a deck.` : 'Pick a deck.'}</h1>
           <p className="home-sub">
             Semester {semester} subjects. Each one has study, practice and exam modes, plus

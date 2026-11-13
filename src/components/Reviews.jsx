@@ -60,8 +60,9 @@ function ReviewBody({ mine, onCancel }) {
   const [editing, setEditing] = useState(!mine);
   const [rating, setRating] = useState(mine?.rating || 0);
   const [body, setBody] = useState(mine?.body || '');
+  const [anonymous, setAnonymous] = useState(!!mine?.anonymous);
   const save = useMutation({
-    mutationFn: () => saveMyReview({ rating, body: body.trim() }),
+    mutationFn: () => saveMyReview({ rating, body: body.trim(), anonymous }),
     onSuccess: (review) => {
       qc.setQueryData(['my-review'], review);
       setEditing(false);
@@ -73,6 +74,7 @@ function ReviewBody({ mine, onCancel }) {
     return (
       <>
         <p className="review-mine"><StarRow n={saved.rating} /><span dir="auto">{saved.body}</span></p>
+        {saved.anonymous ? <p className="review-hint">Posted anonymously, shown as "A student".</p> : null}
         <p className="review-status" role="status">{STATUS[saved.status] || STATUS.pending}</p>
         <button type="button" className="btn sm" onClick={() => setEditing(true)}>Edit my review</button>
         <ModuleRequest />
@@ -93,6 +95,13 @@ function ReviewBody({ mine, onCancel }) {
       <textarea id="review-body" rows={4} maxLength={MAX} dir="auto" value={body}
                 placeholder="Write it your way… / اكتب بطريقتك…"
                 onChange={(e) => setBody(e.target.value)} />
+      <label className="review-anon">
+        <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
+        <span>
+          Post anonymously, without my name
+          <span lang="ar" dir="rtl"> / النشر بدون اسمي</span>
+        </span>
+      </label>
       <div className="review-actions">
         <span className="review-count">{MAX - body.length} characters left</span>
         {onCancel || saved ? (

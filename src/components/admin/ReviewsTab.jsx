@@ -16,6 +16,9 @@ function ReviewList({ items, act }) {
           <p className="adm-review-head">
             <b>{r.name}</b> <span className="adm-stars" aria-label={`${r.rating} out of 5 stars`}>{stars(r.rating)}</span>
           </p>
+          {r.anonymous ? (
+            <p className="adm-sub">Posted anonymously{r.author ? `. Written by ${r.author}; students only see "A student".` : '.'}</p>
+          ) : null}
           <p className="adm-review-body" dir="auto">{r.body}</p>
           {act.isError && act.variables?.id === r.id ? <p className="adm-error">{act.error.message}</p> : null}
           <div className="adm-report-foot">

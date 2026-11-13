@@ -1,4 +1,5 @@
 import { ChevronRight } from '../components/Icons.jsx';
+import { LockedLectures } from '../components/Plan.jsx';
 
 /* The three ways to answer questions are the big cards; the progress tools
    sit underneath as smaller white stickers. --tilt is each card's resting angle. */
@@ -62,6 +63,8 @@ export default function ModeHome({ title, questionCount, topicCount, wrongCount,
           ))}
         </ul>
       </section>
+
+      <LockedLectures />
     </div>
   );
 }

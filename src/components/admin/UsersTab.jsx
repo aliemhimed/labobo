@@ -53,6 +53,7 @@ export default function UsersTab({ onOpen }) {
       <div className="adm-stats">
         <Stat label="Students" value={num(all.length)} />
         <Stat label="Active this week" value={num(activeWeek)} />
+        <Stat label="With a pass" value={num(all.filter((u) => u.pass_until).length)} />
         <Stat label="Never took a quiz" value={num(all.filter((u) => u.quizzes === 0).length)} />
         <Stat label="No semester yet" value={num(all.filter((u) => !u.semester).length)} />
         <Stat label="Semester 1" value={num(all.filter((u) => u.semester === '1').length)} />
@@ -88,6 +89,7 @@ export default function UsersTab({ onOpen }) {
               <tr key={u.id}>
                 <td>
                   <button type="button" className="adm-link" onClick={() => onOpen(u.id)}>{u.username || u.email || u.id.slice(0, 8)}</button>
+                  {u.pass_until ? <span className="adm-pass-tag" title={`Pass until ${new Date(u.pass_until).toLocaleDateString()}`}>Pass</span> : null}
                   {u.username && u.email ? <div className="adm-sub">{u.email}</div> : null}
                 </td>
                 <td>{u.semester || '—'}</td>

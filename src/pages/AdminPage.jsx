@@ -8,6 +8,7 @@ import QuestionsTab from '../components/admin/QuestionsTab.jsx';
 import AnnouncementsTab from '../components/admin/AnnouncementsTab.jsx';
 import LogTab from '../components/admin/LogTab.jsx';
 import ReviewsTab from '../components/admin/ReviewsTab.jsx';
+import PaymentsTab from '../components/admin/PaymentsTab.jsx';
 import { RetentionPanel, QuietPanel } from '../components/admin/Retention.jsx';
 import { Stat, Panel, DayBars, HBars, Table, ago, pct, num } from '../components/admin/parts.jsx';
 import { fetchSnapshot } from '../lib/adminApi.js';
@@ -212,7 +213,7 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
 
 export default function AdminPage() {
   const [params, setParams] = useSearchParams();
-  const tab = ['users', 'questions', 'announcements', 'reviews', 'log'].includes(params.get('tab')) ? params.get('tab') : 'overview';
+  const tab = ['users', 'payments', 'questions', 'announcements', 'reviews', 'log'].includes(params.get('tab')) ? params.get('tab') : 'overview';
   const studentId = params.get('u');
 
   const setView = (next) => setParams(next, { replace: false });
@@ -261,6 +262,9 @@ export default function AdminPage() {
           <button type="button" role="tab" aria-selected={tab === 'users'} onClick={() => setView({ tab: 'users' })}>
             Users{data.counters.students != null ? <span>{data.counters.students}</span> : null}
           </button>
+          <button type="button" role="tab" aria-selected={tab === 'payments'} onClick={() => setView({ tab: 'payments' })}>
+            Payments
+          </button>
           <button type="button" role="tab" aria-selected={tab === 'questions'} onClick={() => setView({ tab: 'questions' })}>
             Questions{data.counters.reports_open ? <span>{data.counters.reports_open} open</span> : null}
           </button>
@@ -279,6 +283,7 @@ export default function AdminPage() {
           ? (studentId
             ? <UserDetail id={studentId} onBack={() => setView({ tab: 'users' })} />
             : <UsersTab onOpen={openUser} />)
+          : tab === 'payments' ? <PaymentsTab onOpenUser={openUser} />
           : tab === 'questions' ? <QuestionsTab onOpenUser={openUser} />
             : tab === 'announcements' ? <AnnouncementsTab />
               : tab === 'reviews' ? <ReviewsTab />
