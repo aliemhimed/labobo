@@ -239,7 +239,7 @@ export default function HomePage() {
         <div className="home-main">
           <AnnouncementBanner semester={semester} />
           <PlanStrip />
-          <h1 className="home-title">{firstName ? `Hey ${firstName}, pick a deck.` : 'Pick a deck.'}</h1>
+          <h1 className="home-title">{firstName ? `Hey ${firstName}, pick a subject.` : 'Pick a subject.'}</h1>
           <p className="home-sub">
             Semester {semester} subjects. Each one has study, practice and exam modes, plus
             flashcards and a weekly leaderboard.
