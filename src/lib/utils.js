@@ -30,6 +30,18 @@ export function seededShuffle(a, seed) {
   return out;
 }
 
+/* Options such as "All of the above" or "None of these" only make sense
+   after the others, so they stay at the bottom in their original order. */
+const PINNED_OPTION = /^(all|none|neither|both)\b.*\b(above|these|them|following)\b|^(neither|none|both)$/i;
+
+/** Display order for a question's options: the rest shuffled by `seed`, pinned ones last. */
+export function optionOrder(options, seed) {
+  const idx = options.map((_, i) => i);
+  const pinned = idx.filter((i) => PINNED_OPTION.test(String(options[i]).trim()));
+  const free = idx.filter((i) => !pinned.includes(i));
+  return seededShuffle(free, seed).concat(pinned);
+}
+
 export function fmtDate(iso) {
   const d = new Date(iso);
   return (

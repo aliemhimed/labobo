@@ -23,7 +23,7 @@ import { supaInsert } from '../lib/supabase.js';
 import { recordAnswers } from '../lib/answers.js';
 import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
-import { buildQuizFromTopics, seededShuffle, shuffle, uid } from '../lib/utils.js';
+import { buildQuizFromTopics, optionOrder, shuffle, uid } from '../lib/utils.js';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
 
 /* Which views need a quiz in progress, and which need a finished result. The
@@ -105,8 +105,7 @@ export default function QuizEngine({ config, questions, basePath }) {
   const getDisplayOrder = useCallback((qIdx) => {
     if (!optionOrders.has(qIdx)) {
       const q = questions[qIdx];
-      const n = q?.options.length || 0;
-      optionOrders.set(qIdx, seededShuffle(Array.from({ length: n }, (_, i) => i), `${optionSeed}:${q?.id}`));
+      optionOrders.set(qIdx, optionOrder(q?.options || [], `${optionSeed}:${q?.id}`));
     }
     return optionOrders.get(qIdx);
   }, [questions, optionSeed, optionOrders]);
