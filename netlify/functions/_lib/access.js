@@ -33,16 +33,17 @@ function trialEmail(caller) {
 }
 
 /** { kind, expires_at, trial_used } for a verified caller (or null).
-    kind: 'open'  subscriptions have not started, everyone reads everything
-          'pass'  paid, until expires_at
+    kind: 'pass'  paid, until expires_at (also reported before the lock, so
+                  a student who pre-subscribed sees it and isn't asked to pay
+                  again)
+          'open'  subscriptions have not started, everyone reads everything
           'trial' inside the 3-day trial, until expires_at
           'none'  free lectures only
     Throws if the lookup fails: callers answer with an error rather than
     guess, so a database hiccup neither locks out a paying student for good
     nor opens the bank to everyone. */
 async function getAccess(caller) {
-  if (!isLocked()) return { kind: 'open', expires_at: null, trial_used: false };
-  if (!caller) return { kind: 'none', expires_at: null, trial_used: false };
+  if (!caller) return { kind: isLocked() ? 'none' : 'open', expires_at: null, trial_used: false };
 
   const id = encodeURIComponent(caller.id);
   const email = trialEmail(caller);
@@ -58,6 +59,7 @@ async function getAccess(caller) {
   const live = (list) => list.map((r) => r.expires_at).filter((t) => new Date(t).getTime() > now).sort().pop() || null;
   const pass = live(subs);
   if (pass) return { kind: 'pass', expires_at: pass, trial_used: trials.length > 0 };
+  if (!isLocked()) return { kind: 'open', expires_at: null, trial_used: trials.length > 0 };
   const trial = live(trials);
   if (trial) return { kind: 'trial', expires_at: trial, trial_used: true };
   return { kind: 'none', expires_at: null, trial_used: trials.length > 0 };

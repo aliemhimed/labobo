@@ -655,7 +655,14 @@ async function paymentsView() {
   const ids = [...new Set(list.map((p) => p.user_id))];
   const profiles = ids.length ? await rows(`/profiles?id=in.(${ids.join(',')})&select=id,username,email,semester`) : [];
   const who = new Map(profiles.map((p) => [p.id, p]));
+  // A receipt from a student who already has a pass is most likely the same
+  // payment sent twice: say so on the card instead of letting it pass unseen.
+  const passes = ids.length
+    ? await rows(`/subscriptions?user_id=in.(${ids.join(',')})&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=user_id,expires_at`)
+    : [];
+  const passUntil = new Map(passes.map((s) => [s.user_id, s.expires_at]));
   const items = await Promise.all(list.map(async (p) => ({
+    pass_until: p.status === 'pending' ? passUntil.get(p.user_id) ?? null : null,
     id: p.id, user_id: p.user_id, reference: p.reference, status: p.status,
     created_at: p.created_at, decided_at: p.decided_at, decided_by: p.decided_by, note: p.note,
     username: who.get(p.user_id)?.username ?? null,

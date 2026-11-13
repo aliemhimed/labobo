@@ -246,7 +246,8 @@ export function SubscribeView({
   const waiting = request?.status === 'pending' && !resending;
 
   const hasFull = access?.access === 'pass' || access?.access === 'trial';
-  const title = access && !access.locked ? 'Subscriptions are coming' : hasFull ? 'Your plan' : 'Unlock every lecture';
+  // A pass is reported before the lock too, so pre-subscribers see it.
+  const title = hasFull ? 'Your plan' : access && !access.locked ? 'Subscriptions are coming' : 'Unlock every lecture';
   const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Labobo pass ${reference}`.trim())}`
     + `&body=${encodeURIComponent(`Hi, I would like a Labobo pass.\nMy account email: ${email || ''}\nMy reference: ${reference}\n`)}`;
 
@@ -259,7 +260,7 @@ export function SubscribeView({
 
       {loading ? <p className="dialog-text">Loading…</p> : null}
 
-      {access && !access.locked ? (
+      {access && !access.locked && access.access !== 'pass' ? (
         <p className="dialog-text">
           Everything on Labobo is free until {formatMoment(access.lock_start)}. After that the first{' '}
           {FREE_LECTURES} lectures of every subject stay free, and the rest needs a pass.

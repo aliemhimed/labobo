@@ -32,6 +32,12 @@ export function PaymentCard({ item, onOpenUser, onApprove, onReject, busy, error
           {item.email}{item.semester ? ` · Semester ${item.semester}` : ''} · sent {ago(item.created_at)}
         </p>
         <p className="adm-payment-ref">Reference to look for in the bank transfer: <code>{item.reference}</code></p>
+        {item.pass_until ? (
+          <p className="adm-error">
+            This student already has a pass until {day(item.pass_until)}. This is probably the same payment sent
+            twice: check your bank before approving, or reject it with a note.
+          </p>
+        ) : null}
         {error ? <p className="adm-error" role="alert">{error}</p> : null}
         <div className="adm-filters">
           <label className="adm-field">
