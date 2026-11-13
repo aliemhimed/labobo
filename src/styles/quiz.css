@@ -691,3 +691,27 @@ button.history-row:hover { background: var(--sheet); }
 .fc-topic.is-locked:hover { color: var(--ink); }
 .sf-chip.is-locked.more, .fc-topic.is-locked.more { border-style: solid; color: var(--hema); font-weight: 700; }
 .fc-topic.is-locked.more { padding-left: 28px; }
+
+/* Which lectures a practice set or exam draws from (ConfigView). */
+.scope-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.scope-chip {
+  min-height: 46px;
+  padding: 0 18px;
+  border: var(--line) solid var(--edge);
+  border-radius: 23px;
+  background: var(--sheet);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--hard);
+  font: 700 var(--t-16)/1.2 var(--font-display);
+  cursor: pointer;
+  transition: transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out);
+}
+.scope-chip:hover { transform: translate(-1px, -2px); box-shadow: 5px 5px 0 var(--hard); }
+.scope-chip[aria-pressed="true"] {
+  background: var(--marker);
+  border-color: var(--card-ink);
+  color: var(--card-ink);
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--hard);
+}
+.count-picker .sf-panel { margin-top: 14px; }

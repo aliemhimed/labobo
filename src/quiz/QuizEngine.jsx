@@ -23,7 +23,8 @@ import { supaInsert } from '../lib/supabase.js';
 import { recordAnswers } from '../lib/answers.js';
 import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
-import { buildQuizQuestions, distribute, seededShuffle, shuffle, uid } from '../lib/utils.js';
+import { buildQuizFromTopics, seededShuffle, shuffle, uid } from '../lib/utils.js';
+import { useTopicKeys } from '../hooks/useTopicKeys.js';
 
 /* Which views need a quiz in progress, and which need a finished result. The
    view itself lives in the URL (/gct/exam, /gct/dashboard …) so the browser's
@@ -65,6 +66,16 @@ export default function QuizEngine({ config, questions, basePath }) {
   }), [authUser, profile]);
   const [session, dispatch] = useReducer(sessionReducer, initialSession, () => restoreSession(config.storagePrefix, idToIndex));
   const [examLength, setExamLength] = useState(() => config.examLengths[Math.min(2, config.examLengths.length - 1)]);
+  /* The lectures a practice set or exam is drawn from. null means "all of
+     them", which is also what a lecture that appears later (a pass switched
+     on mid-visit) should fall into; a hand-picked set is kept to the
+     lectures that still exist. */
+  const allTopicKeys = useTopicKeys(subjectIndex);
+  const [pickedTopics, setPickedTopics] = useState(null);
+  const chosenTopics = useMemo(() => {
+    if (!pickedTopics) return new Set(allTopicKeys);
+    return new Set(allTopicKeys.filter((k) => pickedTopics.has(k)));
+  }, [allTopicKeys, pickedTopics]);
   const [reportFor, setReportFor] = useState(null);
 
   const wrong = useWrong(store);
@@ -137,13 +148,15 @@ export default function QuizEngine({ config, questions, basePath }) {
 
   /* ── starting each mode ─────────────────────────────────────────── */
 
-  function startSession(mode, picked) {
+  function startSession(mode, picked, custom = false) {
     setOptionSeed(uid());
-    commit({ type: 'start', mode, qIds: picked }, mode);
+    commit({ type: 'start', mode, qIds: picked, custom }, mode);
   }
 
   function startConfigured(mode) {
-    startSession(mode, buildQuizQuestions(distribute(examLength, config.ratio), questions));
+    const picked = buildQuizFromTopics(examLength, config.ratio, questions, chosenTopics);
+    if (!picked.length) return;
+    startSession(mode, picked, chosenTopics.size < allTopicKeys.length);
   }
 
   function startReviewWrong() {
@@ -239,7 +252,8 @@ export default function QuizEngine({ config, questions, basePath }) {
     if (quizMode !== 'review-wrong') {
       recordAnswers(answers.map((a) => ({ id: questions[a.qIdx]?.id, pick: a.selected })));
     }
-    if (finished.type === 'exam' && finished.questionCount === 30) {
+    // The board compares like with like: 30 questions from the whole subject.
+    if (finished.type === 'exam' && finished.questionCount === 30 && !session.custom) {
       leaderboard.submitExam({
         score_pct: finished.score,
         total_questions: finished.questionCount,
@@ -340,7 +354,8 @@ export default function QuizEngine({ config, questions, basePath }) {
       case 'exam-config': {
         const mode = view === 'exam-config' ? 'exam' : 'practice';
         body = (
-          <ConfigView config={config} mode={mode}
+          <ConfigView config={config} mode={mode} questions={questions} subjectIndex={subjectIndex}
+                      chosen={chosenTopics} allKeys={allTopicKeys} onChoose={setPickedTopics}
                       examLength={examLength} setExamLength={setExamLength}
                       onStart={() => startConfigured(mode)}
                       onHome={goHome} />

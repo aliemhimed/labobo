@@ -6,15 +6,20 @@ import { loadSession } from '../lib/storage.js';
      answers   [{ qIdx, selected }] parallel to qIds; selected = original option index or null
      index     current position within qIds
      startedAt ms timestamp an exam/practice began (drives the leaderboard time)
+     custom    true when the set was drawn from hand-picked lectures, not the
+               whole subject; such an exam stays off the leaderboard
      record    the saved result being shown on the results / detail / review screens */
-export const initialSession = { mode: null, qIds: [], answers: [], index: 0, startedAt: null, record: null };
+export const initialSession = { mode: null, qIds: [], answers: [], index: 0, startedAt: null, custom: false, record: null };
 
 const slotsFor = (qIds) => qIds.map((qIdx) => ({ qIdx, selected: null }));
 
 export function sessionReducer(state, action) {
   switch (action.type) {
     case 'start':
-      return { ...initialSession, mode: action.mode, qIds: action.qIds, answers: slotsFor(action.qIds), startedAt: Date.now() };
+      return {
+        ...initialSession, mode: action.mode, qIds: action.qIds, answers: slotsFor(action.qIds),
+        startedAt: Date.now(), custom: !!action.custom,
+      };
     case 'select': {
       const answers = state.answers.slice();
       answers[action.slot] = { ...answers[action.slot], selected: action.option };
@@ -53,6 +58,7 @@ export function serializeSession(s, questions) {
     selected: s.answers.map((a) => a.selected),
     index: s.index,
     startedAt: s.startedAt,
+    custom: s.custom,
     record: s.record,
   };
 }
@@ -70,6 +76,7 @@ export function restoreSession(prefix, idToIndex) {
     answers: slots,
     index: Math.min(saved.index || 0, Math.max(0, slots.length - 1)),
     startedAt: saved.startedAt || null,
+    custom: !!saved.custom,
     record: saved.record || null,
   };
 }

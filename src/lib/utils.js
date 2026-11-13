@@ -80,3 +80,52 @@ export function buildQuizQuestions(distMap, questions) {
   });
   return shuffle(picks);
 }
+
+/** The lecture or week number in a topic name ("Biochem Wk 10: …",
+    "Histo Lec 3: …", "Lecture 2 - …"), or null when it has none (past
+    papers, cases, topics named without a number). */
+export function lectureNumber(topic) {
+  const m = /(?:Lec|Wk|Lecture)\s+0?(\d+)/.exec(topic || '');
+  return m ? Number(m[1]) : null;
+}
+
+/* How many questions each subject gives to a set of `total`, when each has
+   only `pools[subject]` to give. The ratio is followed across the subjects
+   that have any; what a small subject can't supply goes to the others, so
+   the set is as close to `total` as the selection allows. */
+export function planSet(total, ratio, pools) {
+  const open = {};
+  Object.keys(ratio).forEach((s) => { if ((pools[s] || 0) > 0) open[s] = ratio[s]; });
+  const plan = Object.fromEntries(Object.keys(open).map((s) => [s, 0]));
+  let want = Math.min(total, Object.keys(open).reduce((n, s) => n + pools[s], 0));
+  while (want > 0 && Object.keys(open).length) {
+    const share = distribute(want, open);
+    let given = 0;
+    Object.keys(open).forEach((s) => {
+      const take = Math.min(share[s], pools[s] - plan[s]);
+      plan[s] += take;
+      given += take;
+      if (plan[s] >= pools[s]) delete open[s];
+    });
+    if (!given) break;
+    want -= given;
+  }
+  return plan;
+}
+
+/** Topic key used wherever lectures are selected: "Subject::Topic". */
+export const topicKey = (q) => `${q.subject}::${q.topic}`;
+
+/* Pick `total` question indices from the chosen lectures only (`selected` is
+   a Set of topic keys), split across subjects as planSet decides. */
+export function buildQuizFromTopics(total, ratio, questions, selected) {
+  const pools = {};
+  questions.forEach((q, i) => {
+    if (selected.has(topicKey(q))) (pools[q.subject] ||= []).push(i);
+  });
+  const sizes = Object.fromEntries(Object.entries(pools).map(([s, list]) => [s, list.length]));
+  const plan = planSet(total, ratio, sizes);
+  const picks = [];
+  Object.entries(plan).forEach(([s, n]) => picks.push(...shuffle(pools[s]).slice(0, n)));
+  return shuffle(picks);
+}
