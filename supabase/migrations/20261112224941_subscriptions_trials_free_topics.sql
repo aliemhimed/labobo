@@ -1,5 +1,5 @@
 -- Subscriptions, step 1 of 2: the new tables. Nothing here changes what
--- students can see; the lock itself is 20261114000000_lock_paid_lectures.sql.
+-- students can see; the lock itself is 20261113041157_lock_paid_lectures.sql.
 
 -- A student's pass. One row per account, replaced when the pass is renewed.
 -- Written only by the admin function (service key).

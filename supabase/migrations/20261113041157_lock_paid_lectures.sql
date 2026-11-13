@@ -1,9 +1,8 @@
--- Subscriptions, step 2 of 2: the lock.
---
--- APPLY THIS ONLY TOGETHER WITH THE DEPLOY THAT SHIPS netlify/functions/access.js
--- and the reworked questions.js. With the old code live, students with a pass
--- would be shown the free lectures only, because the old /api/questions reads
--- with the publishable key.
+-- Subscriptions, step 2 of 2: the lock. Applied on 13 November 2026, right
+-- after the deploy that ships netlify/functions/access.js and the reworked
+-- questions.js went live. It needs that code: the old /api/questions read
+-- with the publishable key, so with it students with a pass would have been
+-- shown the free lectures only.
 --
 -- Until now the publishable key could read every question. From the moment
 -- subscriptions start it reads only the lectures listed in free_topics; the

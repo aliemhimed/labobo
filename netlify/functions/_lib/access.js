@@ -5,7 +5,7 @@
    `subscriptions`, granted from the admin dashboard) or during the one-time
    trial (`trials`); everyone else gets the free lectures listed in
    `free_topics`. The database enforces the same rule for the publishable
-   key (supabase/migrations/20261114000000_lock_paid_lectures.sql), so this
+   key (supabase/migrations/20261113041157_lock_paid_lectures.sql), so this
    file is the only way to the paid rows. */
 
 const { SUPA_URL, dbHeaders } = require('./common');
