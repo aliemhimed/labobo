@@ -96,6 +96,11 @@ export function buildQuizQuestions(distMap, questions) {
 /** The lecture or week number in a topic name ("Biochem Wk 10: …",
     "Histo Lec 3: …", "Lecture 2 - …"), or null when it has none (past
     papers, cases, topics named without a number). */
+/* The midterm covers the first seven lectures (weeks 1 to 7); the banks
+   number what comes after it from 8, or from week 10. Topics without a
+   number (past papers, cases) belong to neither half. */
+export const MIDTERM_LAST = 7;
+
 export function lectureNumber(topic) {
   const m = /(?:Lec|Wk|Lecture)\s+0?(\d+)/.exec(topic || '');
   return m ? Number(m[1]) : null;

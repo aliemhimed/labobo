@@ -1,0 +1,277 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct" data-part="Molecular Biology" data-type="lecture"
+         data-lectures="9" data-topic="MB Lec 9: ER Quality Control and Protein Sorting"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT I · Molecular Biology · Lecture 9</p>
+  <h1>ER Quality Control, the Unfolded Protein Response, and Import into Mitochondria and Peroxisomes</h1>
+  <p class="lb-lede">How the ER checks every new glycoprotein (calnexin cycle), destroys failures (ERAD, cystic fibrosis), copes with overload (UPR), and how proteins made on free ribosomes are imported after synthesis into peroxisomes and mitochondria (TOM and TIM).</p>
+  <span class="lb-topic-name">Labobo topic: MB Lec 9: ER Quality Control and Protein Sorting</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>Two of three glucoses are trimmed → <strong>calnexin</strong> binds the glycoprotein → <strong>glucosidase II</strong> removes the last glucose → release.</li>
+    <li>Still misfolded? <strong>UGGT</strong> (senses exposed hydrophobic patches) adds a glucose back → another round with calnexin.</li>
+    <li>Repeated failure → <strong>dislocation</strong> to the cytosol → sugars removed → <strong>proteasome</strong>: <strong>ERAD</strong>. Over <mark>60</mark> diseases, including <strong>cystic fibrosis</strong>.</li>
+    <li><strong>UPR</strong>: <strong>BiP</strong> normally holds sensors off; when misfolded proteins pile up, BiP leaves → <strong>PERK</strong> dimerises → phosphorylates <strong>eIF2α</strong> → less translation; sensor fragments turn on stress genes; if it fails → <strong>apoptosis</strong>.</li>
+    <li>Nucleus, mitochondria, chloroplasts and peroxisomes import proteins <strong>post-translationally</strong> (made on free ribosomes).</li>
+    <li>Peroxisomes: <strong>PTS/mPTS</strong> signals; form from fusion of two ER-derived vesicles (each half an <strong>importomer</strong>); import <strong>folded</strong> proteins.</li>
+    <li>Mitochondria: ~<mark>99%</mark> of proteins imported; matrix proteins have an N-terminal <strong>presequence</strong> (positive + hydrophobic faces); <strong>TOM</strong> → <strong>TIM23</strong> (matrix) or <strong>TIM22</strong> (inner membrane); driven by the <strong>membrane potential</strong> (stopped by DNP).</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Karp’s Cell and Molecular Biology, 8th ed. By the end you can:</p>
+  <ul>
+    <li>explain ER quality control and ERAD;</li>
+    <li>relate ERAD to cystic fibrosis;</li>
+    <li>describe the unfolded protein response;</li>
+    <li>explain post-translational import into peroxisomes and mitochondria.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#qc">Quality control: the calnexin cycle</a></li>
+    <li><a href="#erad">ERAD and cystic fibrosis</a></li>
+    <li><a href="#upr">The unfolded protein response</a></li>
+    <li><a href="#posttrans">Post-translational import</a></li>
+    <li><a href="#peroxisome">Import into peroxisomes</a></li>
+    <li><a href="#mito">Import into mitochondria</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#check">Check yourself</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="qc">
+  <h2>Quality control: the calnexin cycle</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec09-er-quality-control-sorting/qc-1.jpg" width="1200" height="993" loading="lazy" decoding="async" alt="The calnexin cycle: glucosidases trim the sugars, calnexin holds the protein, UGGT re-adds glucose to misfolded proteins.">
+    <figcaption>The calnexin cycle: glucosidases trim the sugars, calnexin holds the protein, UGGT re-adds glucose to misfolded proteins. <span class="lb-credit">Lecture slide 5</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Soon after the oligosaccharide is attached, it is gradually trimmed, and this sets up a check of whether the protein is fit to move on.</p>
+  <ol class="lb-flow">
+    <li><strong>Step 1</strong>: two of the three terminal <strong>glucose</strong> residues are removed.</li>
+    <li><strong>Step 2</strong>: the glycoprotein, now with <strong>one</strong> glucose, binds the ER chaperone <strong>calnexin</strong>.</li>
+    <li><strong>Step 3</strong>: <strong>glucosidase II</strong> removes the last glucose → the protein is released.</li>
+    <li><strong>Step 4</strong>: if it is still unfolded or misfolded, <strong>UGGT</strong>, a conformation-sensing enzyme, adds one glucose back to an exposed mannose. UGGT spots misfolded proteins by their <strong>exposed hydrophobic residues</strong>.</li>
+    <li><strong>Step 5</strong>: the re-tagged protein binds the chaperones again for another chance to fold.</li>
+    <li>After repeated failure, the protein is sent to the cytosol and destroyed in the <strong>proteasome</strong>.</li>
+  </ol>
+  <aside class="lb-box lb-mnemonic">
+    <span class="lb-box-title">Memory hook</span>
+    <p>One glucose = “please hold me” (calnexin). No glucose = “I’m done”. UGGT is the <strong>inspector</strong> who sticks the glucose back on if the protein isn’t ready.</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="erad">
+  <h2>ERAD and cystic fibrosis</h2>
+  <ul>
+    <li>Misfolded proteins are <strong>not</strong> destroyed inside the ER. They are moved to the cytosol by <strong>dislocation</strong> (mechanism still debated).</li>
+    <li>In the cytosol their sugar chains are removed and they are destroyed by <strong>proteasomes</strong>.</li>
+    <li>This is <strong>ER-associated degradation (ERAD)</strong>: it keeps faulty proteins from reaching the rest of the cell, but can also cause disease.</li>
+    <li>Over <mark>60</mark> human diseases are linked to ERAD.</li>
+  </ul>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: cystic fibrosis</span>
+    <p>In most CF patients the epithelial plasma membrane lacks the protein encoded by the CF gene. The mutant protein would often <strong>work if given time to fold</strong>, but ER quality control destroys it, so it never reaches the cell surface. From the textbook: the protein is <strong>CFTR</strong>, a chloride channel; the commonest mutation, <strong>ΔF508</strong>, is handled this way; the disease is autosomal recessive and causes thick mucus in lungs and pancreas.</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="upr">
+  <h2>The unfolded protein response (UPR)</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec09-er-quality-control-sorting/upr-1.jpg" width="1023" height="1583" loading="lazy" decoding="async" alt="The unfolded protein response: ER sensors detect misfolded proteins and signal to the nucleus.">
+    <figcaption>The unfolded protein response: ER sensors detect misfolded proteins and signal to the nucleus. <span class="lb-credit">Lecture slide 12</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Sometimes misfolded proteins are made faster than they can be removed; their build-up is <strong>potentially lethal</strong>. The cell responds with the <strong>UPR</strong>.</li>
+    <li>ER <strong>sensors</strong> monitor unfolded proteins. Normally they are kept <strong>inactive</strong> by the chaperone <strong>BiP</strong>.</li>
+    <li>When misfolded proteins accumulate, BiP is pulled away to help fold them, leaving the sensors <strong>free and active</strong>.</li>
+  </ul>
+  <ol class="lb-flow">
+    <li>Released from BiP, the sensor <strong>PERK</strong> <strong>dimerises</strong> and becomes an active <strong>protein kinase</strong>.</li>
+    <li>PERK <strong>phosphorylates eIF2α</strong>, a factor needed to start protein synthesis; phosphorylated eIF2 is <strong>inactive</strong>.</li>
+    <li>Fewer new proteins enter the ER, giving time to clear those already there.</li>
+    <li>Meanwhile, the <strong>cytosolic part</strong> of another sensor travels to the <strong>nucleus</strong> and switches on stress genes.</li>
+  </ol>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <caption>Genes switched on by the UPR</caption>
+    <thead><tr><th scope="col">Gene products</th><th scope="col">Help by</th></tr></thead>
+    <tbody>
+      <tr><td>ER chaperones</td><td>Folding misfolded proteins</td></tr>
+      <tr><td>Transport and vesicle coat proteins</td><td>Moving proteins out of the ER</td></tr>
+      <tr><td>Quality-control / degradation machinery</td><td>Destroying abnormal proteins (proteasome)</td></tr>
+    </tbody>
+  </table></div>
+  <p>The UPR is a survival response, but if it can’t fix the stress, it triggers <strong>apoptosis</strong> and the cell dies.</p>
+</section>
+
+<section class="lb-section" id="posttrans">
+  <h2>Post-translational import</h2>
+  <ul>
+    <li>Trafficking depends on <strong>sorting signals</strong> (e.g. signal peptide, mannose 6-phosphate of lysosomal enzymes) and <strong>receptors</strong> that recognise them.</li>
+    <li>The <strong>nucleus, mitochondria, chloroplasts and peroxisomes</strong> import proteins through their outer membranes, using address sequences read by receptors.</li>
+    <li>The RER imports <strong>co-translationally</strong>; these organelles import <strong>post-translationally</strong>, after complete synthesis on <strong>free</strong> ribosomes.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="peroxisome">
+  <h2>Import into peroxisomes</h2>
+  <ul>
+    <li>Peroxisomes have only two places for a protein: the <strong>boundary membrane</strong> and the <strong>matrix</strong>.</li>
+    <li>Proteins carry a <strong>peroxisomal targeting signal</strong>: <strong>PTS</strong> for matrix proteins, <strong>mPTS</strong> for membrane proteins.</li>
+    <li><strong>PTS receptors</strong> bind them in the cytosol and shuttle them to the peroxisome surface.</li>
+    <li><strong>Formation</strong>: peroxisomes form when <strong>two different ER-derived vesicles</strong> fuse, each carrying half of the peroxisomal translocon (<strong>importomer</strong>); fusion completes it.</li>
+    <li>Unlike mitochondria and chloroplasts, peroxisomes import matrix proteins <strong>fully folded</strong>, even multi-subunit ones (how is unknown).</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="mito">
+  <h2>Import into mitochondria</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec09-er-quality-control-sorting/mito-1.jpg" width="1200" height="790" loading="lazy" decoding="async" alt="Mitochondrial import: precursors held by cytosolic Hsp70 enter through the TOM complex.">
+    <figcaption>Mitochondrial import: precursors held by cytosolic Hsp70 enter through the TOM complex. <span class="lb-credit">Lecture slide 21</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec09-er-quality-control-sorting/mito-2.jpg" width="1200" height="1010" loading="lazy" decoding="async" alt="TIM23 takes matrix proteins into the matrix, where the presequence is cut off; TIM22 inserts inner-membrane proteins.">
+    <figcaption>TIM23 takes matrix proteins into the matrix, where the presequence is cut off; TIM22 inserts inner-membrane proteins. <span class="lb-credit">Lecture slide 23</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Four destinations: <strong>outer membrane, inner membrane, intermembrane space, matrix</strong>.</p>
+  <ul>
+    <li>Mitochondria make only <mark>13</mark> of their own polypeptides (mammals); about <mark>99%</mark> are <strong>nuclear-encoded</strong>, made on free ribosomes and imported post-translationally.</li>
+    <li>Most <strong>matrix</strong> proteins have a removable N-terminal <strong>presequence</strong>: positively charged residues on one face of a helix and hydrophobic residues on the other.</li>
+    <li>Most <strong>inner membrane</strong> proteins have <strong>internal</strong> targeting sequences that stay in the protein.</li>
+  </ul>
+  <ol class="lb-flow">
+    <li>The protein must arrive <strong>unfolded</strong> (extended); chaperones such as <strong>Hsp70 and Hsp90</strong> prepare it and bring it to the outer membrane.</li>
+    <li><strong>TOM complex</strong> (translocase of the outer membrane): <strong>receptors</strong> plus a <strong>channel</strong> across the outer membrane.</li>
+    <li>Inner membrane: <strong>TIM22</strong> inserts inner-membrane proteins with internal signals into the bilayer; <strong>TIM23</strong> takes proteins with an N-terminal presequence (all matrix proteins) <strong>right into the matrix</strong>.</li>
+    <li>Entry into the matrix is powered by the <strong>electric potential</strong> across the inner membrane pulling on the positive signal; dissipating it with <strong>DNP</strong> stops import.</li>
+    <li>In the matrix, <strong>mtHsp70</strong> helps the chain in; the <strong>presequence is cut off</strong> and the protein folds to its native shape.</li>
+  </ol>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>2 of 3</td><td>Glucoses removed before calnexin binds</td></tr>
+      <tr><td>&gt; 60</td><td>Diseases linked to ERAD</td></tr>
+      <tr><td>4</td><td>Organelles importing post-translationally; mitochondrial sub-compartments</td></tr>
+      <tr><td>2</td><td>Peroxisome sub-compartments; ER vesicles fusing to form one</td></tr>
+      <tr><td>13 / ~99%</td><td>Mitochondrially made polypeptides / nuclear-encoded share</td></tr>
+      <tr><td>TIM22 / TIM23</td><td>Inner-membrane insertion / matrix import</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">These</th><th scope="col">The difference</th></tr></thead>
+    <tbody>
+      <tr><td>Calnexin vs BiP</td><td>Binds monoglucosylated glycoproteins (quality control) vs holds UPR sensors inactive and folds proteins.</td></tr>
+      <tr><td>Glucosidase II vs UGGT</td><td>Removes the last glucose vs adds one back to misfolded proteins.</td></tr>
+      <tr><td>ERAD vs UPR</td><td>Destroys individual misfolded proteins vs a whole-cell stress response.</td></tr>
+      <tr><td>Peroxisome vs mitochondrial import</td><td>Imports folded proteins vs needs unfolded proteins.</td></tr>
+      <tr><td>TOM vs TIM</td><td>Outer membrane vs inner membrane.</td></tr>
+      <tr><td>Presequence vs internal signal</td><td>N-terminal, removed (matrix) vs internal, kept (inner membrane).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam trap</span>
+    <ul>
+      <li>Misfolded ER proteins are degraded in the <strong>cytosol</strong>, not the ER.</li>
+      <li>In CF the mutant protein might work but is <strong>destroyed</strong> before reaching the surface.</li>
+      <li>PERK <strong>phosphorylates</strong> eIF2α, which <strong>inactivates</strong> it.</li>
+      <li>The UPR can end in <strong>apoptosis</strong>.</li>
+      <li>Mitochondrial import needs the <strong>membrane potential</strong>; DNP blocks it.</li>
+      <li>Peroxisomes arise from <strong>ER-derived</strong> vesicles.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="check">
+  <h2>Check yourself</h2>
+  <ol class="lb-quiz">
+    <li class="lb-q"><p>Which chaperone binds glycoproteins carrying a single glucose?</p>
+      <ol><li>BiP</li><li>Calnexin</li><li>Hsp90</li><li>PDI</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>UGGT recognises misfolded proteins by their:</p>
+      <ol><li>Missing signal peptide</li><li>Exposed hydrophobic residues</li><li>Phosphate groups</li><li>Size</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Where are terminally misfolded ER proteins destroyed?</p>
+      <ol><li>ER lumen</li><li>Cytosolic proteasomes</li><li>Lysosomes</li><li>Golgi</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> After dislocation (ERAD).</p></details></li>
+    <li class="lb-q"><p>In most cystic fibrosis patients, the mutant protein:</p>
+      <ol><li>Is overproduced</li><li>Is destroyed by ER quality control and never reaches the membrane</li><li>Is secreted</li><li>Folds too fast</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>In the UPR, activated PERK:</p>
+      <ol><li>Dephosphorylates eIF2</li><li>Phosphorylates eIF2α, inhibiting translation</li><li>Binds BiP tightly</li><li>Degrades mRNA</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>UPR sensors are normally kept inactive by:</p>
+      <ol><li>Calnexin</li><li>BiP</li><li>UGGT</li><li>Ubiquitin</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Which organelle imports proteins co-translationally?</p>
+      <ol><li>Mitochondria</li><li>Peroxisomes</li><li>Rough ER</li><li>Nucleus</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong></p></details></li>
+    <li class="lb-q"><p>Peroxisomes differ from mitochondria because they import proteins:</p>
+      <ol><li>Only unfolded</li><li>In their folded state</li><li>Co-translationally</li><li>Only from mtDNA</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>A mitochondrial matrix protein enters through:</p>
+      <ol><li>TOM then TIM22</li><li>TOM then TIM23</li><li>TIM22 only</li><li>The SRP</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Import into the mitochondrial matrix stops if DNP is added because:</p>
+      <ol><li>ATP synthase is blocked</li><li>The inner membrane potential that pulls the positive presequence is dissipated</li><li>TOM is destroyed</li><li>Chaperones are inhibited</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+  </ol>
+</section>
+
+<section class="lb-section" id="terms">
+  <h2>Key terms</h2>
+  <dl class="lb-glossary">
+    <dt>Calnexin</dt><dd>ER lectin chaperone binding monoglucosylated proteins.</dd>
+    <dt>UGGT</dt><dd>Enzyme re-glucosylating misfolded proteins.</dd>
+    <dt>Dislocation</dt><dd>Moving misfolded proteins from ER to cytosol.</dd>
+    <dt>ERAD</dt><dd>ER-associated degradation.</dd>
+    <dt>UPR</dt><dd>Unfolded protein response.</dd>
+    <dt>BiP</dt><dd>ER chaperone that keeps UPR sensors off.</dd>
+    <dt>PERK</dt><dd>UPR sensor kinase phosphorylating eIF2α.</dd>
+    <dt>PTS / mPTS</dt><dd>Peroxisomal targeting signals for matrix / membrane proteins.</dd>
+    <dt>Importomer</dt><dd>Peroxisomal translocon.</dd>
+    <dt>Presequence</dt><dd>N-terminal mitochondrial matrix targeting signal.</dd>
+    <dt>TOM / TIM</dt><dd>Translocases of the outer / inner mitochondrial membrane.</dd>
+  </dl>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2-5">Quality control</li>
+    <li data-slides="7-8">ERAD, cystic fibrosis</li>
+    <li data-slides="9-13">UPR</li>
+    <li data-slides="14-15">Sorting and post-translational import</li>
+    <li data-slides="16-18">Peroxisomes</li>
+    <li data-slides="19-25">Mitochondria, TOM, TIM</li>
+  </ul>
+</details>
+</article>

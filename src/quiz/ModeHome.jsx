@@ -1,5 +1,6 @@
 import { ChevronRight } from '../components/Icons.jsx';
 import { LockedLectures } from '../components/Plan.jsx';
+import { GuidesCard } from './Guides.jsx';
 
 /* The three ways to answer questions are the big cards; the progress tools
    sit underneath as smaller white stickers. --tilt is each card's resting angle. */
@@ -12,7 +13,7 @@ const MODES = [
     desc: 'A full set with answers held back until you submit, then scored.' },
 ];
 
-export default function ModeHome({ title, questionCount, topicCount, wrongCount, historyCount, onGo }) {
+export default function ModeHome({ title, subjectKey, questionCount, topicCount, wrongCount, historyCount, onGo }) {
   const tools = [
     { key: 'review-wrong', name: 'Review wrong answers', icon: '🔁', fill: 'blue',
       meta: wrongCount ? `${wrongCount} question${wrongCount !== 1 ? 's' : ''}` : 'None yet',
@@ -31,6 +32,8 @@ export default function ModeHome({ title, questionCount, topicCount, wrongCount,
           {questionCount.toLocaleString()} questions across {topicCount} topic{topicCount !== 1 ? 's' : ''}
         </p>
       </header>
+
+      <GuidesCard subjectKey={subjectKey} onOpen={() => onGo('guides')} />
 
       <section aria-labelledby="modes-title">
         <h2 id="modes-title" className="section-title">Answer questions</h2>

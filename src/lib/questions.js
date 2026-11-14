@@ -118,6 +118,38 @@ async function viaApi(tables, signal) {
   return body;
 }
 
+/* The free plan's sets drawn today from the locked lectures (see
+   netlify/functions/daily.js), with their questions, so a set in progress
+   survives a refresh. Null when the endpoint can't be reached: the free
+   lectures still work without it. */
+async function viaDaily(subjectKey, signal) {
+  try {
+    const res = await fetch(`/api/daily?subject=${encodeURIComponent(subjectKey)}`, {
+      signal,
+      headers: await authHeader(),
+    });
+    if (!res.ok) throw new Error(`/api/daily -> ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    if (signal?.aborted) throw e;
+    console.info('[questions] daily set unavailable', e.message);
+    return null;
+  }
+}
+
+/** Questions from { table: [row, ...] }, shaped like the rest of the bank. */
+export function questionsFromRows(config, rowsByTable) {
+  const out = [];
+  for (const src of config.sources) {
+    for (const row of rowsByTable?.[src.table] || []) {
+      row.__table = src.table;
+      const q = toQuestion(row, src.subject, config.topicMap, config.imageBase);
+      if (q.q && q.options.length >= 2) out.push(q);
+    }
+  }
+  return out;
+}
+
 async function viaSupabaseDirect(sources, signal) {
   const out = {};
   await Promise.all(
@@ -150,19 +182,25 @@ async function viaSupabaseDirect(sources, signal) {
 /**
  * Load and flatten every table a subject draws from.
  * @param {{sources: {table: string, subject: string}[], topicMap?: object, imageBase?: string}} config
- * @returns {Promise<{questions: Array, locked: {subject: string, topic: string, n: number}[]}>}
+ * @returns {Promise<{questions: Array, locked: {subject: string, topic: string, n: number, table: string, raw: string}[],
+ *   daily: object | null, extra: Array}>}
  *   `questions` in a stable order; `locked` names the lectures this student's
  *   plan does not include, with how many questions each holds (empty when
- *   they have everything).
+ *   they have everything). On the free plan, `daily` is today's state of the
+ *   daily sets from the locked lectures ({ day, resets_at, limited, sets })
+ *   and `extra` the questions of the sets already drawn; they are kept apart
+ *   from `questions` so they don't show up as open lectures.
  */
 export async function loadQuestions(config, signal) {
   const tables = config.sources.map((s) => s.table);
   let byTable;
   let lockedByTable = {};
+  let access = 'open';
   try {
     const body = await viaApi(tables, signal);
     byTable = body.tables;
     lockedByTable = body.locked || {};
+    access = body.access;
   } catch (e) {
     if (signal?.aborted) throw e;
     if (!warnedAboutApi) {
@@ -179,6 +217,8 @@ export async function loadQuestions(config, signal) {
         subject: src.subject,
         topic: (config.topicMap && config.topicMap[item.topic]) || item.topic || 'General',
         n: item.n,
+        table: src.table,
+        raw: item.topic,
       });
     }
   }
@@ -194,7 +234,22 @@ export async function loadQuestions(config, signal) {
       if (q.q && q.options.length >= 2) questions.push(q);
     }
   }
-  return { questions, locked };
+
+  let daily = null;
+  const extra = [];
+  if (access === 'free' && locked.length) {
+    daily = await viaDaily(config.path, signal);
+    if (daily) {
+      for (const set of Object.values(daily.sets || {})) {
+        if (set) extra.push(...questionsFromRows(config, set.rows));
+      }
+      // The rows live in `extra` now; the sets keep only their ids.
+      const sets = {};
+      for (const [mode, set] of Object.entries(daily.sets || {})) sets[mode] = set && { scope: set.scope, ids: set.ids };
+      daily = { ...daily, sets };
+    }
+  }
+  return { questions, locked, daily, extra };
 }
 
 /* Row count for one table straight from Supabase, or null if it can't be

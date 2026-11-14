@@ -19,7 +19,7 @@ function Shell({ config, children }) {
 
 export default function SubjectPage({ subjectKey }) {
   const config = getSubject(subjectKey);
-  const { questions, locked, status, error, reload } = useQuestions(config);
+  const { questions, locked, extra, daily, status, error, reload } = useQuestions(config);
 
   useEffect(() => {
     if (config) document.title = config.docTitle;
@@ -78,7 +78,7 @@ export default function SubjectPage({ subjectKey }) {
   return (
     <ToastProvider>
       <LockedContext.Provider value={locked}>
-        <QuizEngine config={config} questions={questions} basePath={`/${subjectKey}`} />
+        <QuizEngine config={config} questions={questions} extra={extra} daily={daily} basePath={`/${subjectKey}`} />
       </LockedContext.Provider>
     </ToastProvider>
   );

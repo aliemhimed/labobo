@@ -184,7 +184,7 @@ exports.handler = async (event) => {
   try {
     const locked = isLocked();
     let full = true;
-    if (locked) full = hasFullAccess(await getAccess(await verifyUser(event)));
+    if (locked) full = hasFullAccess(await getAccess(await verifyUser(event), event));
 
     // Once the lock is on, the publishable key only reaches the free rows.
     const results = await Promise.all(requested.map((t) => fetchTable(t, locked ? dbHeaders() : anonHeaders())));

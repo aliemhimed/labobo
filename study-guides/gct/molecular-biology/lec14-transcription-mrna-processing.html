@@ -1,0 +1,496 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct" data-part="Molecular Biology" data-type="lecture"
+         data-lectures="14" data-topic="MB Lec 14: Transcription and mRNA Processing"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT I · Molecular Biology · Lecture 14</p>
+  <h1>Transcription and mRNA Processing</h1>
+  <p class="lb-lede">The central dogma, how RNA polymerase reads DNA, transcription in bacteria (sigma factor, promoters, two kinds of termination) and in eukaryotes, the structure of mRNA, capping, polyadenylation, splicing (spliceosome and self-splicing), alternative splicing, and FISH.</p>
+  <span class="lb-topic-name">Labobo topic: MB Lec 14: Transcription and mRNA Processing</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li><strong>DNA → RNA → protein</strong>; proteins are needed to make both nucleic acids.</li>
+    <li>RNA polymerase: multi-subunit, polymerase + helicase + ATPase; uses <strong>rNTPs</strong>; reads the template <strong>3′→5′</strong> and makes RNA <strong>5′→3′</strong>; <mark>20–50</mark> nt/s.</li>
+    <li>Bacteria: one polymerase (<mark>5</mark>-subunit core). <strong>Core + σ = holoenzyme</strong>, which finds the promoter; σ leaves after ~<mark>10</mark> nucleotides. <strong>σ70</strong> = housekeeping.</li>
+    <li>Termination: <strong>Rho-dependent</strong> (Rho moves 5′→3′ along the RNA, helicase) or <strong>Rho-independent</strong> (G-C hairpin + run of U’s).</li>
+    <li>Promoters: <mark>100–1000</mark> bp, upstream of +1. Eukaryotes need <strong>transcription factors</strong>; transcription and translation are separated in <strong>space and time</strong>.</li>
+    <li>Processing of pre-mRNA (made by <strong>Pol II</strong>): <strong>5′ cap</strong> (7-methylguanosine, 5′–5′ triphosphate; capping enzyme binds the phosphorylated <strong>CTD</strong>), <strong>poly(A) tail</strong> (signal <strong>AAUAAA</strong>, cut <mark>10–35</mark> nt downstream, ~<mark>250</mark> A’s, no template), <strong>splicing</strong>.</li>
+    <li>Spliceosome: snRNAs <strong>U1, U2, U4, U5, U6</strong> (<mark>107–210</mark> nt); two <strong>transesterifications</strong>; <strong>lariat</strong>. Alternative splicing: <mark>60%</mark> of genes; fibronectin &gt; <mark>20</mark> isoforms.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Karp’s Cell and Molecular Biology; Alberts’ Essential Cell Biology. By the end you can:</p>
+  <ul>
+    <li>state the central dogma and its limits;</li>
+    <li>describe RNA polymerases, promoters and the stages of bacterial transcription;</li>
+    <li>contrast prokaryotic and eukaryotic transcription;</li>
+    <li>describe mRNA structure and processing: capping, polyadenylation, splicing;</li>
+    <li>explain self-splicing, alternative splicing and in situ hybridisation (FISH).</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#dogma">The central dogma</a></li>
+    <li><a href="#polymerase">RNA polymerase</a></li>
+    <li><a href="#promoter">Promoters and numbering</a></li>
+    <li><a href="#bacteria">Transcription in bacteria</a></li>
+    <li><a href="#termination">Termination in bacteria</a></li>
+    <li><a href="#eukaryotes">Transcription in eukaryotes</a></li>
+    <li><a href="#mrna">Structure of mRNA</a></li>
+    <li><a href="#cap">5′ cap</a></li>
+    <li><a href="#polya">3′ poly(A) tail</a></li>
+    <li><a href="#splicing">Splicing</a></li>
+    <li><a href="#selfsplicing">Self-splicing</a></li>
+    <li><a href="#alternative">Alternative splicing</a></li>
+    <li><a href="#fish">In situ hybridisation (FISH)</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#watch">Watch out</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#check">Check yourself</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="dogma">
+  <h2>The central dogma</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/dogma-1.jpg" width="261" height="288" loading="lazy" decoding="async" alt="Transcription and RNA processing in the nucleus, translation in the cytoplasm.">
+    <figcaption>Transcription and RNA processing in the nucleus, translation in the cytoplasm. <span class="lb-credit">Lecture slide 5</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Hereditary information flows <strong>DNA → RNA → protein</strong>: a DNA gene encodes an RNA message that is translated into protein.</li>
+    <li>It does <strong>not</strong> show that proteins are needed to make DNA and RNA, or that many proteins regulate gene expression.</li>
+    <li><strong>Transcription</strong>: the coded part of a gene is copied into single-stranded RNA by <strong>RNA polymerase</strong> (DNA is the template). “Transcribed” = rewritten in the same nucleotide language.</li>
+    <li><strong>Translation</strong>: ribosomes link amino acids in the order dictated by mRNA, using the universal genetic code. “Translated” = into the amino acid language.</li>
+    <li>In eukaryotes the precursor RNA is <strong>processed</strong> into smaller mRNA, which leaves the nucleus for the cytoplasmic ribosomes.</li>
+    <li><strong>Gene expression</strong> = making a functional product from a gene’s information.</li>
+    <li>Ribosomes contain <strong>rRNA</strong> (structure and catalysis of peptide bonds) and protein; <strong>tRNAs</strong> carry amino acids and decode mRNA.</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=nqlNcm_mMcI" target="_blank" rel="noopener">Dr Matt &amp; Dr Mike · DNA Transcription and Translation | DNA to Protein</a>
+      <span class="lb-when">Watch from 0:00 to the end: DNA to RNA to protein in 14 minutes.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="polymerase">
+  <h2>RNA polymerase</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/polymerase-1.jpg" width="510" height="208" loading="lazy" decoding="async" alt="RNA polymerase opens a transcription bubble and adds nucleotides to the 3′ end of the growing RNA.">
+    <figcaption>RNA polymerase opens a transcription bubble and adds nucleotides to the 3′ end of the growing RNA. <span class="lb-credit">Lecture slide 11</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li><strong>DNA-dependent RNA polymerase</strong>: a multi-subunit (quaternary) enzyme with several activities: <strong>polymerase, helicase, ATPase</strong>.</li>
+    <li>Uses <strong>ribonucleoside triphosphates (rNTPs)</strong> (ATP is one) to extend the RNA.</li>
+    <li>It cannot recognise promoters alone: it needs <strong>σ factor</strong> (bacteria) or <strong>transcription factors</strong> (eukaryotes).</li>
+    <li>Moves along the <strong>template</strong> toward its 5′ end (<strong>3′→5′</strong>), unwinding DNA (helicase) and making RNA <strong>5′→3′</strong>. Behind it the double helix re-forms.</li>
+    <li>Speed: <mark>20–50</mark> nucleotides per second; one gene may be read by a hundred or more polymerases at once; how often is tightly regulated.</li>
+    <li>Products: <strong>mRNA, tRNA, rRNA</strong>, catalytic RNA/snRNA, and <strong>miRNA</strong> (regulates gene expression by RNA interference).</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=31s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 0:31 to 23:28: how transcription differs in prokaryotes and eukaryotes.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="promoter">
+  <h2>Promoters and numbering</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/promoter-1.jpg" width="536" height="158" loading="lazy" decoding="async" alt="Numbering: +1 is the start site; the promoter lies upstream.">
+    <figcaption>Numbering: +1 is the start site; the promoter lies upstream. <span class="lb-credit">Lecture slide 17</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>A <strong>promoter</strong> is a regulatory (non-coding) DNA region where RNA polymerase binds to start transcription.</li>
+    <li>Located near the start site, on the same strand, <strong>upstream</strong>; about <mark>100–1000</mark> bp long.</li>
+    <li>The first transcribed nucleotide is <strong>+1</strong>; the one before is <strong>−1</strong> (no 0).</li>
+    <li><strong>Downstream</strong> = direction the polymerase travels (+ numbers). <strong>Upstream</strong> = the opposite (− numbers), toward the 3′ end of the template strand.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="bacteria">
+  <h2>Transcription in bacteria</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/bacteria-1.jpg" width="341" height="567" loading="lazy" decoding="async" alt="The σ factor joins the core enzyme to find the promoter, then leaves once the RNA is being elongated.">
+    <figcaption>The σ factor joins the core enzyme to find the promoter, then leaves once the RNA is being elongated. <span class="lb-credit">Lecture slide 19</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/bacteria-2.jpg" width="567" height="271" loading="lazy" decoding="async" alt="In bacteria, ribosomes translate the mRNA while it is still being transcribed.">
+    <figcaption>In bacteria, ribosomes translate the mRNA while it is still being transcribed. <span class="lb-credit">Lecture slide 27</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>E. coli has a <strong>single</strong> RNA polymerase: a <strong>core enzyme</strong> of <mark>5</mark> subunits.</li>
+    <li>Adding <strong>σ (sigma) factor</strong> → the <strong>holoenzyme</strong>, which slides along DNA until it finds a promoter (with a TATA-like sequence).</li>
+    <li>The holoenzyme separates the strands: the polymerase–σ–DNA complex with open strands is the <strong>open complex</strong>.</li>
+    <li>After ~<mark>10</mark> nucleotides, the enzyme changes shape into a processive <strong>elongation complex</strong>; σ <strong>dissociates</strong>.</li>
+    <li><strong>Holoenzyme = initiation; core enzyme = elongation.</strong></li>
+    <li>Bacteria have several σ factors for different promoters; <strong>σ70</strong> is the <strong>housekeeping</strong> factor for most genes.</li>
+    <li>With no nucleus, <strong>ribosomes start translating</strong> the mRNA even while its 3′ end is still being made: transcription and translation are <strong>coupled</strong>.</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=1408s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 23:28 to 41:16: initiation and elongation.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="termination">
+  <h2>Termination in bacteria</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/termination-1.jpg" width="335" height="247" loading="lazy" decoding="async" alt="Rho-dependent termination: Rho moves along the RNA and pulls it off the polymerase.">
+    <figcaption>Rho-dependent termination: Rho moves along the RNA and pulls it off the polymerase. <span class="lb-credit">Lecture slide 22</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/termination-2.jpg" width="1090" height="499" loading="lazy" decoding="async" alt="Rho-independent termination: a G-C hairpin followed by U’s.">
+    <figcaption>Rho-independent termination: a G-C hairpin followed by U’s. <span class="lb-credit">Lecture slide 24</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">Rho-dependent</th><th scope="col">Rho-independent</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">How</th><td>The polymerase pauses at stop sequences, but that is not enough. <strong>Rho (ρ)</strong> encircles the new RNA, moves <strong>5′→3′</strong> to the polymerase, and separates RNA from DNA (<strong>RNA–DNA helicase</strong>)</td><td>The RNA forms a <strong>G-C-rich hairpin</strong> followed by a string of <strong>U</strong>’s; the polymerase releases the RNA with no extra factor</td></tr>
+      <tr><th scope="row">Needs a protein?</th><td>Yes (Rho)</td><td>No</td></tr>
+    </tbody>
+  </table></div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=2476s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 41:16 to 50:23: Rho-dependent and Rho-independent termination.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="eukaryotes">
+  <h2>Transcription in eukaryotes</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/eukaryotes-1.jpg" width="571" height="253" loading="lazy" decoding="async" alt="The eukaryotic RNA polymerases and the RNAs each one makes.">
+    <figcaption>The eukaryotic RNA polymerases and the RNAs each one makes. <span class="lb-credit">Lecture slide 25</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li><strong>Several</strong> RNA polymerases (bacteria have one). From the textbook: <strong>Pol I</strong> → large rRNAs (28S, 18S, 5.8S); <strong>Pol II</strong> → <strong>all pre-mRNAs</strong> (and most snRNAs, miRNAs); <strong>Pol III</strong> → tRNAs, 5S rRNA.</li>
+    <li>Many <strong>transcription factors</strong> replace σ. <strong>General transcription factors</strong> act in initiation, elongation and termination.</li>
+    <li>mRNAs, rRNAs and tRNAs all come from longer <strong>precursors (primary transcripts)</strong> that must be <strong>processed</strong>.</li>
+    <li>Genes are split: <strong>exons</strong> (coding) and <strong>introns</strong> (non-coding). The pre-RNA copies <strong>both</strong>; introns must be cut out and exons joined.</li>
+    <li>Transcription and translation are separated in <strong>space</strong> (nucleus vs cytoplasm) and <strong>time</strong> (processing first, then export).</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="mrna">
+  <h2>Structure of mRNA</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/mrna-1.jpg" width="445" height="185" loading="lazy" decoding="async" alt="Human β-globin mRNA: cap, 5′ UTR, coding region, 3′ UTR and poly(A) tail.">
+    <figcaption>Human β-globin mRNA: cap, 5′ UTR, coding region, 3′ UTR and poly(A) tail. <span class="lb-credit">Lecture slide 32</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Properties: a continuous coding sequence for one polypeptide; found in the cytoplasm; attached to ribosomes when translated; usually a sizeable <strong>non-coding</strong> part (e.g. human <strong>β-globin mRNA ~25%</strong> non-coding).</li>
+    <li>Layout: <strong>5′ methylguanosine cap → 5′ UTR → coding region → 3′ UTR → poly(A) tail</strong>.</li>
+    <li>The cap and poly(A) tail are found on eukaryotic mRNAs only, not on bacterial mRNAs, tRNAs or rRNAs.</li>
+  </ul>
+  <p>Processing a pre-mRNA (transcribed by Pol II over the whole <strong>transcription unit</strong>, from promoter to terminator) needs three steps: <strong>5′ cap</strong>, <strong>3′ poly(A) tail</strong>, <strong>splicing</strong>.</p>
+</section>
+
+<section class="lb-section" id="cap">
+  <h2>5′ cap</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/cap-1.jpg" width="589" height="1136" loading="lazy" decoding="async" alt="The 5′ cap: 7-methylguanosine joined by a 5′–5′ triphosphate link.">
+    <figcaption>The 5′ cap: 7-methylguanosine joined by a 5′–5′ triphosphate link. <span class="lb-credit">Lecture slide 34</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/cap-2.jpg" width="780" height="342" loading="lazy" decoding="async" alt="The capping enzyme binds the phosphorylated CTD of RNA polymerase II.">
+    <figcaption>The capping enzyme binds the phosphorylated CTD of RNA polymerase II. <span class="lb-credit">Lecture slide 35</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>As soon as the 5′ end leaves the polymerase, enzymes add <strong>7-methylguanosine</strong>.</li>
+    <li>It is joined by an unusual <strong>5′–5′ triphosphate</strong> link (not a 5′–3′ phosphodiester bond).</li>
+    <li>Pol II has a phosphorylated <strong>carboxyl-terminal domain (CTD)</strong> that binds the dimeric <strong>capping enzyme</strong>. Pols I and III have no CTD, so only <strong>Pol II</strong> transcripts are capped.</li>
+  </ul>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <caption>Functions of the cap</caption>
+    <thead><tr><th scope="col">Function</th></tr></thead>
+    <tbody>
+      <tr><td>Protects mRNA from <strong>exonuclease</strong> degradation</td></tr>
+      <tr><td>Helps <strong>export</strong> to the cytoplasm</td></tr>
+      <tr><td>Binds the factor needed to <strong>start translation</strong></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="polya">
+  <h2>3′ poly(A) tail</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/polya-1.jpg" width="1005" height="793" loading="lazy" decoding="async" alt="Polyadenylation: the RNA is cut 10–35 nt after AAUAAA, then poly(A) polymerase adds the tail.">
+    <figcaption>Polyadenylation: the RNA is cut 10–35 nt after AAUAAA, then poly(A) polymerase adds the tail. <span class="lb-credit">Lecture slide 37</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ol class="lb-flow">
+    <li>Nearly all pre-mRNAs contain the signal <strong>AAUAAA</strong>.</li>
+    <li>An <strong>endonuclease</strong> cuts <mark>10–35</mark> nucleotides downstream, leaving a free 3′-OH.</li>
+    <li><strong>Poly(A) polymerase</strong> adds A’s one at a time <strong>without a template</strong> (~<mark>100–250</mark>; typically starts ~250, then shortens).</li>
+  </ol>
+  <ul>
+    <li>The tail plus its bound protein protects mRNA from exonucleases.</li>
+    <li>Up to <mark>40%</mark> of prokaryotic mRNAs are also polyadenylated, but with short tails (<mark>15–60</mark> A’s). Lower eukaryotes (yeast, invertebrates) have shorter tails; each species has its own length.</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=WQt2wfehtms&amp;t=225s" target="_blank" rel="noopener">Medicosis Perfectionalis · Posttranscriptional modification (hnRNA to mRNA)</a>
+      <span class="lb-when">Watch from 3:45 to 8:55: the 5′ cap and the poly(A) tail, and why the tail protects mRNA.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="splicing">
+  <h2>Splicing</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/splicing-1.jpg" width="918" height="1000" loading="lazy" decoding="async" alt="Processing of the β-globin pre-mRNA: cap, cleavage and poly(A) addition, then removal of its two introns.">
+    <figcaption>Processing of the β-globin pre-mRNA: cap, cleavage and poly(A) addition, then removal of its two introns. <span class="lb-credit">Lecture slide 42</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>The last processing step: <strong>introns are cut out and exons joined</strong>.</p>
+  <h3>Example: β-globin</h3>
+  <p>The β-globin gene has <strong>3 exons and 2 introns</strong>, plus non-coding regions from the start site to the poly(A) site. Processing: cap at the start site → cleave and add A’s at the poly(A) site → splice out the two introns.</p>
+  <h3>The spliceosome</h3>
+  <ul>
+    <li>Five U-rich <strong>snRNAs</strong>: <strong>U1, U2, U4, U5, U6</strong> (<mark>107–210</mark> nucleotides), each bound to proteins as <strong>snRNPs</strong>.</li>
+    <li>They assemble on the pre-mRNA into the <strong>spliceosome</strong>, by base pairing (U1 and U6 to the pre-RNA, and snRNAs to each other).</li>
+    <li>Splice sites have <strong>consensus sequences</strong> (from comparing many pre-mRNAs): GU at the intron’s 5′ end, AG at its 3′ end, and a branch-point A.</li>
+  </ul>
+  <ol class="lb-flow">
+    <li><strong>First transesterification</strong>: the branch-point <strong>A</strong> bonds to the intron’s 5′ end, forming a <strong>lariat</strong>.</li>
+    <li><strong>Second transesterification</strong>: the two exons are joined by a normal phosphodiester bond, releasing the intron (with snRNPs).</li>
+    <li>The intron–snRNP complex comes apart; snRNPs are reused; the intron is quickly degraded.</li>
+  </ol>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=3945s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 1:05:45 to 1:14:43: the spliceosome and the lariat.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="selfsplicing">
+  <h2>Self-splicing</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/selfsplicing-1.jpg" width="353" height="182" loading="lazy" decoding="async" alt="A group II intron (left) and the snRNAs of the spliceosome (right) fold the RNA in a similar way.">
+    <figcaption>A group II intron (left) and the snRNAs of the spliceosome (right) fold the RNA in a similar way. <span class="lb-credit">Lecture slide 46</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Some RNAs slowly splice out introns <strong>without any protein</strong>: the intron is a <strong>ribozyme</strong>.</li>
+    <li><strong>Group I</strong> introns: in rRNA transcripts of bacteria, protozoa and some animal cells.</li>
+    <li><strong>Group II</strong> introns: the widest group, in all three domains; in mitochondrial and chloroplast mRNAs, nuclear mRNAs of plants and fungi, some rRNAs and tRNAs. They fold into <strong>six domains</strong>; the <strong>2′-OH of an adenosine</strong> in domain VI attacks the 5′ splice site, forming a <strong>2′–5′</strong> bond and a <strong>lariat</strong>.</li>
+    <li>This discovery changed ideas about what RNA can do.</li>
+    <li>Group II self-splicing resembles spliceosome splicing, suggesting the <strong>snRNAs</strong> play the catalytic role of the group II intron’s RNA structure.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="alternative">
+  <h2>Alternative splicing</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/alternative-1.jpg" width="1200" height="299" loading="lazy" decoding="async" alt="Fibronectin: the fibroblast mRNA keeps exons EIIIA and EIIIB; the hepatocyte mRNA skips them.">
+    <figcaption>Fibronectin: the fibroblast mRNA keeps exons EIIIA and EIIIB; the hepatocyte mRNA skips them. <span class="lb-credit">Lecture slide 51</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>A primary transcript can be processed in two or more ways: a sequence that is an intron in one path is an exon in another, so <strong>one gene codes several polypeptides</strong>.</li>
+    <li>About <mark>60%</mark> of human genes are alternatively spliced.</li>
+    <li>Humans may have over <mark>2 million</mark> kinds of protein but only <mark>20,000–25,000</mark> genes (genome sequenced <mark>2003</mark>); alternative splicing helps explain the gap.</li>
+  </ul>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <caption>Fibronectin (&gt; 20 isoforms from one gene)</caption>
+    <thead><tr><th scope="col">Cell</th><th scope="col">mRNA</th><th scope="col">Result</th></tr></thead>
+    <tbody>
+      <tr><td>Fibroblast</td><td><strong>Includes</strong> exons <strong>EIIIA and EIIIB</strong> (sequences that bind tightly to membranes)</td><td>Fibronectin sticks to the fibroblast membrane</td></tr>
+      <tr><td>Hepatocyte</td><td><strong>Skips</strong> EIIIA and EIIIB</td><td>Soluble fibronectin circulates in blood; in clotting it binds fibrin and platelets</td></tr>
+    </tbody>
+  </table></div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=4483s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 1:14:43 to the end: alternative splicing.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="fish">
+  <h2>In situ hybridisation (FISH)</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/fish-1.jpg" width="1200" height="1209" loading="lazy" decoding="async" alt="FISH: fluorescent probes (yellow) mark satellite DNA on chromosomes.">
+    <figcaption>FISH: fluorescent probes (yellow) mark satellite DNA on chromosomes. <span class="lb-credit">Lecture slide 55</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/molecular-biology/lec14-transcription-mrna-processing/fish-2.jpg" width="1195" height="1327" loading="lazy" decoding="async" alt="In situ hybridisation shows HPV DNA (pink) in the nuclei of infected cells.">
+    <figcaption>In situ hybridisation shows HPV DNA (pink) in the nuclei of infected cells. <span class="lb-credit">Lecture slide 56</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>RNA-Seq lists which genes are expressed but not <strong>where</strong>. <strong>In situ hybridisation</strong> (“in place”) shows a specific DNA or RNA in its normal location.</li>
+    <li>Uses single-stranded DNA or RNA <strong>probes</strong> labelled with <strong>fluorescent dyes</strong> or radioisotopes that bind complementary sequences in tissue or on chromosomes.</li>
+    <li>Examples: locating <strong>satellite DNA</strong>; detecting <strong>HPV</strong> DNA in infected cell nuclei (pink probe, green cytoplasm).</li>
+  </ul>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Applications</th></tr></thead>
+    <tbody>
+      <tr><td>Chromosome abnormalities: aneuploidy, deletions, duplications, translocations (e.g. in the fetus)</td></tr>
+      <tr><td>Gene mapping to chromosome locations</td></tr>
+      <tr><td>Gene expression: where mRNAs are in cells and tissues</td></tr>
+      <tr><td>Clinical diagnosis: genetic disorders, some cancers, birth defects</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>20–50 nt/s</td><td>Transcription speed</td></tr>
+      <tr><td>5</td><td>Subunits of bacterial core enzyme; splicing snRNAs</td></tr>
+      <tr><td>~10 nt</td><td>Made before σ leaves</td></tr>
+      <tr><td>σ70</td><td>Housekeeping sigma factor</td></tr>
+      <tr><td>100–1000 bp</td><td>Promoter length</td></tr>
+      <tr><td>~25%</td><td>Non-coding part of β-globin mRNA</td></tr>
+      <tr><td>AAUAAA; 10–35 nt</td><td>Poly(A) signal; cleavage distance</td></tr>
+      <tr><td>100–250 / 15–60</td><td>Poly(A) length in eukaryotes / prokaryotes</td></tr>
+      <tr><td>107–210 nt</td><td>snRNA length</td></tr>
+      <tr><td>3 exons, 2 introns</td><td>β-globin gene</td></tr>
+      <tr><td>60%; &gt; 20</td><td>Alternatively spliced human genes; fibronectin isoforms</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="watch">
+  <h2>Watch out</h2>
+  <aside class="lb-box lb-watch">
+    <span class="lb-box-title">Watch out: “three types” of self-splicing introns</span>
+    <p>Slide 48 says three types were discovered but describes only <strong>group I and group II</strong>. Learn those two (group III introns are a minor, rarely taught class).</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam trap</span>
+    <ul>
+      <li>RNA is made <strong>5′→3′</strong> while the template is read 3′→5′.</li>
+      <li>Only the <strong>holoenzyme</strong> finds promoters; the core enzyme elongates.</li>
+      <li>Rho moves <strong>5′→3′</strong> along the RNA.</li>
+      <li>Only <strong>Pol II</strong> transcripts are capped (CTD).</li>
+      <li>The cap link is <strong>5′–5′</strong>.</li>
+      <li>Poly(A) is added <strong>without a template</strong>.</li>
+      <li>Bacteria translate mRNA <strong>while</strong> it is being transcribed.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="check">
+  <h2>Check yourself</h2>
+  <ol class="lb-quiz">
+    <li class="lb-q"><p>RNA polymerase synthesises RNA in which direction?</p>
+      <ol><li>3′→5′</li><li>5′→3′</li><li>Both</li><li>Depends on the gene</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Which form of bacterial RNA polymerase recognises promoters?</p>
+      <ol><li>Core enzyme</li><li>Holoenzyme (core + σ)</li><li>Rho factor</li><li>σ alone</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Rho-independent termination depends on:</p>
+      <ol><li>Rho helicase</li><li>A G-C-rich hairpin followed by U’s</li><li>The poly(A) signal</li><li>The 5′ cap</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Why can bacteria translate mRNA before transcription ends?</p>
+      <ol><li>They have no ribosomes</li><li>Their DNA is not enclosed in a nucleus</li><li>Their mRNA is capped</li><li>They lack RNA polymerase</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Which eukaryotic RNA polymerase makes all pre-mRNAs?</p>
+      <ol><li>Pol I</li><li>Pol II</li><li>Pol III</li><li>Primase</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>The 5′ cap is linked to the mRNA by:</p>
+      <ol><li>A 3′–5′ phosphodiester bond</li><li>A 5′–5′ triphosphate linkage</li><li>A peptide bond</li><li>A glycosidic bond only</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Only Pol II transcripts are capped because:</p>
+      <ol><li>Only they are in the nucleus</li><li>Pol II’s phosphorylated CTD binds the capping enzyme</li><li>Other RNAs lack a 5′ end</li><li>Pol II is cytoplasmic</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>The polyadenylation signal in pre-mRNA is:</p>
+      <ol><li>TATA</li><li>AAUAAA</li><li>AUG</li><li>GU…AG</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Which snRNAs make up the spliceosome?</p>
+      <ol><li>U1, U2, U4, U5, U6</li><li>U3 and U7</li><li>5S and 5.8S</li><li>miRNAs</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>A.</strong></p></details></li>
+    <li class="lb-q"><p>Hepatocyte fibronectin circulates in blood because its mRNA:</p>
+      <ol><li>Includes exons EIIIA and EIIIB</li><li>Lacks exons EIIIA and EIIIB</li><li>Has no poly(A) tail</li><li>Comes from a different gene</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Alternative splicing.</p></details></li>
+  </ol>
+</section>
+
+<section class="lb-section" id="terms">
+  <h2>Key terms</h2>
+  <dl class="lb-glossary">
+    <dt>Transcription / translation</dt><dd>DNA → RNA / RNA → protein.</dd>
+    <dt>Promoter</dt><dd>DNA site where RNA polymerase binds to start.</dd>
+    <dt>Holoenzyme</dt><dd>Bacterial core polymerase + σ factor.</dd>
+    <dt>Open complex</dt><dd>Polymerase–σ–DNA with strands separated.</dd>
+    <dt>Rho factor</dt><dd>Helicase that ends some bacterial transcripts.</dd>
+    <dt>Transcription factors</dt><dd>Eukaryotic proteins needed for polymerase to work.</dd>
+    <dt>Exon / intron</dt><dd>Kept coding segment / removed non-coding segment.</dd>
+    <dt>5′ cap</dt><dd>7-Methylguanosine on mRNA’s 5′ end.</dd>
+    <dt>Poly(A) tail</dt><dd>Adenosine string at the 3′ end.</dd>
+    <dt>Spliceosome</dt><dd>snRNP complex that removes introns.</dd>
+    <dt>Lariat</dt><dd>Looped intron formed during splicing.</dd>
+    <dt>Alternative splicing</dt><dd>Different exon combinations from one gene.</dd>
+    <dt>FISH</dt><dd>Fluorescence in situ hybridisation.</dd>
+  </dl>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2-8">Central dogma, transcription and translation</li>
+    <li data-slides="9-14">RNA polymerase, speed, products</li>
+    <li data-slides="16-18">Promoters, numbering</li>
+    <li data-slides="15, 19-20, 27">Bacterial transcription</li>
+    <li data-slides="21-24">Termination</li>
+    <li data-slides="25-29">Eukaryotic transcription</li>
+    <li data-slides="30-33">mRNA structure</li>
+    <li data-slides="34-36">5′ cap</li>
+    <li data-slides="37-39">Poly(A)</li>
+    <li data-slides="40-46">Splicing, β-globin, spliceosome</li>
+    <li data-slides="47-49">Self-splicing</li>
+    <li data-slides="50-53">Alternative splicing</li>
+    <li data-slides="54-57">FISH</li>
+  </ul>
+</details>
+</article>

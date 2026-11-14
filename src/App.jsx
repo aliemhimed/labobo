@@ -18,7 +18,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage.jsx'));
 // Development only: the subscription screens with made-up data. The built
 // site has neither the route nor the page.
 const DevPlanPreview = import.meta.env.DEV ? lazy(() => import('./pages/DevPlanPreview.jsx')) : null;
-
+const DevGuidesPreview = import.meta.env.DEV ? lazy(() => import('./pages/DevGuidesPreview.jsx')) : null;
 /* The old site was a folder of .html files. Keep those URLs working so
    existing links and bookmarks don't break. */
 const LEGACY = {
@@ -35,7 +35,7 @@ export default function App() {
         {/* Public: readable before signing in or paying. */}
         <Route path="/terms" element={<Suspense fallback={null}><TermsPage /></Suspense>} />
         {DevPlanPreview ? <Route path="/dev/plan" element={<Suspense fallback={null}><DevPlanPreview /></Suspense>} /> : null}
-        <Route path="/*" element={<StudentApp />} />
+        {DevGuidesPreview ? <Route path="/dev/guides" element={<Suspense fallback={null}><DevGuidesPreview /></Suspense>} /> : null}        <Route path="/*" element={<StudentApp />} />
       </Routes>
       <InstallPrompt />
       <HelpButton />

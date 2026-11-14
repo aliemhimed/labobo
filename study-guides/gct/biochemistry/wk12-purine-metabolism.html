@@ -1,0 +1,474 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct" data-part="Biochemistry" data-type="lecture"
+         data-lectures="12" data-topic="Biochem Wk 12: Purine Nucleotide Metabolism"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT I · Biochemistry · Week 12</p>
+  <h1>Nucleotide Metabolism, Part 1: Purines</h1>
+  <p class="lb-lede">How the body builds purine nucleotides from scratch, recycles them, turns them into deoxyribonucleotides for DNA, and breaks them down to uric acid, with the diseases of each step: Lesch–Nyhan, ADA deficiency, gout and tumour lysis syndrome.</p>
+  <span class="lb-topic-name">Labobo topic: Biochem Wk 12: Purine Nucleotide Metabolism</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>Purines (A, G) have <strong>two rings</strong>; pyrimidines (C, T, U) have <strong>one</strong>. T = U + a <strong>methyl</strong> group.</li>
+    <li>Purine ring atoms come from <strong>aspartate, glycine, glutamine, CO₂</strong> and <strong>N¹⁰-formyl-THF</strong>; most de novo synthesis is in the <strong>liver</strong>.</li>
+    <li><strong>PRPP synthetase</strong> makes PRPP; <strong>GPAT</strong> catalyses the <strong>committed step</strong>. The pathway builds <strong>IMP</strong>, then AMP (needs <strong>GTP</strong>) and GMP (needs <strong>ATP</strong>).</li>
+    <li><strong>Ribonucleotide reductase</strong> makes deoxyribonucleotides from NDPs; thioredoxin is reduced again by <strong>NADPH</strong>.</li>
+    <li>Salvage: <strong>HGPRT</strong> (hypoxanthine, guanine) and <strong>APRT</strong> (adenine). No HGPRT = <strong>Lesch–Nyhan</strong>.</li>
+    <li>No <strong>ADA</strong> → dATP builds up → blocks ribonucleotide reductase → <strong>SCID</strong>.</li>
+    <li>Gout: <strong>needle-shaped, negatively birefringent</strong> urate crystals; <mark>90%</mark> underexcretion. Allopurinol/febuxostat block <strong>xanthine oxidase</strong>.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Lippincott Illustrated Reviews: Biochemistry, 8th ed., Chapter 22, pages 815–842. By the end you can:</p>
+  <ul>
+    <li>describe purine and pyrimidine structures, nucleosides and nucleotides;</li>
+    <li>outline de novo purine synthesis, its regulation and its drug inhibitors;</li>
+    <li>explain deoxyribonucleotide synthesis;</li>
+    <li>explain the purine salvage pathway and purine degradation;</li>
+    <li>describe Lesch–Nyhan syndrome, adenosine deaminase deficiency, gout and tumour lysis syndrome.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#bases">Bases, nucleosides and nucleotides</a></li>
+    <li><a href="#denovo">De novo purine synthesis</a></li>
+    <li><a href="#amp-gmp">Making AMP and GMP</a></li>
+    <li><a href="#deoxy">Deoxyribonucleotides</a></li>
+    <li><a href="#control">Regulation and inhibitors</a></li>
+    <li><a href="#salvage">Salvage and degradation</a></li>
+    <li><a href="#lesch">Lesch–Nyhan syndrome</a></li>
+    <li><a href="#ada">Adenosine deaminase deficiency</a></li>
+    <li><a href="#gout">Gout</a></li>
+    <li><a href="#tls">Treatment and tumour lysis syndrome</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#watch">Watch out</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#check">Check yourself</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="bases">
+  <h2>Bases, nucleosides and nucleotides</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/bases-1.jpg" width="679" height="850" loading="lazy" decoding="async" alt="The bases of DNA and RNA.">
+    <figcaption>The bases of DNA and RNA. <span class="lb-credit">Lecture slide 3</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/bases-2.jpg" width="679" height="696" loading="lazy" decoding="async" alt="Ribonucleoside mono-, di- and triphosphates.">
+    <figcaption>Ribonucleoside mono-, di- and triphosphates. <span class="lb-credit">Lecture slide 4</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Purines and pyrimidines are <strong>nitrogen-containing ring structures</strong> (heterocycles). They are parts of the nucleotides in DNA and RNA, which store the cell’s information.</p>
+  <p>Nucleotides and their derivatives also act as <strong>energy sources</strong> (ATP), <strong>signal molecules</strong> (cAMP), <strong>regulators</strong> and <strong>carriers</strong> (NAD⁺, FAD, coenzyme A, UDP-glucose).</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">Purines</th><th scope="col">Pyrimidines</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Rings</th><td><strong>Two</strong> (double ring)</td><td><strong>One</strong></td></tr>
+      <tr><th scope="row">In DNA</th><td>Adenine (A), guanine (G)</td><td>Cytosine (C), <strong>thymine (T)</strong></td></tr>
+      <tr><th scope="row">In RNA</th><td>Adenine (A), guanine (G)</td><td>Cytosine (C), <strong>uracil (U)</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p>Thymine differs from uracil by one <strong>methyl group</strong>.</p>
+  <h3>Nucleoside vs nucleotide</h3>
+  <ul>
+    <li><strong>Nucleoside</strong> = base + sugar, joined by an <strong>N-glycosidic bond</strong>. With ribose → ribonucleoside; with 2-deoxyribose → deoxyribonucleoside.</li>
+    <li>Ribonucleosides of A, G, C, U: <strong>adenosine, guanosine, cytidine, uridine</strong>.</li>
+    <li><strong>Nucleotide</strong> = nucleoside + one or more <strong>phosphates</strong>.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="denovo">
+  <h2>De novo purine synthesis</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/denovo-1.jpg" width="792" height="416" loading="lazy" decoding="async" alt="Where the atoms of the purine ring come from.">
+    <figcaption>Where the atoms of the purine ring come from. <span class="lb-credit">Lecture slide 5</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/denovo-2.jpg" width="1200" height="276" loading="lazy" decoding="async" alt="PRPP synthetase makes PRPP from ribose 5-phosphate; purine nucleotides inhibit it.">
+    <figcaption>PRPP synthetase makes PRPP from ribose 5-phosphate; purine nucleotides inhibit it. <span class="lb-credit">Lecture slide 6</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>“De novo” = from scratch. The purine ring is built atom by atom <strong>on the ribose-phosphate</strong>, so the pathway makes nucleotides directly.</p>
+  <ul>
+    <li>Ring atoms come from: <strong>aspartate, glycine, glutamine</strong> (amino acids), <strong>CO₂</strong>, and <strong>N¹⁰-formyltetrahydrofolate (N¹⁰-formyl-THF)</strong>.</li>
+    <li>Mostly in the <strong>liver</strong>; bases and nucleosides then travel to other tissues in <strong>red blood cells</strong>. The <strong>brain</strong> also makes a lot.</li>
+  </ul>
+  <ol class="lb-flow">
+    <li><strong>PRPP synthetase</strong> makes <strong>PRPP</strong> (5-phosphoribosyl-1-pyrophosphate) from <strong>ATP + ribose 5-phosphate</strong>. Its gene is <strong>X-linked</strong>; it is activated by <strong>inorganic phosphate</strong> and inhibited by <strong>purine nucleotides</strong>.</li>
+    <li><strong>Committed step</strong>: the amide group of <strong>glutamine</strong> replaces the pyrophosphate on carbon 1 of PRPP, catalysed by <strong>glutamine:PRPP amidotransferase (GPAT)</strong>.</li>
+    <li>Further steps (slide diagram) add glycine, formyl groups from THF, CO₂, aspartate and another glutamine, closing both rings → <strong>inosine monophosphate (IMP)</strong>, whose base is <strong>hypoxanthine</strong>.</li>
+  </ol>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=4GFKdLy2fOE&amp;t=1782s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Nucleotide Synthesis | Purine and Pyrimidine Synthesis</a>
+      <span class="lb-when">Watch from 29:42 to the end: purine synthesis, then GMP and AMP.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=EHZuFDf7VPE&amp;t=414s" target="_blank" rel="noopener">Medicosis Perfectionalis · Purine Metabolism - De Novo, Salvage, Degradation, Uric Acid</a>
+      <span class="lb-when">Watch from 6:54 to 8:49: de novo purine synthesis.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="amp-gmp">
+  <h2>Making AMP and GMP from IMP</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/amp-gmp-1.jpg" width="1019" height="1216" loading="lazy" decoding="async" alt="IMP branches into AMP and GMP.">
+    <figcaption>IMP branches into AMP and GMP. <span class="lb-credit">Lecture slide 13</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">AMP</th><th scope="col">GMP</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Step 1</th><td><strong>Aspartate</strong> is added to IMP → <strong>adenylosuccinate</strong> (adenylosuccinate synthetase)</td><td>Hypoxanthine is oxidised by <strong>IMP dehydrogenase</strong> → <strong>XMP</strong> (xanthosine monophosphate, base xanthine)</td></tr>
+      <tr><th scope="row">Step 2</th><td><strong>Fumarate</strong> is removed → AMP (adenylosuccinate lyase)</td><td><strong>Glutamine</strong> gives its amide N → GMP (GMP synthetase)</td></tr>
+      <tr><th scope="row">Energy</th><td>Needs <strong>GTP</strong></td><td>Needs <strong>ATP</strong></td></tr>
+      <tr><th scope="row">Inhibited by</th><td>AMP (inhibits adenylosuccinate synthetase)</td><td>GMP (inhibits IMP dehydrogenase)</td></tr>
+    </tbody>
+  </table></div>
+  <aside class="lb-box lb-key">
+    <span class="lb-box-title">The crossover</span>
+    <p>Making <strong>A</strong> uses <strong>G</strong>TP; making <strong>G</strong> uses <strong>A</strong>TP. This keeps the two in balance: plenty of one helps make the other.</p>
+  </aside>
+  <h3>Phosphorylation to NDP and NTP</h3>
+  <ul>
+    <li>NMP → NDP: specific <strong>nucleoside monophosphate kinases</strong> (e.g. adenylate kinase for AMP).</li>
+    <li>NDP → NTP: <strong>nucleoside diphosphate kinase</strong>, which works on a <strong>wide range</strong> of NDPs.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="deoxy">
+  <h2>Deoxyribonucleotides</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/deoxy-1.jpg" width="850" height="1004" loading="lazy" decoding="async" alt="Ribonucleotide reductase turns ribonucleoside diphosphates into deoxyribonucleoside diphosphates.">
+    <figcaption>Ribonucleotide reductase turns ribonucleoside diphosphates into deoxyribonucleoside diphosphates. <span class="lb-credit">Lecture slide 12</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>DNA needs <strong>2′-deoxyribonucleotides</strong>. They are made from <strong>ribonucleoside diphosphates</strong> (ADP, GDP, CDP, UDP) by <strong>ribonucleotide reductase</strong>, during the <strong>S phase</strong> of the cell cycle.</li>
+    <li>The enzyme takes electrons from <strong>thioredoxin</strong>, which becomes oxidised.</li>
+    <li>Thioredoxin is reduced again by <strong>thioredoxin reductase</strong> (a <strong>selenoprotein</strong>), using <strong>NADPH + H⁺</strong>.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="control">
+  <h2>Regulation and synthetic inhibitors</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/control-1.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="Ribavirin and mycophenolate both inhibit IMP dehydrogenase.">
+    <figcaption>Ribavirin and mycophenolate both inhibit IMP dehydrogenase. <span class="lb-credit">Lecture slide 10</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Enzyme</th><th scope="col">Inhibited by</th></tr></thead>
+    <tbody>
+      <tr><td>PRPP synthetase</td><td>ADP or GDP at one allosteric site</td></tr>
+      <tr><td>GPAT (committed step)</td><td>Adenine and guanine nucleotides, mostly the <strong>monophosphates</strong> (AMP, GMP, IMP); di- and triphosphates also</td></tr>
+      <tr><td>Adenylosuccinate synthetase</td><td>AMP</td></tr>
+      <tr><td>IMP dehydrogenase</td><td>GMP</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Synthetic inhibitors (drugs)</h3>
+  <p>The slide is a diagram; examples from Lippincott:</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Drug</th><th scope="col">Blocks</th><th scope="col">Use</th></tr></thead>
+    <tbody>
+      <tr><td>Sulfonamides</td><td>Bacterial <strong>folate</strong> synthesis (less THF for purines)</td><td>Antibiotics</td></tr>
+      <tr><td>Methotrexate</td><td><strong>Dihydrofolate reductase</strong> (no THF regeneration)</td><td>Cancer, autoimmune disease</td></tr>
+      <tr><td>Mycophenolic acid</td><td><strong>IMP dehydrogenase</strong> (no GMP)</td><td>Immunosuppression after transplant</td></tr>
+      <tr><td>6-Mercaptopurine</td><td>Purine analogue that blocks several steps</td><td>Leukaemia</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="salvage">
+  <h2>Salvage and degradation</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/salvage-1.jpg" width="724" height="748" loading="lazy" decoding="async" alt="The salvage enzymes: HGPRT (hypoxanthine and guanine) and APRT (adenine).">
+    <figcaption>The salvage enzymes: HGPRT (hypoxanthine and guanine) and APRT (adenine). <span class="lb-credit">Lecture slide 14</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Purines from breakdown of the cell’s own nucleic acids (and a little from food) can be <strong>recycled</strong> into new nucleotides: the <strong>salvage pathway</strong>. It costs far less energy than de novo synthesis, so it matters most in tissues like the <strong>brain</strong>.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <caption>The enzymes on the slide</caption>
+    <thead><tr><th scope="col">Enzyme</th><th scope="col">Reaction</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">HGPRT (hypoxanthine-guanine phosphoribosyltransferase)</th><td>Hypoxanthine + PRPP → <strong>IMP</strong>; guanine + PRPP → <strong>GMP</strong></td></tr>
+      <tr><th scope="row">APRT (adenine phosphoribosyltransferase)</th><td>Adenine + PRPP → <strong>AMP</strong></td></tr>
+      <tr><th scope="row">Adenosine kinase</th><td>Adenosine → AMP (adenosine is the <strong>only nucleoside</strong> phosphorylated directly)</td></tr>
+      <tr><th scope="row">ADA (adenosine deaminase)</th><td>Adenosine → inosine (degradation)</td></tr>
+      <tr><th scope="row">PNP (purine nucleoside phosphorylase)</th><td>Inosine → hypoxanthine; guanosine → guanine</td></tr>
+      <tr><th scope="row">XO (xanthine oxidase)</th><td>Hypoxanthine → xanthine → <strong>uric acid</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p>About <mark>10%</mark> of the bases enter the <strong>excretion pathway</strong>: they are oxidised to xanthine and then to <strong>uric acid</strong>, which leaves in the <strong>urine</strong>.</p>
+  <ol class="lb-flow">
+    <li>AMP → adenosine → (ADA) inosine → (PNP) <strong>hypoxanthine</strong></li>
+    <li>GMP → guanosine → (PNP) guanine → (guanase) <strong>xanthine</strong></li>
+    <li>Hypoxanthine → (XO) xanthine → (XO) <strong>uric acid</strong> → urine</li>
+  </ol>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=EHZuFDf7VPE&amp;t=529s" target="_blank" rel="noopener">Medicosis Perfectionalis · Purine Metabolism - De Novo, Salvage, Degradation, Uric Acid</a>
+      <span class="lb-when">Watch from 8:49 to 13:51: degradation to uric acid and the salvage pathway.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="lesch">
+  <h2>Lesch–Nyhan syndrome</h2>
+  <p>An inherited (from the textbook: <strong>X-linked recessive</strong>) defect of <strong>HGPRT</strong>, so purines cannot be salvaged.</p>
+  <ol class="lb-flow">
+    <li>Hypoxanthine and guanine are not turned back into IMP and GMP → they become <strong>uric acid</strong>.</li>
+    <li>PRPP is not used up, and <strong>low AMP, IMP and GMP</strong> remove the normal brakes on PRPP synthetase and GPAT.</li>
+    <li><strong>De novo purine synthesis rises</strong> → even more uric acid.</li>
+  </ol>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Clinical features</th></tr></thead>
+    <tbody>
+      <tr><td>Usually no symptoms for the first <mark>6 months</mark></td></tr>
+      <tr><td><strong>Orange, sand-like sodium urate crystals</strong> in the infant’s diapers</td></tr>
+      <tr><td>Developmental delay and cognitive impairment</td></tr>
+      <tr><td>Gouty arthritis, urate nephropathy, renal failure</td></tr>
+      <tr><td><strong>Aggression and self-injury</strong> (biting lips and fingers)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="ada">
+  <h2>Adenosine deaminase (ADA) deficiency</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/ada-1.jpg" width="1024" height="1024" loading="lazy" decoding="async" alt="Without ADA, deoxyadenosine builds up as dATP, which is toxic to lymphocytes.">
+    <figcaption>Without ADA, deoxyadenosine builds up as dATP, which is toxic to lymphocytes. <span class="lb-credit">Lecture slide 16</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Rare, <strong>autosomal recessive</strong>, from mutations in the <strong>ADA</strong> gene. One of the major causes of <strong>severe combined immunodeficiency (SCID)</strong>.</li>
+  </ul>
+  <ol class="lb-flow">
+    <li>No ADA → adenosine and <strong>deoxyadenosine</strong> are not broken down.</li>
+    <li>Deoxyadenosine is phosphorylated → <strong>dATP</strong> builds up.</li>
+    <li>dATP <strong>inhibits ribonucleotide reductase</strong> → no deoxyribonucleotides → DNA synthesis fails.</li>
+    <li>Rapidly dividing <strong>lymphocytes</strong> cannot develop → T and B cells are missing.</li>
+  </ol>
+  <p>Clinical features: <strong>failure to thrive</strong> despite good feeding; <strong>recurrent infections</strong>; chronic <strong>diarrhea</strong>; recurrent <strong>thrush</strong>. The <strong>absence of a thymic shadow</strong> on a chest X-ray (thymus missing or small) is a hallmark of SCID.</p>
+</section>
+
+<section class="lb-section" id="gout">
+  <h2>Gout and hyperuricemia</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/gout-1.jpg" width="553" height="415" loading="lazy" decoding="async" alt="Needle-shaped monosodium urate crystals from a gouty joint, seen under polarised light.">
+    <figcaption>Needle-shaped monosodium urate crystals from a gouty joint, seen under polarised light. <span class="lb-credit">Lecture slide 19</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/gout-2.jpg" width="685" height="491" loading="lazy" decoding="async" alt="Purine breakdown to uric acid, and where gout drugs act.">
+    <figcaption>Purine breakdown to uric acid, and where gout drugs act. <span class="lb-credit">Lecture slide 20</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p><strong>Gout</strong> is an acute inflammatory <strong>monoarthritis</strong> caused by <strong>monosodium urate crystals</strong> precipitating in a joint.</p>
+  <h3>Risk factors and causes</h3>
+  <ul>
+    <li>Risk factors: male sex, hypertension, obesity, diabetes, dyslipidemia, alcohol. The <strong>strongest</strong> is <strong>hyperuricemia</strong>.</li>
+  </ul>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Cause of hyperuricemia</th><th scope="col">Share</th><th scope="col">Examples</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Underexcretion of uric acid</th><td><mark>90%</mark></td><td>Mostly idiopathic; worse with renal failure; some drugs (e.g. <strong>thiazide diuretics</strong>)</td></tr>
+      <tr><th scope="row">Overproduction of uric acid</th><td><mark>10%</mark></td><td>Lesch–Nyhan, PRPP excess, high cell turnover (<strong>tumour lysis syndrome</strong>), <strong>von Gierke disease</strong></td></tr>
+    </tbody>
+  </table></div>
+  <h3>Clinical features</h3>
+  <ul>
+    <li>Asymmetric joints; joint swollen, red and painful.</li>
+    <li>Classic: painful <strong>MTP joint of the big toe</strong> (<strong>podagra</strong>).</li>
+    <li><strong>Tophi</strong> (urate deposits), often on the <strong>external ear</strong> or <strong>Achilles tendon</strong>.</li>
+    <li>Attacks follow a large meal rich in <strong>purines</strong> (red meat, seafood), trauma, surgery, dehydration, diuresis, or <strong>alcohol</strong> (its metabolites compete with uric acid for secretion in the kidney).</li>
+  </ul>
+  <h3>Diagnosis</h3>
+  <p>The <strong>gold standard</strong> is finding urate crystals in synovial fluid (needs arthrocentesis). The crystals are <strong>needle-shaped</strong> and <strong>negatively birefringent</strong> under polarised light: <strong>yellow</strong> when parallel to the light axis, <strong>blue</strong> when perpendicular.</p>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=1f9r9nPt1GA&amp;t=42s" target="_blank" rel="noopener">Medicosis Perfectionalis · Gout Diagnosis</a>
+      <span class="lb-when">Watch from 0:42 to 15:00: what gout is, risk factors and joint-fluid crystals.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="tls">
+  <h2>Treatment and tumour lysis syndrome</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk12-purine-metabolism/tls-1.jpg" width="1200" height="776" loading="lazy" decoding="async" alt="Tumour lysis syndrome: dying tumour cells release nucleic acids, phosphate and K⁺.">
+    <figcaption>Tumour lysis syndrome: dying tumour cells release nucleic acids, phosphate and K⁺. <span class="lb-credit">Lecture slide 21</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Drug</th><th scope="col">How it works</th><th scope="col">Use</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Rasburicase, pegloticase</th><td>Convert uric acid to very soluble <strong>allantoin</strong></td><td>Rapid lowering, mainly in <strong>tumour lysis syndrome</strong></td></tr>
+      <tr><th scope="row">Allopurinol, febuxostat, topiroxostat</th><td>Inhibit <strong>xanthine oxidase</strong></td><td>Less uric acid made</td></tr>
+      <tr><th scope="row">Probenecid</th><td>Blocks uric acid <strong>reabsorption</strong> in the kidney → more excreted</td><td>Chronic gout</td></tr>
+    </tbody>
+  </table></div>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: tumour lysis syndrome (TLS)</span>
+    <p>A life-threatening emergency: rapid destruction of tumour cells releases <strong>K⁺, phosphate and uric acid</strong> into blood, causing <strong>acute kidney injury</strong>. Most common after starting chemotherapy for fast-growing, chemo-sensitive blood cancers: <strong>ALL, AML</strong> and high-grade <strong>non-Hodgkin lymphoma</strong>.</p>
+  </aside>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=Vq2-koDMYKU&amp;t=713s" target="_blank" rel="noopener">Medicosis Perfectionalis · Gout Management</a>
+      <span class="lb-when">Watch from 11:53 to 17:48: xanthine oxidase inhibitors, uricase and uricosurics.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>2 rings / 1 ring</td><td>Purine / pyrimidine</td></tr>
+      <tr><td>C1 of PRPP</td><td>Where glutamine’s amide replaces pyrophosphate (committed step)</td></tr>
+      <tr><td>2 steps each</td><td>IMP → AMP and IMP → GMP</td></tr>
+      <tr><td>≈ 10%</td><td>Purine bases that enter excretion</td></tr>
+      <tr><td>6 months</td><td>Symptom-free period in Lesch–Nyhan</td></tr>
+      <tr><td>90% / 10%</td><td>Underexcretion / overproduction in hyperuricemia</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">These</th><th scope="col">The difference</th></tr></thead>
+    <tbody>
+      <tr><td>PRPP synthetase vs GPAT</td><td>PRPP synthetase makes PRPP; GPAT does the committed step.</td></tr>
+      <tr><td>AMP vs GMP synthesis</td><td>AMP: aspartate in, fumarate out, needs GTP. GMP: oxidation to XMP, then glutamine N, needs ATP.</td></tr>
+      <tr><td>HGPRT vs APRT</td><td>Hypoxanthine and guanine vs adenine.</td></tr>
+      <tr><td>Lesch–Nyhan vs ADA deficiency</td><td>No HGPRT → uric acid, self-injury vs no ADA → dATP, SCID.</td></tr>
+      <tr><td>Gout vs pseudogout crystals</td><td>Urate: needle-shaped, negatively birefringent. Calcium pyrophosphate: rhomboid, positively birefringent.</td></tr>
+      <tr><td>Allopurinol vs probenecid vs rasburicase</td><td>Less made (XO) vs more excreted vs broken down to allantoin.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="watch">
+  <h2>Watch out</h2>
+  <aside class="lb-box lb-watch">
+    <span class="lb-box-title">Watch out: guanine to xanthine</span>
+    <p>Slide 14 says xanthine oxidase oxidises “hypoxanthine and guanine” to xanthine. In Lippincott, <strong>guanine</strong> is <strong>deaminated</strong> to xanthine by <strong>guanase</strong>; xanthine oxidase acts on <strong>hypoxanthine</strong> and then on <strong>xanthine</strong> (→ uric acid).</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam trap</span>
+    <ul>
+      <li>The <strong>committed</strong> step is GPAT, not PRPP synthetase (PRPP is used by other pathways too).</li>
+      <li>Ribonucleotide reductase works on <strong>diphosphates</strong>, not monophosphates.</li>
+      <li>Adenosine is the <strong>only</strong> nucleoside directly phosphorylated (adenosine kinase).</li>
+      <li>Most gout is from <strong>under-excretion</strong>, not overproduction.</li>
+      <li>Urate crystals are <strong>negatively</strong> birefringent.</li>
+      <li>ADA deficiency kills cells through <strong>dATP</strong> blocking ribonucleotide reductase.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="check">
+  <h2>Check yourself</h2>
+  <ol class="lb-quiz">
+    <li class="lb-q"><p>Which is NOT a source of purine ring atoms?</p>
+      <ol><li>Glycine</li><li>Aspartate</li><li>CO₂</li><li>Leucine</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>D.</strong> The sources are glycine, aspartate, glutamine, CO₂ and N¹⁰-formyl-THF.</p></details></li>
+    <li class="lb-q"><p>The committed step of purine synthesis is catalysed by:</p>
+      <ol><li>PRPP synthetase</li><li>Glutamine:PRPP amidotransferase</li><li>IMP dehydrogenase</li><li>Xanthine oxidase</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Glutamine’s amide replaces pyrophosphate on C1 of PRPP.</p></details></li>
+    <li class="lb-q"><p>Conversion of IMP to AMP requires:</p>
+      <ol><li>ATP and glutamine</li><li>GTP and aspartate</li><li>NADPH</li><li>Folate only</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> GMP synthesis needs ATP and glutamine.</p></details></li>
+    <li class="lb-q"><p>Ribonucleotide reductase uses electrons ultimately from:</p>
+      <ol><li>NADH</li><li>NADPH</li><li>FADH₂</li><li>Glutathione only</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Via thioredoxin and thioredoxin reductase.</p></details></li>
+    <li class="lb-q"><p>Mycophenolic acid suppresses lymphocytes by inhibiting:</p>
+      <ol><li>Dihydrofolate reductase</li><li>IMP dehydrogenase</li><li>Xanthine oxidase</li><li>Adenosine deaminase</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> No GMP can be made.</p></details></li>
+    <li class="lb-q"><p>Which salvage enzyme is missing in Lesch–Nyhan syndrome?</p>
+      <ol><li>APRT</li><li>HGPRT</li><li>Adenosine kinase</li><li>PNP</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Uric acid rises and de novo synthesis is de-repressed.</p></details></li>
+    <li class="lb-q"><p>An infant has orange sand in the diapers and later bites his fingers. The likely diagnosis is:</p>
+      <ol><li>ADA deficiency</li><li>Lesch–Nyhan syndrome</li><li>Gout</li><li>Von Gierke disease</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Sodium urate crystals and self-injury.</p></details></li>
+    <li class="lb-q"><p>In ADA deficiency, what accumulates and blocks DNA synthesis?</p>
+      <ol><li>Uric acid</li><li>dATP</li><li>PRPP</li><li>GTP</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> dATP inhibits ribonucleotide reductase → SCID.</p></details></li>
+    <li class="lb-q"><p>Which X-ray finding is a hallmark of SCID?</p>
+      <ol><li>Crew-cut skull</li><li>Absent thymic shadow</li><li>Enlarged heart</li><li>Rib notching</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> The thymus is absent or tiny.</p></details></li>
+    <li class="lb-q"><p>Most patients with hyperuricemia have:</p>
+      <ol><li>Overproduction of uric acid</li><li>Underexcretion of uric acid</li><li>HGPRT deficiency</li><li>Tumour lysis</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> About 90%.</p></details></li>
+    <li class="lb-q"><p>Gout crystals under polarised light are:</p>
+      <ol><li>Rhomboid, positively birefringent</li><li>Needle-shaped, negatively birefringent</li><li>Hexagonal</li><li>Envelope-shaped</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Yellow when parallel, blue when perpendicular.</p></details></li>
+    <li class="lb-q"><p>Which drug converts uric acid to allantoin?</p>
+      <ol><li>Allopurinol</li><li>Probenecid</li><li>Rasburicase</li><li>Febuxostat</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong> Used mainly in tumour lysis syndrome.</p></details></li>
+  </ol>
+</section>
+
+<section class="lb-section" id="terms">
+  <h2>Key terms</h2>
+  <dl class="lb-glossary">
+    <dt>Purine / pyrimidine</dt><dd>Double-ring / single-ring nitrogenous base.</dd>
+    <dt>Nucleoside</dt><dd>Base + sugar (N-glycosidic bond).</dd>
+    <dt>Nucleotide</dt><dd>Nucleoside + phosphate(s).</dd>
+    <dt>De novo synthesis</dt><dd>Making nucleotides from small precursors.</dd>
+    <dt>PRPP</dt><dd>5-Phosphoribosyl-1-pyrophosphate, the activated ribose.</dd>
+    <dt>IMP</dt><dd>Inosine monophosphate, the first purine nucleotide made; base hypoxanthine.</dd>
+    <dt>Ribonucleotide reductase</dt><dd>Makes deoxyribonucleotides from NDPs.</dd>
+    <dt>Salvage pathway</dt><dd>Recycling free bases into nucleotides with PRPP.</dd>
+    <dt>HGPRT</dt><dd>Salvages hypoxanthine and guanine; missing in Lesch–Nyhan.</dd>
+    <dt>Xanthine oxidase</dt><dd>Makes uric acid; blocked by allopurinol.</dd>
+    <dt>SCID</dt><dd>Severe combined immunodeficiency; ADA deficiency is a major cause.</dd>
+    <dt>Podagra</dt><dd>Gout of the big-toe MTP joint.</dd>
+    <dt>Tophus</dt><dd>Deposit of urate crystals in tissue.</dd>
+    <dt>Tumour lysis syndrome</dt><dd>Release of K⁺, phosphate and uric acid from dying tumour cells.</dd>
+  </dl>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2">Learning objectives</li>
+    <li data-slides="3-4">Bases, nucleosides, nucleotides</li>
+    <li data-slides="5-8">De novo purine synthesis</li>
+    <li data-slides="9-11">AMP, GMP and phosphorylation</li>
+    <li data-slides="12">Deoxyribonucleotides</li>
+    <li data-slides="13">Regulation (drug inhibitors from Lippincott)</li>
+    <li data-slides="14">Salvage and degradation</li>
+    <li data-slides="15">Lesch–Nyhan</li>
+    <li data-slides="16">ADA deficiency</li>
+    <li data-slides="17-19">Gout</li>
+    <li data-slides="20-21">Treatment and tumour lysis syndrome</li>
+  </ul>
+</details>
+</article>

@@ -7,7 +7,8 @@
     "dev": "vite",
     "dev:netlify": "npx netlify dev",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "guides": "node study-guides/build.cjs && node study-guides/publish.cjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",

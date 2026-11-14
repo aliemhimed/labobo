@@ -1,0 +1,237 @@
+/* Labobo study guides: one stylesheet for every guide.
+
+   Each guide is an HTML fragment (<article class="lb-guide">) with no
+   style or script of its own, so the website loads this file once and every
+   guide follows its light and dark themes. Every selector starts with
+   .lb-guide, so nothing leaks into the rest of the site. The fallbacks are
+   Labobo's light theme, for when a guide is opened outside the site. */
+
+.lb-guide {
+  --g-ink:     var(--ink, #0B1233);
+  --g-soft:    var(--ink-soft, #46527F);
+  --g-muted:   var(--ink-muted, #56618D);
+  --g-paper:   var(--sheet, #FFFFFF);
+  --g-wash:    var(--hema-wash, #E1E7FF);
+  --g-rule:    var(--rule, #CDD4F2);
+  --g-accent:  var(--hema, #2F5BFF);
+  --g-mark:    var(--fill-yellow, #FFE45C);
+  --g-mark-ink: var(--card-ink, #0B1233);
+  --g-warn:    var(--eosin, #D12A45);
+  --g-warn-bg: var(--wrong-wash, #FFE3E7);
+  --g-ok:      var(--correct, #137A50);
+  --g-ok-bg:   var(--correct-wash, #DDF7EE);
+  --g-edge:    var(--edge, #0B1233);
+  --g-hard:    var(--hard, #0B1233);
+  --g-display: var(--font-display, system-ui, sans-serif);
+  font-family: var(--font-read, system-ui, -apple-system, "Segoe UI", sans-serif);
+  font-size: 1.0625rem;
+  color: var(--g-ink);
+  line-height: 1.65;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0 0 3rem;
+  overflow-wrap: break-word;
+}
+.lb-guide *, .lb-guide *::before, .lb-guide *::after { box-sizing: border-box; }
+
+/* Headings */
+.lb-guide h1, .lb-guide h2, .lb-guide h3, .lb-guide h4 {
+  font-family: var(--g-display);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--g-ink);
+}
+.lb-guide h1 { font-size: clamp(1.75rem, 5vw, 2.35rem); margin: 0.2em 0 0.35em; font-weight: 800; }
+.lb-guide h2 {
+  font-size: clamp(1.35rem, 3.6vw, 1.6rem); font-weight: 800;
+  margin: 2.4rem 0 0.8rem; padding-top: 0.4rem;
+  border-top: 2.5px solid var(--g-edge);
+  scroll-margin-top: 5rem;
+}
+.lb-guide h3 { font-size: 1.18rem; font-weight: 750; margin: 1.6rem 0 0.5rem; }
+.lb-guide h4 { font-size: 1.02rem; font-weight: 700; margin: 1.2rem 0 0.35rem; }
+.lb-guide p { margin: 0 0 0.9rem; }
+.lb-guide ul, .lb-guide ol { margin: 0 0 1rem; padding-left: 1.4rem; }
+.lb-guide li { margin: 0.25rem 0; }
+.lb-guide li > ul, .lb-guide li > ol { margin: 0.2rem 0 0.3rem; }
+.lb-guide strong { font-weight: 750; }
+.lb-guide a { color: var(--g-accent); text-underline-offset: 2px; }
+.lb-guide mark {
+  background: var(--g-mark); color: var(--g-mark-ink);
+  padding: 0 0.22em; border-radius: 4px; font-weight: 700;
+}
+.lb-guide sub, .lb-guide sup { line-height: 0; }
+.lb-guide code { font-size: 0.92em; }
+
+/* Header */
+.lb-guide .lb-head {
+  margin: 0 0 1.5rem; padding: 1.2rem 1.25rem 1.1rem;
+  background: var(--g-wash);
+  border: 2.5px solid var(--g-edge); border-radius: 22px;
+  box-shadow: 4px 4px 0 var(--g-hard);
+}
+.lb-guide .lb-kicker {
+  margin: 0; font: 700 0.82rem/1.3 var(--g-display);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--g-soft);
+}
+.lb-guide .lb-lede { margin: 0; color: var(--g-soft); font-size: 1.05rem; }
+.lb-guide .lb-topic-name {
+  display: inline-block; margin: 0.6rem 0 0; padding: 0.15rem 0.6rem;
+  border: 2px solid var(--g-edge); border-radius: 999px;
+  background: var(--g-paper); font: 650 0.85rem/1.5 var(--g-display);
+}
+
+/* Cards: in 60 seconds, objectives */
+.lb-guide .lb-card {
+  margin: 1.2rem 0; padding: 1rem 1.15rem 0.4rem;
+  background: var(--g-paper);
+  border: 2.5px solid var(--g-edge); border-radius: 18px;
+}
+.lb-guide .lb-card > h2 { border-top: 0; margin-top: 0.1rem; padding-top: 0; font-size: 1.2rem; }
+
+/* Table of contents */
+.lb-guide .lb-toc {
+  margin: 1.2rem 0; padding: 0.9rem 1.15rem;
+  border: 2.5px dashed var(--g-rule); border-radius: 18px;
+}
+.lb-guide .lb-toc h2 { border: 0; margin: 0 0 0.4rem; padding: 0; font-size: 1.05rem; }
+.lb-guide .lb-toc ol { margin: 0; padding-left: 1.3rem; columns: 2 16rem; column-gap: 2rem; }
+.lb-guide .lb-toc li { margin: 0; break-inside: avoid; }
+.lb-guide .lb-toc a { display: inline-block; min-height: 44px; padding: 0.55rem 0; line-height: 1.35; }
+
+/* Callout boxes */
+.lb-guide .lb-box {
+  margin: 1.2rem 0; padding: 0.9rem 1.1rem 0.25rem;
+  border: 2.5px solid var(--g-edge); border-radius: 16px;
+  box-shadow: 4px 4px 0 var(--g-hard);
+  background: var(--g-paper);
+}
+.lb-guide .lb-box > :first-child { margin-top: 0; }
+.lb-guide .lb-box-title {
+  display: block; margin: 0 0 0.4rem;
+  font: 800 0.86rem/1.3 var(--g-display); letter-spacing: 0.05em; text-transform: uppercase;
+}
+.lb-guide .lb-clinic { background: var(--g-ok-bg); }
+.lb-guide .lb-clinic .lb-box-title { color: var(--g-ok); }
+.lb-guide .lb-watch { background: var(--g-warn-bg); }
+.lb-guide .lb-watch .lb-box-title { color: var(--g-warn); }
+.lb-guide .lb-trap { background: var(--g-paper); border-style: dashed; }
+.lb-guide .lb-trap .lb-box-title { color: var(--g-warn); }
+.lb-guide .lb-mnemonic { background: var(--g-wash); }
+.lb-guide .lb-mnemonic .lb-box-title { color: var(--g-accent); }
+.lb-guide .lb-key { background: var(--g-wash); }
+.lb-guide .lb-key .lb-box-title { color: var(--g-accent); }
+
+.lb-guide .lb-tag {
+  display: inline-block; margin-left: 0.3em; padding: 0 0.45em;
+  border: 1.5px solid currentColor; border-radius: 6px;
+  font: 700 0.72rem/1.5 var(--g-display); letter-spacing: 0.03em; text-transform: uppercase;
+  vertical-align: 0.12em; color: var(--g-warn);
+}
+
+/* Tables */
+.lb-guide .lb-table-wrap {
+  margin: 1rem 0 1.3rem; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border: 2.5px solid var(--g-edge); border-radius: 16px;
+  background: var(--g-paper);
+}
+.lb-guide .lb-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; line-height: 1.45; }
+.lb-guide .lb-table caption {
+  caption-side: top; text-align: left; padding: 0.7rem 0.9rem 0.2rem;
+  font: 750 0.95rem/1.3 var(--g-display);
+}
+.lb-guide .lb-table th, .lb-guide .lb-table td {
+  padding: 0.55rem 0.8rem; text-align: left; vertical-align: top;
+  border-bottom: 1.5px solid var(--g-rule); min-width: 7.5rem;
+}
+.lb-guide .lb-table thead th {
+  background: var(--g-wash); font-family: var(--g-display); font-weight: 750;
+  border-bottom: 2.5px solid var(--g-edge);
+}
+.lb-guide .lb-table tbody th { font-weight: 700; }
+.lb-guide .lb-table tr:last-child > * { border-bottom: 0; }
+
+/* Diagrams */
+.lb-guide figure { margin: 1.2rem 0; }
+.lb-guide figure svg { display: block; width: 100%; max-width: 100%; height: auto; }
+.lb-guide figcaption { margin-top: 0.4rem; color: var(--g-soft); font-size: 0.92rem; }
+.lb-guide .lb-flow {
+  list-style: none; padding: 0; margin: 1rem 0 1.3rem;
+  display: flex; flex-direction: column; gap: 0;
+}
+.lb-guide .lb-flow li {
+  position: relative; margin: 0 0 1.4rem; padding: 0.6rem 0.9rem;
+  border: 2.5px solid var(--g-edge); border-radius: 14px; background: var(--g-paper);
+}
+.lb-guide .lb-flow li:not(:last-child)::after {
+  content: "↓"; position: absolute; left: 50%; bottom: -1.45rem; transform: translateX(-50%);
+  font-weight: 800; color: var(--g-soft);
+}
+
+/* Check yourself */
+.lb-guide .lb-quiz { padding-left: 1.5rem; }
+.lb-guide .lb-q { margin: 0 0 1.4rem; }
+.lb-guide .lb-q > p { margin-bottom: 0.4rem; font-weight: 600; }
+.lb-guide .lb-q ol { list-style: upper-alpha; margin: 0 0 0.5rem; }
+.lb-guide details.lb-answer {
+  border: 2px solid var(--g-rule); border-radius: 12px; padding: 0 0.85rem;
+}
+.lb-guide details.lb-answer summary {
+  min-height: 44px; display: flex; align-items: center; cursor: pointer;
+  font: 700 0.95rem/1.3 var(--g-display); color: var(--g-accent);
+}
+.lb-guide details.lb-answer[open] { background: var(--g-ok-bg); border-color: var(--g-ok); }
+.lb-guide details.lb-answer[open] summary { color: var(--g-ok); }
+.lb-guide details.lb-answer p { margin: 0 0 0.8rem; }
+
+/* Glossary */
+.lb-guide .lb-glossary { margin: 0.5rem 0 1rem; }
+.lb-guide .lb-glossary dt { font-weight: 750; margin-top: 0.7rem; }
+.lb-guide .lb-glossary dd { margin: 0.1rem 0 0 1rem; color: var(--g-soft); }
+
+/* Slide coverage */
+.lb-guide details.lb-slidemap {
+  margin: 2rem 0 0; padding: 0 1rem; border: 2px dashed var(--g-rule); border-radius: 14px;
+  color: var(--g-soft); font-size: 0.92rem;
+}
+.lb-guide details.lb-slidemap summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
+
+@media (max-width: 30rem) {
+  .lb-guide { font-size: 1rem; }
+  .lb-guide .lb-head, .lb-guide .lb-card, .lb-guide .lb-box { border-radius: 14px; padding-left: 0.9rem; padding-right: 0.9rem; }
+  .lb-guide ul, .lb-guide ol { padding-left: 1.15rem; }
+}
+
+@media print {
+  .lb-guide { max-width: none; font-size: 11pt; }
+  .lb-guide .lb-head, .lb-guide .lb-box { box-shadow: none; }
+  .lb-guide .lb-box, .lb-guide .lb-table-wrap, .lb-guide .lb-q, .lb-guide figure { break-inside: avoid; }
+  .lb-guide .lb-table-wrap { overflow: visible; }
+  .lb-guide details > *:not(summary) { display: block !important; }
+  .lb-guide .lb-toc { display: none; }
+}
+
+/* Watch: a video that explains the section it sits in, with where to start. */
+.lb-guide .lb-video { background: var(--g-paper); border-style: solid; }
+.lb-guide .lb-video .lb-box-title { color: var(--g-accent); }
+.lb-guide .lb-video ul { list-style: none; padding-left: 0; margin: 0 0 0.75rem; }
+.lb-guide .lb-video li { margin: 0 0 0.6rem; padding-left: 1.6rem; position: relative; }
+.lb-guide .lb-video li::before {
+  content: "▶"; position: absolute; left: 0; top: 0.05em;
+  font-size: 0.85em; color: var(--g-accent);
+}
+.lb-guide .lb-video a { font-weight: 700; display: inline-block; min-height: 1.6em; }
+.lb-guide .lb-video .lb-when { display: block; color: var(--g-soft); font-size: 0.93rem; }
+
+/* Pictures from the lecture slides. A white mat keeps diagrams drawn on
+   white readable in the dark theme too. */
+.lb-guide .lb-figures { display: grid; gap: 1rem; margin: 0.2rem 0 1.4rem; }
+.lb-guide .lb-figures-2 { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); align-items: start; }
+.lb-guide .lb-figure { margin: 0; }
+.lb-guide .lb-figure img {
+  display: block; width: 100%; height: auto; max-height: 30rem; object-fit: contain;
+  background: #fff; padding: 0.5rem;
+  border: 2px solid var(--g-rule); border-radius: 0.75rem;
+}
+.lb-guide .lb-figure figcaption { margin-top: 0.45rem; color: var(--g-soft); font-size: 0.93rem; line-height: 1.5; }
+.lb-guide .lb-credit { display: inline-block; margin-left: 0.3rem; color: var(--g-muted); font-size: 0.8rem; font-weight: 600; white-space: nowrap; }

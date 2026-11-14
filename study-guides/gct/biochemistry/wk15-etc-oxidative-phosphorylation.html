@@ -1,0 +1,399 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct" data-part="Biochemistry" data-type="lecture"
+         data-lectures="15" data-topic="Biochem Wk 15: Cellular Respiration"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT I · Biochemistry · Week 15</p>
+  <h1>Electron Transport Chain and Oxidative Phosphorylation</h1>
+  <p class="lb-lede">How the mitochondrion turns NADH and FADH₂ into ATP: the four complexes, coenzyme Q and cytochrome c, the proton gradient, ATP synthase, uncouplers, the poisons that block the chain (cyanide, CO, rotenone) and Leigh syndrome.</p>
+  <span class="lb-topic-name">Labobo topic: Biochem Wk 15: Cellular Respiration</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>The <strong>inner membrane</strong> is impermeable to H⁺, ATP, ADP and pyruvate; the outer membrane is freely permeable.</li>
+    <li>Order: <strong>Complex I → (II) → CoQ → Complex III → cytochrome c → Complex IV → O₂</strong>.</li>
+    <li>Protons pumped: <strong>I = 4</strong>, <strong>II = 0</strong>, <strong>III = 4</strong>, <strong>IV = 2</strong>. Oxygen is the <strong>final electron acceptor</strong>, becoming water.</li>
+    <li><strong>ATP synthase</strong> (Complex V): <strong>F0</strong> = proton channel in the membrane; <strong>F1</strong> = catalytic head in the matrix (α₃β₃, only β makes ATP). About <mark>4 H⁺</mark> per ATP.</li>
+    <li><strong>Statins</strong> lower CoQ synthesis too → possible muscle pain and weakness.</li>
+    <li>Inhibitors: <strong>rotenone, barbiturates</strong> (I), <strong>antimycin A</strong> (III), <strong>CO</strong> (IV, Fe²⁺), <strong>cyanide</strong> (IV, Fe³⁺). Cyanide antidotes: <strong>thiosulfate, hydroxocobalamin, nitrites</strong>.</li>
+    <li><strong>Uncoupling proteins</strong> let H⁺ back in without making ATP → <strong>heat</strong>.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Marks’ Basic Medical Biochemistry, 6th ed., Chapter 24, pages 861–884. By the end you can:</p>
+  <ul>
+    <li>describe the electron transport chain and the mitochondrial membranes;</li>
+    <li>explain how ATP synthase uses the proton gradient (oxidative phosphorylation);</li>
+    <li>explain chemical uncouplers and uncoupling proteins;</li>
+    <li>name the clinically relevant inhibitors of the chain, and describe cyanide poisoning and Leigh syndrome.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#membranes">Mitochondrial membranes</a></li>
+    <li><a href="#oxphos">Oxidative phosphorylation in three parts</a></li>
+    <li><a href="#complexes">The complexes</a></li>
+    <li><a href="#coq">Coenzyme Q and statins</a></li>
+    <li><a href="#synthase">ATP synthase</a></li>
+    <li><a href="#inhibitors">Inhibitors of the chain</a></li>
+    <li><a href="#cyanide">Cyanide poisoning</a></li>
+    <li><a href="#uncouplers">Uncouplers</a></li>
+    <li><a href="#leigh">Leigh syndrome</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#watch">Watch out</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#check">Check yourself</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="membranes">
+  <h2>Mitochondrial membranes</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk15-etc-oxidative-phosphorylation/membranes-1.jpg" width="886" height="636" loading="lazy" decoding="async" alt="The mitochondrion: outer and inner membranes, cristae, intermembrane space and matrix.">
+    <figcaption>The mitochondrion: outer and inner membranes, cristae, intermembrane space and matrix. <span class="lb-credit">Lecture slide 4</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Part</th><th scope="col">Properties</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Outer membrane</th><td>Has special channels (porins); <strong>freely permeable</strong> to most ions and small molecules</td></tr>
+      <tr><th scope="row">Intermembrane space</th><td>Between the two membranes; protons are pumped into it</td></tr>
+      <tr><th scope="row">Inner membrane</th><td><strong>Impermeable</strong> to most small ions, including <strong>H⁺</strong>, and to ATP, ADP and pyruvate; needs specific carriers. Holds the ETC and ATP synthase</td></tr>
+      <tr><th scope="row">Matrix</th><td>Contains <strong>NAD⁺ and FAD</strong> (electron acceptors) and <strong>ADP and Pi</strong> (to make ATP)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Because the inner membrane does not leak H⁺, pumped protons stay outside and store energy as a gradient.</p>
+</section>
+
+<section class="lb-section" id="oxphos">
+  <h2>Oxidative phosphorylation in three parts</h2>
+  <p>The final stage of cellular respiration, where cells make <strong>most</strong> of their ATP, using oxygen.</p>
+  <ol class="lb-flow">
+    <li><strong>Electron transport chain</strong>: electrons from NADH and FADH₂ pass through a series of proteins; the energy released pumps H⁺ from the matrix to the intermembrane space → a <strong>proton gradient</strong>.</li>
+    <li><strong>Chemiosmosis</strong>: protons flow back into the matrix through <strong>ATP synthase</strong>, and this flow drives ADP + Pi → <strong>ATP</strong>.</li>
+    <li><strong>Oxygen</strong>: the <strong>final electron acceptor</strong>; it combines with electrons and protons to form <strong>water</strong>. Without O₂ the whole process stops.</li>
+  </ol>
+  <p>As electrons move along the chain, each carrier has a higher <strong>reduction potential</strong> (greater pull on electrons), so energy is released step by step: some as heat, most used to pump protons.</p>
+  <h3>Substrate-level vs oxidative phosphorylation</h3>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">Substrate-level</th><th scope="col">Oxidative</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">How</th><td>A high-energy phosphate is passed directly from a substrate to ADP (or GDP)</td><td>ATP synthase uses a proton gradient made by the ETC</td></tr>
+      <tr><th scope="row">Needs O₂?</th><td>No</td><td>Yes</td></tr>
+      <tr><th scope="row">Where</th><td>Glycolysis (cytosol), succinyl-CoA synthetase (matrix)</td><td>Inner mitochondrial membrane</td></tr>
+      <tr><th scope="row">Share of ATP</th><td>Small</td><td>Most</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="complexes">
+  <h2>The complexes</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk15-etc-oxidative-phosphorylation/complexes-1.jpg" width="544" height="462" loading="lazy" decoding="async" alt="The electron transport chain: complexes I–IV, coenzyme Q and cytochrome c.">
+    <figcaption>The electron transport chain: complexes I–IV, coenzyme Q and cytochrome c. <span class="lb-credit">Lecture slide 9</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk15-etc-oxidative-phosphorylation/complexes-2.jpg" width="850" height="398" loading="lazy" decoding="async" alt="Complex II (succinate dehydrogenase) passes electrons from FADH₂ to coenzyme Q without pumping protons.">
+    <figcaption>Complex II (succinate dehydrogenase) passes electrons from FADH₂ to coenzyme Q without pumping protons. <span class="lb-credit">Lecture slide 8</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Complex</th><th scope="col">Also called</th><th scope="col">Electrons from → to</th><th scope="col">Contains</th><th scope="col">H⁺ pumped</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">I</th><td>NADH dehydrogenase (NADH:ubiquinone oxidoreductase)</td><td><strong>NADH</strong> (from glycolysis and the TCA cycle) → FMN → Fe-S → <strong>CoQ</strong></td><td><strong>FMN</strong>, <mark>8</mark> iron–sulfur clusters</td><td><mark>4</mark></td></tr>
+      <tr><th scope="row">II</th><td>Succinate dehydrogenase</td><td><strong>Succinate</strong> → FAD → Fe-S → <strong>CoQ</strong>; a second entry point</td><td>FAD, Fe-S</td><td><mark>0</mark> (so less ATP from FADH₂)</td></tr>
+      <tr><th scope="row">CoQ</th><td>Ubiquinone</td><td>Mobile carrier from I, II and other dehydrogenases → III</td><td>Quinone with a long hydrophobic tail</td><td>—</td></tr>
+      <tr><th scope="row">III</th><td>Cytochrome bc1 complex</td><td>CoQ → <strong>cytochrome c</strong></td><td>Cytochromes (heme)</td><td><mark>4</mark></td></tr>
+      <tr><th scope="row">Cytochrome c</th><td>—</td><td>Small mobile carrier in the intermembrane space, III → IV</td><td>Heme</td><td>—</td></tr>
+      <tr><th scope="row">IV</th><td>Cytochrome c oxidase (cytochrome a + a3)</td><td>Cytochrome c → <strong>O₂</strong>, reduced to <strong>H₂O</strong></td><td>Heme a/a3 and <strong>copper</strong></td><td><mark>2</mark></td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li><strong>Cytochromes</strong> are heme proteins whose iron switches reversibly between <strong>Fe²⁺ (ferrous)</strong> and <strong>Fe³⁺ (ferric)</strong>, ideal for passing electrons.</li>
+    <li>Other enzymes also feed electrons to CoQ without pumping protons: <strong>ETF–CoQ oxidoreductase</strong> (electrons from fatty acid <strong>β-oxidation</strong> via ETF) and <strong>glycerol-3-phosphate dehydrogenase</strong>.</li>
+  </ul>
+  <aside class="lb-box lb-mnemonic">
+    <span class="lb-box-title">Memory hook: proton count “4-0-4-2”</span>
+    <p>NADH enters at I and passes I, III, IV: 4 + 4 + 2 = <strong>10 H⁺</strong>. FADH₂ enters at II and passes III, IV: 4 + 2 = <strong>6 H⁺</strong>. That is why FADH₂ makes less ATP.</p>
+  </aside>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ClBDozXUIWc&amp;t=31s" target="_blank" rel="noopener">Dr Matt &amp; Dr Mike · Electron Transport Chain | Made Easy</a>
+      <span class="lb-when">Watch from 0:31 to 9:39: the carriers and Complexes I to IV.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=AsD0hOkVZXU" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Electron Transport Chain: Overview</a>
+      <span class="lb-when">Watch from 0:00 to 26:05: the whole chain step by step.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="coq">
+  <h2>Coenzyme Q and statins</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk15-etc-oxidative-phosphorylation/coq-1.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="Coenzyme Q is made on the same mevalonate pathway as cholesterol, so statins lower it too.">
+    <figcaption>Coenzyme Q is made on the same mevalonate pathway as cholesterol, so statins lower it too. <span class="lb-credit">Lecture slide 10</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>CoQ (ubiquinone) is a quinone with a long <strong>hydrophobic tail</strong>, so it moves within the membrane.</li>
+    <li>It is made from an <strong>intermediate of cholesterol synthesis</strong>.</li>
+    <li>It links the <strong>flavoprotein dehydrogenases</strong> (Complexes I, II and others) to the <strong>cytochromes</strong> (Complex III).</li>
+  </ul>
+  <ol class="lb-flow">
+    <li><strong>HMG-CoA reductase</strong> turns HMG-CoA into <strong>mevalonate</strong>.</li>
+    <li>Mevalonate is used to make <strong>cholesterol</strong> and <strong>isoprenoids</strong> (FPP, GGPP), which are needed for <strong>CoQ</strong>.</li>
+    <li><strong>Statins</strong> block HMG-CoA reductase → less cholesterol, but also fewer isoprenoids → CoQ may fall.</li>
+    <li>Less CoQ may impair energy production in muscle → one explanation for statin <strong>muscle pain, weakness and myopathy</strong>.</li>
+  </ol>
+</section>
+
+<section class="lb-section" id="synthase">
+  <h2>ATP synthase (Complex V)</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk15-etc-oxidative-phosphorylation/synthase-1.jpg" width="406" height="448" loading="lazy" decoding="async" alt="ATP synthase: protons flow through F₀ in the membrane and drive ATP synthesis in F₁.">
+    <figcaption>ATP synthase: protons flow through F₀ in the membrane and drive ATP synthesis in F₁. <span class="lb-credit">Lecture slide 15</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>ATP synthase uses the proton gradient to make ATP. It is a <strong>rotary motor</strong> with two parts:</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">F0</th><th scope="col">F1</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Location</th><td><strong>Embedded</strong> in the inner membrane; hydrophobic</td><td>Faces the <strong>matrix</strong>; hydrophilic</td></tr>
+      <tr><th scope="row">Job</th><td><strong>Proton channel</strong>: protonated and deprotonated as H⁺ flows from intermembrane space to matrix, which turns the ring</td><td><strong>Catalytic</strong>: shape changes make ATP from ADP + Pi</td></tr>
+      <tr><th scope="row">Subunits</th><td>a, b, c: a <strong>ring of 9–12 c subunits</strong>, one <strong>a</strong> and two <strong>b</strong></td><td><strong>α₃β₃</strong> hexamer + one each of <strong>γ, δ, ε</strong></td></tr>
+      <tr><th scope="row">Key facts</th><td>The a subunit passes protons between the c-ring and the outside; the peripheral stalk joins F0 to F1</td><td><strong>Only β subunits</strong> make ATP. γ, δ, ε form the <strong>central stalk</strong> that turns with the c-ring</td></tr>
+    </tbody>
+  </table></div>
+  <p>About <mark>4 H⁺</mark> flow back for every <strong>1 ATP</strong> made (including the H⁺ used to bring Pi and ADP in).</p>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ClBDozXUIWc&amp;t=579s" target="_blank" rel="noopener">Dr Matt &amp; Dr Mike · Electron Transport Chain | Made Easy</a>
+      <span class="lb-when">Watch from 9:39 to the end: how ATP synthase makes ATP.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=AsD0hOkVZXU&amp;t=1565s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Electron Transport Chain: Overview</a>
+      <span class="lb-when">Watch from 26:05 to the end: how much ATP each NADH and FADH₂ gives.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="inhibitors">
+  <h2>Inhibitors of the chain</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Site</th><th scope="col">Inhibitor</th><th scope="col">How</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Complex I</th><td><strong>Rotenone</strong> (insecticide); <strong>barbiturates</strong> in high doses</td><td>Stop electron transfer to CoQ</td></tr>
+      <tr><th scope="row">Complex III</th><td><strong>Antimycin A</strong> (antibiotic)</td><td>Blocks the bc1 complex</td></tr>
+      <tr><th scope="row">Complex IV</th><td><strong>Carbon monoxide</strong></td><td>Binds <strong>a3 in the Fe²⁺</strong> state, competing with O₂</td></tr>
+      <tr><th scope="row">Complex IV</th><td><strong>Cyanide</strong></td><td>Binds <strong>a3 in the Fe³⁺</strong> state</td></tr>
+      <tr><th scope="row">ATP synthase</th><td>Oligomycin (textbook)</td><td>Blocks the F0 proton channel</td></tr>
+    </tbody>
+  </table></div>
+  <p>Blocking any step stops electron flow, proton pumping and ATP synthesis; cells switch to anaerobic glycolysis and make <strong>lactate</strong>.</p>
+</section>
+
+<section class="lb-section" id="cyanide">
+  <h2>Cyanide poisoning</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk15-etc-oxidative-phosphorylation/cyanide-1.jpg" width="454" height="427" loading="lazy" decoding="async" alt="Cyanide blocks cytochrome oxidase (complex IV), so cells switch to anaerobic metabolism and lactic acid rises.">
+    <figcaption>Cyanide blocks cytochrome oxidase (complex IV), so cells switch to anaerobic metabolism and lactic acid rises. <span class="lb-credit">Lecture slide 19</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Cyanide binds <strong>irreversibly</strong> to cytochrome a/a3, so electrons can’t reach O₂. Cells can’t use oxygen even though blood carries plenty: changes like tissue <strong>hypoxia</strong>.</li>
+    <li>Plasma half-life: <mark>20–60 minutes</mark>.</li>
+  </ul>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <caption>How cyanide is removed</caption>
+    <thead><tr><th scope="col">Mechanism</th><th scope="col">Treatment</th></tr></thead>
+    <tbody>
+      <tr><td>Mitochondrial <strong>thiosulfate sulfurtransferase</strong> (rhodanese) converts CN⁻ to <strong>thiocyanate (SCN⁻)</strong>, excreted in urine</td><td>IV <strong>sodium thiosulfate</strong>, the enzyme’s substrate, speeds this up</td></tr>
+      <tr><td>Cyanide binds <strong>cobalamin</strong> (forming cyanocobalamin)</td><td>IV <strong>hydroxocobalamin</strong></td></tr>
+      <tr><td>Cyanide binds <strong>methemoglobin</strong> (Fe³⁺) instead of cytochrome a3</td><td><strong>Amyl nitrite</strong> or <strong>sodium nitrite</strong> create methemoglobin; target about <mark>10–30%</mark> of Hb as methemoglobin in adults</td></tr>
+    </tbody>
+  </table></div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=UbkYCrLXHNk" target="_blank" rel="noopener">Medicosis Perfectionalis · Cyanide Poisoning</a>
+      <span class="lb-when">Watch from 0:00 to the end: how cyanide blocks Complex IV and how it is treated.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="uncouplers">
+  <h2>Uncouplers</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk15-etc-oxidative-phosphorylation/uncouplers-1.jpg" width="416" height="493" loading="lazy" decoding="async" alt="Uncoupling proteins let protons back into the matrix without passing through ATP synthase; the energy is lost as heat.">
+    <figcaption>Uncoupling proteins let protons back into the matrix without passing through ATP synthase; the energy is lost as heat. <span class="lb-credit">Lecture slide 20</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Normally electron transport and ATP synthesis are <strong>coupled</strong>: protons only re-enter through ATP synthase.</li>
+    <li><strong>Uncoupling proteins (UCPs)</strong> in the inner membrane make channels that let H⁺ <strong>re-enter the matrix without making ATP</strong>; the energy is released as <strong>heat</strong>.</li>
+    <li>From the textbook: <strong>UCP1 (thermogenin)</strong> in <strong>brown fat</strong> keeps newborns warm. <strong>Chemical uncouplers</strong> such as <strong>2,4-dinitrophenol</strong> and high-dose <strong>aspirin</strong> carry H⁺ across the membrane, causing fever and wasted energy.</li>
+  </ul>
+  <aside class="lb-box lb-key">
+    <span class="lb-box-title">Inhibitor vs uncoupler</span>
+    <p>An <strong>inhibitor</strong> stops electron flow, so O₂ use <strong>falls</strong>. An <strong>uncoupler</strong> lets electrons flow freely, so O₂ use <strong>rises</strong>, but ATP synthesis falls and heat is made.</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="leigh">
+  <h2>Leigh syndrome</h2>
+  <ul>
+    <li>Subacute necrotizing encephalomyelopathy: a severe <strong>mitochondrial</strong> disease of <strong>infants and young children</strong>.</li>
+    <li>Caused by defects in oxidative phosphorylation, most often <strong>Complex I, Complex IV or ATP synthase</strong>.</li>
+    <li>Less ATP → cells switch to anaerobic metabolism → <strong>lactic acidosis</strong>.</li>
+    <li>High-energy tissues suffer most: <strong>brain, heart, lungs</strong>.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>4 / 0 / 4 / 2</td><td>H⁺ pumped by Complexes I / II / III / IV</td></tr>
+      <tr><td>2</td><td>Electrons passed from NADH to FMN</td></tr>
+      <tr><td>8</td><td>Fe-S clusters in Complex I</td></tr>
+      <tr><td>9–12</td><td>c subunits in the F0 ring</td></tr>
+      <tr><td>α₃β₃γδε</td><td>F1 composition</td></tr>
+      <tr><td>4 H⁺ per ATP</td><td>ATP synthase</td></tr>
+      <tr><td>20–60 min</td><td>Cyanide plasma half-life</td></tr>
+      <tr><td>10–30%</td><td>Target methemoglobin in cyanide treatment</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">These</th><th scope="col">The difference</th></tr></thead>
+    <tbody>
+      <tr><td>CO vs cyanide at Complex IV</td><td>CO binds a3 Fe²⁺ (and Hb); cyanide binds a3 Fe³⁺, irreversibly.</td></tr>
+      <tr><td>Rotenone vs antimycin A</td><td>Complex I vs Complex III.</td></tr>
+      <tr><td>F0 vs F1</td><td>Membrane proton channel vs matrix catalytic head.</td></tr>
+      <tr><td>Complex I vs II</td><td>NADH, pumps 4 H⁺ vs succinate, pumps none.</td></tr>
+      <tr><td>CoQ vs cytochrome c</td><td>Lipid-soluble carrier in the membrane (I/II → III) vs water-soluble carrier in the intermembrane space (III → IV).</td></tr>
+      <tr><td>Inhibitor vs uncoupler</td><td>O₂ use falls vs rises.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="watch">
+  <h2>Watch out</h2>
+  <aside class="lb-box lb-watch">
+    <span class="lb-box-title">Watch out: ATP per NADH</span>
+    <p>This lecture’s proton numbers (10 H⁺ per NADH, 6 per FADH₂, 4 H⁺ per ATP) give <strong>2.5 ATP per NADH</strong> and <strong>1.5 per FADH₂</strong>. Week 14 used the older values <strong>3 and 2</strong>. Know both; if a question uses the TCA-cycle total of 12 ATP, it is using 3 and 2.</p>
+  </aside>
+  <aside class="lb-box lb-watch">
+    <span class="lb-box-title">Watch out: “outside the cell”</span>
+    <p>Slide 16 says the a subunit passes protons between the c-ring and “outside the cell”. For mitochondria it is the <strong>intermembrane space</strong> (the slide text comes from a general description of ATP synthase).</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam trap</span>
+    <ul>
+      <li>Complex II pumps <strong>no</strong> protons.</li>
+      <li>Complex IV contains <strong>copper</strong> as well as heme.</li>
+      <li>Only the <strong>β</strong> subunits of F1 make ATP.</li>
+      <li>Protons are pumped <strong>out of the matrix</strong> into the intermembrane space, and flow <strong>back into the matrix</strong> through ATP synthase.</li>
+      <li>CoQ is made from the <strong>cholesterol pathway</strong>, so statins can lower it.</li>
+      <li>Nitrites help in cyanide poisoning by <strong>making</strong> methemoglobin.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="check">
+  <h2>Check yourself</h2>
+  <ol class="lb-quiz">
+    <li class="lb-q"><p>Which mitochondrial membrane is impermeable to H⁺?</p>
+      <ol><li>Outer membrane</li><li>Inner membrane</li><li>Both</li><li>Neither</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> The outer membrane has channels that let small molecules through.</p></details></li>
+    <li class="lb-q"><p>The final electron acceptor of the chain is:</p>
+      <ol><li>NAD⁺</li><li>Cytochrome c</li><li>Oxygen</li><li>CoQ</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong> O₂ is reduced to water at Complex IV.</p></details></li>
+    <li class="lb-q"><p>Which complex pumps no protons?</p>
+      <ol><li>I</li><li>II</li><li>III</li><li>IV</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Succinate dehydrogenase.</p></details></li>
+    <li class="lb-q"><p>Complex IV contains:</p>
+      <ol><li>Copper and heme</li><li>FMN</li><li>Only Fe-S clusters</li><li>Zinc</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>A.</strong> Cytochromes a + a3 and copper.</p></details></li>
+    <li class="lb-q"><p>Statin myopathy may be explained by lower levels of:</p>
+      <ol><li>Cytochrome c</li><li>Coenzyme Q</li><li>NAD⁺</li><li>Thiamine</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> CoQ is made from mevalonate-derived isoprenoids.</p></details></li>
+    <li class="lb-q"><p>Which part of ATP synthase actually makes ATP?</p>
+      <ol><li>c-ring</li><li>a subunit</li><li>β subunits of F1</li><li>b subunits</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong> α₃β₃ forms the head; only β is catalytic.</p></details></li>
+    <li class="lb-q"><p>Rotenone blocks the chain at:</p>
+      <ol><li>Complex I</li><li>Complex II</li><li>Complex III</li><li>Complex IV</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>A.</strong> As do high-dose barbiturates.</p></details></li>
+    <li class="lb-q"><p>Antimycin A inhibits:</p>
+      <ol><li>Complex I</li><li>Complex III</li><li>Complex IV</li><li>ATP synthase</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> The cytochrome bc1 complex.</p></details></li>
+    <li class="lb-q"><p>Cyanide binds cytochrome a3 in which iron state?</p>
+      <ol><li>Fe²⁺</li><li>Fe³⁺</li><li>Fe⁰</li><li>It doesn’t bind iron</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> CO binds the Fe²⁺ state.</p></details></li>
+    <li class="lb-q"><p>Sodium thiosulfate treats cyanide poisoning by:</p>
+      <ol><li>Making methemoglobin</li><li>Being the substrate for conversion of cyanide to thiocyanate</li><li>Binding cobalt</li><li>Blocking Complex IV</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Thiosulfate sulfurtransferase (rhodanese) makes excretable SCN⁻.</p></details></li>
+    <li class="lb-q"><p>Uncoupling proteins cause:</p>
+      <ol><li>More ATP and less heat</li><li>Heat production instead of ATP</li><li>Blocked electron flow</li><li>Less oxygen use</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> H⁺ re-enters the matrix without passing ATP synthase.</p></details></li>
+    <li class="lb-q"><p>Leigh syndrome most often involves defects in:</p>
+      <ol><li>Complex I, Complex IV or ATP synthase</li><li>Hemoglobin</li><li>Glycolysis only</li><li>The urea cycle</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>A.</strong> It causes lactic acidosis and damages brain, heart and lungs.</p></details></li>
+  </ol>
+</section>
+
+<section class="lb-section" id="terms">
+  <h2>Key terms</h2>
+  <dl class="lb-glossary">
+    <dt>Oxidative phosphorylation</dt><dd>ATP synthesis driven by the proton gradient from electron transport.</dd>
+    <dt>Chemiosmosis</dt><dd>Protons flowing back through ATP synthase to make ATP.</dd>
+    <dt>Proton gradient</dt><dd>Higher H⁺ in the intermembrane space than in the matrix.</dd>
+    <dt>FMN</dt><dd>Flavin mononucleotide, first electron acceptor in Complex I.</dd>
+    <dt>Iron–sulfur cluster</dt><dd>Fe-S centre that carries electrons.</dd>
+    <dt>Coenzyme Q (ubiquinone)</dt><dd>Mobile lipid carrier from Complexes I/II to III.</dd>
+    <dt>Cytochrome</dt><dd>Heme protein whose Fe cycles between Fe²⁺ and Fe³⁺.</dd>
+    <dt>Cytochrome c oxidase</dt><dd>Complex IV; reduces O₂ to water.</dd>
+    <dt>ATP synthase</dt><dd>Complex V; F0 channel + F1 catalytic head.</dd>
+    <dt>Uncoupler</dt><dd>Lets H⁺ back into the matrix without making ATP.</dd>
+    <dt>Thiocyanate</dt><dd>Less toxic, excretable product of cyanide detoxification.</dd>
+    <dt>Leigh syndrome</dt><dd>Infant mitochondrial disease with lactic acidosis.</dd>
+  </dl>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2">Learning objectives</li>
+    <li data-slides="3-4">Mitochondrial membranes</li>
+    <li data-slides="5-6, 14">Oxidative phosphorylation, substrate-level vs oxidative</li>
+    <li data-slides="7-8, 11-13">The complexes</li>
+    <li data-slides="9-10">Coenzyme Q and statins</li>
+    <li data-slides="15-16">ATP synthase</li>
+    <li data-slides="18">Inhibitors</li>
+    <li data-slides="19">Cyanide</li>
+    <li data-slides="20">Uncouplers</li>
+    <li data-slides="21">Leigh syndrome</li>
+  </ul>
+</details>
+</article>

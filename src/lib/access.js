@@ -29,6 +29,16 @@ export const startTrial = () => call({
   body: JSON.stringify({ action: 'start_trial' }),
 });
 
+/** Moves the pass's slot for this kind of device (phone, or tablet/computer) to this device. */
+export const switchDevice = () => call({
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ action: 'switch_device' }),
+});
+
+/** True when the account has a pass or trial but this device may not use it. */
+export const deviceBlocked = (access) => access?.device?.ok === false;
+
 /* The subscribe dialog can be opened from anywhere (a locked lecture, the
    home page strip, the profile menu); SubscribeDialogHost listens for this. */
 const OPEN_EVENT = 'labobo:open-subscribe';

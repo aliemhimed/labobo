@@ -63,6 +63,7 @@ export async function downloadStudentsCsv() {
 /** Gives a student full access until `expiresAt` (ISO); replaces an earlier pass. */
 export const grantPass = (id, expiresAt, note) => post({ action: 'grant_pass', id, expires_at: expiresAt, note });
 export const revokePass = (id) => post({ action: 'revoke_pass', id });
+export const resetDevices = (id) => post({ action: 'reset_devices', id });
 
 /* The day a new pass runs to unless the admin picks another: the end of the
    current semester. Change it here when a new semester starts. */

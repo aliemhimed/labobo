@@ -1,5 +1,7 @@
 import { LockedContext, LockedLectures, LockedNote, PlanStripView, SubscribeView } from '../components/Plan.jsx';
 import { DecidedList, PaymentCard } from '../components/admin/PaymentsTab.jsx';
+import DailyCard from '../quiz/DailyCard.jsx';
+import { SUBJECTS } from '../lib/subjects.js';
 import '../styles/quiz.css';
 import '../styles/admin.css';
 
@@ -20,6 +22,17 @@ const ACCESS = {
   trial: { locked: true, access: 'trial', expires_at: SOON, trial: { ...TRIAL, used: true, available: false } },
   pass: { locked: true, access: 'pass', expires_at: '2027-02-28T19:59:59Z', trial: NO_TRIAL },
 };
+// Device slots (netlify/functions/_lib/devices.js): one phone, one tablet or computer.
+const SLOTS = [
+  { slot: 'phone', name: 'phone', used: true, label: 'iPhone · Safari', last_seen: RECENT, this_device: true },
+  { slot: 'other', name: 'tablet or computer', used: true, label: 'Mac or iPad · Safari', last_seen: RECENT, this_device: false },
+];
+ACCESS.passDevices = { ...ACCESS.pass, device: { ok: true, slots: SLOTS } };
+ACCESS.passBlocked = { ...ACCESS.pass, device: {
+  ok: false, reason: 'taken', slot: 'phone', slot_name: 'phone', can_switch: true, next_switch: null,
+  holder: { label: 'Android phone · Chrome', last_seen: RECENT }, frees_at: SOON,
+  slots: [{ ...SLOTS[0], label: 'Android phone · Chrome', this_device: false }, SLOTS[1]],
+} };
 const REF = 'LB-7K2QXM';
 // Placeholders on purpose: the real accounts live in the payment_accounts
 // table, not in this public code.
@@ -38,7 +51,11 @@ const LOCKED = [
   { subject: 'Biochemistry', topic: 'Biochem Lec 4: Pentose Phosphate Pathway and NADPH', n: 112 },
   { subject: 'Medical Genetics', topic: 'MG Lec 3: Human Genome Project', n: 28 },
   { subject: 'Medical Genetics', topic: 'MG Lec 4: Personal Genome Projects', n: 27 },
-];
+  { subject: 'Medical Genetics', topic: 'MG Lec 12: Cancer Genetics', n: 41 },
+].map((l) => ({ ...l, table: 'gct_biochemistry', raw: l.topic }));
+const TONIGHT = new Date(Date.now() + 5 * 3600e3).toISOString();
+const DAILY_OPEN = { limited: true, resets_at: TONIGHT, sets: { practice: null, exam: null } };
+const DAILY_USED = { limited: true, resets_at: TONIGHT, sets: { practice: { scope: 'all', ids: Array(30).fill('x') }, exam: null } };
 
 // A small drawn stand-in for an uploaded receipt.
 const RECEIPT = 'data:image/svg+xml,' + encodeURIComponent(
@@ -89,7 +106,8 @@ export default function DevPlanPreview() {
         <Frame title="After the receipt is sent"><Subscribe access={ACCESS.free} payment={PAYMENT.pending} /></Frame>
         <Frame title="Receipt rejected"><Subscribe access={ACCESS.free} payment={PAYMENT.rejected} /></Frame>
         <Frame title="University account: trial offered"><Subscribe access={ACCESS.freeUni} payment={PAYMENT.none} /></Frame>
-        <Frame title="Pass switched on"><Subscribe access={ACCESS.pass} payment={PAYMENT.none} /></Frame>
+        <Frame title="Pass switched on, with its two devices"><Subscribe access={ACCESS.passDevices} payment={PAYMENT.none} /></Frame>
+        <Frame title="Pass in use on another phone"><Subscribe access={ACCESS.passBlocked} payment={PAYMENT.none} /></Frame>
         <Frame title="Before 14 November"><Subscribe access={ACCESS.before} payment={PAYMENT.none} /></Frame>
       </div>
 
@@ -97,12 +115,20 @@ export default function DevPlanPreview() {
         <PlanStripView data={ACCESS.free} />
         <PlanStripView data={ACCESS.trial} />
         <PlanStripView data={ACCESS.pass} />
+        <PlanStripView data={ACCESS.passBlocked} />
       </Frame>
 
       <Frame title="A subject's start screen and topic picker, free plan" wide>
         <LockedContext.Provider value={LOCKED}>
           <LockedLectures />
           <LockedNote />
+        </LockedContext.Provider>
+      </Frame>
+
+      <Frame title="Exam setup, free plan: today's set from the locked lectures, then after using it" wide>
+        <LockedContext.Provider value={LOCKED}>
+          <DailyCard config={SUBJECTS.gct} mode="exam" daily={DAILY_OPEN} onStart={nothing} />
+          <DailyCard config={SUBJECTS.gct} mode="practice" daily={DAILY_USED} onStart={nothing} />
         </LockedContext.Provider>
       </Frame>
 

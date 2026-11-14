@@ -9,6 +9,7 @@
    file is the only way to the paid rows. */
 
 const { SUPA_URL, dbHeaders } = require('./common');
+const { readDevice, checkDevice } = require('./devices');
 
 // Subscriptions start at the end of 14 November 2026 in Tbilisi (UTC+4).
 // LOCK_START in the environment overrides it, for testing the lock locally.
@@ -41,8 +42,22 @@ function trialEmail(caller) {
           'none'  free lectures only
     Throws if the lookup fails: callers answer with an error rather than
     guess, so a database hiccup neither locks out a paying student for good
-    nor opens the bank to everyone. */
-async function getAccess(caller) {
+    nor opens the bank to everyone.
+
+    With the request `event`, a pass or trial after the lock also checks the
+    device (_lib/devices.js) and adds `device`: { ok, reason, slots, ... }.
+    A device that is turned away keeps its kind ('pass', so the student is
+    not asked to pay again) but hasFullAccess() is false for it. Without
+    `event` (payments) the device is not checked. */
+async function getAccess(caller, event) {
+  const access = await getPlan(caller);
+  if (event && caller && isLocked() && (access.kind === 'pass' || access.kind === 'trial')) {
+    access.device = await checkDevice(caller.id, readDevice(event));
+  }
+  return access;
+}
+
+async function getPlan(caller) {
   if (!caller) return { kind: isLocked() ? 'none' : 'open', expires_at: null, trial_used: false };
 
   const id = encodeURIComponent(caller.id);
@@ -65,6 +80,7 @@ async function getAccess(caller) {
   return { kind: 'none', expires_at: null, trial_used: trials.length > 0 };
 }
 
-const hasFullAccess = (access) => access.kind === 'open' || access.kind === 'pass' || access.kind === 'trial';
+const hasFullAccess = (access) => access.kind === 'open'
+  || ((access.kind === 'pass' || access.kind === 'trial') && access.device?.ok !== false);
 
 module.exports = { LOCK_START, TRIAL_DAYS, TRIAL_DOMAIN, isLocked, trialEmail, getAccess, hasFullAccess };

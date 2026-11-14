@@ -502,7 +502,7 @@ async function studyDetail(id, tz) {
 
 async function userDetail(id, tz) {
   const q = encodeURIComponent(id);
-  const [profile, pass, trial, stats, board, reports, auth] = await Promise.all([
+  const [profile, pass, trial, stats, board, reports, auth, devices] = await Promise.all([
     rows(`/profiles?id=eq.${q}&select=id,username,email,semester,created_at`),
     rows(`/subscriptions?user_id=eq.${q}&select=expires_at,granted_at,granted_by,note`),
     rows(`/trials?user_id=eq.${q}&select=email,started_at,expires_at`),
@@ -512,6 +512,7 @@ async function userDetail(id, tz) {
     fetch(`${SUPA_URL}/auth/v1/admin/users/${q}`, { headers: dbHeaders() })
       .then((r) => (r.ok ? r.json() : null))
       .catch(() => null),
+    rows(`/user_devices?user_id=eq.${q}&select=slot,label,first_seen,last_seen,switched_at&order=slot`).catch(() => []),
   ]);
   if (!profile[0]) return null;
 
@@ -528,6 +529,8 @@ async function userDetail(id, tz) {
     plan: {
       pass: pass[0] ? { ...pass[0], live: new Date(pass[0].expires_at) > new Date() } : null,
       trial: trial[0] ? { ...trial[0], live: new Date(trial[0].expires_at) > new Date() } : null,
+      // The phone and tablet/computer the pass is held to (_lib/devices.js).
+      devices,
     },
     totals: { ...stats.totals, reports: reports.length, leaderboard_entries: board.length },
     by_subject: stats.by_subject,
@@ -612,6 +615,17 @@ async function grantPass(body, caller) {
   const [row] = await res.json();
   await logAction(caller, 'grant_pass', body.id, { username: profile.username, email: profile.email, expires_at: row.expires_at, note });
   return json(200, { ok: true, pass: { ...row, live: true } });
+}
+
+/* Forgets the devices a pass is held to, so the student's next phone and
+   tablet/computer can take the slots (a lost or replaced device). */
+async function resetDevices(id, caller) {
+  if (!UUID.test(id || '')) return fail(400, 'Invalid user id');
+  const res = await rest(`/user_devices?user_id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=representation' } });
+  if (!res.ok) return fail(502, 'Could not reset the devices', `${res.status} ${await res.text()}`);
+  const removed = await res.json();
+  await logAction(caller, 'reset_devices', id, { devices: removed.map((d) => `${d.slot}: ${d.label || '?'}`) });
+  return json(200, { ok: true, devices: [] });
 }
 
 async function revokePass(id, caller) {
@@ -848,6 +862,7 @@ exports.handler = async (event) => {
         case 'delete_user': return await deleteUser(body.id, caller);
         case 'grant_pass': return await grantPass(body, caller);
         case 'revoke_pass': return await revokePass(body.id, caller);
+        case 'reset_devices': return await resetDevices(body.id, caller);
         case 'approve_payment': return await decidePayment(body, caller, true);
         case 'reject_payment': return await decidePayment(body, caller, false);
         case 'create_announcement': return await createAnnouncement(body, caller);

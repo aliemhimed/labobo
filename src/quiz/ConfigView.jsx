@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import PageHead from '../components/PageHead.jsx';
 import { LockedNote, LockedTopics } from '../components/Plan.jsx';
-import { lectureNumber, planSet } from '../lib/utils.js';
+import DailyCard from './DailyCard.jsx';
+import { MIDTERM_LAST, lectureNumber, planSet } from '../lib/utils.js';
 
 const LEADERBOARD_LENGTH = 30;
-/* The midterm covers the first seven lectures (weeks 1 to 7); the banks
-   number what comes after it from 8, or from week 10. Topics without a
-   number (past papers, cases) belong to neither half. */
-const MIDTERM_LAST = 7;
 // Each part's chips take a card colour, in the same order as study mode.
 const CHIP_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];
 
@@ -20,6 +17,7 @@ const sum = (list) => list.reduce((n, x) => n + x, 0);
    (null = all lectures, including any that appear later). */
 export default function ConfigView({
   config, mode, subjectIndex, chosen, allKeys, onChoose, examLength, setExamLength, onStart, onHome,
+  daily, onStartDaily,
 }) {
   const isExam = mode === 'exam';
   const [open, setOpen] = useState(false);
@@ -74,8 +72,10 @@ export default function ConfigView({
           : 'You see the answer and explanation after every question. There is no timer, and your score is saved to your history.'}
       </p>
 
+      <DailyCard config={config} mode={mode} daily={daily} onStart={onStartDaily} />
+
       <fieldset className="count-picker">
-        <legend>Lectures</legend>
+        <legend>{daily?.limited ? 'Free lectures' : 'Lectures'}</legend>
         <div className="scope-row">
           <button type="button" className="scope-chip" aria-pressed={preset === 'all'} onClick={() => onChoose(null)}>
             All lectures

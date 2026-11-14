@@ -6,8 +6,8 @@ import { Cross, InstagramGlyph, Mail } from './Icons.jsx';
 import { useAuth } from '../lib/auth.jsx';
 import { useAccess } from '../hooks/useAccess.js';
 import {
-  FREE_LECTURES, PASS_PRICE, formatDay, formatMoment,
-  onOpenSubscribeDialog, openSubscribeDialog, startTrial,
+  FREE_LECTURES, PASS_PRICE, deviceBlocked, formatDay, formatMoment,
+  onOpenSubscribeDialog, openSubscribeDialog, startTrial, switchDevice,
 } from '../lib/access.js';
 import { fetchPayment, sendReceipt } from '../lib/payments.js';
 import { CONTACT_EMAIL, INSTAGRAM_DM, INSTAGRAM_HANDLE } from '../lib/contact.js';
@@ -105,6 +105,7 @@ export function LockedLectures() {
           <p className="locked-lede">
             The first {FREE_LECTURES} lectures of each part are free. A pass opens the other{' '}
             {plural(locked.length, 'lecture')}, {plural(questions, 'question')} in this subject.
+            Without one, you still get one practice set and one exam of 30 questions from them every day.
           </p>
         </div>
         <button type="button" className="btn primary" onClick={openSubscribeDialog}>Unlock everything</button>
@@ -131,6 +132,17 @@ export function LockedLectures() {
 export function PlanStripView({ data }) {
   if (!data || !data.locked) return null;
 
+  if (deviceBlocked(data)) {
+    return (
+      <div className="plan-strip device">
+        <p>
+          <b>Not on this device</b> Your {data.access === 'trial' ? 'trial' : 'pass'} is in use on another{' '}
+          {data.device.slot_name || 'device'}, so only the free lectures are open here.
+        </p>
+        <button type="button" className="btn sm primary" onClick={openSubscribeDialog}>See my devices</button>
+      </div>
+    );
+  }
   if (data.access === 'pass') {
     return <p className="plan-strip pass"><b>Full access</b> Your pass runs until {formatDay(data.expires_at)}.</p>;
   }
@@ -199,11 +211,17 @@ function TransferSteps({ accounts, reference, onSend, sending, error }) {
   return (
     <ol className="subscribe-steps pay">
       <li>
-        <span>Send <b>{PASS_PRICE}</b> by bank transfer to one of these accounts.</span>
+        <span>Send <b>{PASS_PRICE}</b> by bank transfer to the account at <b>the same bank you pay from</b>.</span>
+        <p className="pay-same-bank">
+          Paying from {accounts.length > 1 ? accounts.map((a) => a.bank).join(' or ') : 'your bank'}? Use the
+          matching account below. A transfer to a different bank adds a fee, and then less than {PASS_PRICE} arrives.
+          {accounts.length > 1 ? ' If your bank is not listed, use either one.' : ''}
+        </p>
         <ul className="pay-accounts">
           {accounts.map((a) => (
             <li key={a.iban}>
               <b>{a.bank}</b>
+              {accounts.length > 1 ? <span className="pay-for">For payments from a {a.bank} account</span> : null}
               <span>{a.holder}</span>
               <span className="pay-iban"><code>{a.iban}</code><CopyButton text={a.iban} label={`${a.bank} account number`} /></span>
             </li>
@@ -229,6 +247,71 @@ function TransferSteps({ accounts, reference, onSend, sending, error }) {
   );
 }
 
+/** The rule, shown before paying, before a trial, and with the pass. */
+export function DeviceRule() {
+  return (
+    <p className="device-rule" role="note">
+      <b>One account, two devices.</b> A pass works on <b>one phone</b> and <b>one tablet or computer</b>.
+      The first two devices you use it on are saved to your account; other devices only get the free lectures.
+      Please don&rsquo;t share your account: if another device keeps using it, the pass stops working there.
+    </p>
+  );
+}
+
+/* Which devices hold the pass, and, on a device that was turned away, the
+   way to move the pass here. `onSwitch` returns a promise. */
+export function DevicePanel({ device, plan, onSwitch, switching, switchError }) {
+  if (!device) return null;
+  const slots = device.slots || [];
+  const blocked = device.ok === false;
+  return (
+    <section className={'device-panel' + (blocked ? ' blocked' : '')} aria-labelledby="device-title">
+      <h3 id="device-title">{blocked ? `Your ${plan} is on another ${device.slot_name || 'device'}` : 'Your devices'}</h3>
+      {blocked && device.reason === 'missing' ? (
+        <p>This copy of Labobo is out of date. Reload the page to use your {plan} here.</p>
+      ) : null}
+      {blocked && device.reason === 'taken' ? (
+        <p>
+          Your {plan} is saved to <b>{device.holder?.label || 'another device'}</b>, last used{' '}
+          {formatMoment(device.holder?.last_seen)}. Only the free lectures are open on this device.
+          If that device stays unused, this one can take its place from {formatMoment(device.frees_at)}.
+        </p>
+      ) : null}
+      {slots.length ? (
+        <ul className="device-slots">
+          {slots.map((s) => (
+            <li key={s.slot} className={s.this_device ? 'this' : ''}>
+              <span className="device-slot-name">{s.slot === 'phone' ? 'Phone' : 'Tablet or computer'}</span>
+              <span>
+                {s.used ? s.label : 'Not used yet'}
+                {s.this_device ? <b> (this device)</b> : null}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {blocked && device.reason === 'taken' && device.can_switch ? (
+        <div className="device-switch">
+          <p>
+            Got a new {device.slot_name}? Move your {plan} here. The other {device.slot_name} will lose access.
+            You can do this once every 30 days.
+          </p>
+          <button type="button" className="btn primary" disabled={switching} onClick={onSwitch}>
+            {switching ? 'Moving…' : 'Use this device instead'}
+          </button>
+        </div>
+      ) : null}
+      {blocked && device.reason === 'taken' && !device.can_switch ? (
+        <p>
+          This was already moved recently; you can move it again from {formatMoment(device.next_switch)}. Lost
+          your device? Message us and we will reset it.
+        </p>
+      ) : null}
+      {switchError ? <p className="form-error" role="alert">{switchError}</p> : null}
+    </section>
+  );
+}
+
 /** The dialog's content for a given plan and payment state.
     access:  what /api/access returned
     payment: what /api/payments returned ({ reference, request }) */
@@ -236,6 +319,7 @@ export function SubscribeView({
   access, payment, email, loading, onClose,
   onStartTrial, trialBusy, trialError,
   onSendReceipt, sending, sendError,
+  onSwitchDevice, switching, switchError,
 }) {
   // After a receipt is in, the student can still choose to send another.
   const [resending, setResending] = useState(false);
@@ -276,12 +360,18 @@ export function SubscribeView({
         </p>
       ) : null}
 
+      {hasFull && access.device ? (
+        <DevicePanel device={access.device} plan={access.access === 'trial' ? 'trial' : 'pass'}
+                     onSwitch={onSwitchDevice} switching={switching} switchError={switchError} />
+      ) : null}
+
       {access && access.access !== 'pass' ? (
         <>
           <p className="subscribe-price">
             <b>{PASS_PRICE}</b>
             <span>Every subject and every lecture, for the whole semester.</span>
           </p>
+          <DeviceRule />
 
           {waiting ? (
             <div className="subscribe-status ok" role="status">
@@ -384,7 +474,8 @@ export function SubscribeDialogHost() {
   useEffect(() => onOpenSubscribeDialog(() => setOpen(true)), []);
 
   useEffect(() => {
-    const kind = data ? `${data.locked}:${data.access}` : undefined;
+    // A device being let in or turned away changes the questions too.
+    const kind = data ? `${data.locked}:${data.access}:${data.device?.ok !== false}` : undefined;
     if (kind && lastKind.current && kind !== lastKind.current) {
       queryClient.invalidateQueries({ queryKey: ['questions'] });
     }
@@ -420,6 +511,10 @@ function SubscribeDialog({ onClose }) {
     mutationFn: sendReceipt,
     onSuccess: (data) => queryClient.setQueryData(paymentKey, data),
   });
+  const moveDevice = useMutation({
+    mutationFn: switchDevice,
+    onSuccess: (data) => queryClient.setQueryData(['access', user?.id], data),
+  });
 
   // An approval shows up as a decided request: fetch the new plan with it.
   const status = payment?.request?.status;
@@ -435,6 +530,8 @@ function SubscribeDialog({ onClose }) {
         trialError={trial.isError ? trial.error.message : ''}
         onSendReceipt={(file) => receipt.mutateAsync(file).then(() => true, () => false)}
         sending={receipt.isPending} sendError={receipt.isError ? receipt.error.message : ''}
+        onSwitchDevice={() => moveDevice.mutate()} switching={moveDevice.isPending}
+        switchError={moveDevice.isError ? moveDevice.error.message : ''}
       />
     </Dialog>
   );

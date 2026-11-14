@@ -742,3 +742,15 @@
 /* "Post anonymously" under the review text box. */
 .review-anon { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; color: var(--ink-soft); font-size: var(--t-14); font-weight: 600; line-height: 1.4; cursor: pointer; }
 .review-anon input { flex: none; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--hema); }
+
+/* Study guides on the home page: the badge on a subject card and "Continue reading". */
+.deck-guides {
+  padding: 3px 9px;
+  border: 2px solid var(--card-ink);
+  border-radius: 99px;
+  background: #fff;
+  color: var(--card-ink);
+  font-size: var(--t-12);
+}
+.resume-link.reading { background: var(--fill-blue); max-width: 100%; }
+.resume-link.reading .resume-mode { overflow-wrap: anywhere; }

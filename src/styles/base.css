@@ -527,6 +527,28 @@ button.crumb-current:hover { color: var(--hema); }
 }
 .plan-strip.trial { background: var(--hema-wash); }
 .plan-strip.pass { display: block; background: var(--correct-wash); box-shadow: none; }
+.plan-strip.device { background: var(--wrong-wash); }
+
+/* The two-device rule and the devices that hold a pass (Plan.jsx). */
+.device-rule {
+  margin: 0 0 16px; padding: 10px 12px; border: 2px solid var(--edge); border-radius: var(--r-control);
+  background: var(--fill-yellow); color: var(--card-ink); font-size: var(--t-14); line-height: 1.5;
+}
+.device-panel {
+  margin: 0 0 18px; padding: 14px; border: 2px solid var(--edge); border-radius: var(--r-control);
+  background: var(--sheet); font-size: var(--t-14); line-height: 1.5;
+}
+.device-panel.blocked { background: var(--wrong-wash); }
+.device-panel h3 { margin: 0 0 8px; font: 800 var(--t-16)/1.25 var(--font-display); }
+.device-panel p { margin: 0 0 10px; }
+.device-slots { display: grid; gap: 6px; margin: 0 0 10px; padding: 0; list-style: none; }
+.device-slots li {
+  display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 8px 10px;
+  border: 2px solid var(--rule-strong); border-radius: var(--r-control); background: var(--sheet-hover);
+}
+.device-slots li.this { border-color: var(--hema); }
+.device-slot-name { min-width: 9.5rem; font-weight: 800; color: var(--ink); }
+.device-switch .btn { max-width: 100%; white-space: normal; }
 
 .locked { margin-top: 48px; }
 .locked-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
@@ -607,6 +629,11 @@ a.wordmark { text-decoration: none; }
   color: var(--ink-soft); font-size: var(--t-14);
 }
 .pay-accounts b { color: var(--ink); font: 800 var(--t-16)/1.2 var(--font-display); }
+.pay-for { color: var(--hema); font-weight: 700; }
+.pay-same-bank {
+  margin: 8px 0 0; padding: 8px 12px; border-left: 4px solid var(--fill-yellow);
+  background: var(--hema-wash); color: var(--ink); font-size: var(--t-14); line-height: 1.5;
+}
 .pay-iban, .pay-reference { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
 .pay-iban code, .pay-reference code {
   color: var(--ink); overflow-wrap: anywhere;

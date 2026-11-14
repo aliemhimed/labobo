@@ -1,6 +1,7 @@
 import { AuthClient } from '@supabase/auth-js';
 import { PostgrestClient } from '@supabase/postgrest-js';
 import { SUPA_URL, SUPA_KEY } from './supabaseConfig.js';
+import { deviceHeaders } from './device.js';
 
 /* The one place the Supabase SDK is created. Handles OAuth, email/password
    auth, session persistence (localStorage) and automatic token refresh —
@@ -53,5 +54,6 @@ export const supabase = {
     supplied id, only this token (see netlify/functions/_lib/common#verifyUser). */
 export async function authHeader() {
   const token = await sessionToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  // The device headers ride along so a pass can be held to two devices.
+  return token ? { Authorization: `Bearer ${token}`, ...deviceHeaders() } : {};
 }

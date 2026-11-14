@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { DEFAULT_PASS_END, fetchUser, deleteUser, grantPass, revokePass } from '../../lib/adminApi.js';
+import { DEFAULT_PASS_END, fetchUser, deleteUser, grantPass, revokePass, resetDevices } from '../../lib/adminApi.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useConfirm } from '../Confirm.jsx';
 import { fmtTime } from '../../lib/leaderboard.js';
@@ -61,7 +61,30 @@ function PassPanel({ id, plan }) {
       </div>
       {grant.isError ? <p className="adm-error" role="alert">Couldn't save the pass: {grant.error.message}</p> : null}
       {revoke.isError ? <p className="adm-error" role="alert">Couldn't remove the pass: {revoke.error.message}</p> : null}
+      <Devices id={id} devices={plan.devices || []} onDone={refresh} />
     </Panel>
+  );
+}
+
+/* The phone and tablet/computer a pass is held to. Resetting lets the
+   student's next devices take the slots (a lost or replaced phone). */
+function Devices({ id, devices, onDone }) {
+  const reset = useMutation({ mutationFn: () => resetDevices(id), onSuccess: onDone });
+  return (
+    <div className="adm-devices">
+      <p className="adm-pass-status">
+        <b>Devices:</b>{' '}
+        {devices.length
+          ? devices.map((d) => `${d.slot === 'phone' ? 'Phone' : 'Tablet/computer'}: ${d.label || 'unknown'} (last used ${ago(d.last_seen)})`).join(' · ')
+          : 'none saved yet. The first phone and the first tablet or computer to use the pass take the two places.'}
+      </p>
+      {devices.length ? (
+        <button type="button" className="btn sm" disabled={reset.isPending} onClick={() => reset.mutate()}>
+          {reset.isPending ? 'Resetting…' : 'Reset devices'}
+        </button>
+      ) : null}
+      {reset.isError ? <p className="adm-error" role="alert">Couldn't reset the devices: {reset.error.message}</p> : null}
+    </div>
   );
 }
 

@@ -1,0 +1,493 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct" data-part="Biochemistry" data-type="lecture"
+         data-lectures="10-11" data-topic="Biochem Wk 10: Enzymes and Kinetics; Biochem Wk 11: Enzyme Regulation and Clinical Enzymes"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT I · Biochemistry · Weeks 10–11</p>
+  <h1>Enzymes: Kinetics, Inhibition, Regulation and Clinical Use</h1>
+  <p class="lb-lede">What enzymes are, the six classes, how they lower activation energy, the Michaelis–Menten curve, how inhibitors change Km and Vmax, how cells switch enzymes on and off, and the enzymes doctors measure in blood (LDH, CK).</p>
+  <span class="lb-topic-name">Labobo topics: Biochem Wk 10 and Wk 11</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>Enzymes are <strong>biological catalysts</strong>: they speed reactions and are <strong>not consumed</strong>. Catalytic RNAs are <strong>ribozymes</strong>.</li>
+    <li>Six classes: <strong>O</strong>xidoreductases, <strong>T</strong>ransferases, <strong>H</strong>ydrolases, <strong>L</strong>yases, <strong>I</strong>somerases, <strong>L</strong>igases.</li>
+    <li>Enzymes <strong>lower the activation energy</strong> by stabilising the <strong>transition state</strong>; they don’t change ΔG of the reaction.</li>
+    <li><strong>Km</strong> = [S] at <strong>½ Vmax</strong>. [S] ≪ Km → <strong>first order</strong>; [S] ≫ Km → <strong>zero order</strong>.</li>
+    <li><strong>Competitive</strong>: Vmax same, <strong>Km ↑</strong>. <strong>Noncompetitive</strong>: <strong>Vmax ↓</strong>, Km same. <strong>Irreversible</strong>: covalent, permanent.</li>
+    <li>Regulation: <strong>allosteric</strong> effectors, <strong>covalent modification</strong> (phosphorylation of Ser/Thr/Tyr), and changing <strong>enzyme amount</strong> (induction/repression).</li>
+    <li>LDH1 = <strong>H4</strong> (heart, RBC); LDH5 = <strong>M4</strong> (liver, muscle). <strong>CK-MB</strong> rises <mark>4–8 h</mark> after MI, peaks at <mark>24 h</mark>, normal in <mark>2–3 days</mark>.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Lippincott Illustrated Reviews: Biochemistry, 8th ed., Chapter 5, pages 165–202. By the end you can:</p>
+  <ul>
+    <li>classify enzymes and describe their properties, including holoenzymes, apoenzymes, cofactors and coenzymes;</li>
+    <li>explain the mechanism of enzyme action and the effect of substrate concentration, pH and temperature;</li>
+    <li>use the Michaelis–Menten equation and explain reaction order;</li>
+    <li>compare competitive, noncompetitive and irreversible inhibition;</li>
+    <li>describe allosteric regulation, covalent modification and control of enzyme synthesis;</li>
+    <li>explain how LDH and CK isoenzymes are used in diagnosis.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#define">What an enzyme is</a></li>
+    <li><a href="#classes">The six classes</a></li>
+    <li><a href="#properties">Properties: active site, specificity, cofactors</a></li>
+    <li><a href="#mechanism">Activation energy and the transition state</a></li>
+    <li><a href="#factors">Substrate, temperature and pH</a></li>
+    <li><a href="#mm">Michaelis–Menten kinetics</a></li>
+    <li><a href="#inhibition">Inhibition</a></li>
+    <li><a href="#regulation">Regulation</a></li>
+    <li><a href="#clinical">Enzymes in diagnosis: LDH and CK</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#watch">Watch out</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#check">Check yourself</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="define">
+  <h2>What an enzyme is</h2>
+  <ul>
+    <li>Enzymes are <strong>biological catalysts</strong>: they <strong>accelerate</strong> reactions but are <strong>not consumed or changed</strong> by them.</li>
+    <li>They take part in every process essential for life: DNA replication and transcription, protein synthesis, metabolism, signal transduction.</li>
+    <li>Most enzymes are proteins. Some <strong>RNAs</strong> can also catalyse reactions on <strong>phosphodiester or peptide bonds</strong>; these are <strong>ribozymes</strong>, far less common than protein enzymes.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="classes">
+  <h2>The six classes</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/classes-1.jpg" width="566" height="608" loading="lazy" decoding="async" alt="The subclasses of oxidoreductases.">
+    <figcaption>The subclasses of oxidoreductases. <span class="lb-credit">Lecture slide 5</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Most class slides are diagrams; the examples follow Lippincott.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Class</th><th scope="col">What it does</th><th scope="col">Examples</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">1. Oxidoreductases</th><td>Oxidation–reduction (moves electrons or H)</td><td>Dehydrogenases (lactate dehydrogenase). <strong>Oxidases</strong> pass H from substrate to O₂, making <strong>H₂O or H₂O₂</strong>. <strong>Oxygenases</strong> put O atoms from O₂ <strong>into the substrate</strong>.</td></tr>
+      <tr><th scope="row">2. Transferases</th><td>Move a group (amino, phosphate, methyl…) from one molecule to another</td><td>Aminotransferases (ALT, AST), kinases</td></tr>
+      <tr><th scope="row">3. Hydrolases</th><td>Break bonds by adding <strong>water</strong></td><td>Lipases, proteases, phosphatases, amylase</td></tr>
+      <tr><th scope="row">4. Lyases</th><td>Break C–C, C–O, C–N bonds <strong>without water or oxidation</strong>, often leaving a double bond (or add groups to one)</td><td>Aldolase, decarboxylases</td></tr>
+      <tr><th scope="row">5. Isomerases</th><td>Rearrange atoms within one molecule</td><td>Triose phosphate isomerase, epimerases, mutases</td></tr>
+      <tr><th scope="row">6. Ligases</th><td>Join two molecules, using energy from <strong>ATP</strong></td><td>DNA ligase, synthetases, pyruvate carboxylase</td></tr>
+    </tbody>
+  </table></div>
+  <aside class="lb-box lb-mnemonic">
+    <span class="lb-box-title">Mnemonic: “Over The HILL”</span>
+    <p><strong>O</strong>xidoreductases, <strong>T</strong>ransferases, <strong>H</strong>ydrolases, <strong>I</strong>somerases, <strong>L</strong>yases, <strong>L</strong>igases. (The official numbering puts lyases 4th and isomerases 5th.)</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="properties">
+  <h2>Properties: active site, specificity, cofactors</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/properties-1.jpg" width="1200" height="383" loading="lazy" decoding="async" alt="Lock-and-key and induced-fit models of substrate binding.">
+    <figcaption>Lock-and-key and induced-fit models of substrate binding. <span class="lb-credit">Lecture slide 12</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/properties-2.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="Cofactors (metal ions) and coenzymes (small organic molecules).">
+    <figcaption>Cofactors (metal ions) and coenzymes (small organic molecules). <span class="lb-credit">Lecture slide 14</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <h3>The active site</h3>
+  <ul>
+    <li>A special <strong>pocket or cleft</strong> formed by the folding of the protein.</li>
+    <li>Its amino acid side chains take part in <strong>substrate binding</strong> and <strong>catalysis</strong>.</li>
+    <li>The substrate binds <strong>non-covalently</strong>, forming the <strong>enzyme–substrate (ES) complex</strong>.</li>
+  </ul>
+  <h3>Two models of binding</h3>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Model</th><th scope="col">Idea</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Lock and key (Fischer)</th><td>The binding site is <strong>rigid</strong>; only a substrate of exactly the right shape fits</td></tr>
+      <tr><th scope="row">Induced fit (Koshland)</th><td>The enzyme is <strong>flexible</strong>; substrate binding changes its shape so a stable complex forms</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Other properties</h3>
+  <ul>
+    <li><strong>Efficiency</strong>: how fast an enzyme turns substrate into product, and how often a collision with substrate succeeds.</li>
+    <li><strong>Specificity</strong>: each enzyme binds one or a very few substrates and catalyses only <strong>one type</strong> of reaction.</li>
+    <li><strong>Location</strong>: most enzymes work inside cells, often in specific organelles, which keeps pathways organised and separate.</li>
+  </ul>
+  <h3>Holoenzyme, apoenzyme, cofactors and coenzymes</h3>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Term</th><th scope="col">Meaning</th><th scope="col">Example</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Apoenzyme</th><td>The protein part alone; <strong>inactive</strong></td><td></td></tr>
+      <tr><th scope="row">Holoenzyme</th><td>Apoenzyme + its non-protein helper; <strong>active</strong></td><td></td></tr>
+      <tr><th scope="row">Cofactor</th><td>A <strong>metal ion</strong> helper</td><td>Zn²⁺, Mg²⁺, Fe²⁺</td></tr>
+      <tr><th scope="row">Coenzyme</th><td>A small <strong>organic</strong> helper, often from a vitamin</td><td>NAD⁺ (niacin), FAD (riboflavin), coenzyme A</td></tr>
+      <tr><th scope="row">Prosthetic group</th><td>A coenzyme <strong>permanently attached</strong> to the enzyme; it returns to its original form after each reaction</td><td><strong>FAD</strong> is reduced to FADH₂ during the reaction, then oxidised back to FAD</td></tr>
+    </tbody>
+  </table></div>
+  <p>Holoenzyme = apoenzyme + cofactor/coenzyme.</p>
+</section>
+
+<section class="lb-section" id="mechanism">
+  <h2>Activation energy and the transition state</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/mechanism-1.jpg" width="679" height="1225" loading="lazy" decoding="async" alt="An enzyme lowers the activation energy but does not change the overall free-energy change of the reaction.">
+    <figcaption>An enzyme lowers the activation energy but does not change the overall free-energy change of the reaction. <span class="lb-credit">Lecture slide 15</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <ul>
+    <li>Most reactions have an <strong>energy barrier</strong> between reactants and products: the <strong>activation energy</strong> (free energy of activation, ΔG‡).</li>
+    <li>It is the energy difference between the reactant and a high-energy intermediate, the <strong>transition state (T*)</strong>: <strong>A ⇄ T* ⇄ B</strong>. Every molecule must pass through T* to become product.</li>
+    <li>The <strong>higher</strong> the activation energy, the <strong>slower</strong> the reaction.</li>
+    <li>An enzyme provides another pathway with a <strong>lower</strong> activation energy (“lowers the hill”), so the reaction goes faster. It does <strong>not</strong> change the energy of the reactants or products, or the equilibrium.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="factors">
+  <h2>Substrate, temperature and pH</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/factors-1.jpg" width="679" height="671" loading="lazy" decoding="async" alt="Effect of temperature: activity rises, then falls as the enzyme is heat-inactivated.">
+    <figcaption>Effect of temperature: activity rises, then falls as the enzyme is heat-inactivated. <span class="lb-credit">Lecture slide 18</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/factors-2.jpg" width="1200" height="396" loading="lazy" decoding="async" alt="Optimum pH of some enzymes.">
+    <figcaption>Optimum pH of some enzymes. <span class="lb-credit">Lecture slide 19</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Enzyme speed depends on <strong>substrate concentration, pH, temperature</strong> and <strong>inhibitors</strong>. Everyday example: sliced apples turn brown by enzyme-driven oxidation; lemon juice (with vitamin C) prevents this by changing the pH around the enzyme.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Factor</th><th scope="col">Effect</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Substrate concentration</th><td>Velocity (v = substrate converted per unit time) rises with [S] until the enzyme is <strong>saturated</strong>: then <strong>Vmax</strong> is reached and more substrate does nothing (at constant enzyme)</td></tr>
+      <tr><th scope="row">Temperature</th><td>Velocity rises with temperature to a <strong>peak</strong>; higher still, the enzyme <strong>denatures</strong> and velocity falls (a bell-shaped curve)</td></tr>
+      <tr><th scope="row">pH</th><td>(1) Enzyme and substrate need certain groups <strong>ionised or un-ionised</strong> to interact; (2) <strong>extreme pH denatures</strong> the enzyme. Each enzyme has an optimum pH</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="mm">
+  <h2>Michaelis–Menten kinetics</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/mm-1.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="Michaelis–Menten curve: Km is the substrate concentration at half Vmax.">
+    <figcaption>Michaelis–Menten curve: Km is the substrate concentration at half Vmax. <span class="lb-credit">Lecture slide 21</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/mm-2.jpg" width="471" height="612" loading="lazy" decoding="async" alt="A small Km means high affinity (enzyme 1); a large Km means low affinity (enzyme 2).">
+    <figcaption>A small Km means high affinity (enzyme 1); a large Km means low affinity (enzyme 2). <span class="lb-credit">Lecture slide 21</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>The <strong>Michaelis–Menten equation</strong> describes how velocity depends on substrate concentration. It assumes the enzyme first <strong>binds</strong> substrate (ES), then makes product. Over time [S] falls and [P] rises.</p>
+  <p><strong>v = Vmax [S] / (Km + [S])</strong></p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Symbol</th><th scope="col">Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>v</td><td>Reaction rate (product formed per unit time); proportional to enzyme concentration: <strong>halve the enzyme → v and Vmax halve</strong></td></tr>
+      <tr><td>Vmax</td><td>Maximum rate, when <strong>all active sites are full</strong></td></tr>
+      <tr><td>[S]</td><td>Substrate concentration</td></tr>
+      <tr><td>Km</td><td>Michaelis constant: <strong>[S] at which v = ½ Vmax</strong>. Low Km = high affinity for substrate</td></tr>
+    </tbody>
+  </table></div>
+  <p>The plot of v against [S] is a <strong>hyperbola</strong>: a steep rise, then a plateau at Vmax.</p>
+  <h3>Reaction order</h3>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Situation</th><th scope="col">Order</th><th scope="col">Rate depends on</th></tr></thead>
+    <tbody>
+      <tr><td>[S] ≪ Km</td><td><strong>First order</strong></td><td>v is roughly <strong>proportional to [S]</strong></td></tr>
+      <tr><td>[S] ≫ Km (at Vmax)</td><td><strong>Zero order</strong></td><td>Only the <strong>enzyme</strong> amount; adding substrate doesn’t help. To make more product, add more enzyme</td></tr>
+    </tbody>
+  </table></div>
+  <p>From the textbook: the <strong>Lineweaver–Burk</strong> (double-reciprocal) plot, 1/v against 1/[S], is a straight line that crosses the y-axis at 1/Vmax and the x-axis at –1/Km. It makes inhibitor effects easy to see.</p>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=CotD9m8Wm78&amp;t=192s" target="_blank" rel="noopener">Medicosis Perfectionalis · Michaelis-Menten Equation &amp; Enzyme Kinetics</a>
+      <span class="lb-when">Watch from 3:12 to the end: the Michaelis–Menten curve, Km and Vmax.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=4eLjRcHnMCk&amp;t=150s" target="_blank" rel="noopener">Ninja Nerd · Biochemistry | Michaelis-Menten Equation</a>
+      <span class="lb-when">Watch from 2:30 to the end: the steady-state assumption, the equation and what Km says about affinity.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="inhibition">
+  <h2>Inhibition</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/inhibition-1.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="Reversible and irreversible inhibition compared.">
+    <figcaption>Reversible and irreversible inhibition compared. <span class="lb-credit">Lecture slide 23</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/inhibition-2.jpg" width="1200" height="792" loading="lazy" decoding="async" alt="Competitive inhibition: the inhibitor competes with the substrate for the active site.">
+    <figcaption>Competitive inhibition: the inhibitor competes with the substrate for the active site. <span class="lb-credit">Lecture slide 24</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/inhibition-3.jpg" width="1200" height="811" loading="lazy" decoding="async" alt="Non-competitive inhibition: the inhibitor binds elsewhere and blocks catalysis.">
+    <figcaption>Non-competitive inhibition: the inhibitor binds elsewhere and blocks catalysis. <span class="lb-credit">Lecture slide 25</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p><strong>Inhibitors</strong> reduce enzyme activity, typically by stopping the active site forming ES. Some cause <strong>temporary</strong>, others <strong>permanent</strong> loss of activity.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Type</th><th scope="col">Binds</th><th scope="col">Vmax</th><th scope="col">Km</th><th scope="col">Notes</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Competitive</th><td>The <strong>active site</strong>; looks like the substrate</td><td><strong>Unchanged</strong>: lots of substrate outcompetes it</td><td><strong>Increased</strong>: more substrate needed for ½ Vmax</td><td>Lineweaver–Burk lines cross on the <strong>y-axis</strong></td></tr>
+      <tr><th scope="row">Noncompetitive</th><td>An <strong>allosteric site</strong> (another site), on E or ES</td><td><strong>Decreased</strong></td><td><strong>Unchanged</strong></td><td>Cannot be overcome by more substrate; lines cross on the <strong>x-axis</strong></td></tr>
+      <tr><th scope="row">Irreversible</th><td>The enzyme, by a <strong>covalent</strong> bond (or very tightly)</td><td>Decreased (enzyme lost)</td><td>—</td><td>Permanent; activity returns only when new enzyme is made (e.g. aspirin acetylating COX)</td></tr>
+    </tbody>
+  </table></div>
+  <aside class="lb-box lb-mnemonic">
+    <span class="lb-box-title">Memory hook</span>
+    <p><strong>C</strong>ompetitive changes the <strong>K</strong>m (both have a “k” sound: “Kompetitive”). <strong>N</strong>oncompetitive lowers Vmax (“<strong>N</strong>o Vmax”).</p>
+  </aside>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=jJUoQMLMV2E&amp;t=110s" target="_blank" rel="noopener">Ninja Nerd · Biochemistry | Enzyme Inhibition</a>
+      <span class="lb-when">Watch from 1:50 to 18:24: competitive and noncompetitive inhibition.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=jJUoQMLMV2E&amp;t=1641s" target="_blank" rel="noopener">Ninja Nerd · Biochemistry | Enzyme Inhibition</a>
+      <span class="lb-when">Watch from 27:21 to the end: irreversible inhibition.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=ieFZBP8Vg4I" target="_blank" rel="noopener">Medicosis Perfectionalis · Competitive vs Non-competitive inhibitors</a>
+      <span class="lb-when">Watch from 0:00 to the end: a 10-minute comparison of the two.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="regulation">
+  <h2>Regulation</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/regulation-1.jpg" width="676" height="460" loading="lazy" decoding="async" alt="Allosteric inhibition and activation.">
+    <figcaption>Allosteric inhibition and activation. <span class="lb-credit">Lecture slide 28</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/regulation-2.jpg" width="679" height="525" loading="lazy" decoding="async" alt="Covalent modification: protein kinases add phosphate; phosphatases remove it.">
+    <figcaption>Covalent modification: protein kinases add phosphate; phosphatases remove it. <span class="lb-credit">Lecture slide 29</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Cells must coordinate many pathways, so enzyme speed is regulated. Most enzymes respond to substrate concentration; beyond that there are three main ways.</p>
+  <h3>1. Allosteric enzymes</h3>
+  <ul>
+    <li>Regulated by <strong>effectors</strong> that bind <strong>non-covalently</strong> at a site <strong>other than the active site</strong>.</li>
+    <li><strong>Negative effectors</strong> inhibit; <strong>positive effectors</strong> activate. They can change substrate affinity (Km), maximal activity (Vmax) or both.</li>
+    <li><strong>Homotropic</strong>: the <strong>substrate itself</strong> is the effector, usually positive: binding at one site helps the other sites (cooperativity, giving a sigmoidal curve).</li>
+    <li><strong>Heterotropic</strong>: the effector is <strong>not the substrate</strong>. Example: <strong>feedback inhibition</strong>, where a pathway’s end product inhibits an early enzyme so unneeded product doesn’t build up.</li>
+  </ul>
+  <h3>2. Covalent modification</h3>
+  <ul>
+    <li>Most often <strong>adding or removing phosphate</strong> on <strong>serine, threonine or tyrosine</strong> (by kinases and phosphatases).</li>
+    <li>One of the main ways cells regulate processes.</li>
+    <li>Depending on the enzyme, the phosphorylated form may be <strong>more or less</strong> active.</li>
+  </ul>
+  <h3>3. Changing the amount of enzyme</h3>
+  <ul>
+    <li>Cells alter the rate of enzyme <strong>degradation</strong> or, more typically, <strong>synthesis</strong>.</li>
+    <li><strong>Induction</strong> (more synthesis) or <strong>repression</strong> (less) changes the total number of active sites. This is slower (hours to days).</li>
+    <li>Used for enzymes needed only at one stage of development or under certain conditions.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="clinical">
+  <h2>Enzymes in diagnosis: LDH and CK</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/clinical-1.jpg" width="486" height="518" loading="lazy" decoding="async" alt="LDH isoenzymes on electrophoresis: LDH₁ rises after myocardial infarction; LDH₅ rises in acute hepatitis.">
+    <figcaption>LDH isoenzymes on electrophoresis: LDH₁ rises after myocardial infarction; LDH₅ rises in acute hepatitis. <span class="lb-credit">Lecture slide 32</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/biochemistry/wk10-11-enzymes/clinical-2.jpg" width="999" height="642" loading="lazy" decoding="async" alt="The three creatine kinase isoenzymes: CK-BB (brain), CK-MB (heart), CK-MM (skeletal muscle).">
+    <figcaption>The three creatine kinase isoenzymes: CK-BB (brain), CK-MB (heart), CK-MM (skeletal muscle). <span class="lb-credit">Lecture slide 33</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Enzyme activity in serum or plasma helps diagnose disease. Blood enzymes form two groups:</p>
+  <ul>
+    <li><strong>Plasma-functional enzymes</strong>: made to work in plasma (e.g. clotting factors).</li>
+    <li><strong>Non-plasma-functional enzymes</strong>: normally inside cells; they appear in blood when cells are <strong>damaged</strong>. These are the diagnostic ones.</li>
+  </ul>
+  <h3>Lactate dehydrogenase (LDH)</h3>
+  <p>Found in heart, liver, muscle, kidney, lung and blood cells; released when cells are damaged. A <strong>tetramer</strong> of two kinds of subunit, coded by different genes: <strong>H</strong> (mainly heart) and <strong>M</strong> (mainly skeletal muscle and liver). Five isoenzymes:</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Isoenzyme</th><th scope="col">Subunits</th><th scope="col">Main tissues</th></tr></thead>
+    <tbody>
+      <tr><td>LDH-1</td><td>H4</td><td>Heart, red blood cells, brain</td></tr>
+      <tr><td>LDH-2</td><td>H3M1</td><td>Reticuloendothelial system</td></tr>
+      <tr><td>LDH-3</td><td>H2M2</td><td>Lungs</td></tr>
+      <tr><td>LDH-4</td><td>H1M3</td><td>Kidneys, placenta, pancreas, brain</td></tr>
+      <tr><td>LDH-5</td><td>M4</td><td>Liver, striated muscle, brain</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Creatine kinase (CK)</h3>
+  <p>Three isoenzymes, each a <strong>dimer</strong> of B (brain) and M (muscle) subunits, each moving differently on electrophoresis:</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Isoenzyme</th><th scope="col">Subunits</th><th scope="col">Tissue</th></tr></thead>
+    <tbody>
+      <tr><td>CK1</td><td>BB</td><td>Brain</td></tr>
+      <tr><td>CK2</td><td><strong>MB</strong></td><td><strong>Heart</strong> (almost exclusive)</td></tr>
+      <tr><td>CK3</td><td>MM</td><td>Skeletal muscle</td></tr>
+    </tbody>
+  </table></div>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: myocardial infarction</span>
+    <p>After a heart attack, <strong>CK-MB</strong> appears in blood within <mark>4–8 hours</mark>, <strong>peaks at 24 hours</strong> and returns to normal within <mark>2–3 days</mark>. Because it clears fast, a second rise suggests a new infarct.</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>6</td><td>Enzyme classes</td></tr>
+      <tr><td>½ Vmax</td><td>Velocity at which [S] = Km</td></tr>
+      <tr><td>[S] ≪ Km / ≫ Km</td><td>First-order / zero-order kinetics</td></tr>
+      <tr><td>5</td><td>LDH isoenzymes (tetramers of H and M)</td></tr>
+      <tr><td>H4 / M4</td><td>LDH-1 (heart) / LDH-5 (liver, muscle)</td></tr>
+      <tr><td>3</td><td>CK isoenzymes (dimers BB, MB, MM)</td></tr>
+      <tr><td>4–8 h / 24 h / 2–3 days</td><td>CK-MB appears / peaks / normalises after MI</td></tr>
+      <tr><td>Ser, Thr, Tyr</td><td>Residues phosphorylated in covalent modification</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">These</th><th scope="col">The difference</th></tr></thead>
+    <tbody>
+      <tr><td>Oxidase vs oxygenase</td><td>Oxidase gives H to O₂ (making H₂O/H₂O₂); oxygenase puts O atoms into the substrate.</td></tr>
+      <tr><td>Hydrolase vs lyase</td><td>Hydrolase uses water; lyase breaks bonds without water or oxidation.</td></tr>
+      <tr><td>Ligase vs lyase</td><td>Ligase joins molecules using ATP; lyase splits (or adds to double bonds) without ATP.</td></tr>
+      <tr><td>Cofactor vs coenzyme</td><td>Metal ion vs organic molecule (often vitamin-derived).</td></tr>
+      <tr><td>Apoenzyme vs holoenzyme</td><td>Protein alone (inactive) vs protein + helper (active).</td></tr>
+      <tr><td>Competitive vs noncompetitive</td><td>Km ↑, Vmax same vs Vmax ↓, Km same.</td></tr>
+      <tr><td>Homotropic vs heterotropic</td><td>Effector is the substrate vs a different molecule.</td></tr>
+      <tr><td>LDH-1 vs LDH-5</td><td>H4, heart and RBC vs M4, liver and muscle.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="watch">
+  <h2>Watch out</h2>
+  <aside class="lb-box lb-watch">
+    <span class="lb-box-title">Watch out: “steady state”</span>
+    <p>Slide 17 says steady state is when the enzyme works at maximum activity. In enzyme kinetics, <strong>steady state</strong> means the concentration of the <strong>ES complex stays constant</strong> (made as fast as it breaks down). Working at maximum activity is <strong>saturation</strong> (Vmax).</p>
+  </aside>
+  <aside class="lb-box lb-watch">
+    <span class="lb-box-title">Watch out: activation energy vs ΔG</span>
+    <p>Slide 15 calls the activation energy “ΔG”. The barrier is the <strong>free energy of activation (ΔG‡)</strong>. ΔG without the ‡ is the overall energy change between reactants and products, which an enzyme does <strong>not</strong> change.</p>
+  </aside>
+  <aside class="lb-box lb-watch">
+    <span class="lb-box-title">Watch out: “solubility curve”</span>
+    <p>Slide 21 calls the v–[S] plot a “hyperbolic solubility curve”. It is a hyperbolic <strong>saturation</strong> curve; solubility has nothing to do with it.</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam trap</span>
+    <ul>
+      <li>Enzymes don’t change the equilibrium or ΔG; they only make it faster to get there.</li>
+      <li>A <strong>low</strong> Km means <strong>high</strong> affinity.</li>
+      <li>Halving the enzyme halves <strong>Vmax</strong>, not Km.</li>
+      <li>At Vmax the reaction is <strong>zero</strong> order in substrate.</li>
+      <li>Noncompetitive inhibition <strong>can’t</strong> be overcome by more substrate.</li>
+      <li>Phosphorylation can activate <strong>or</strong> inhibit, depending on the enzyme.</li>
+      <li>CK-MB, not CK-MM, is the heart marker.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="check">
+  <h2>Check yourself</h2>
+  <ol class="lb-quiz">
+    <li class="lb-q"><p>Catalytic RNA molecules are called:</p>
+      <ol><li>Coenzymes</li><li>Ribozymes</li><li>Isozymes</li><li>Zymogens</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> They act on phosphodiester or peptide bonds.</p></details></li>
+    <li class="lb-q"><p>An enzyme that joins two molecules using ATP belongs to which class?</p>
+      <ol><li>Lyases</li><li>Hydrolases</li><li>Ligases</li><li>Isomerases</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong> For example DNA ligase.</p></details></li>
+    <li class="lb-q"><p>An enzyme that inserts oxygen atoms from O₂ into its substrate is:</p>
+      <ol><li>An oxidase</li><li>An oxygenase</li><li>A hydrolase</li><li>A transferase</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Oxidases pass H to O₂, making H₂O or H₂O₂.</p></details></li>
+    <li class="lb-q"><p>The inactive protein part of an enzyme without its coenzyme is the:</p>
+      <ol><li>Holoenzyme</li><li>Apoenzyme</li><li>Prosthetic group</li><li>Cofactor</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Apoenzyme + coenzyme/cofactor = holoenzyme.</p></details></li>
+    <li class="lb-q"><p>Enzymes speed up reactions by:</p>
+      <ol><li>Raising the energy of the products</li><li>Lowering the activation energy</li><li>Shifting the equilibrium</li><li>Being consumed in the reaction</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> They stabilise the transition state.</p></details></li>
+    <li class="lb-q"><p>Km is defined as:</p>
+      <ol><li>The maximum velocity</li><li>The substrate concentration giving half Vmax</li><li>The enzyme concentration</li><li>Half the substrate concentration</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> A low Km means high affinity.</p></details></li>
+    <li class="lb-q"><p>When [S] is far above Km, the reaction is:</p>
+      <ol><li>First order</li><li>Second order</li><li>Zero order</li><li>Stopped</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong> The enzyme is saturated; rate depends only on enzyme amount.</p></details></li>
+    <li class="lb-q"><p>A competitive inhibitor causes:</p>
+      <ol><li>Vmax ↓, Km unchanged</li><li>Vmax unchanged, Km ↑</li><li>Both ↓</li><li>Both ↑</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Enough substrate can still reach Vmax.</p></details></li>
+    <li class="lb-q"><p>An inhibitor binds an allosteric site and cannot be overcome by adding substrate. It is:</p>
+      <ol><li>Competitive</li><li>Noncompetitive</li><li>A homotropic activator</li><li>A coenzyme</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Vmax falls, Km stays the same.</p></details></li>
+    <li class="lb-q"><p>The end product of a pathway inhibits its first enzyme. This is:</p>
+      <ol><li>Homotropic activation</li><li>Feedback inhibition by a heterotropic effector</li><li>Covalent modification</li><li>Enzyme induction</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> The effector is not the enzyme’s substrate.</p></details></li>
+    <li class="lb-q"><p>Covalent regulation of enzymes most often adds phosphate to:</p>
+      <ol><li>Lysine</li><li>Serine, threonine or tyrosine</li><li>Glycine</li><li>Cysteine</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Kinases add it; phosphatases remove it.</p></details></li>
+    <li class="lb-q"><p>Which LDH isoenzyme is H4 and found mainly in heart and red cells?</p>
+      <ol><li>LDH-1</li><li>LDH-3</li><li>LDH-4</li><li>LDH-5</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>A.</strong> LDH-5 (M4) is liver and muscle.</p></details></li>
+    <li class="lb-q"><p>After a myocardial infarction, CK-MB peaks at about:</p>
+      <ol><li>1 hour</li><li>24 hours</li><li>5 days</li><li>2 weeks</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> It appears at 4–8 h and normalises in 2–3 days.</p></details></li>
+  </ol>
+</section>
+
+<section class="lb-section" id="terms">
+  <h2>Key terms</h2>
+  <dl class="lb-glossary">
+    <dt>Enzyme</dt><dd>Biological catalyst, not consumed in the reaction.</dd>
+    <dt>Ribozyme</dt><dd>Catalytic RNA.</dd>
+    <dt>Active site</dt><dd>Pocket where substrate binds and catalysis happens.</dd>
+    <dt>ES complex</dt><dd>Enzyme bound non-covalently to its substrate.</dd>
+    <dt>Induced fit</dt><dd>Enzyme changes shape when substrate binds.</dd>
+    <dt>Holoenzyme / apoenzyme</dt><dd>Active complete enzyme / inactive protein part.</dd>
+    <dt>Cofactor / coenzyme</dt><dd>Metal ion / organic helper molecule.</dd>
+    <dt>Prosthetic group</dt><dd>Coenzyme permanently bound to the enzyme (e.g. FAD).</dd>
+    <dt>Transition state</dt><dd>High-energy intermediate between reactant and product.</dd>
+    <dt>Activation energy</dt><dd>Energy barrier to reach the transition state.</dd>
+    <dt>Vmax</dt><dd>Maximum velocity when all active sites are full.</dd>
+    <dt>Km</dt><dd>[S] at half Vmax.</dd>
+    <dt>Zero-order kinetics</dt><dd>Rate independent of substrate concentration.</dd>
+    <dt>Allosteric effector</dt><dd>Molecule binding outside the active site to change activity.</dd>
+    <dt>Feedback inhibition</dt><dd>End product inhibiting an early enzyme of its pathway.</dd>
+    <dt>Induction / repression</dt><dd>Increase / decrease of enzyme synthesis.</dd>
+    <dt>Isoenzymes</dt><dd>Different forms of one enzyme in different tissues (LDH, CK).</dd>
+  </dl>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2">Learning objectives</li>
+    <li data-slides="3">What an enzyme is</li>
+    <li data-slides="4-10">The six classes (most slides are diagrams; examples from Lippincott)</li>
+    <li data-slides="11-14">Properties, models, cofactors</li>
+    <li data-slides="15">Activation energy</li>
+    <li data-slides="16-19">Substrate, temperature, pH</li>
+    <li data-slides="20-22">Michaelis–Menten and reaction order</li>
+    <li data-slides="23-26">Inhibition (slides 25–26 partly diagrams)</li>
+    <li data-slides="27-30">Regulation</li>
+    <li data-slides="31-33">LDH and CK</li>
+  </ul>
+</details>
+</article>

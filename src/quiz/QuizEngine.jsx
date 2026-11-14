@@ -15,6 +15,9 @@ import ReviewView from './ReviewView.jsx';
 import Flashcards from './Flashcards.jsx';
 import Dashboard from './Dashboard.jsx';
 import ExamDetail from './ExamDetail.jsx';
+import { GuideReader, GuidesLibrary } from './Guides.jsx';
+import { findGuide } from '../lib/guides.js';
+import { openSubscribeDialog } from '../lib/access.js';
 import { initialSession, restoreSession, serializeSession, sessionReducer } from './session.js';
 import { useHistory, useWrong } from '../hooks/useStore.js';
 import { buildSubjectIndex } from '../lib/questions.js';
@@ -24,6 +27,9 @@ import { recordAnswers } from '../lib/answers.js';
 import { useAuth, signOut } from '../lib/auth.jsx';
 import { useProfile } from '../hooks/useProfile.js';
 import { buildQuizFromTopics, optionOrder, shuffle, uid } from '../lib/utils.js';
+import { drawDailySet } from '../lib/daily.js';
+import { questionsFromRows } from '../lib/questions.js';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTopicKeys } from '../hooks/useTopicKeys.js';
 
 /* Which views need a quiz in progress, and which need a finished result. The
@@ -32,15 +38,22 @@ import { useTopicKeys } from '../hooks/useTopicKeys.js';
 const NEEDS_QUIZ = new Set(['practice', 'exam', 'review-wrong', 'review-after-exam']);
 const NEEDS_RECORD = new Set(['exam-results', 'exam-detail']);
 const VIEWS = new Set([
-  'home', 'study', 'practice-config', 'exam-config', 'flashcards-config', 'flashcards', 'dashboard',
+  'home', 'study', 'practice-config', 'exam-config', 'flashcards-config', 'flashcards', 'dashboard', 'guides',
   ...NEEDS_QUIZ, ...NEEDS_RECORD,
 ]);
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export default function QuizEngine({ config, questions, basePath }) {
+const NO_EXTRA = [];
+
+/* `questions` is the open bank. `extra` holds the questions of the free
+   plan's daily sets from the locked lectures (`daily`, see
+   src/lib/questions.js): they are appended after the bank, so a session can
+   use them, but stay out of the lecture lists. */
+export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, daily = null, basePath }) {
   const store = useMemo(() => createSubjectStore(config.storagePrefix), [config.storagePrefix]);
-  const subjectIndex = useMemo(() => buildSubjectIndex(questions), [questions]);
+  const questions = useMemo(() => (extra.length ? [...bank, ...extra] : bank), [bank, extra]);
+  const subjectIndex = useMemo(() => buildSubjectIndex(bank), [bank]);
   const idToIndex = useMemo(() => {
     const m = new Map();
     questions.forEach((q, i) => m.set(q.id, i));
@@ -111,8 +124,10 @@ export default function QuizEngine({ config, questions, basePath }) {
   }, [questions, optionSeed, optionOrders]);
 
   useEffect(() => {
+    // A guide sets its own scroll position (top, a heading, or where the student stopped).
+    if (view === 'guides' && splat.split('/').length > 1) return;
     window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
-  }, [view]);
+  }, [view, splat]);
 
   useEffect(() => {
     document.title = config.docTitle;
@@ -157,6 +172,37 @@ export default function QuizEngine({ config, questions, basePath }) {
     if (!picked.length) return;
     startSession(mode, picked, chosenTopics.size < allTopicKeys.length);
   }
+
+  /* The free plan's daily set: the server draws it and keeps it, the
+     questions join the cache, and the session starts once they are in. */
+  const queryClient = useQueryClient();
+  const [pendingDaily, setPendingDaily] = useState(null);
+  async function startDaily(mode, request) {
+    let reply;
+    try {
+      reply = await drawDailySet({ subject: config.path, mode, ...request });
+    } catch (e) {
+      toast(e.message || 'Couldn’t start the set. Try again.');
+      if (e.status === 409) queryClient.invalidateQueries({ queryKey: ['questions', config.storagePrefix] });
+      return;
+    }
+    const fresh = questionsFromRows(config, reply.set.rows);
+    queryClient.setQueryData(['questions', config.storagePrefix], (old) => old && ({
+      ...old,
+      extra: [...(old.extra || []), ...fresh],
+      daily: { ...old.daily, sets: { ...(old.daily?.sets || {}), [mode]: { scope: reply.set.scope, ids: reply.set.ids } } },
+    }));
+    setPendingDaily({ mode, ids: reply.set.ids });
+  }
+  useEffect(() => {
+    if (!pendingDaily) return;
+    const picked = pendingDaily.ids.map((id) => idToIndex.get(id)).filter((i) => i !== undefined);
+    if (!picked.length) return; // the new questions haven't arrived yet
+    setPendingDaily(null);
+    // A set from the locked lectures is never the whole subject, so it stays
+    // off the leaderboard.
+    startSession(pendingDaily.mode, picked, true);
+  }, [pendingDaily, idToIndex]); // startSession is a plain function, new each render
 
   function startReviewWrong() {
     const ids = Object.keys(wrong)
@@ -334,7 +380,8 @@ export default function QuizEngine({ config, questions, basePath }) {
       case 'home':
         body = (
           <ModeHome title={subjectTitle}
-                    questionCount={questions.length}
+                    subjectKey={config.path}
+                    questionCount={bank.length}
                     topicCount={topicCount}
                     wrongCount={Object.keys(wrong).length}
                     historyCount={history.length}
@@ -357,6 +404,7 @@ export default function QuizEngine({ config, questions, basePath }) {
                       chosen={chosenTopics} allKeys={allTopicKeys} onChoose={setPickedTopics}
                       examLength={examLength} setExamLength={setExamLength}
                       onStart={() => startConfigured(mode)}
+                      daily={daily} onStartDaily={(request) => startDaily(mode, request)}
                       onHome={goHome} />
         );
         break;
@@ -402,6 +450,25 @@ export default function QuizEngine({ config, questions, basePath }) {
       case 'exam-detail':
         body = <ExamDetail record={record} onBack={() => go('dashboard')} onReview={() => openReview(record)} />;
         break;
+      case 'guides': {
+        const [, folder, slug] = splat.split('/');
+        const read = (g) => go(`guides/${g.path}`);
+        if (!folder || !slug) {
+          body = <GuidesLibrary subjectKey={config.path} subjectTitle={subjectTitle} onBack={goHome} onRead={read} />;
+          break;
+        }
+        // The guide's lectures the student can practise now (a locked one is not in allTopicKeys).
+        const guide = findGuide(config.path, folder, slug);
+        const keys = guide ? guide.topics.map((t) => `${guide.part}::${t}`).filter((k) => allTopicKeys.includes(k)) : [];
+        body = (
+          <GuideReader subjectKey={config.path} subjectTitle={subjectTitle} folder={folder} slug={slug}
+                       canPractise={keys.length > 0}
+                       onPractise={() => { setPickedTopics(new Set(keys)); go('practice-config'); }}
+                       onUnlock={openSubscribeDialog}
+                       onBack={() => go('guides')} onRead={read} />
+        );
+        break;
+      }
       default:
         body = null;
     }

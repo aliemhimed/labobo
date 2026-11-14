@@ -14,6 +14,18 @@
       "port": 5173
     },
     {
+      "name": "labobo-locked",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set LOCK_START=2026-11-01T00:00:00Z&& npx netlify dev"],
+      "port": 5173
+    },
+    {
+      "name": "study-guides",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "study-guides/preview", "--port", "5180", "--strictPort"],
+      "port": 5180
+    },
+    {
       "name": "labobo-preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "preview", "--", "--port", "4173", "--strictPort"],

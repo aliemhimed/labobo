@@ -1,0 +1,300 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct" data-part="Medical Genetics" data-type="lecture"
+         data-lectures="16" data-topic="MG Wk 16: DNA Repair and Xeroderma Pigmentosum"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT I · Medical Genetics · Week 16</p>
+  <h1>DNA Repair Systems and Xeroderma Pigmentosum</h1>
+  <p class="lb-lede">Why cells must repair DNA, the main kinds of damage, the five repair systems (BER, NER, MMR, HR, NHEJ) and what each fixes, and xeroderma pigmentosum, where a broken NER system makes sunlight dangerous.</p>
+  <span class="lb-topic-name">Labobo topic: MG Wk 16: DNA Repair and Xeroderma Pigmentosum</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>Repair fixes damage <strong>before</strong> replication makes it permanent; without repair the mutation rate would be incompatible with life.</li>
+    <li>Damage types: <strong>altered bases</strong> (deamination, oxidation, alkylation), <strong>bulky lesions</strong> (UV thymine dimers), <strong>strand breaks</strong> (single, double).</li>
+    <li><strong>BER</strong>: small base damage; <strong>DNA glycosylase</strong> → AP site → AP endonuclease → polymerase → ligase.</li>
+    <li><strong>NER</strong>: bulky, helix-distorting lesions; detects <strong>distortion</strong>, cuts <strong>both sides</strong>, removes a short stretch, refills.</li>
+    <li><strong>MMR</strong>: mismatches and small loops escaping proofreading.</li>
+    <li>Double-strand breaks: <strong>HR</strong> (accurate, uses <strong>sister chromatid</strong>, S/G2) and <strong>NHEJ</strong> (fast, any phase, <strong>error-prone</strong>).</li>
+    <li><strong>Xeroderma pigmentosum</strong>: autosomal recessive NER defect (<strong>XPA–XPG</strong>), no unscheduled DNA synthesis, extreme UV sensitivity, skin cancer risk <strong>thousands</strong> of times higher.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>By the end you can:</p>
+  <ul>
+    <li>explain why DNA repair is essential;</li>
+    <li>describe the main types of DNA damage, especially UV pyrimidine dimers;</li>
+    <li>outline nucleotide excision repair step by step and compare it with BER and MMR;</li>
+    <li>describe HR and NHEJ for double-strand breaks;</li>
+    <li>explain the genetics, cell biology and clinical features of xeroderma pigmentosum.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#why">Why cells need repair</a></li>
+    <li><a href="#damage">Types of DNA damage</a></li>
+    <li><a href="#systems">The repair systems at a glance</a></li>
+    <li><a href="#ber">Base excision repair</a></li>
+    <li><a href="#ner">Nucleotide excision repair</a></li>
+    <li><a href="#dsb">Double-strand break repair</a></li>
+    <li><a href="#xp">Xeroderma pigmentosum</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#check">Check yourself</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="why">
+  <h2>Why cells need DNA repair</h2>
+  <ul>
+    <li>Mutations arise constantly from replication errors, tautomeric shifts, slippage, and mutagens (UV, ionising radiation, chemicals). Most are neutral or harmful.</li>
+    <li>Polymerases and <strong>proofreading</strong> are accurate but not perfect; damage can block replication or cause wrong pairing.</li>
+    <li>Damage not fixed before replication becomes a <strong>permanent mutation</strong> in both daughter cells.</li>
+    <li>Repair systems <strong>monitor</strong> the genome, <strong>recognise</strong> abnormal DNA, <strong>remove</strong> it, and <strong>restore</strong> the sequence using the undamaged strand as a template.</li>
+    <li>They don’t undo mutations already fixed, but they greatly <strong>reduce</strong> how many form. Without them the mutation rate would be <strong>incompatible with life</strong>.</li>
+    <li>When repair fails, damage accumulates → more mutations → genetic disease and <strong>cancer</strong> (e.g. xeroderma pigmentosum).</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="damage">
+  <h2>Types of DNA damage</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/genetics/wk16-dna-repair-xp/damage-1.jpg" width="1200" height="656" loading="lazy" decoding="async" alt="Deamination: cytosine → uracil, guanine → xanthine, adenine → hypoxanthine, 5-methylcytosine → thymine.">
+    <figcaption>Deamination: cytosine → uracil, guanine → xanthine, adenine → hypoxanthine, 5-methylcytosine → thymine. <span class="lb-credit">Lecture slide 5</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Type</th><th scope="col">Examples</th><th scope="col">Problem</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Altered individual bases</th><td><strong>Deamination</strong>, <strong>oxidation</strong>, <strong>alkylation</strong></td><td>Wrong pairing at replication</td></tr>
+      <tr><th scope="row">Bulky, helix-distorting lesions</th><td><strong>Pyrimidine (thymine) dimers</strong> from UV</td><td>Distort the helix; block replication and transcription</td></tr>
+      <tr><th scope="row">Backbone breaks</th><td><strong>Single-strand</strong> and <strong>double-strand</strong> breaks</td><td>Double-strand breaks are the most dangerous: rearrangements or cell death</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="systems">
+  <h2>The repair systems at a glance</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/genetics/wk16-dna-repair-xp/systems-1.jpg" width="1200" height="810" loading="lazy" decoding="async" alt="Mismatch repair: a wrong base in the new strand is cut out with its neighbours and replaced.">
+    <figcaption>Mismatch repair: a wrong base in the new strand is cut out with its neighbours and replaced. <span class="lb-credit">Lecture slide 10</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">System</th><th scope="col">Damage it fixes</th><th scope="col">Accuracy / note</th></tr></thead>
+    <tbody>
+      <tr><th scope="row" colspan="3">Single-strand / base damage</th></tr>
+      <tr><td><strong>Base excision repair (BER)</strong></td><td>Small, <strong>non-bulky</strong> base damage: deamination, oxidation, alkylation</td><td>Runs continuously in all cells</td></tr>
+      <tr><td><strong>Nucleotide excision repair (NER)</strong></td><td><strong>Bulky</strong>, helix-distorting lesions: UV <strong>thymine dimers</strong></td><td>Defective in xeroderma pigmentosum</td></tr>
+      <tr><td><strong>Mismatch repair (MMR)</strong></td><td>Base <strong>mismatches</strong> and small insertion–deletion loops that escaped proofreading</td><td>Defective in Lynch syndrome</td></tr>
+      <tr><th scope="row" colspan="3">Double-strand breaks</th></tr>
+      <tr><td><strong>Homologous recombination (HR)</strong></td><td>Double-strand breaks, using a homologous template</td><td><strong>Accurate</strong></td></tr>
+      <tr><td><strong>Non-homologous end joining (NHEJ)</strong></td><td>Double-strand breaks, joining ends directly</td><td>Fast but <strong>error-prone</strong></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="ber">
+  <h2>Base excision repair (BER)</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/genetics/wk16-dna-repair-xp/ber-1.jpg" width="720" height="576" loading="lazy" decoding="async" alt="Base excision repair: glycosylase removes the base, AP endonuclease cuts the backbone, polymerase fills, ligase seals.">
+    <figcaption>Base excision repair: glycosylase removes the base, AP endonuclease cuts the backbone, polymerase fills, ligase seals. <span class="lb-credit">Lecture slide 8</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Fixes small chemical changes that <strong>don’t distort</strong> the helix but alter pairing. These arise often from spontaneous reactions, so BER works all the time.</p>
+  <ol class="lb-flow">
+    <li><strong>DNA glycosylase</strong> recognises the damaged base and removes it by cutting the base–sugar bond → an <strong>abasic (AP) site</strong>.</li>
+    <li><strong>AP endonuclease</strong> cuts the backbone at the AP site.</li>
+    <li><strong>DNA polymerase</strong> inserts the correct nucleotide using the complementary strand.</li>
+    <li><strong>DNA ligase</strong> seals the nick.</li>
+  </ol>
+</section>
+
+<section class="lb-section" id="ner">
+  <h2>Nucleotide excision repair (NER)</h2>
+<div class="lb-figures lb-figures-2" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/genetics/wk16-dna-repair-xp/ner-1.jpg" width="597" height="540" loading="lazy" decoding="async" alt="Nucleotide excision repair: the helix is opened, a stretch around the damage is cut out, then filled and sealed.">
+    <figcaption>Nucleotide excision repair: the helix is opened, a stretch around the damage is cut out, then filled and sealed. <span class="lb-credit">Lecture slide 9</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/genetics/wk16-dna-repair-xp/ner-2.jpg" width="1200" height="1054" loading="lazy" decoding="async" alt="The NER proteins, including the XP proteins.">
+    <figcaption>The NER proteins, including the XP proteins. <span class="lb-credit">Lecture slide 14</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <p>Fixes <strong>bulky</strong> lesions that distort the helix. The best-known is the UV <strong>thymine dimer</strong>: abnormal covalent bonds between adjacent thymines.</p>
+  <ol class="lb-flow">
+    <li><strong>Recognition</strong>: NER does not detect a specific chemical change; it detects the <strong>distortion</strong> in DNA shape.</li>
+    <li><strong>Unwinding</strong>: repair proteins bind and locally unwind the DNA.</li>
+    <li><strong>Excision</strong>: endonucleases cut the damaged strand on <strong>both sides</strong> of the lesion, removing a short stretch of nucleotides.</li>
+    <li><strong>Resynthesis</strong>: DNA polymerase fills the gap using the undamaged strand.</li>
+    <li><strong>Ligation</strong>: DNA ligase seals the strand.</li>
+  </ol>
+  <aside class="lb-box lb-key">
+    <span class="lb-box-title">BER vs NER</span>
+    <p>BER removes <strong>one damaged base</strong>, found by a specific glycosylase. NER removes a <strong>stretch of nucleotides</strong>, found by helix <strong>distortion</strong>.</p>
+  </aside>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=5eB-GOJvsqM" target="_blank" rel="noopener">Medicosis Perfectionalis · How DNA Repairs Itself (Proofreading, Mismatch, Excision Repair)</a>
+      <span class="lb-when">Watch from 0:00 to 13:07: how mismatch and excision repair work.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="dsb">
+  <h2>Double-strand break repair</h2>
+<div class="lb-figures" data-auto="slides">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/genetics/wk16-dna-repair-xp/dsb-1.jpg" width="564" height="390" loading="lazy" decoding="async" alt="Double-strand breaks are joined by non-homologous end joining (may lose bases) or homologous recombination (accurate).">
+    <figcaption>Double-strand breaks are joined by non-homologous end joining (may lose bases) or homologous recombination (accurate). <span class="lb-credit">Lecture slide 11</span></figcaption>
+  </figure>
+</div><!-- /slides -->
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">Homologous recombination (HR)</th><th scope="col">Non-homologous end joining (NHEJ)</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Template</th><td>A homologous sequence, usually the <strong>sister chromatid</strong>; broken ends invade it and copy the missing information</td><td><strong>None</strong>: ends are processed and joined directly</td></tr>
+      <tr><th scope="row">When</th><td>Mainly <strong>S and G2</strong> (sister chromatid present)</td><td><strong>Any phase</strong>; key in non-dividing cells</td></tr>
+      <tr><th scope="row">Accuracy</th><td><strong>High</strong>; prevents rearrangements</td><td><strong>Error-prone</strong>: small insertions or deletions</td></tr>
+      <tr><th scope="row">If it fails</th><td>—</td><td>Chromosomal instability and cell death</td></tr>
+    </tbody>
+  </table></div>
+  <p>Double-strand breaks are so dangerous because both strands are broken, removing the usual template.</p>
+</section>
+
+<section class="lb-section" id="xp">
+  <h2>Xeroderma pigmentosum (XP)</h2>
+  <h3>Genetic basis</h3>
+  <ul>
+    <li><strong>Autosomal recessive</strong>.</li>
+    <li>Mutations in genes for <strong>NER</strong> proteins, the <strong>XP genes</strong>, grouped in complementation groups <strong>XPA through XPG</strong>.</li>
+    <li>UV makes <strong>thymine dimers</strong>; normal cells remove them by NER. In XP the dimers <strong>accumulate</strong>; replication across them causes errors → a huge rise in mutations, especially in <strong>sun-exposed skin</strong>.</li>
+    <li>Lab hallmark: XP cells <strong>fail to carry out unscheduled DNA synthesis</strong> (the repair synthesis normally seen after UV), linking XP directly to defective NER.</li>
+  </ul>
+  <h3>Clinical features</h3>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Stage</th><th scope="col">Features</th></tr></thead>
+    <tbody>
+      <tr><td>Early childhood</td><td>Severe <strong>sunburn</strong>, redness and blistering after <strong>minimal</strong> sun</td></tr>
+      <tr><td>Progression</td><td>Dry, thin, fragile skin; <strong>freckling</strong> and abnormal pigmentation young; <strong>premature ageing</strong> of sun-exposed skin</td></tr>
+      <tr><td>Cancer</td><td><strong>Basal cell carcinoma, squamous cell carcinoma, melanoma</strong>, often in childhood or adolescence; risk <strong>thousands of times</strong> higher than normal</td></tr>
+      <tr><td>Some forms</td><td><strong>Neurological</strong> problems: developmental delay, hearing loss, progressive neurodegeneration (repair also matters in long-lived neurons)</td></tr>
+    </tbody>
+  </table></div>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic</span>
+    <p>Management is strict <strong>UV protection</strong> (avoid sunlight, protective clothing, sunscreen, UV-filtering windows) and frequent skin checks to remove cancers early. Children with XP are sometimes called “children of the night”.</p>
+  </aside>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=wklWGURTUi8" target="_blank" rel="noopener">Medicosis Perfectionalis · Xeroderma Pigmentosum</a>
+      <span class="lb-when">Watch from 0:00 to the end: how a nucleotide excision repair defect causes XP.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">These</th><th scope="col">The difference</th></tr></thead>
+    <tbody>
+      <tr><td>BER vs NER</td><td>Small base change, glycosylase, one base vs bulky distortion, cut both sides, a stretch.</td></tr>
+      <tr><td>NER vs MMR</td><td>Damaged DNA (UV) vs replication mistakes (normal bases mispaired).</td></tr>
+      <tr><td>HR vs NHEJ</td><td>Template, accurate, S/G2 vs no template, error-prone, any phase.</td></tr>
+      <tr><td>XP vs Lynch</td><td>NER defect, skin cancer vs MMR defect, colorectal cancer.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam trap</span>
+    <ul>
+      <li>Thymine dimers are repaired by <strong>NER</strong>, not BER.</li>
+      <li>The first enzyme of BER is a <strong>glycosylase</strong>, making an AP site.</li>
+      <li>HR needs a <strong>sister chromatid</strong>, so it works in S/G2.</li>
+      <li>NHEJ is the <strong>error-prone</strong> one.</li>
+      <li>XP is <strong>autosomal recessive</strong> and shows no unscheduled DNA synthesis.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="check">
+  <h2>Check yourself</h2>
+  <ol class="lb-quiz">
+    <li class="lb-q"><p>UV light mainly causes which lesion?</p>
+      <ol><li>Double-strand breaks</li><li>Thymine dimers</li><li>Deaminated cytosine</li><li>Mismatches</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Which pathway repairs a deaminated base?</p>
+      <ol><li>Base excision repair</li><li>NHEJ</li><li>Homologous recombination</li><li>NER only</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>A.</strong></p></details></li>
+    <li class="lb-q"><p>The first step of base excision repair is:</p>
+      <ol><li>AP endonuclease cutting</li><li>DNA glycosylase removing the base</li><li>Ligation</li><li>Unwinding</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> Creating an AP site.</p></details></li>
+    <li class="lb-q"><p>NER recognises damage by detecting:</p>
+      <ol><li>A specific base change</li><li>Distortion of the double helix</li><li>Methylation</li><li>A free 3′ end</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Errors that escape proofreading during replication are fixed by:</p>
+      <ol><li>Mismatch repair</li><li>NER</li><li>NHEJ</li><li>BER only</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>A.</strong></p></details></li>
+    <li class="lb-q"><p>Which double-strand break repair is accurate and uses the sister chromatid?</p>
+      <ol><li>NHEJ</li><li>Homologous recombination</li><li>BER</li><li>MMR</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>NHEJ is especially important in:</p>
+      <ol><li>Only S phase</li><li>Non-dividing cells</li><li>Gametes only</li><li>Bacteria only</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> It works in any phase without a template.</p></details></li>
+    <li class="lb-q"><p>Xeroderma pigmentosum is caused by a defect in:</p>
+      <ol><li>Mismatch repair</li><li>Nucleotide excision repair</li><li>Homologous recombination</li><li>Telomerase</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong> XP genes XPA–XPG.</p></details></li>
+    <li class="lb-q"><p>A laboratory hallmark of XP cells after UV is:</p>
+      <ol><li>Excess unscheduled DNA synthesis</li><li>Failure of unscheduled DNA synthesis</li><li>High sister chromatid exchange</li><li>Microsatellite instability</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>XP is inherited as:</p>
+      <ol><li>Autosomal dominant</li><li>Autosomal recessive</li><li>X-linked</li><li>Mitochondrial</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+  </ol>
+</section>
+
+<section class="lb-section" id="terms">
+  <h2>Key terms</h2>
+  <dl class="lb-glossary">
+    <dt>Proofreading</dt><dd>Polymerase checking and correcting its own errors.</dd>
+    <dt>Thymine dimer</dt><dd>Covalent link between adjacent thymines from UV.</dd>
+    <dt>DNA glycosylase</dt><dd>Removes a damaged base, leaving an AP site.</dd>
+    <dt>AP site</dt><dd>Abasic (apurinic/apyrimidinic) site.</dd>
+    <dt>BER / NER / MMR</dt><dd>Base excision / nucleotide excision / mismatch repair.</dd>
+    <dt>Homologous recombination</dt><dd>Accurate DSB repair using a homologous template.</dd>
+    <dt>NHEJ</dt><dd>Error-prone DSB repair joining ends directly.</dd>
+    <dt>Unscheduled DNA synthesis</dt><dd>Repair DNA synthesis outside S phase.</dd>
+    <dt>Complementation group</dt><dd>Group of patients whose defect lies in the same gene.</dd>
+    <dt>Xeroderma pigmentosum</dt><dd>Recessive NER defect with extreme UV sensitivity.</dd>
+  </dl>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2">Objectives</li>
+    <li data-slides="3-4">Why repair</li>
+    <li data-slides="5-6">Types of damage</li>
+    <li data-slides="7">Repair systems overview</li>
+    <li data-slides="8">BER</li>
+    <li data-slides="9">NER</li>
+    <li data-slides="11-12">HR and NHEJ</li>
+    <li data-slides="14-15">Xeroderma pigmentosum</li>
+  </ul>
+</details>
+</article>

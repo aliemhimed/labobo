@@ -715,3 +715,17 @@ button.history-row:hover { background: var(--sheet); }
   box-shadow: 0 0 0 var(--hard);
 }
 .count-picker .sf-panel { margin-top: 14px; }
+
+/* The free plan's daily set from the locked lectures (DailyCard). */
+.daily-card {
+  margin: 28px 0 0;
+  padding: 18px 18px 20px;
+  border: var(--line) solid var(--edge);
+  border-radius: var(--r-control);
+  background: var(--hema-wash);
+  box-shadow: 4px 4px 0 var(--hard);
+}
+.daily-card h2 { margin: 0 0 8px; font: 800 var(--t-18)/1.25 var(--font-display); letter-spacing: -0.01em; }
+.daily-card p { margin: 0 0 14px; color: var(--ink-soft); font: 500 var(--t-14)/1.5 var(--font-ui); }
+.daily-actions { margin-top: 14px; }
+.daily-actions .btn { max-width: 100%; white-space: normal; }

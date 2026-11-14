@@ -3,6 +3,7 @@ import { loadQuestions } from '../lib/questions.js';
 
 const NO_QUESTIONS = [];
 const NOTHING_LOCKED = [];
+const NO_EXTRA = [];
 
 /** Query options for a subject's bank. Shared with the home page, which
     prefetches a bank when a subject card is hovered or touched, so the
@@ -23,8 +24,9 @@ export function questionsQuery(config) {
 }
 
 /** Fetches a subject's question bank.
-    Returns { questions, locked, status, error, reload }; `locked` lists the
-    lectures the student's plan leaves out (see loadQuestions).
+    Returns { questions, locked, extra, daily, status, error, reload };
+    `locked` lists the lectures the student's plan leaves out; `daily` and
+    `extra` are the free plan's daily sets (see loadQuestions).
 
     Cached by React Query for the life of the page, so going home and back
     into a subject doesn't re-download its bank. The bank is never refetched
@@ -37,6 +39,8 @@ export function useQuestions(config) {
 
   const questions = query.data?.questions ?? NO_QUESTIONS;
   const locked = query.data?.locked ?? NOTHING_LOCKED;
+  const extra = query.data?.extra ?? NO_EXTRA;
+  const daily = query.data?.daily ?? null;
   // A manual reload shows the loading screen again, as it did before caching.
   let status;
   if (query.isPending || (query.isFetching && !questions.length)) status = 'loading';
@@ -46,6 +50,8 @@ export function useQuestions(config) {
   return {
     questions,
     locked,
+    extra,
+    daily,
     status,
     error: status === 'error' ? query.error : null,
     reload: () => query.refetch(),
