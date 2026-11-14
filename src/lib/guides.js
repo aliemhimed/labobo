@@ -1,7 +1,10 @@
 /* The study guides that are on the site (src/lib/guides.json, written by
    study-guides/publish.cjs) and the "Continue reading" note kept on this
-   device. The guide text itself is a static file in public/guides/. */
+   device. The guide text comes from /api/guide (netlify/functions/guide.js),
+   which applies the same rule as the questions: free lectures for everyone,
+   the rest with a pass or trial. */
 import MANIFEST from './guides.json';
+import { authHeader } from './supabaseClient.js';
 
 /** { scope, note, parts, guides } for a subject, or null if it has none. */
 export function guidesFor(subjectKey) {
@@ -13,14 +16,29 @@ export function findGuide(subjectKey, folder, slug) {
   return guidesFor(subjectKey)?.guides.find((g) => g.folder === folder && g.slug === slug) || null;
 }
 
+/** The guide's HTML. Throws an Error with `.locked` when it needs a pass. */
 export async function fetchGuide(subjectKey, guide, signal) {
-  const res = await fetch(`/guides/${subjectKey}/${guide.path}.html`, { signal });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const q = new URLSearchParams({ subject: subjectKey, path: guide.path });
+  const res = await fetch(`/api/guide?${q}`, { signal, headers: await authHeader() });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const err = new Error(data.error || `HTTP ${res.status}`);
+    err.status = res.status;
+    err.locked = !!data.locked;
+    throw err;
+  }
   const html = await res.text();
   // Only our own fragments: anything else (the app's index.html served for
   // a missing file) means the guide is not there.
   if (!html.trimStart().startsWith('<article class="lb-guide"')) throw new Error('This guide is not available');
   return html;
+}
+
+/** { "<path>": true | false }: which of a subject's guides this student can read. */
+export async function fetchGuideAccess(subjectKey, signal) {
+  const res = await fetch(`/api/guide?${new URLSearchParams({ subject: subjectKey, list: '1' })}`, { signal, headers: await authHeader() });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return (await res.json()).open || {};
 }
 
 const LAST_KEY = 'labobo-last-guide';

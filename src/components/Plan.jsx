@@ -478,6 +478,8 @@ export function SubscribeDialogHost() {
     const kind = data ? `${data.locked}:${data.access}:${data.device?.ok !== false}` : undefined;
     if (kind && lastKind.current && kind !== lastKind.current) {
       queryClient.invalidateQueries({ queryKey: ['questions'] });
+      queryClient.invalidateQueries({ queryKey: ['guide-access'] });
+      queryClient.invalidateQueries({ queryKey: ['guide'] });
     }
     if (kind) lastKind.current = kind;
   }, [data, queryClient]);
@@ -505,6 +507,8 @@ function SubscribeDialog({ onClose }) {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['access'] });
       await queryClient.invalidateQueries({ queryKey: ['questions'] });
+      queryClient.invalidateQueries({ queryKey: ['guide-access'] });
+      queryClient.invalidateQueries({ queryKey: ['guide'] });
     },
   });
   const receipt = useMutation({

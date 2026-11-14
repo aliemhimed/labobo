@@ -454,7 +454,7 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
         const [, folder, slug] = splat.split('/');
         const read = (g) => go(`guides/${g.path}`);
         if (!folder || !slug) {
-          body = <GuidesLibrary subjectKey={config.path} subjectTitle={subjectTitle} onBack={goHome} onRead={read} />;
+          body = <GuidesLibrary subjectKey={config.path} subjectTitle={subjectTitle} onBack={goHome} onRead={read} onUnlock={openSubscribeDialog} />;
           break;
         }
         // The guide's lectures the student can practise now (a locked one is not in allTopicKeys).

@@ -25,7 +25,8 @@
     "minutes": 22,
     "videos": 14,
     "pictures": 14,
-    "quiz": 12
+    "quiz": 12,
+    "table": "gct_biochemistry"
    },
    {
     "subject": "gct",
@@ -43,7 +44,8 @@
     "minutes": 16,
     "videos": 5,
     "pictures": 14,
-    "quiz": 12
+    "quiz": 12,
+    "table": "gct_biochemistry"
    },
    {
     "subject": "gct",
@@ -61,7 +63,8 @@
     "minutes": 13,
     "videos": 3,
     "pictures": 9,
-    "quiz": 12
+    "quiz": 12,
+    "table": "gct_biochemistry"
    },
    {
     "subject": "gct",
@@ -79,7 +82,8 @@
     "minutes": 13,
     "videos": 5,
     "pictures": 13,
-    "quiz": 11
+    "quiz": 11,
+    "table": "gct_biochemistry"
    },
    {
     "subject": "gct",
@@ -97,7 +101,8 @@
     "minutes": 15,
     "videos": 5,
     "pictures": 19,
-    "quiz": 12
+    "quiz": 12,
+    "table": "gct_biochemistry"
    },
    {
     "subject": "gct",
@@ -115,7 +120,8 @@
     "minutes": 17,
     "videos": 10,
     "pictures": 20,
-    "quiz": 13
+    "quiz": 13,
+    "table": "gct_biochemistry"
    },
    {
     "subject": "gct",
@@ -133,7 +139,8 @@
     "minutes": 18,
     "videos": 9,
     "pictures": 17,
-    "quiz": 13
+    "quiz": 13,
+    "table": "gct_biochemistry"
    },
    {
     "subject": "gct",
@@ -151,7 +158,8 @@
     "minutes": 12,
     "videos": 4,
     "pictures": 6,
-    "quiz": 12
+    "quiz": 12,
+    "table": "gct_genetics"
    },
    {
     "subject": "gct",
@@ -169,7 +177,8 @@
     "minutes": 10,
     "videos": 3,
     "pictures": 5,
-    "quiz": 11
+    "quiz": 11,
+    "table": "gct_genetics"
    },
    {
     "subject": "gct",
@@ -187,7 +196,8 @@
     "minutes": 12,
     "videos": 4,
     "pictures": 9,
-    "quiz": 12
+    "quiz": 12,
+    "table": "gct_genetics"
    },
    {
     "subject": "gct",
@@ -205,7 +215,8 @@
     "minutes": 8,
     "videos": 1,
     "pictures": 4,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_genetics"
    },
    {
     "subject": "gct",
@@ -223,7 +234,8 @@
     "minutes": 10,
     "videos": 0,
     "pictures": 5,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_genetics"
    },
    {
     "subject": "gct",
@@ -241,7 +253,8 @@
     "minutes": 8,
     "videos": 0,
     "pictures": 3,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_genetics"
    },
    {
     "subject": "gct",
@@ -259,7 +272,8 @@
     "minutes": 8,
     "videos": 1,
     "pictures": 4,
-    "quiz": 11
+    "quiz": 11,
+    "table": "gct_genetics"
    },
    {
     "subject": "gct",
@@ -277,7 +291,8 @@
     "minutes": 8,
     "videos": 2,
     "pictures": 4,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_molecular_biology"
    },
    {
     "subject": "gct",
@@ -295,7 +310,8 @@
     "minutes": 9,
     "videos": 2,
     "pictures": 4,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_molecular_biology"
    },
    {
     "subject": "gct",
@@ -313,7 +329,8 @@
     "minutes": 9,
     "videos": 0,
     "pictures": 12,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_molecular_biology"
    },
    {
     "subject": "gct",
@@ -331,7 +348,8 @@
     "minutes": 11,
     "videos": 4,
     "pictures": 13,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_molecular_biology"
    },
    {
     "subject": "gct",
@@ -349,7 +367,8 @@
     "minutes": 12,
     "videos": 3,
     "pictures": 9,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_molecular_biology"
    },
    {
     "subject": "gct",
@@ -367,7 +386,8 @@
     "minutes": 9,
     "videos": 5,
     "pictures": 5,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_molecular_biology"
    },
    {
     "subject": "gct",
@@ -385,7 +405,8 @@
     "minutes": 10,
     "videos": 0,
     "pictures": 0,
-    "quiz": 12
+    "quiz": 12,
+    "table": "gct_histology"
    },
    {
     "subject": "gct",
@@ -403,7 +424,8 @@
     "minutes": 7,
     "videos": 0,
     "pictures": 0,
-    "quiz": 11
+    "quiz": 11,
+    "table": "gct_histology"
    },
    {
     "subject": "gct",
@@ -421,7 +443,8 @@
     "minutes": 9,
     "videos": 5,
     "pictures": 5,
-    "quiz": 11
+    "quiz": 11,
+    "table": "gct_histology"
    },
    {
     "subject": "gct",
@@ -439,7 +462,8 @@
     "minutes": 8,
     "videos": 4,
     "pictures": 4,
-    "quiz": 11
+    "quiz": 11,
+    "table": "gct_histology"
    },
    {
     "subject": "gct",
@@ -457,7 +481,8 @@
     "minutes": 6,
     "videos": 2,
     "pictures": 1,
-    "quiz": 10
+    "quiz": 10,
+    "table": "gct_histology"
    },
    {
     "subject": "gct",
@@ -475,7 +500,8 @@
     "minutes": 6,
     "videos": 2,
     "pictures": 8,
-    "quiz": 9
+    "quiz": 9,
+    "table": "gct_histology"
    },
    {
     "subject": "gct",
@@ -493,7 +519,8 @@
     "minutes": 6,
     "videos": 1,
     "pictures": 4,
-    "quiz": 11
+    "quiz": 11,
+    "table": "gct_histology"
    }
   ]
  }

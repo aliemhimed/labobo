@@ -3,13 +3,36 @@ import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from '../components/Icons.jsx';
 import PageHead from '../components/PageHead.jsx';
-import { fetchGuide, findGuide, guidesFor, rememberGuide } from '../lib/guides.js';
+import { fetchGuide, fetchGuideAccess, findGuide, guidesFor, rememberGuide } from '../lib/guides.js';
+import { useAuth } from '../lib/auth.jsx';
 import '../../study-guides/lb-guide.css';
 import '../styles/guides.css';
 
 /* A subject's study guides: the card on the subject's start screen, the
-   list (one tab per part), and the guide itself. The guides are static
-   files written by study-guides/publish.cjs; this only shows them. */
+   list (one tab per part), and the guide itself. The server decides who may
+   read which guide (netlify/functions/guide.js): the free lectures for
+   everyone, the rest with a pass or trial. `loadHtml` and `loadAccess`
+   replace the server calls in the dev-only preview page. */
+
+const Lock = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="4.5" y="10.5" width="15" height="10" rx="2.5" />
+    <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+  </svg>
+);
+
+/** { "<path>": open? } for this student, or {} while loading or if it fails (the reader still checks). */
+function useGuideAccess(subjectKey, loadAccess) {
+  const { user } = useAuth();
+  const { data } = useQuery({
+    queryKey: ['guide-access', subjectKey, user?.id],
+    queryFn: ({ signal }) => (loadAccess || fetchGuideAccess)(subjectKey, signal),
+    staleTime: 5 * 60_000,
+    retry: 1,
+  });
+  return data || {};
+}
 
 const PART_ICON = { Biochemistry: '⚗️', 'Medical Genetics': '🧬', 'Molecular Biology': '🔬', Histology: '🩻' };
 
@@ -38,8 +61,10 @@ export function GuidesCard({ subjectKey, onOpen }) {
 }
 
 /** All guides of a subject, one tab per part. */
-export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead }) {
+export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead, onUnlock, loadAccess }) {
   const m = guidesFor(subjectKey);
+  const open = useGuideAccess(subjectKey, loadAccess);
+  const lockedCount = m ? m.guides.filter((g) => open[g.path] === false).length : 0;
   const [part, setPart] = useState(() => {
     try { return sessionStorage.getItem(`labobo-guides-part:${subjectKey}`) || m?.parts[0]; } catch { return m?.parts[0]; }
   });
@@ -56,6 +81,12 @@ export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead }) {
         Read a lecture, watch the clips inside it, then practise its questions. Guides for the lectures {m.note} are
         here now; the rest are on the way.
       </p>
+      {lockedCount ? (
+        <div className="guides-locked-note">
+          <p>The first two lectures of each part are free. The other {lockedCount} guides come with a pass.</p>
+          <button type="button" className="btn sm primary" onClick={onUnlock}>Unlock everything</button>
+        </div>
+      ) : null}
 
       <div className="guides-tabs" role="tablist" aria-label="Part">
         {m.parts.map((p) => (
@@ -68,10 +99,14 @@ export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead }) {
       </div>
 
       <ul className="guides-list">
-        {m.guides.filter((g) => g.part === shown).map((g) => (
+        {m.guides.filter((g) => g.part === shown).map((g) => {
+          const locked = open[g.path] === false;
+          return (
           <li key={g.path}>
-            <button type="button" className="guide-row" onClick={() => onRead(g)}>
-              <span className="guide-row-label">{g.label}</span>
+            <button type="button" className={'guide-row' + (locked ? ' is-locked' : '')}
+                    onClick={() => (locked ? onUnlock() : onRead(g))}
+                    aria-label={locked ? `${g.label}: ${g.title}, locked. Unlock with a pass` : undefined}>
+              <span className="guide-row-label">{locked ? <Lock /> : null}{g.label}</span>
               <span className="guide-row-text">
                 <span className="guide-row-title">{g.title}</span>
                 <span className="guide-row-meta">
@@ -84,7 +119,8 @@ export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead }) {
               <ChevronRight />
             </button>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </div>
   );
@@ -92,15 +128,16 @@ export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead }) {
 
 /** One guide. `practiseKeys` are the guide's lectures that the student can
     practise now (open, not locked); with none, the button offers the pass. */
-export function GuideReader({ subjectKey, subjectTitle, folder, slug, canPractise, onPractise, onUnlock, onBack, onRead }) {
+export function GuideReader({ subjectKey, subjectTitle, folder, slug, canPractise, onPractise, onUnlock, onBack, onRead, loadHtml }) {
   const guide = findGuide(subjectKey, folder, slug);
   const location = useLocation();
+  const { user } = useAuth();
   const { data: html, error, isLoading, refetch } = useQuery({
-    queryKey: ['guide', subjectKey, folder, slug],
+    queryKey: ['guide', subjectKey, folder, slug, user?.id],
     enabled: !!guide,
-    queryFn: ({ signal }) => fetchGuide(subjectKey, guide, signal),
-    staleTime: Infinity,
-    retry: 1,
+    queryFn: ({ signal }) => (loadHtml || fetchGuide)(subjectKey, guide, signal),
+    staleTime: 30 * 60_000,
+    retry: (n, e) => !e?.locked && n < 1,
   });
 
   // Start at the top of a new guide, or where the student stopped when they
@@ -149,13 +186,22 @@ export function GuideReader({ subjectKey, subjectTitle, folder, slug, canPractis
     <div className="container guide-page">
       <button type="button" className="back-link" onClick={onBack}><ChevronLeft />Study guides</button>
       {isLoading ? <p className="guide-loading" role="status">Loading the guide…</p> : null}
-      {error ? (
+      {error?.locked ? (
+        <div className="guide-locked" role="status">
+          <span className="guide-locked-icon"><Lock /></span>
+          <h1>{guide.title}</h1>
+          <p className="guide-locked-lede">{guide.lede}</p>
+          <p><strong>{error.message}.</strong> The first two lectures of each part are free; a pass opens every guide and all their questions.</p>
+          <button type="button" className="btn primary" onClick={onUnlock}>Unlock with a pass</button>
+        </div>
+      ) : null}
+      {error && !error.locked ? (
         <div className="state" role="alert">
           <p>Couldn&rsquo;t load this guide. Check your connection and try again.</p>
           <button type="button" className="btn primary" onClick={() => refetch()}>Try again</button>
         </div>
       ) : null}
-      {/* Our own static file from public/guides (checked by study-guides/build.cjs: no scripts, no outside files). */}
+      {/* Our own guide from /api/guide (checked by study-guides/build.cjs: no scripts, no outside files). */}
       {html ? <div dangerouslySetInnerHTML={{ __html: html }} /> : null}
       {html ? (
         <aside className="guide-next">

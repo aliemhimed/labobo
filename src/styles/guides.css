@@ -93,5 +93,27 @@
   .guide-row { grid-template-columns: minmax(0, 1fr) 20px; gap: 6px 10px; }
   .guide-row-label { grid-column: 1; }
   .guide-row-text { grid-column: 1; }
-  .guide-row svg { grid-column: 2; grid-row: 1 / span 2; }
+  .guide-row > svg { grid-column: 2; grid-row: 1 / span 2; }
 }
+
+/* Locked guides (need a pass). */
+.guides-locked-note {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+  margin: 0 0 22px; padding: 12px 14px; border: var(--line) solid var(--edge); border-radius: var(--r-control);
+  background: var(--hema-wash); box-shadow: 4px 4px 0 var(--hard);
+}
+.guides-locked-note p { flex: 1 1 14rem; margin: 0; font-size: var(--t-14); line-height: 1.5; }
+.guide-row.is-locked { background: var(--sheet-hover); box-shadow: 2px 2px 0 var(--hard); }
+.guide-row.is-locked .guide-row-title, .guide-row.is-locked .guide-row-meta { opacity: 0.65; }
+.guide-row.is-locked .guide-row-label { display: inline-flex; align-items: center; gap: 5px; background: var(--rule); }
+.guide-locked {
+  max-width: 46rem; margin: 8px auto 48px; padding: 24px 20px;
+  border: var(--line) solid var(--edge); border-radius: var(--r-sheet); background: var(--sheet); box-shadow: 6px 6px 0 var(--hard);
+}
+.guide-locked h1 { margin: 10px 0 8px; font: 800 clamp(1.5rem, 5vw, 2rem)/1.15 var(--font-display); }
+.guide-locked-lede { color: var(--ink-soft); }
+.guide-locked-icon {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; border: var(--line) solid var(--card-ink);
+  border-radius: 50%; background: var(--fill-yellow); color: var(--card-ink);
+}
+.guide-locked .btn { max-width: 100%; white-space: normal; }

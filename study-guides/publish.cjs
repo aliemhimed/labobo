@@ -3,8 +3,10 @@
      node study-guides/publish.cjs
 
    PUBLISH says which guides go live. For each one this script
-     - copies the guide (an <article class="lb-guide"> fragment) to
-       public/guides/<subject>/<part>/<name>.html,
+     - puts the guide (an <article class="lb-guide"> fragment) into
+       netlify/functions/_lib/guides-content.json, which the guide function
+       serves with the same access rule as the questions (so locked guides
+       are not public files),
      - copies the pictures it uses to public/guides/img/...,
      - lists it in src/lib/guides.json, which the app reads for the guide
        list, the badge on the home page and "Continue reading".
@@ -26,8 +28,13 @@ const PUBLISH = {
     scope: 'pre-midterm',
     note: 'up to the midterm',
     include: (g) => typeof g.lecture === 'number' && g.lecture <= 7,
+    // Each part's question table: a guide is free when its lectures are in free_topics for it.
+    tables: { Biochemistry: 'gct_biochemistry', 'Medical Genetics': 'gct_genetics', 'Molecular Biology': 'gct_molecular_biology', Histology: 'gct_histology' },
   },
 };
+// The guide text is served by netlify/functions/guide.js, with the same
+// access rule as the questions, so it is bundled there and not made public.
+const CONTENT = path.join(SITE, 'netlify', 'functions', '_lib', 'guides-content.json');
 const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology'];
 
 const attr = (html, name) => new RegExp(`data-${name}="([^"]*)"`).exec(html)?.[1] || '';
@@ -59,6 +66,7 @@ function describe(subject, rel, html) {
 
 fs.rmSync(OUT, { recursive: true, force: true });
 const manifest = {};
+const content = {};
 let files = 0;
 let bytes = 0;
 for (const [subject, rule] of Object.entries(PUBLISH)) {
@@ -69,11 +77,8 @@ for (const [subject, rule] of Object.entries(PUBLISH)) {
       const html = fs.readFileSync(path.join(dir, part, file), 'utf8');
       const g = describe(subject, `${part}/${file}`, html);
       if (!rule.include(g)) continue;
-      const dest = path.join(OUT, subject, part, file);
-      fs.mkdirSync(path.dirname(dest), { recursive: true });
-      fs.writeFileSync(dest, html);
-      bytes += Buffer.byteLength(html);
-      files++;
+      g.table = rule.tables[g.part] || null;
+      content[`${subject}/${g.path}`] = html;
       for (const [, src] of html.matchAll(/<img\b[^>]*\ssrc="\/guides\/(img\/[^"]+)"/g)) {
         const from = path.join(ROOT, src);
         if (!fs.existsSync(from)) throw new Error(`${part}/${file}: missing picture ${src}`);
@@ -91,7 +96,8 @@ for (const [subject, rule] of Object.entries(PUBLISH)) {
 }
 
 fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 1) + '\n');
+fs.writeFileSync(CONTENT, JSON.stringify(content));
 for (const [s, m] of Object.entries(manifest)) {
   console.log(`${s}: ${m.guides.length} guides (${m.parts.map((p) => `${p} ${m.guides.filter((g) => g.part === p).length}`).join(', ')})`);
 }
-console.log(`${files} files, ${(bytes / 1048576).toFixed(1)} MB in public/guides; list in src/lib/guides.json`);
+console.log(`${Object.keys(content).length} guides into netlify/functions/_lib/guides-content.json (${(Buffer.byteLength(JSON.stringify(content)) / 1048576).toFixed(1)} MB); ${files} pictures (${(bytes / 1048576).toFixed(1)} MB) in public/guides/img`);

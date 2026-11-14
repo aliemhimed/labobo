@@ -4,29 +4,53 @@ import { GuideReader, GuidesLibrary } from '../quiz/Guides.jsx';
 import '../styles/quiz.css';
 
 /* Development only (/dev/guides): the real study-guide screens of GCT I
-   without signing in. App.jsx only adds this route in `vite dev`. Nothing
-   here saves or sends anything except "Continue reading" in this browser. */
+   without signing in or the server functions. App.jsx only adds this route
+   in `vite dev`, so this module (and the guide text it pulls in) is not in
+   the built site. "Free plan" shows what a student without a pass sees: the
+   first two lectures of each part open, the rest locked. */
+
+const SOURCES = import.meta.glob('../../study-guides/gct/**/*.html', { query: '?raw', import: 'default', eager: true });
+const IMAGES = import.meta.glob('../../study-guides/img/**/*.{jpg,png}', { query: '?url', import: 'default', eager: true });
+const isFree = (path) => /\/(wk|lec)0[12]-/.test(path);
 
 export default function DevGuidesPreview() {
   const [view, setView] = useState({ name: 'home' });
+  const [plan, setPlan] = useState('free');
   const read = (g) => { setView({ name: 'guide', folder: g.folder, slug: g.slug }); window.scrollTo(0, 0); };
+
+  const loadAccess = async (subject) => {
+    const { guidesFor } = await import('../lib/guides.js');
+    return Object.fromEntries(guidesFor(subject).guides.map((g) => [g.path, plan === 'pass' || isFree(g.path)]));
+  };
+  const loadHtml = async (subject, guide) => {
+    if (plan !== 'pass' && !isFree(guide.path)) {
+      throw Object.assign(new Error('This guide comes with a pass'), { locked: true, status: 403 });
+    }
+    const html = SOURCES[`../../study-guides/${subject}/${guide.path}.html`] || '';
+    return html.replace(/src="\/guides\/img\/([^"]+)"/g, (m, p) => `src="${IMAGES[`../../study-guides/img/${p}`] || ''}"`);
+  };
+
   return (
-    <main>
+    <main key={plan}>
       <p style={{ margin: 0, padding: '8px 16px', background: 'var(--fill-yellow)', color: 'var(--card-ink)', fontWeight: 700, textAlign: 'center' }}>
-        Preview (dev only): GCT I with the published guides. Buttons that would start a quiz do nothing.
+        Preview (dev only).{' '}
+        <button type="button" onClick={() => setPlan(plan === 'pass' ? 'free' : 'pass')}>
+          {plan === 'pass' ? 'Showing: pass. Switch to free plan' : 'Showing: free plan. Switch to pass'}
+        </button>
       </p>
       {view.name === 'home' ? (
         <ModeHome title="GCT I" subjectKey="gct" questionCount={2840} topicCount={64} wrongCount={0} historyCount={0}
                   onGo={(k) => { if (k === 'guides') setView({ name: 'library' }); }} />
       ) : null}
       {view.name === 'library' ? (
-        <GuidesLibrary subjectKey="gct" subjectTitle="GCT I" onBack={() => setView({ name: 'home' })} onRead={read} />
+        <GuidesLibrary subjectKey="gct" subjectTitle="GCT I" onBack={() => setView({ name: 'home' })} onRead={read}
+                       onUnlock={() => alert('Would open the pass window')} loadAccess={loadAccess} />
       ) : null}
       {view.name === 'guide' ? (
         <GuideReader subjectKey="gct" subjectTitle="GCT I" folder={view.folder} slug={view.slug}
-                     canPractise={view.slug.startsWith('wk01') || view.slug.startsWith('wk02') || view.slug.startsWith('lec01') || view.slug.startsWith('lec02')}
-                     onPractise={() => {}} onUnlock={() => {}}
-                     onBack={() => setView({ name: 'library' })} onRead={read} />
+                     canPractise={plan === 'pass' || isFree(`/${view.slug}`)}
+                     onPractise={() => {}} onUnlock={() => alert('Would open the pass window')}
+                     onBack={() => setView({ name: 'library' })} onRead={read} loadHtml={loadHtml} />
       ) : null}
     </main>
   );
