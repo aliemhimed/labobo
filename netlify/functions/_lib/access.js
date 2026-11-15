@@ -10,6 +10,7 @@
 
 const { SUPA_URL, dbHeaders } = require('./common');
 const { readDevice, checkDevice } = require('./devices');
+const { verifiedEmail } = require('./uniEmail');
 
 // Subscriptions start at the end of 14 November 2026 in Tbilisi (UTC+4).
 // LOCK_START in the environment overrides it, for testing the lock locally.
@@ -61,7 +62,10 @@ async function getPlan(caller) {
   if (!caller) return { kind: isLocked() ? 'none' : 'open', expires_at: null, trial_used: false };
 
   const id = encodeURIComponent(caller.id);
-  const email = trialEmail(caller);
+  // The sign-in address if it is a university one, else a university address
+  // the student proved with an emailed code (_lib/uniEmail.js).
+  const verified = trialEmail(caller) ? null : await verifiedEmail(caller.id).catch(() => null);
+  const email = trialEmail(caller) || verified;
   const trialFilter = email
     ? `or=(user_id.eq.${id},email.eq.${encodeURIComponent(email)})`
     : `user_id=eq.${id}`;
@@ -73,11 +77,11 @@ async function getPlan(caller) {
   const now = Date.now();
   const live = (list) => list.map((r) => r.expires_at).filter((t) => new Date(t).getTime() > now).sort().pop() || null;
   const pass = live(subs);
-  if (pass) return { kind: 'pass', expires_at: pass, trial_used: trials.length > 0 };
-  if (!isLocked()) return { kind: 'open', expires_at: null, trial_used: trials.length > 0 };
+  if (pass) return { kind: 'pass', expires_at: pass, trial_used: trials.length > 0, uni_email: email };
+  if (!isLocked()) return { kind: 'open', expires_at: null, trial_used: trials.length > 0, uni_email: email };
   const trial = live(trials);
-  if (trial) return { kind: 'trial', expires_at: trial, trial_used: true };
-  return { kind: 'none', expires_at: null, trial_used: trials.length > 0 };
+  if (trial) return { kind: 'trial', expires_at: trial, trial_used: true, uni_email: email };
+  return { kind: 'none', expires_at: null, trial_used: trials.length > 0, uni_email: email };
 }
 
 const hasFullAccess = (access) => access.kind === 'open'

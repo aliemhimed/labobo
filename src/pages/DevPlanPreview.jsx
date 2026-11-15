@@ -18,6 +18,7 @@ const NO_TRIAL = { ...TRIAL, eligible: false, available: false };
 const ACCESS = {
   before: { locked: false, lock_start: '2026-11-14T19:59:00Z', access: 'open', expires_at: null, trial: NO_TRIAL },
   free: { locked: true, access: 'none', expires_at: null, trial: NO_TRIAL },
+  freePending: { locked: true, access: 'none', expires_at: null, trial: { ...NO_TRIAL, pending: 'nino.beridze@eu.edu.ge' } },
   freeUni: { locked: true, access: 'none', expires_at: null, trial: TRIAL },
   trial: { locked: true, access: 'trial', expires_at: SOON, trial: { ...TRIAL, used: true, available: false } },
   pass: { locked: true, access: 'pass', expires_at: '2027-02-28T19:59:59Z', trial: NO_TRIAL },
@@ -90,7 +91,9 @@ function Subscribe({ access, payment }) {
   return (
     <div className="dialog dev-dialog">
       <SubscribeView access={access} payment={payment} email="student@gmail.com"
-                     onStartTrial={noop} onSendReceipt={nothing} />
+                     onStartTrial={noop} onSendReceipt={nothing}
+                     onSendUniCode={async (email) => ({ sent: true, email: email.toLowerCase() })}
+                     onVerifyUniCode={async () => { throw new Error('That code is not right. Check the email and try again'); }} />
     </div>
   );
 }
@@ -105,6 +108,7 @@ export default function DevPlanPreview() {
         <Frame title="Subscribe window: free plan, paying by transfer"><Subscribe access={ACCESS.free} payment={PAYMENT.none} /></Frame>
         <Frame title="After the receipt is sent"><Subscribe access={ACCESS.free} payment={PAYMENT.pending} /></Frame>
         <Frame title="Receipt rejected"><Subscribe access={ACCESS.free} payment={PAYMENT.rejected} /></Frame>
+        <Frame title="Gmail account: entering the code sent to @eu.edu.ge"><Subscribe access={ACCESS.freePending} payment={PAYMENT.none} /></Frame>
         <Frame title="University account: trial offered"><Subscribe access={ACCESS.freeUni} payment={PAYMENT.none} /></Frame>
         <Frame title="Pass switched on, with its two devices"><Subscribe access={ACCESS.passDevices} payment={PAYMENT.none} /></Frame>
         <Frame title="Pass in use on another phone"><Subscribe access={ACCESS.passBlocked} payment={PAYMENT.none} /></Frame>

@@ -7,7 +7,7 @@ import { useAuth } from '../lib/auth.jsx';
 import { useAccess } from '../hooks/useAccess.js';
 import {
   FREE_LECTURES, PASS_PRICE, deviceBlocked, formatDay, formatMoment,
-  onOpenSubscribeDialog, openSubscribeDialog, startTrial, switchDevice,
+  onOpenSubscribeDialog, openSubscribeDialog, sendUniCode, startTrial, switchDevice, verifyUniCode,
 } from '../lib/access.js';
 import { fetchPayment, sendReceipt } from '../lib/payments.js';
 import { CONTACT_EMAIL, INSTAGRAM_DM, INSTAGRAM_HANDLE } from '../lib/contact.js';
@@ -320,6 +320,7 @@ export function SubscribeView({
   onStartTrial, trialBusy, trialError,
   onSendReceipt, sending, sendError,
   onSwitchDevice, switching, switchError,
+  onSendUniCode, onVerifyUniCode,
 }) {
   // After a receipt is in, the student can still choose to send another.
   const [resending, setResending] = useState(false);
@@ -424,7 +425,8 @@ export function SubscribeView({
       ) : null}
 
       {access?.locked && access.access === 'none' ? (
-        <TrialOffer trial={access.trial} busy={trialBusy} onStart={onStartTrial} />
+        <TrialOffer trial={access.trial} busy={trialBusy} onStart={onStartTrial}
+                    onSendCode={onSendUniCode} onVerifyCode={onVerifyUniCode} />
       ) : null}
       {trialError ? <p className="form-error" role="alert">{trialError}</p> : null}
 
@@ -435,13 +437,14 @@ export function SubscribeView({
   );
 }
 
-function TrialOffer({ trial, busy, onStart }) {
+function TrialOffer({ trial, busy, onStart, onSendCode, onVerifyCode }) {
   if (!trial) return null;
   if (trial.available) {
     return (
       <div className="subscribe-trial">
         <p>
-          <b>Try it first.</b> Your university account gets {trial.days} days of full access, once. The
+          <b>Try it first.</b> Your university address
+          {trial.email ? <> (<b>{trial.email}</b>)</> : null} gets {trial.days} days of full access, once. The
           {' '}{trial.days} days start when you press the button.
         </p>
         <button type="button" className="btn" disabled={busy} onClick={onStart}>
@@ -453,11 +456,85 @@ function TrialOffer({ trial, busy, onStart }) {
   if (trial.used) {
     return <p className="subscribe-trial used">Your free {trial.days}-day trial has been used.</p>;
   }
+  if (!onSendCode) {
+    return (
+      <p className="subscribe-trial used">
+        <b>Free {trial.days}-day trial</b> for EU students: confirm your @{trial.domain} address to use it.
+      </p>
+    );
+  }
+  return <UniEmailForm trial={trial} onSendCode={onSendCode} onVerifyCode={onVerifyCode} />;
+}
+
+/* For an account signed in with another address (usually Gmail): prove a
+   @eu.edu.ge address with a code we email to it, then the trial opens. The
+   address is linked to this account, so progress stays where it is. */
+export function UniEmailForm({ trial, onSendCode, onVerifyCode }) {
+  const [email, setEmail] = useState(trial.pending || '');
+  const [sentTo, setSentTo] = useState(trial.pending || '');
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [note, setNote] = useState(
+    trial.pending ? `Enter the 6-digit code we sent to ${trial.pending}. Check spam if it isn't there.` : '',
+  );
+
+  async function send(e) {
+    e?.preventDefault();
+    setBusy(true); setError(''); setNote('');
+    try {
+      const r = await onSendCode(email.trim());
+      setSentTo(r.email); setCode('');
+      setNote(`We sent a 6-digit code to ${r.email}. It works for 15 minutes. Check spam if it isn't there.`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function verify(e) {
+    e.preventDefault();
+    setBusy(true); setError('');
+    try {
+      await onVerifyCode(code);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <p className="subscribe-trial used">
-      <b>Free {trial.days}-day trial:</b> sign in with your university Google account (@{trial.domain}) to
-      use it. It is a separate account from this one, so your progress here does not move across.
-    </p>
+    <div className="subscribe-trial uni-email">
+      <p>
+        <b>Studying at EU? Get {trial.days} days free.</b> Confirm your university email and every lecture opens
+        for {trial.days} days, once. You stay in this account, so your progress stays too.
+      </p>
+      {!sentTo ? (
+        <form className="uni-email-row" onSubmit={send}>
+          <input type="email" inputMode="email" autoComplete="email" required
+                 placeholder={`name@${trial.domain}`} aria-label="Your university email"
+                 value={email} onChange={(e) => setEmail(e.target.value)} />
+          <button type="submit" className="btn" disabled={busy || !email.trim()}>{busy ? 'Sending…' : 'Send code'}</button>
+        </form>
+      ) : (
+        <form className="uni-email-row" onSubmit={verify}>
+          <input type="text" className="uni-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6}
+                 placeholder="6-digit code" aria-label="Code from the email"
+                 value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} />
+          <button type="submit" className="btn primary" disabled={busy || code.length !== 6}>{busy ? 'Checking…' : 'Confirm'}</button>
+        </form>
+      )}
+      {note ? <p className="uni-email-note" role="status">{note}</p> : null}
+      {sentTo ? (
+        <p className="uni-email-again">
+          <button type="button" className="btn ghost sm" disabled={busy} onClick={() => send()}>Send a new code</button>
+          <button type="button" className="btn ghost sm" disabled={busy}
+                  onClick={() => { setSentTo(''); setCode(''); setNote(''); setError(''); }}>Use a different address</button>
+        </p>
+      ) : null}
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
+    </div>
   );
 }
 
@@ -534,6 +611,8 @@ function SubscribeDialog({ onClose }) {
         trialError={trial.isError ? trial.error.message : ''}
         onSendReceipt={(file) => receipt.mutateAsync(file).then(() => true, () => false)}
         sending={receipt.isPending} sendError={receipt.isError ? receipt.error.message : ''}
+        onSendUniCode={sendUniCode}
+        onVerifyUniCode={async (code) => { queryClient.setQueryData(['access', user?.id], await verifyUniCode(code)); }}
         onSwitchDevice={() => moveDevice.mutate()} switching={moveDevice.isPending}
         switchError={moveDevice.isError ? moveDevice.error.message : ''}
       />

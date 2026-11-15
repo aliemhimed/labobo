@@ -602,6 +602,13 @@ button.crumb-current:hover { color: var(--hema); }
 .subscribe-trial p { margin: 0; }
 .subscribe-trial b { color: var(--ink); }
 .subscribe-trial.used { display: block; font-size: var(--t-14); }
+/* Confirming a university address with an emailed code (UniEmailForm). */
+.uni-email-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.uni-email-row input { flex: 1 1 13rem; min-width: 0; }
+.uni-email-row .uni-code { flex: 0 1 11rem; font: 700 var(--t-18)/1 var(--font-ui); letter-spacing: 0.3em; text-align: center; }
+.uni-email-row .uni-code::placeholder { letter-spacing: normal; font-weight: 500; font-size: var(--t-16); }
+.uni-email-note { font-size: var(--t-14); }
+.uni-email-again { display: flex; flex-wrap: wrap; gap: 4px 12px; }
 .subscribe-foot { margin: 18px 0 0; font-size: var(--t-14); }
 .subscribe-foot a, .login-terms a { color: var(--hema); font-weight: 700; }
 .login-terms { margin-top: 18px; font-size: var(--t-14); }

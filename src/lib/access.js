@@ -29,6 +29,20 @@ export const startTrial = () => call({
   body: JSON.stringify({ action: 'start_trial' }),
 });
 
+/** Emails a 6-digit code to a university address (for accounts signed in with Gmail). */
+export const sendUniCode = (email) => call({
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ action: 'send_uni_code', email }),
+});
+
+/** Confirms the code; resolves to the new plan (the trial becomes available). */
+export const verifyUniCode = (code) => call({
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ action: 'verify_uni_code', code }),
+});
+
 /** Moves the pass's slot for this kind of device (phone, or tablet/computer) to this device. */
 export const switchDevice = () => call({
   method: 'POST',
