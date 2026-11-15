@@ -8,6 +8,7 @@ const SORTS = {
   quizzes: { label: 'Most quizzes', by: (u) => -u.quizzes },
   avg: { label: 'Highest average', by: (u) => -(u.avg_pct ?? -1) },
   joined: { label: 'Newest', by: (u) => -new Date(u.created_at) },
+  shared: { label: 'Flagged sharing', by: (u) => -(u.split_hits || 0) },
 };
 
 const lastSeen = (u) => u.last_quiz_at || u.last_visit_day || u.last_sign_in_at || null;
@@ -47,6 +48,7 @@ export default function UsersTab({ onOpen }) {
   const all = data.users;
   const weekAgo = Date.now() - 7 * 86400000;
   const activeWeek = all.filter((u) => new Date(lastSeen(u) || 0) > weekAgo).length;
+  const flaggedSharing = all.filter((u) => (u.split_hits || 0) >= 2).length;
 
   return (
     <>
@@ -54,6 +56,7 @@ export default function UsersTab({ onOpen }) {
         <Stat label="Students" value={num(all.length)} />
         <Stat label="Active this week" value={num(activeWeek)} />
         <Stat label="With a pass" value={num(all.filter((u) => u.pass_until).length)} />
+        {flaggedSharing > 0 ? <Stat label="Shared devices?" value={num(flaggedSharing)} tone="warn" hint="2+ simultaneous split hits" /> : null}
         <Stat label="Never took a quiz" value={num(all.filter((u) => u.quizzes === 0).length)} />
         <Stat label="No semester yet" value={num(all.filter((u) => !u.semester).length)} />
         <Stat label="Semester 1" value={num(all.filter((u) => u.semester === '1').length)} />
@@ -90,6 +93,11 @@ export default function UsersTab({ onOpen }) {
                 <td>
                   <button type="button" className="adm-link" onClick={() => onOpen(u.id)}>{u.username || u.email || u.id.slice(0, 8)}</button>
                   {u.pass_until ? <span className="adm-pass-tag" title={`Pass until ${new Date(u.pass_until).toLocaleDateString()}`}>Pass</span> : null}
+                  {(u.split_hits || 0) >= 2 ? (
+                    <span className="adm-warn-tag" title={`Two tablets/computers used at the same time on different networks (${u.split_hits}×)`}>
+                      Shared? {u.split_hits}×
+                    </span>
+                  ) : null}
                   {u.username && u.email ? <div className="adm-sub">{u.email}</div> : null}
                 </td>
                 <td>{u.semester || '—'}</td>

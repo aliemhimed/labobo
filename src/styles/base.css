@@ -547,8 +547,9 @@ button.crumb-current:hover { color: var(--hema); }
   border: 2px solid var(--rule-strong); border-radius: var(--r-control); background: var(--sheet-hover);
 }
 .device-slots li.this { border-color: var(--hema); }
-.device-slot-name { min-width: 9.5rem; font-weight: 800; color: var(--ink); }
+.device-slot-name { min-width: 10.5rem; font-weight: 800; color: var(--ink); }
 .device-switch .btn { max-width: 100%; white-space: normal; }
+.device-switch-list { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .locked { margin-top: 48px; }
 .locked-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }

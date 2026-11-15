@@ -9,10 +9,11 @@
         sign-in address is at the university domain, and only once per
         address: the address is the row's key, so deleting the account and
         signing up again does not give a second trial.
-   POST /api/access  body: { action: 'switch_device' }
+   POST /api/access  body: { action: 'switch_device', slot? }
      -> the GET reply
-        Moves the pass from the device in this device's slot (phone, or
-        tablet/computer) to this one, at most once per slot every 30 days.
+        Moves the pass from a device in this device's kind (phone, or one of
+        the two tablet/computer slots) to this one, at most once per slot every
+        30 days.
    With a pass or trial after the lock, the GET reply also has
      device: { ok, reason, slots, ... }   (see _lib/devices.js)
    POST /api/access  body: { action: 'send_uni_code', email }
@@ -73,8 +74,9 @@ exports.handler = async (event) => {
         if (!(await allowRequest(caller.id, 'switch_device', 5, 3600))) return fail(429, 'Too many requests');
         const plan = await getAccess(caller);
         if (!isLocked() || (plan.kind !== 'pass' && plan.kind !== 'trial')) return fail(400, 'Only a pass or trial is tied to devices');
-        const result = await switchToDevice(caller.id, readDevice(event));
+        const result = await switchToDevice(caller.id, readDevice(event), body.slot);
         if (result.reason === 'missing') return fail(400, 'Reload the page and try again');
+        if (result.reason === 'invalid_slot') return fail(400, 'That slot cannot be used for this kind of device');
         if (result.reason === 'switch_limit') {
           return fail(409, 'This slot was already moved in the last 30 days. Message us and we will move it for you.');
         }

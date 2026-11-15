@@ -439,16 +439,45 @@ async function setReportsResolved(ids, caller, resolved) {
 
 /* ── Students ─────────────────────────────────────────────────────── */
 
-/* Each student with `pass_until`: when their pass ends, or null without a
-   live one. A failed pass lookup leaves the list usable. */
+/* Summarises an account's `user_devices` rows without sending network hashes. */
+function summarizeDeviceNetwork(rows) {
+  const other1 = rows.find((r) => r.slot === 'other');
+  const other2 = rows.find((r) => r.slot === 'other_2');
+  const sameRouter = other1?.net_hash && other2?.net_hash ? other1.net_hash === other2.net_hash : null;
+  const splitHits = rows.reduce((sum, r) => sum + (r.split_hits || 0), 0);
+  const lastSplitAt = rows.reduce((max, r) => (!r.last_split_at ? max : !max || r.last_split_at > max ? r.last_split_at : max), null);
+  return { same_router: sameRouter, split_hits: splitHits, last_split_at: lastSplitAt };
+}
+
+/* Each student with `pass_until` and device-sharing signals. A failed lookup
+   leaves the list usable. */
 async function usersView() {
-  const [users, passes] = await Promise.all([
+  const [users, passes, allDevices] = await Promise.all([
     rpc('admin_users', {}),
     rows(`/subscriptions?expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=user_id,expires_at`)
       .catch((e) => { console.error('[admin] passes', e); return []; }),
+    rows('/user_devices?select=user_id,slot,net_hash,split_hits,last_split_at')
+      .catch((e) => { console.error('[admin] devices', e); return []; }),
   ]);
   const until = new Map(passes.map((p) => [p.user_id, p.expires_at]));
-  return { users: users.map((u) => ({ ...u, pass_until: until.get(u.id) ?? null })) };
+  const byUser = new Map();
+  for (const d of allDevices) {
+    if (!byUser.has(d.user_id)) byUser.set(d.user_id, []);
+    byUser.get(d.user_id).push(d);
+  }
+  return {
+    users: users.map((u) => {
+      const devs = byUser.get(u.id) || [];
+      const net = summarizeDeviceNetwork(devs);
+      return {
+        ...u,
+        pass_until: until.get(u.id) ?? null,
+        devices_used: devs.length,
+        split_hits: net.split_hits,
+        same_router: net.same_router,
+      };
+    }),
+  };
 }
 
 /* Spreadsheet-safe CSV: quoted where needed, and a cell that starts like a
@@ -512,7 +541,7 @@ async function userDetail(id, tz) {
     fetch(`${SUPA_URL}/auth/v1/admin/users/${q}`, { headers: dbHeaders() })
       .then((r) => (r.ok ? r.json() : null))
       .catch(() => null),
-    rows(`/user_devices?user_id=eq.${q}&select=slot,label,first_seen,last_seen,switched_at&order=slot`).catch(() => []),
+    rows(`/user_devices?user_id=eq.${q}&select=slot,label,first_seen,last_seen,switched_at,net_hash,split_hits,last_split_at&order=slot`).catch(() => []),
   ]);
   if (!profile[0]) return null;
 
@@ -529,8 +558,9 @@ async function userDetail(id, tz) {
     plan: {
       pass: pass[0] ? { ...pass[0], live: new Date(pass[0].expires_at) > new Date() } : null,
       trial: trial[0] ? { ...trial[0], live: new Date(trial[0].expires_at) > new Date() } : null,
-      // The phone and tablet/computer the pass is held to (_lib/devices.js).
-      devices,
+      // The phone and two tablets/computers the pass is held to (_lib/devices.js).
+      devices: devices.map(({ net_hash: _nh, ...d }) => d),
+      device_network: summarizeDeviceNetwork(devices),
     },
     totals: { ...stats.totals, reports: reports.length, leaderboard_entries: board.length },
     by_subject: stats.by_subject,

@@ -61,24 +61,43 @@ function PassPanel({ id, plan }) {
       </div>
       {grant.isError ? <p className="adm-error" role="alert">Couldn't save the pass: {grant.error.message}</p> : null}
       {revoke.isError ? <p className="adm-error" role="alert">Couldn't remove the pass: {revoke.error.message}</p> : null}
-      <Devices id={id} devices={plan.devices || []} onDone={refresh} />
+      <Devices id={id} devices={plan.devices || []} network={plan.device_network} onDone={refresh} />
     </Panel>
   );
 }
 
-/* The phone and tablet/computer a pass is held to. Resetting lets the
-   student's next devices take the slots (a lost or replaced phone). */
-function Devices({ id, devices, onDone }) {
+const slotLabel = (slot) => (slot === 'phone' ? 'Phone' : slot === 'other_2' ? 'Tablet/computer 2' : 'Tablet/computer 1');
+
+/* The phone and up to two tablets/computers a pass is held to, plus whether
+   the two larger devices share a router or have been active simultaneously
+   from different networks. */
+function Devices({ id, devices, network, onDone }) {
   const reset = useMutation({ mutationFn: () => resetDevices(id), onSuccess: onDone });
+  const order = { phone: 0, other: 1, other_2: 2 };
+  const sorted = [...devices].sort((a, b) => (order[a.slot] ?? 9) - (order[b.slot] ?? 9));
+
   return (
     <div className="adm-devices">
       <p className="adm-pass-status">
-        <b>Devices:</b>{' '}
-        {devices.length
-          ? devices.map((d) => `${d.slot === 'phone' ? 'Phone' : 'Tablet/computer'}: ${d.label || 'unknown'} (last used ${ago(d.last_seen)})`).join(' · ')
-          : 'none saved yet. The first phone and the first tablet or computer to use the pass take the two places.'}
+        <b>Devices ({sorted.length}/3):</b>{' '}
+        {sorted.length
+          ? sorted.map((d) => `${slotLabel(d.slot)}: ${d.label || 'unknown'} (last used ${ago(d.last_seen)})`).join(' · ')
+          : 'none saved yet. The first phone and the first two tablets or computers to use the pass take the three places.'}
       </p>
-      {devices.length ? (
+      {network && (network.same_router !== null || network.split_hits > 0) ? (
+        <p className="adm-pass-status">
+          <b>Router check:</b>{' '}
+          {network.same_router === true ? 'Tablet/computer 1 & 2 last seen on the same router/network.' : null}
+          {network.same_router === false ? 'Tablet/computer 1 & 2 last seen on different networks.' : null}
+          {network.split_hits > 0 ? (
+            <span className={network.split_hits >= 2 ? ' adm-danger-text' : ''}>
+              {' '}Used at the same time on different networks <b>{network.split_hits}×</b>
+              {network.last_split_at ? ` (last ${ago(network.last_split_at)})` : ''}.
+            </span>
+          ) : null}
+        </p>
+      ) : null}
+      {sorted.length ? (
         <button type="button" className="btn sm" disabled={reset.isPending} onClick={() => reset.mutate()}>
           {reset.isPending ? 'Resetting…' : 'Reset devices'}
         </button>

@@ -1,5 +1,5 @@
 /* This device's id and kind, sent with every signed-in request so the
-   server can hold a pass to one phone and one tablet or computer
+   server can hold a pass to one phone and two tablets or computers
    (netlify/functions/_lib/devices.js). The id is random and means nothing
    outside Labobo; it is kept in this browser only. */
 

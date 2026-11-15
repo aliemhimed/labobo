@@ -23,16 +23,19 @@ const ACCESS = {
   trial: { locked: true, access: 'trial', expires_at: SOON, trial: { ...TRIAL, used: true, available: false } },
   pass: { locked: true, access: 'pass', expires_at: '2027-02-28T19:59:59Z', trial: NO_TRIAL },
 };
-// Device slots (netlify/functions/_lib/devices.js): one phone, one tablet or computer.
+// Device slots (netlify/functions/_lib/devices.js): one phone + two tablets or computers.
 const SLOTS = [
-  { slot: 'phone', name: 'phone', used: true, label: 'iPhone · Safari', last_seen: RECENT, this_device: true },
-  { slot: 'other', name: 'tablet or computer', used: true, label: 'Mac or iPad · Safari', last_seen: RECENT, this_device: false },
+  { slot: 'phone', name: 'Phone', used: true, label: 'iPhone · Safari', last_seen: RECENT, this_device: true },
+  { slot: 'other', name: 'Tablet or computer 1', used: true, label: 'Mac or iPad · Safari', last_seen: RECENT, this_device: false },
+  { slot: 'other_2', name: 'Tablet or computer 2', used: true, label: 'Windows · Chrome', last_seen: RECENT, this_device: false },
 ];
 ACCESS.passDevices = { ...ACCESS.pass, device: { ok: true, slots: SLOTS } };
 ACCESS.passBlocked = { ...ACCESS.pass, device: {
   ok: false, reason: 'taken', slot: 'phone', slot_name: 'phone', can_switch: true, next_switch: null,
-  holder: { label: 'Android phone · Chrome', last_seen: RECENT }, frees_at: SOON,
-  slots: [{ ...SLOTS[0], label: 'Android phone · Chrome', this_device: false }, SLOTS[1]],
+  holder: { slot: 'phone', label: 'Android phone · Chrome', last_seen: RECENT },
+  holders: [{ slot: 'phone', name: 'Phone', label: 'Android phone · Chrome', last_seen: RECENT, frees_at: SOON, can_switch: true }],
+  frees_at: SOON,
+  slots: [{ ...SLOTS[0], label: 'Android phone · Chrome', this_device: false }, SLOTS[1], SLOTS[2]],
 } };
 const REF = 'LB-7K2QXM';
 // Placeholders on purpose: the real accounts live in the payment_accounts
@@ -110,7 +113,7 @@ export default function DevPlanPreview() {
         <Frame title="Receipt rejected"><Subscribe access={ACCESS.free} payment={PAYMENT.rejected} /></Frame>
         <Frame title="Gmail account: entering the code sent to @eu.edu.ge"><Subscribe access={ACCESS.freePending} payment={PAYMENT.none} /></Frame>
         <Frame title="University account: trial offered"><Subscribe access={ACCESS.freeUni} payment={PAYMENT.none} /></Frame>
-        <Frame title="Pass switched on, with its two devices"><Subscribe access={ACCESS.passDevices} payment={PAYMENT.none} /></Frame>
+        <Frame title="Pass switched on, with its three devices"><Subscribe access={ACCESS.passDevices} payment={PAYMENT.none} /></Frame>
         <Frame title="Pass in use on another phone"><Subscribe access={ACCESS.passBlocked} payment={PAYMENT.none} /></Frame>
         <Frame title="Before 14 November"><Subscribe access={ACCESS.before} payment={PAYMENT.none} /></Frame>
       </div>

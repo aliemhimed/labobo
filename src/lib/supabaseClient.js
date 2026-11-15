@@ -54,6 +54,6 @@ export const supabase = {
     supplied id, only this token (see netlify/functions/_lib/common#verifyUser). */
 export async function authHeader() {
   const token = await sessionToken();
-  // The device headers ride along so a pass can be held to two devices.
+  // The device headers ride along so a pass can be held to three devices.
   return token ? { Authorization: `Bearer ${token}`, ...deviceHeaders() } : {};
 }

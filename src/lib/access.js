@@ -43,11 +43,11 @@ export const verifyUniCode = (code) => call({
   body: JSON.stringify({ action: 'verify_uni_code', code }),
 });
 
-/** Moves the pass's slot for this kind of device (phone, or tablet/computer) to this device. */
-export const switchDevice = () => call({
+/** Moves a slot for this kind of device (phone, or one of the two tablet/computer slots) to this device. */
+export const switchDevice = (slot) => call({
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ action: 'switch_device' }),
+  body: JSON.stringify(slot ? { action: 'switch_device', slot } : { action: 'switch_device' }),
 });
 
 /** True when the account has a pass or trial but this device may not use it. */

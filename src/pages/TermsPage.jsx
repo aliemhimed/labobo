@@ -6,7 +6,7 @@ import { CONTACT_EMAIL, INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/conta
 /* Terms, refunds and privacy on one page. Public: linked from the sign-in
    screen and the subscribe dialog, so it must open without an account. */
 
-const UPDATED = '13 November 2026';
+const UPDATED = '16 November 2026';
 const TRIAL_DAYS = 3;
 const REFUND_DAYS = 3;
 
@@ -65,7 +65,7 @@ export default function TermsPage() {
         <h2>One student, one account</h2>
         <ul>
           <li>An account, and a pass, is for one student only. Sharing your login with other people is not allowed. This keeps the price low and the leaderboard fair for everyone.</li>
-          <li>You can use your account on one phone and on one larger device (a laptop or a tablet). A second phone, or a second laptop or tablet, is blocked until you sign out of the first one.</li>
+          <li>You can use your account on up to three devices: one phone and two larger devices (such as a laptop and a tablet). Additional devices are blocked unless you move a place to a new device or a saved device stays unused for a week.</li>
           <li>If an account is clearly being shared, we may switch its pass off without a refund.</li>
         </ul>
 

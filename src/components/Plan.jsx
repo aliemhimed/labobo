@@ -251,37 +251,55 @@ function TransferSteps({ accounts, reference, onSend, sending, error }) {
 export function DeviceRule() {
   return (
     <p className="device-rule" role="note">
-      <b>One account, two devices.</b> A pass works on <b>one phone</b> and <b>one tablet or computer</b>.
-      The first two devices you use it on are saved to your account; other devices only get the free lectures.
-      Please don&rsquo;t share your account: if another device keeps using it, the pass stops working there.
+      <b>One account, up to three devices.</b> A pass works on <b>one phone</b> and <b>two tablets or computers</b>{' '}
+      (for example, your iPad and your laptop). The first three devices you use it on are saved to your account;
+      other devices only get the free lectures. Please don&rsquo;t share your account: if another person keeps using
+      it, the pass stops working there.
     </p>
   );
 }
 
+const slotTitle = (s) => s.name || (s.slot === 'phone' ? 'Phone' : s.slot === 'other_2' ? 'Tablet or computer 2' : 'Tablet or computer 1');
+
 /* Which devices hold the pass, and, on a device that was turned away, the
-   way to move the pass here. `onSwitch` returns a promise. */
+   way to move the pass here. `onSwitch(slot?)` returns a promise. */
 export function DevicePanel({ device, plan, onSwitch, switching, switchError }) {
   if (!device) return null;
   const slots = device.slots || [];
   const blocked = device.ok === false;
+  const holders = device.holders?.length
+    ? device.holders
+    : device.holder ? [{ slot: device.holder.slot || device.slot, label: device.holder.label, last_seen: device.holder.last_seen, can_switch: device.can_switch }] : [];
+  const switchable = holders.filter((h) => h.can_switch !== false);
+
   return (
     <section className={'device-panel' + (blocked ? ' blocked' : '')} aria-labelledby="device-title">
-      <h3 id="device-title">{blocked ? `Your ${plan} is on another ${device.slot_name || 'device'}` : 'Your devices'}</h3>
+      <h3 id="device-title">{blocked ? `Your ${plan} is on ${holders.length > 1 ? `two other ${device.slot_name || 'device'}s` : `another ${device.slot_name || 'device'}`}` : 'Your devices'}</h3>
       {blocked && device.reason === 'missing' ? (
         <p>This copy of Labobo is out of date. Reload the page to use your {plan} here.</p>
       ) : null}
       {blocked && device.reason === 'taken' ? (
         <p>
-          Your {plan} is saved to <b>{device.holder?.label || 'another device'}</b>, last used{' '}
-          {formatMoment(device.holder?.last_seen)}. Only the free lectures are open on this device.
-          If that device stays unused, this one can take its place from {formatMoment(device.frees_at)}.
+          {holders.length > 1 ? (
+            <>
+              Both {device.slot_name} places are saved to{' '}
+              <b>{holders.map((h) => h.label || 'another device').join(' and ')}</b>.
+            </>
+          ) : (
+            <>
+              Your {plan} is saved to <b>{device.holder?.label || 'another device'}</b>, last used{' '}
+              {formatMoment(device.holder?.last_seen)}.
+            </>
+          )}{' '}
+          Only the free lectures are open on this device. If {holders.length > 1 ? 'one stays' : 'that device stays'} unused,
+          this one can take its place from {formatMoment(device.frees_at)}.
         </p>
       ) : null}
       {slots.length ? (
         <ul className="device-slots">
           {slots.map((s) => (
             <li key={s.slot} className={s.this_device ? 'this' : ''}>
-              <span className="device-slot-name">{s.slot === 'phone' ? 'Phone' : 'Tablet or computer'}</span>
+              <span className="device-slot-name">{slotTitle(s)}</span>
               <span>
                 {s.used ? s.label : 'Not used yet'}
                 {s.this_device ? <b> (this device)</b> : null}
@@ -293,18 +311,29 @@ export function DevicePanel({ device, plan, onSwitch, switching, switchError }) 
       {blocked && device.reason === 'taken' && device.can_switch ? (
         <div className="device-switch">
           <p>
-            Got a new {device.slot_name}? Move your {plan} here. The other {device.slot_name} will lose access.
-            You can do this once every 30 days.
+            Got a new {device.slot_name}? Move your {plan} here. The replaced {device.slot_name} will lose access.
+            You can move each place once every 30 days.
           </p>
-          <button type="button" className="btn primary" disabled={switching} onClick={onSwitch}>
-            {switching ? 'Moving…' : 'Use this device instead'}
-          </button>
+          {switchable.length > 1 ? (
+            <div className="device-switch-list">
+              {switchable.map((h) => (
+                <button key={h.slot} type="button" className="btn primary" disabled={switching} onClick={() => onSwitch(h.slot)}>
+                  {switching ? 'Moving…' : `Use here instead of ${h.label || h.name}`}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button type="button" className="btn primary" disabled={switching}
+                    onClick={() => onSwitch(switchable[0]?.slot)}>
+              {switching ? 'Moving…' : switchable[0]?.label && holders.length > 1 ? `Use here instead of ${switchable[0].label}` : 'Use this device instead'}
+            </button>
+          )}
         </div>
       ) : null}
       {blocked && device.reason === 'taken' && !device.can_switch ? (
         <p>
-          This was already moved recently; you can move it again from {formatMoment(device.next_switch)}. Lost
-          your device? Message us and we will reset it.
+          {holders.length > 1 ? 'Both places were' : 'This was'} already moved recently; you can move one again from{' '}
+          {formatMoment(device.next_switch)}. Lost your device? Message us and we will reset it.
         </p>
       ) : null}
       {switchError ? <p className="form-error" role="alert">{switchError}</p> : null}
@@ -613,7 +642,7 @@ function SubscribeDialog({ onClose }) {
         sending={receipt.isPending} sendError={receipt.isError ? receipt.error.message : ''}
         onSendUniCode={sendUniCode}
         onVerifyUniCode={async (code) => { queryClient.setQueryData(['access', user?.id], await verifyUniCode(code)); }}
-        onSwitchDevice={() => moveDevice.mutate()} switching={moveDevice.isPending}
+        onSwitchDevice={(slot) => moveDevice.mutate(slot)} switching={moveDevice.isPending}
         switchError={moveDevice.isError ? moveDevice.error.message : ''}
       />
     </Dialog>
