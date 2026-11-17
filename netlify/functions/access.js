@@ -5,7 +5,7 @@
         access: 'open' | 'pass' | 'trial' | 'none'   (see _lib/access.js)
    POST /api/access  body: { action: 'start_trial' }
      -> { access: 'trial', expires_at }
-        Starts the one-time 3-day trial. Only for an account whose confirmed
+        Starts the one-time 1-day trial. Only for an account whose confirmed
         sign-in address is at the university domain, and only once per
         address: the address is the row's key, so deleting the account and
         signing up again does not give a second trial.

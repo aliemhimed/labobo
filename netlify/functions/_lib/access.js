@@ -16,7 +16,7 @@ const { verifiedEmail } = require('./uniEmail');
 // LOCK_START in the environment overrides it, for testing the lock locally.
 const LOCK_START = new Date(process.env.LOCK_START || '2026-11-14T19:59:00Z');
 
-const TRIAL_DAYS = 3;
+const TRIAL_DAYS = 1;
 // The trial is for students who can prove a university address.
 const TRIAL_DOMAIN = 'eu.edu.ge';
 
@@ -39,7 +39,7 @@ function trialEmail(caller) {
                   a student who pre-subscribed sees it and isn't asked to pay
                   again)
           'open'  subscriptions have not started, everyone reads everything
-          'trial' inside the 3-day trial, until expires_at
+          'trial' inside the one-time trial (TRIAL_DAYS), until expires_at
           'none'  free lectures only
     Throws if the lookup fails: callers answer with an error rather than
     guess, so a database hiccup neither locks out a paying student for good

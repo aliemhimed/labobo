@@ -449,17 +449,21 @@ function summarizeDeviceNetwork(rows) {
   return { same_router: sameRouter, split_hits: splitHits, last_split_at: lastSplitAt };
 }
 
-/* Each student with `pass_until` and device-sharing signals. A failed lookup
-   leaves the list usable. */
+/* Each student with `pass_until`, `trial_until` (a free trial still running)
+   and device-sharing signals. A failed lookup leaves the list usable. */
 async function usersView() {
-  const [users, passes, allDevices] = await Promise.all([
+  const nowIso = encodeURIComponent(new Date().toISOString());
+  const [users, passes, trials, allDevices] = await Promise.all([
     rpc('admin_users', {}),
-    rows(`/subscriptions?expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=user_id,expires_at`)
+    rows(`/subscriptions?expires_at=gt.${nowIso}&select=user_id,expires_at`)
       .catch((e) => { console.error('[admin] passes', e); return []; }),
+    rows(`/trials?expires_at=gt.${nowIso}&select=user_id,expires_at`)
+      .catch((e) => { console.error('[admin] trials', e); return []; }),
     rows('/user_devices?select=user_id,slot,net_hash,split_hits,last_split_at')
       .catch((e) => { console.error('[admin] devices', e); return []; }),
   ]);
   const until = new Map(passes.map((p) => [p.user_id, p.expires_at]));
+  const trialUntil = new Map(trials.filter((t) => t.user_id).map((t) => [t.user_id, t.expires_at]));
   const byUser = new Map();
   for (const d of allDevices) {
     if (!byUser.has(d.user_id)) byUser.set(d.user_id, []);
@@ -472,6 +476,7 @@ async function usersView() {
       return {
         ...u,
         pass_until: until.get(u.id) ?? null,
+        trial_until: trialUntil.get(u.id) ?? null,
         devices_used: devs.length,
         split_hits: net.split_hits,
         same_router: net.same_router,

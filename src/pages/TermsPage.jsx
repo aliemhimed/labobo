@@ -7,7 +7,7 @@ import { CONTACT_EMAIL, INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/conta
    screen and the subscribe dialog, so it must open without an account. */
 
 const UPDATED = '16 November 2026';
-const TRIAL_DAYS = 3;
+const TRIAL_DAYS = 1;
 const REFUND_DAYS = 3;
 
 export default function TermsPage() {
@@ -49,9 +49,9 @@ export default function TermsPage() {
 
         <h2>The free trial</h2>
         <p>
-          An account signed in with a university address (@eu.edu.ge) can try full access for {TRIAL_DAYS} days,
-          once. The {TRIAL_DAYS} days start when you press the button and cannot be paused. Each university
-          address gets one trial, also if the account is deleted and created again.
+          An account signed in with a university address (@eu.edu.ge) can try full access for {TRIAL_DAYS}{' '}
+          {TRIAL_DAYS === 1 ? 'day (24 hours)' : 'days'}, once. The trial starts when you press the button and
+          cannot be paused. Each university address gets one trial, also if the account is deleted and created again.
         </p>
 
         <h2>Refunds</h2>

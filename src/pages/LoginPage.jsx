@@ -170,7 +170,7 @@ function Plans({ onSignIn }) {
           <ul>
             <li>Every lecture of every subject</li>
             <li>Past papers and cases</li>
-            <li>University accounts can try it free for 3 days</li>
+            <li>University accounts can try it free for 1 day</li>
           </ul>
         </div>
       </div>

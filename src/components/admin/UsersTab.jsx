@@ -13,6 +13,10 @@ const SORTS = {
 
 const lastSeen = (u) => u.last_quiz_at || u.last_visit_day || u.last_sign_in_at || null;
 
+/* A pass outranks a trial: a student with both counts as "pass". */
+const planOf = (u) => (u.pass_until ? 'pass' : u.trial_until ? 'trial' : 'none');
+const PLANS = { all: 'Every plan', pass: 'With a pass', trial: 'On free trial', none: 'No pass or trial' };
+
 export default function UsersTab({ onOpen }) {
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ['admin-users'],
@@ -21,6 +25,7 @@ export default function UsersTab({ onOpen }) {
   });
   const [search, setSearch] = useState('');
   const [semester, setSemester] = useState('all');
+  const [plan, setPlan] = useState('all');
   const [sort, setSort] = useState('active');
   const qc = useQueryClient();
   const exporting = useMutation({
@@ -33,9 +38,10 @@ export default function UsersTab({ onOpen }) {
     const q = search.trim().toLowerCase();
     return data.users
       .filter((u) => (semester === 'all' ? true : semester === 'none' ? !u.semester : u.semester === semester))
+      .filter((u) => plan === 'all' || planOf(u) === plan)
       .filter((u) => !q || `${u.username || ''} ${u.email || ''}`.toLowerCase().includes(q))
       .sort((a, b) => SORTS[sort].by(a) - SORTS[sort].by(b));
-  }, [data, search, semester, sort]);
+  }, [data, search, semester, plan, sort]);
 
   if (isLoading) return <p className="adm-empty">Loading students…</p>;
   if (error) {
@@ -56,6 +62,7 @@ export default function UsersTab({ onOpen }) {
         <Stat label="Students" value={num(all.length)} />
         <Stat label="Active this week" value={num(activeWeek)} />
         <Stat label="With a pass" value={num(all.filter((u) => u.pass_until).length)} />
+        <Stat label="On free trial" value={num(all.filter((u) => planOf(u) === 'trial').length)} />
         {flaggedSharing > 0 ? <Stat label="Shared devices?" value={num(flaggedSharing)} tone="warn" hint="2+ simultaneous split hits" /> : null}
         <Stat label="Never took a quiz" value={num(all.filter((u) => u.quizzes === 0).length)} />
         <Stat label="No semester yet" value={num(all.filter((u) => !u.semester).length)} />
@@ -77,6 +84,9 @@ export default function UsersTab({ onOpen }) {
             <option value="4">Semester 4</option>
             <option value="none">No semester</option>
           </select>
+          <select className="adm-input" aria-label="Plan" value={plan} onChange={(e) => setPlan(e.target.value)}>
+            {Object.entries(PLANS).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+          </select>
           <select className="adm-input" aria-label="Sort by" value={sort} onChange={(e) => setSort(e.target.value)}>
             {Object.entries(SORTS).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}
           </select>
@@ -93,6 +103,9 @@ export default function UsersTab({ onOpen }) {
                 <td>
                   <button type="button" className="adm-link" onClick={() => onOpen(u.id)}>{u.username || u.email || u.id.slice(0, 8)}</button>
                   {u.pass_until ? <span className="adm-pass-tag" title={`Pass until ${new Date(u.pass_until).toLocaleDateString()}`}>Pass</span> : null}
+                  {!u.pass_until && u.trial_until ? (
+                    <span className="adm-trial-tag" title={`Free trial until ${new Date(u.trial_until).toLocaleString()}`}>Trial</span>
+                  ) : null}
                   {(u.split_hits || 0) >= 2 ? (
                     <span className="adm-warn-tag" title={`Two tablets/computers used at the same time on different networks (${u.split_hits}×)`}>
                       Shared? {u.split_hits}×

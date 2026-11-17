@@ -12,7 +12,7 @@ import '../styles/admin.css';
 
 const SOON = new Date(Date.now() + 2 * 86400e3).toISOString();
 const RECENT = new Date(Date.now() - 40 * 60e3).toISOString();
-const TRIAL = { days: 3, domain: 'eu.edu.ge', eligible: true, used: false, available: true };
+const TRIAL = { days: 1, domain: 'eu.edu.ge', eligible: true, used: false, available: true };
 const NO_TRIAL = { ...TRIAL, eligible: false, available: false };
 
 const ACCESS = {

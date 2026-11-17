@@ -466,6 +466,9 @@ export function SubscribeView({
   );
 }
 
+/* "1 day", "3 days": the trial length as the server reports it. */
+const trialLength = (days) => `${days} ${days === 1 ? 'day' : 'days'}`;
+
 function TrialOffer({ trial, busy, onStart, onSendCode, onVerifyCode }) {
   if (!trial) return null;
   if (trial.available) {
@@ -473,11 +476,11 @@ function TrialOffer({ trial, busy, onStart, onSendCode, onVerifyCode }) {
       <div className="subscribe-trial">
         <p>
           <b>Try it first.</b> Your university address
-          {trial.email ? <> (<b>{trial.email}</b>)</> : null} gets {trial.days} days of full access, once. The
-          {' '}{trial.days} days start when you press the button.
+          {trial.email ? <> (<b>{trial.email}</b>)</> : null} gets {trialLength(trial.days)} of full access, once.
+          The clock starts when you press the button.
         </p>
         <button type="button" className="btn" disabled={busy} onClick={onStart}>
-          {busy ? 'Starting…' : `Start my free ${trial.days} days`}
+          {busy ? 'Starting…' : trial.days === 1 ? 'Start my free day' : `Start my free ${trial.days} days`}
         </button>
       </div>
     );
@@ -536,8 +539,8 @@ export function UniEmailForm({ trial, onSendCode, onVerifyCode }) {
   return (
     <div className="subscribe-trial uni-email">
       <p>
-        <b>Studying at EU? Get {trial.days} days free.</b> Confirm your university email and every lecture opens
-        for {trial.days} days, once. You stay in this account, so your progress stays too.
+        <b>Studying at EU? Get {trialLength(trial.days)} free.</b> Confirm your university email and every lecture opens
+        for {trialLength(trial.days)}, once. You stay in this account, so your progress stays too.
       </p>
       {!sentTo ? (
         <form className="uni-email-row" onSubmit={send}>
