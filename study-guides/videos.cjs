@@ -312,6 +312,33 @@ const GUIDES = {
   'gct/histology/practical-epithelium.html': {
     method: [v('ddHQW0QnbDI', MM, 'Epithelial classification', '0:00', 'end', 'how to classify every type of epithelium')],
   },
+  // GCT II. Chapter times read from each video's page on 17 Nov 2026.
+  'gct-2/biochemistry/lec07-hemostasis.html': {
+    water: [
+      v('YNROPnYy1tc', MP, 'Starling Forces made easy: Hydrostatic vs Oncotic Pressure', '7:57', '13:41', 'Starling forces along a capillary and why low plasma protein causes edema'),
+      v('cl1B9lwoJTE', MM, 'Swelling and Oedema (Capillary Exchange)', '0:00', 'end', 'how a fall in plasma proteins leads to oedema'),
+    ],
+    transport: [v('EBf97p7AeZc', MP, 'Albumin &amp; Globulins: Plasma Proteins and Electrophoresis', '0:00', 'end', 'albumin and the globulins, and what they carry')],
+    plug: [
+      v('SGzp9wqeu84', NN, 'Hematology | Hemostasis: Coagulation Cascade', '6:22', '16:58', 'vascular spasm and platelet plug formation'),
+      v('8FTuOjO7j-s', MM, 'Hemostasis and the Clotting Cascade', '1:33', '7:55', 'vascular spasm and the platelet plug'),
+      v('EEE4ReO1Pxs', MP, 'Von Willebrand Factor (vWF): Platelets and Coagulation', '0:00', 'end', 'what vWF does in platelet adhesion and for factor VIII'),
+    ],
+    process: [
+      v('SGzp9wqeu84', NN, 'Hematology | Hemostasis: Coagulation Cascade', '16:58', '36:13', 'the coagulation cascade, clot retraction and repair'),
+      v('8FTuOjO7j-s', MM, 'Hemostasis and the Clotting Cascade', '7:55', '20:46', 'the extrinsic, intrinsic and common pathways (the videos also show factor XII; for this lecture, follow the book)'),
+    ],
+    complexes: [v('8FTuOjO7j-s', MM, 'Hemostasis and the Clotting Cascade', '20:46', 'end', 'why the clotting factors need vitamin K and calcium')],
+    fibrinolysis: [
+      v('SGzp9wqeu84', NN, 'Hematology | Hemostasis: Coagulation Cascade', '36:13', '39:27', 'fibrinolysis: plasminogen, t-PA and plasmin'),
+      v('aSRI6BGXX70', NN, 'Antiplatelet, Anticoagulant, Thrombolytic Agents', '50:29', '1:00:45', 'fibrinolysis and how thrombolytic drugs work'),
+    ],
+    drugs: [
+      v('8E5VwvN0MCU', NN, 'Antiplatelets, Anticoagulants, and Thrombolytics | Clinical Medicine', '0:37', '30:53', 'antiplatelet drugs, including the P2Y12 blockers'),
+      v('8E5VwvN0MCU', NN, 'Antiplatelets, Anticoagulants, and Thrombolytics | Clinical Medicine', '30:53', '58:48', 'heparins, warfarin, fondaparinux, direct thrombin and Xa inhibitors'),
+      v('aSRI6BGXX70', NN, 'Antiplatelet, Anticoagulant, Thrombolytic Agents', '2:15:07', '2:26:50', 'heparin adverse effects, including heparin-induced thrombocytopenia'),
+    ],
+  },
 };
 
 const seconds = (t) => t.split(':').reduce((s, x) => s * 60 + Number(x), 0);

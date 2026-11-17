@@ -34,7 +34,7 @@ const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
 const DRY = process.argv.includes('--dry');
 const PROD = process.argv.includes('--prod');
 
-// GCT I, pre-midterm: lectures and weeks 1–7 of every part.
+// GCT I, pre-midterm: lectures and weeks 1–7 of every part. GCT II: every guide in study-guides/gct-2.
 const PUBLISH = {
   gct: {
     scope: 'pre-midterm',
@@ -42,6 +42,13 @@ const PUBLISH = {
     include: (g) => typeof g.lecture === 'number' && g.lecture <= 7,
     // Each part's question table: a guide is free when its lectures are in free_topics for it.
     tables: { Biochemistry: 'gct_biochemistry', 'Medical Genetics': 'gct_genetics', 'Molecular Biology': 'gct_molecular_biology', Histology: 'gct_histology' },
+  },
+  // GCT II: every guide written so far.
+  'gct-2': {
+    scope: 'lectures',
+    note: 'covered so far',
+    include: (g) => typeof g.lecture === 'number',
+    tables: { Biochemistry: 'gct2_biochemistry', 'Medical Genetics': 'gct2_genetics', 'Molecular Biology': 'gct2_molecular_biology', Histology: 'gct2_histology' },
   },
 };
 const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology'];
