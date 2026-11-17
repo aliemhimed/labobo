@@ -754,3 +754,46 @@
 }
 .resume-link.reading { background: var(--fill-blue); max-width: 100%; }
 .resume-link.reading .resume-mode { overflow-wrap: anywhere; }
+
+/* ── "Try the free trial" next to "Give us a review" (Plan.jsx TrialButton) ── */
+
+.home-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; margin-top: 22px; }
+.home-actions:empty { display: none; }
+.home-actions .review-pill { margin-top: 0; }
+.home-actions > .review-form { flex-basis: 100%; margin-top: 34px; }
+.trial-pill-error, .trial-started-note { flex-basis: 100%; margin: 0; }
+.trial-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  border: var(--line) solid var(--card-ink); border-radius: 99px;
+  background: var(--fill-mint); color: var(--card-ink);
+  font: 700 var(--t-14)/1 var(--font-display);
+  cursor: pointer; box-shadow: 3px 3px 0 var(--hard);
+  transition: transform 0.12s, box-shadow 0.12s;
+  animation: trial-nudge 2.4s ease-in-out 1s 2;
+}
+.trial-pill:hover { transform: translate(-1px, -2px); box-shadow: 5px 5px 0 var(--hard); }
+.trial-pill:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--hard); }
+.trial-pill:disabled { cursor: progress; opacity: 0.8; }
+@keyframes trial-nudge {
+  0%, 70%, 100% { transform: none; }
+  76% { transform: rotate(-4deg); }
+  84% { transform: rotate(4deg); }
+  92% { transform: rotate(-2deg); }
+}
+.trial-started-note {
+  padding: 12px 16px;
+  border: var(--line) solid var(--card-ink); border-radius: 16px;
+  background: var(--correct-wash); color: var(--ink); line-height: 1.45;
+  box-shadow: 4px 4px 0 var(--hard);
+}
+.trial-started-note b { display: block; font: 800 var(--t-16)/1.2 var(--font-display); }
+
+.trial-dialog .uni-email { margin-top: 14px; }
+.trial-dialog-alt { margin: 16px 0 0; font-size: var(--t-14); color: var(--ink-soft); }
+.trial-dialog-alt .btn { margin-left: 6px; }
+.trial-dialog-hint { display: block; margin-top: 4px; font-size: var(--t-12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .trial-pill { animation: none; transition: none; }
+}

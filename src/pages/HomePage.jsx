@@ -9,7 +9,7 @@ import { useProfile } from '../hooks/useProfile.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
-import { PlanStrip } from '../components/Plan.jsx';
+import { PlanStrip, TrialButton } from '../components/Plan.jsx';
 import { ReviewNote, ReviewPrompt, ReviewWall } from '../components/Reviews.jsx';
 import { InstagramGlyph } from '../components/Icons.jsx';
 import { INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/contact.js';
@@ -253,7 +253,10 @@ export default function HomePage() {
             {withGuides.map((s) => ` ${s.name} also has a study guide for every lecture ${guidesFor(catalog, s.key).note}.`).join('')}
           </p>
 
-          <ReviewPrompt activeDays={log.activeDays} />
+          <div className="home-actions">
+            <TrialButton />
+            <ReviewPrompt activeDays={log.activeDays} />
+          </div>
 
           {resumable.length || reading ? (
             <section className="resume" aria-labelledby="resume-title">

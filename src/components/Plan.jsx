@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Dialog from './Dialog.jsx';
 import { Cross, InstagramGlyph, Mail } from './Icons.jsx';
-import { useAuth } from '../lib/auth.jsx';
+import { useAuth, signOut } from '../lib/auth.jsx';
 import { useAccess } from '../hooks/useAccess.js';
 import {
   FREE_LECTURES, PASS_PRICE, deviceBlocked, formatDay, formatMoment,
@@ -567,6 +567,113 @@ export function UniEmailForm({ trial, onSendCode, onVerifyCode }) {
       ) : null}
       {error ? <p className="form-error" role="alert">{error}</p> : null}
     </div>
+  );
+}
+
+/* ── "Try the free trial" on the home page ─────────────────────────── */
+
+/** Who should see the home-page trial button: subscriptions have started,
+    the student has neither a pass nor a running trial, and their university
+    address (if any) has not used its trial yet. */
+export const showTrialButton = (access) =>
+  !!access?.locked && access.access === 'none' && !!access.trial && !access.trial.used;
+
+/** The button itself, from plain data (the dev preview shows it too). */
+export function TrialButtonView({ trial, busy, error, onClick }) {
+  if (!trial) return null;
+  return (
+    <>
+      <button type="button" className="trial-pill" disabled={busy} onClick={onClick}
+              title={`Every lecture open for ${trialLength(trial.days)}, free for EU students`}>
+        <span aria-hidden="true">🎁</span> {busy ? 'Starting your trial…' : 'Try the free trial'}
+      </button>
+      {error ? <p className="form-error trial-pill-error" role="alert">{error}</p> : null}
+    </>
+  );
+}
+
+/* For an account not signed in with its university address: confirm one by
+   code without leaving the account (progress stays), or sign in with it.
+   Once confirmed, the trial starts straight away. */
+export function TrialDialogView({ trial, email, onClose, onSendCode, onVerifyCode, onSignOut, error }) {
+  return (
+    <div className="subscribe trial-dialog">
+      <div className="subscribe-head">
+        <h2 id="trial-title">Free trial for EU students</h2>
+        {onClose ? <button type="button" className="help-close" aria-label="Close" onClick={onClose}><Cross /></button> : null}
+      </div>
+      <p className="dialog-text">
+        {email ? <>You are signed in as <b className="subscribe-email">{email}</b>, which is not a university email. </> : null}
+        The trial needs an <b>@{trial.domain}</b> email.
+      </p>
+      <UniEmailForm trial={trial} onSendCode={onSendCode} onVerifyCode={onVerifyCode} />
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
+      <p className="trial-dialog-alt">
+        Or sign in with your university email instead.{' '}
+        {onSignOut ? <button type="button" className="btn ghost sm" onClick={onSignOut}>Sign out</button> : null}
+        <span className="trial-dialog-hint">A different sign-in is a separate account, so confirming the code above keeps your progress.</span>
+      </p>
+      <DeviceRule />
+    </div>
+  );
+}
+
+export function TrialButton() {
+  const { user } = useAuth();
+  const { data: access } = useAccess();
+  const queryClient = useQueryClient();
+  const [asking, setAsking] = useState(false);
+  // When the trial starts, the button turns into a confirmation in place.
+  const [startedUntil, setStartedUntil] = useState(null);
+
+  async function refresh() {
+    await queryClient.invalidateQueries({ queryKey: ['access'] });
+    await queryClient.invalidateQueries({ queryKey: ['questions'] });
+    queryClient.invalidateQueries({ queryKey: ['guide-access'] });
+    queryClient.invalidateQueries({ queryKey: ['guide'] });
+  }
+  const trial = useMutation({
+    mutationFn: startTrial,
+    onSuccess: async (data) => {
+      setAsking(false);
+      setStartedUntil(data.expires_at);
+      await refresh();
+    },
+  });
+
+  if (startedUntil) {
+    return (
+      <p className="trial-started-note" role="status">
+        <b>Your free trial has started 🎉</b> Every lecture is open until {formatMoment(startedUntil)}.
+      </p>
+    );
+  }
+  if (!showTrialButton(access)) return null;
+  const info = access.trial;
+
+  return (
+    <>
+      <TrialButtonView trial={info} busy={trial.isPending}
+                       error={!asking && trial.isError ? trial.error.message : ''}
+                       onClick={() => (info.available ? trial.mutate() : setAsking(true))} />
+      {asking ? (
+        <Dialog onClose={() => setAsking(false)} labelledBy="trial-title">
+          <TrialDialogView
+            trial={info} email={user?.email || ''} onClose={() => setAsking(false)}
+            onSendCode={sendUniCode}
+            onVerifyCode={async (code) => {
+              const next = await verifyUniCode(code);
+              queryClient.setQueryData(['access', user?.id], next);
+              // The address is confirmed: start the trial they asked for.
+              if (next?.trial?.available) await trial.mutateAsync();
+              else if (next?.trial?.used) throw new Error('Confirmed, but this university address has already used its free trial.');
+              else setAsking(false);
+            }}
+            onSignOut={async () => { setAsking(false); await signOut(); }}
+          />
+        </Dialog>
+      ) : null}
+    </>
   );
 }
 
