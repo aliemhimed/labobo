@@ -11,8 +11,8 @@
      2. writes a <figure> block at the top of each section, right under its
         heading. Blocks it wrote before (marked data-auto="slides") are
         removed first, so it can be run again after changing PICKS.
-   Images are referenced as /guides/img/..., which the site will serve from
-   public/guides/img/ once the guides go live. */
+   Images are referenced as /guides/img/..., which the site serves from the
+   guide-images storage bucket (publish.cjs uploads them). */
 
 const fs = require('fs');
 const path = require('path');

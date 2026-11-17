@@ -3,13 +3,14 @@ import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from '../components/Icons.jsx';
 import PageHead from '../components/PageHead.jsx';
-import { fetchGuide, fetchGuideAccess, findGuide, guidesFor, rememberGuide } from '../lib/guides.js';
+import { fetchGuide, fetchGuideAccess, findGuide, guidesFor, rememberGuide, useGuideCatalog } from '../lib/guides.js';
 import { useAuth } from '../lib/auth.jsx';
 import '../../study-guides/lb-guide.css';
 import '../styles/guides.css';
 
 /* A subject's study guides: the card on the subject's start screen, the
-   list (one tab per part), and the guide itself. The server decides who may
+   list (one tab per part), and the guide itself. The list comes from the
+   server too (useGuideCatalog). The server decides who may
    read which guide (netlify/functions/guide.js): the free lectures for
    everyone, the rest with a pass or trial. `loadHtml` and `loadAccess`
    replace the server calls in the dev-only preview page. */
@@ -38,7 +39,7 @@ const PART_ICON = { Biochemistry: '⚗️', 'Medical Genetics': '🧬', 'Molecul
 
 /** The wide card above Study / Practice / Exam. Nothing for a subject without guides. */
 export function GuidesCard({ subjectKey, onOpen }) {
-  const m = guidesFor(subjectKey);
+  const m = guidesFor(useGuideCatalog().catalog, subjectKey);
   if (!m) return null;
   const videos = m.guides.reduce((n, g) => n + g.videos, 0);
   return (
@@ -62,13 +63,21 @@ export function GuidesCard({ subjectKey, onOpen }) {
 
 /** All guides of a subject, one tab per part. */
 export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead, onUnlock, loadAccess }) {
-  const m = guidesFor(subjectKey);
+  const { catalog, loading } = useGuideCatalog();
+  const m = guidesFor(catalog, subjectKey);
   const open = useGuideAccess(subjectKey, loadAccess);
   const lockedCount = m ? m.guides.filter((g) => open[g.path] === false).length : 0;
   const [part, setPart] = useState(() => {
-    try { return sessionStorage.getItem(`labobo-guides-part:${subjectKey}`) || m?.parts[0]; } catch { return m?.parts[0]; }
+    try { return sessionStorage.getItem(`labobo-guides-part:${subjectKey}`); } catch { return null; }
   });
-  if (!m) return null;
+  if (!m) {
+    return (
+      <div className="container">
+        <PageHead backLabel={subjectTitle} onBack={onBack} title="Study guides" />
+        <p className="guide-loading" role="status">{loading ? 'Loading the guides…' : 'There are no study guides for this subject yet.'}</p>
+      </div>
+    );
+  }
   const shown = m.parts.includes(part) ? part : m.parts[0];
   const choose = (p) => {
     setPart(p);
@@ -129,7 +138,8 @@ export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead, onUnlo
 /** One guide. `practiseKeys` are the guide's lectures that the student can
     practise now (open, not locked); with none, the button offers the pass. */
 export function GuideReader({ subjectKey, subjectTitle, folder, slug, canPractise, onPractise, onUnlock, onBack, onRead, loadHtml }) {
-  const guide = findGuide(subjectKey, folder, slug);
+  const { catalog, loading: listLoading } = useGuideCatalog();
+  const guide = findGuide(catalog, subjectKey, folder, slug);
   const location = useLocation();
   const { user } = useAuth();
   const { data: html, error, isLoading, refetch } = useQuery({
@@ -168,6 +178,14 @@ export function GuideReader({ subjectKey, subjectTitle, folder, slug, canPractis
     return () => { clearTimeout(t); window.removeEventListener('scroll', onScroll); save(); };
   }, [guide, subjectKey, subjectTitle]);
 
+  if (!guide && listLoading) {
+    return (
+      <div className="container guide-page">
+        <button type="button" className="back-link" onClick={onBack}><ChevronLeft />Study guides</button>
+        <p className="guide-loading" role="status">Loading the guide…</p>
+      </div>
+    );
+  }
   if (!guide) {
     return (
       <div className="container">
@@ -177,7 +195,7 @@ export function GuideReader({ subjectKey, subjectTitle, folder, slug, canPractis
     );
   }
 
-  const m = guidesFor(subjectKey);
+  const m = guidesFor(catalog, subjectKey);
   const list = m.guides.filter((g) => g.part === guide.part);
   const next = list[list.indexOf(guide) + 1] || null;
   const lecture = guide.topics.join(' and ');

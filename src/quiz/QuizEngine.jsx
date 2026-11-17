@@ -16,7 +16,7 @@ import Flashcards from './Flashcards.jsx';
 import Dashboard from './Dashboard.jsx';
 import ExamDetail from './ExamDetail.jsx';
 import { GuideReader, GuidesLibrary } from './Guides.jsx';
-import { findGuide } from '../lib/guides.js';
+import { findGuide, useGuideCatalog } from '../lib/guides.js';
 import { openSubscribeDialog } from '../lib/access.js';
 import { initialSession, restoreSession, serializeSession, sessionReducer } from './session.js';
 import { useHistory, useWrong } from '../hooks/useStore.js';
@@ -71,6 +71,7 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
   // Everyone reaching this component is already signed in (AuthGate) with a
   // semester chosen (SemesterGate) — there is no guest mode any more.
   const { user: authUser } = useAuth();
+  const { catalog: guideCatalog } = useGuideCatalog();
   const { data: profile } = useProfile();
   const user = useMemo(() => ({
     name: profile?.username || authUser?.user_metadata?.full_name || authUser?.email || '',
@@ -458,7 +459,7 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
           break;
         }
         // The guide's lectures the student can practise now (a locked one is not in allTopicKeys).
-        const guide = findGuide(config.path, folder, slug);
+        const guide = findGuide(guideCatalog, config.path, folder, slug);
         const keys = guide ? guide.topics.map((t) => `${guide.part}::${t}`).filter((k) => allTopicKeys.includes(k)) : [];
         body = (
           <GuideReader subjectKey={config.path} subjectTitle={subjectTitle} folder={folder} slug={slug}

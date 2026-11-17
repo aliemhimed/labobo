@@ -1,19 +1,54 @@
-/* The study guides that are on the site (src/lib/guides.json, written by
-   study-guides/publish.cjs) and the "Continue reading" note kept on this
-   device. The guide text comes from /api/guide (netlify/functions/guide.js),
-   which applies the same rule as the questions: free lectures for everyone,
-   the rest with a pass or trial. */
-import MANIFEST from './guides.json';
+/* The study guides that are on the site and the "Continue reading" note kept
+   on this device. Both the list and the guide text come from /api/guide
+   (netlify/functions/guide.js), which reads them from the database and
+   applies the same rule as the questions: free lectures for everyone, the
+   rest with a pass or trial. Nothing about the guides is built into the
+   site, so a new guide needs no deploy (study-guides/publish.cjs). */
+import { useQuery } from '@tanstack/react-query';
 import { authHeader } from './supabaseClient.js';
 
+const CATALOG_KEY = 'labobo-guide-catalog';
+export const CATALOG_QUERY = ['guide-catalog'];
+
+/** { "<subject>": { scope, note, parts, guides } } for every subject with guides. */
+async function fetchCatalog({ signal }) {
+  const res = await fetch('/api/guide?catalog=1', { signal });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const catalog = await res.json();
+  try { localStorage.setItem(CATALOG_KEY, JSON.stringify(catalog)); } catch { /* shown after loading next time */ }
+  return catalog;
+}
+
+function storedCatalog() {
+  try {
+    const v = JSON.parse(localStorage.getItem(CATALOG_KEY) || 'null');
+    return v && typeof v === 'object' ? v : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** { catalog, loading }: the guide list, shown from the last visit's copy
+    while the fresh one loads. `catalog` is {} until there is one. */
+export function useGuideCatalog() {
+  const { data, isLoading } = useQuery({
+    queryKey: CATALOG_QUERY,
+    queryFn: fetchCatalog,
+    placeholderData: storedCatalog,
+    staleTime: 10 * 60_000,
+    retry: 1,
+  });
+  return { catalog: data || {}, loading: isLoading };
+}
+
 /** { scope, note, parts, guides } for a subject, or null if it has none. */
-export function guidesFor(subjectKey) {
-  const m = MANIFEST[subjectKey];
+export function guidesFor(catalog, subjectKey) {
+  const m = catalog?.[subjectKey];
   return m && m.guides.length ? m : null;
 }
 
-export function findGuide(subjectKey, folder, slug) {
-  return guidesFor(subjectKey)?.guides.find((g) => g.folder === folder && g.slug === slug) || null;
+export function findGuide(catalog, subjectKey, folder, slug) {
+  return guidesFor(catalog, subjectKey)?.guides.find((g) => g.folder === folder && g.slug === slug) || null;
 }
 
 /** The guide's HTML. Throws an Error with `.locked` when it needs a pass. */
@@ -43,11 +78,12 @@ export async function fetchGuideAccess(subjectKey, signal) {
 
 const LAST_KEY = 'labobo-last-guide';
 
-/** { subject, path, title, label, part, y, at } or null. */
+/** { subject, path, title, label, part, y, at } or null. The caller checks
+    the guide is still on the site (findGuide) once the catalog is there. */
 export function lastGuide() {
   try {
     const v = JSON.parse(localStorage.getItem(LAST_KEY) || 'null');
-    return v && v.subject && v.path && findGuide(v.subject, ...v.path.split('/')) ? v : null;
+    return v && v.subject && typeof v.path === 'string' && v.path.includes('/') ? v : null;
   } catch {
     return null;
   }

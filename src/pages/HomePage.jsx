@@ -16,7 +16,7 @@ import { INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/contact.js';
 import { SUBJECTS, inSemester } from '../lib/subjects.js';
 import { questionsQuery } from '../hooks/useQuestions.js';
 import { loadSubjectPage } from './loadSubjectPage.js';
-import { guidesFor, lastGuide } from '../lib/guides.js';
+import { findGuide, guidesFor, lastGuide, useGuideCatalog } from '../lib/guides.js';
 
 const RESUME_LABEL = {
   practice: 'Practice in progress',
@@ -197,11 +197,11 @@ export default function HomePage() {
 
   const resumable = subjects.filter((s) => progress[s.key]?.resumeMode);
   // Study guides: the subjects that have them, and the guide last read on this device.
-  const withGuides = subjects.filter((s) => guidesFor(s.key));
-  const [reading] = useState(() => {
-    const g = lastGuide();
-    return g && subjects.some((s) => s.key === g.subject) ? g : null;
-  });
+  const { catalog } = useGuideCatalog();
+  const withGuides = subjects.filter((s) => guidesFor(catalog, s.key));
+  const [lastRead] = useState(lastGuide);
+  const reading = lastRead && subjects.some((s) => s.key === lastRead.subject)
+    && findGuide(catalog, lastRead.subject, ...lastRead.path.split('/')) ? lastRead : null;
 
   const fullName = profile?.username || user?.user_metadata?.full_name || '';
   const firstName = fullName.includes('@') ? '' : fullName.trim().split(/\s+/)[0];
@@ -250,7 +250,7 @@ export default function HomePage() {
           <p className="home-sub">
             Semester {semester} subjects. Each one has study, practice and exam modes, plus
             flashcards and a weekly leaderboard.
-            {withGuides.map((s) => ` ${s.name} also has a study guide for every lecture ${guidesFor(s.key).note}.`).join('')}
+            {withGuides.map((s) => ` ${s.name} also has a study guide for every lecture ${guidesFor(catalog, s.key).note}.`).join('')}
           </p>
 
           <ReviewPrompt activeDays={log.activeDays} />
@@ -289,7 +289,7 @@ export default function HomePage() {
                     <span className="deck-count">
                       {n == null ? ' ' : n === 0 ? 'Coming soon' : `${n.toLocaleString()} questions`}
                     </span>
-                    {guidesFor(s.key) ? <span className="deck-guides">📖 {guidesFor(s.key).guides.length} study guides</span> : null}
+                    {guidesFor(catalog, s.key) ? <span className="deck-guides">📖 {guidesFor(catalog, s.key).guides.length} study guides</span> : null}
                     {p?.wrongCount ? <span className="deck-review">{p.wrongCount} to review</span> : null}
                   </span>
                   <MiniSheet scores={log.recent[s.key] || []} />

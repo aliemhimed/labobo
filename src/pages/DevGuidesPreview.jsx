@@ -1,27 +1,35 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import ModeHome from '../quiz/ModeHome.jsx';
 import { GuideReader, GuidesLibrary } from '../quiz/Guides.jsx';
+import { CATALOG_QUERY } from '../lib/guides.js';
 import '../styles/quiz.css';
 
 /* Development only (/dev/guides): the real study-guide screens of GCT I
    without signing in or the server functions. App.jsx only adds this route
    in `vite dev`, so this module (and the guide text it pulls in) is not in
    the built site. "Free plan" shows what a student without a pass sees: the
-   first two lectures of each part open, the rest locked. */
+   first two lectures of each part open, the rest locked. The guide list is
+   study-guides/preview/guides.json: run `node study-guides/publish.cjs --dry`
+   to write it. */
 
 const SOURCES = import.meta.glob('../../study-guides/gct/**/*.html', { query: '?raw', import: 'default', eager: true });
 const IMAGES = import.meta.glob('../../study-guides/img/**/*.{jpg,png}', { query: '?url', import: 'default', eager: true });
+// Absent until publish.cjs has run once; the page then shows no guides.
+const LIST = Object.values(import.meta.glob('../../study-guides/preview/guides.json', { import: 'default', eager: true }))[0] || {};
 const isFree = (path) => /\/(wk|lec)0[12]-/.test(path);
 
 export default function DevGuidesPreview() {
   const [view, setView] = useState({ name: 'home' });
   const [plan, setPlan] = useState('free');
   const read = (g) => { setView({ name: 'guide', folder: g.folder, slug: g.slug }); window.scrollTo(0, 0); };
+  // Stand in for /api/guide?catalog=1 before the screens ask for it.
+  const queryClient = useQueryClient();
+  useState(() => queryClient.setQueryData(CATALOG_QUERY, LIST));
 
-  const loadAccess = async (subject) => {
-    const { guidesFor } = await import('../lib/guides.js');
-    return Object.fromEntries(guidesFor(subject).guides.map((g) => [g.path, plan === 'pass' || isFree(g.path)]));
-  };
+  const loadAccess = async (subject) => (
+    Object.fromEntries((LIST[subject]?.guides || []).map((g) => [g.path, plan === 'pass' || isFree(g.path)]))
+  );
   const loadHtml = async (subject, guide) => {
     if (plan !== 'pass' && !isFree(guide.path)) {
       throw Object.assign(new Error('This guide comes with a pass'), { locked: true, status: 403 });

@@ -1,0 +1,5 @@
+# The study guides' pictures live in Supabase Storage (the public guide-images
+# bucket, filled by study-guides/publish.cjs). Guides ask for /guides/img/...,
+# so the pictures come through our own domain: ad blockers that block
+# *.supabase.co do not hide them. Rules here run before those in netlify.toml.
+/guides/img/*  https://boukmowybmtfqkinuvqj.supabase.co/storage/v1/object/public/guide-images/:splat  200

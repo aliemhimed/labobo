@@ -64,6 +64,6 @@ graphify-out/
 # Study-guide preview pages (node study-guides/build.cjs)
 study-guides/preview/
 study-guides/instagram/
-# Picture sources for the guides (Nano Banana originals, slide extracts). The site
-# uses the shrunk copies in public/guides/img (node study-guides/publish.cjs).
+# Pictures for the guides (Nano Banana originals, slide extracts). The ones the
+# guides use are uploaded to Supabase Storage (node study-guides/publish.cjs).
 study-guides/img/

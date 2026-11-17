@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 // another port, or if you run the functions somewhere else.
 const FUNCTIONS_ORIGIN = process.env.FUNCTIONS_ORIGIN || 'http://localhost:8888';
 
+const GUIDE_IMAGES = (process.env.VITE_SUPA_URL || 'https://boukmowybmtfqkinuvqj.supabase.co') + '/storage/v1/object/public/guide-images';
+
 /* The /api/* routes are Netlify Functions. `netlify dev` serves them on 8888;
    plain `vite dev` has nothing there.
 
@@ -32,6 +34,14 @@ function netlifyFunctionsDev() {
   return {
     name: 'labobo:netlify-functions-dev',
     configureServer(server) {
+      // The guides' pictures are in Supabase Storage; the live site maps
+      // /guides/img/* to them in public/_redirects.
+      server.middlewares.use('/guides/img', (req, res) => {
+        res.statusCode = 302;
+        res.setHeader('Location', GUIDE_IMAGES + req.url);
+        res.end();
+      });
+
       server.middlewares.use('/api', async (req, res) => {
         const url = FUNCTIONS_ORIGIN + '/api' + req.url;
 
