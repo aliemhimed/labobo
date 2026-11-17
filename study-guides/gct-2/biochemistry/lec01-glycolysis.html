@@ -1,0 +1,451 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct-2" data-part="Biochemistry" data-type="lecture"
+         data-lectures="1" data-topic="Biochem Lec 1: Glycolysis"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT II · Biochemistry · Lecture 1</p>
+  <h1>Carbohydrate Digestion and Glycolysis</h1>
+  <p class="lb-lede">How dietary carbohydrate is digested and absorbed, how glucose enters cells, the ten reactions that turn glucose into pyruvate, how the pathway is controlled, and what happens to pyruvate next, with arsenic poisoning, pyruvate kinase deficiency and lactic acidosis.</p>
+  <span class="lb-topic-name">Labobo topic: Biochem Lec 1: Glycolysis</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>Starch is digested by <strong>salivary and pancreatic α-amylase</strong>, then brush-border <strong>disaccharidases</strong>; only <strong>monosaccharides</strong> are absorbed. Glucose and galactose enter by <strong>SGLT-1</strong> (with Na⁺), fructose by <strong>GLUT-5</strong>, and all leave into the portal blood by <strong>GLUT-2</strong>.</li>
+    <li>Glucose enters other cells by <strong>GLUT</strong> facilitated diffusion (GLUT-4 is insulin-sensitive, in muscle and fat) or by <strong>Na⁺-dependent cotransport</strong> (SGLT).</li>
+    <li>Glycolysis: glucose → <strong>2 pyruvate</strong>, net <strong>2 ATP</strong> and <strong>2 NADH</strong>. Three irreversible steps: <strong>hexokinase/glucokinase</strong>, <strong>PFK-1</strong> (rate-limiting) and <strong>pyruvate kinase</strong>.</li>
+    <li><strong>Fructose 2,6-bisphosphate</strong> is the strongest PFK-1 activator; insulin raises it, glucagon lowers it in the liver.</li>
+    <li>Without O₂ or mitochondria, pyruvate → <strong>lactate</strong> (regenerates NAD⁺). Shock and circulatory collapse cause <strong>lactic acidosis</strong>.</li>
+    <li><strong>Arsenate</strong> replaces phosphate at glyceraldehyde 3-phosphate dehydrogenase and cancels the ATP of that step; <strong>PK deficiency</strong> causes hemolytic anemia.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Lippincott Illustrated Reviews: Biochemistry, 8th ed., chapter 7 (pp. 263–272) and chapter 8 (pp. 293–324). By the end you can:</p>
+  <ul>
+    <li>describe how dietary carbohydrate is digested and absorbed, and the disaccharidase deficiencies;</li>
+    <li>compare the two systems that move glucose into cells;</li>
+    <li>name each reaction of glycolysis, its enzyme, and where ATP and NADH are used or made;</li>
+    <li>explain how hexokinase, glucokinase, PFK-1 and pyruvate kinase are regulated, including by insulin and glucagon;</li>
+    <li>describe the fates of pyruvate and NADH in aerobic and anaerobic glycolysis;</li>
+    <li>explain arsenic poisoning, pyruvate kinase deficiency and lactic acidosis.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#digestion">Carbohydrate digestion</a></li>
+    <li><a href="#absorption">Absorption and disaccharide intolerance</a></li>
+    <li><a href="#transport">Glucose transport into cells</a></li>
+    <li><a href="#overview">Glycolysis overview</a></li>
+    <li><a href="#investment">Energy-investment phase</a></li>
+    <li><a href="#generation">Energy-generation phase</a></li>
+    <li><a href="#pk">Pyruvate kinase and its deficiency</a></li>
+    <li><a href="#lactate">Lactate and lactic acidosis</a></li>
+    <li><a href="#yield">Energy yield</a></li>
+    <li><a href="#hormones">Hormonal regulation</a></li>
+    <li><a href="#fates">Other fates of pyruvate</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="digestion">
+  <h2>Carbohydrate digestion</h2>
+  <p>Digestion happens mainly in the <strong>mouth</strong> and the <strong>intestinal lumen</strong>, by <strong>glycoside hydrolases</strong> (glycosidases) that cut glycosidic bonds. Because diets contain little free monosaccharide, the enzymes are mostly <strong>endoglycosidases</strong> (for polysaccharides) and <strong>disaccharidases</strong>. The end products are <strong>glucose, galactose and fructose</strong>.</p>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/digestion-1.jpg" width="439" height="821" loading="lazy" decoding="async" alt="Carbohydrate digestion from mouth to small intestine: salivary α-amylase, inactivated in the stomach, then pancreatic α-amylase and the brush-border disaccharidases, producing glucose, fructose and galactose that reach the liver by the portal vein; cellulose passes undigested.">
+    <figcaption>Where each step of carbohydrate digestion happens; cellulose passes to the colon undigested. <span class="lb-credit">Lecture slide 5</span></figcaption>
+  </figure>
+</div>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Step</th><th scope="col">Enzyme</th><th scope="col">What it does</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Mouth</th><td>Salivary α-amylase</td><td>Cuts random <strong>α(1→4)</strong> bonds of starch and glycogen → <strong>dextrins</strong> (it cannot cut α(1→6) branch points)</td></tr>
+      <tr><th scope="row">Stomach</th><td>None</td><td>Digestion <strong>halts</strong>: acid inactivates salivary amylase</td></tr>
+      <tr><th scope="row">Small intestine lumen</th><td>Pancreatic α-amylase</td><td>Continues starch digestion after pancreatic <strong>bicarbonate</strong> neutralises the acid</td></tr>
+      <tr><th scope="row">Brush border (duodenum, upper jejunum)</th><td>Isomaltase</td><td>α(1→6) bond of isomaltose (and most maltose)</td></tr>
+      <tr><td></td><td>Maltase</td><td>α(1→4) bond of maltose and maltotriose → glucose</td></tr>
+      <tr><td></td><td>Sucrase</td><td>α(1→2) bond of <strong>sucrose</strong> → glucose + fructose</td></tr>
+      <tr><td></td><td>Lactase (β-galactosidase)</td><td>β(1→4) bond of <strong>lactose</strong> → galactose + glucose</td></tr>
+      <tr><td></td><td>Trehalase</td><td>α(1→1) bond of trehalose (mushrooms)</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>Humans make no β(1→4)-endoglucosidase, so <strong>cellulose</strong> cannot be digested.</li>
+    <li>Sucrase and isomaltase are one protein cut into two subunits: the <strong>sucrase–isomaltase (SI) complex</strong>. Maltase is part of the uncut <strong>maltase–glucoamylase</strong>; glucoamylase cuts α(1→4) bonds in dextrins.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="absorption">
+  <h2>Absorption and disaccharide intolerance</h2>
+  <p>The <strong>upper jejunum</strong> absorbs most of the monosaccharides, each by its own transporter.</p>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/absorption-1.jpg" width="594" height="358" loading="lazy" decoding="async" alt="An epithelial cell takes up glucose with Na⁺ through SGLT on its apical side and releases glucose through GLUT2 on its basal side, while the Na⁺/K⁺ pump keeps sodium low inside.">
+    <figcaption>Sodium-dependent uptake (SGLT) on the luminal side and GLUT-2 release on the blood side, powered by the Na⁺/K⁺ pump. <span class="lb-credit">Lecture slide 6</span></figcaption>
+  </figure>
+</div>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Sugar</th><th scope="col">Into the enterocyte</th><th scope="col">Out to the portal blood</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Glucose, galactose</th><td><strong>SGLT-1</strong>: secondary active transport with Na⁺ (symport); the Na⁺ gradient comes from the Na⁺/K⁺-ATPase</td><td rowspan="2"><strong>GLUT-2</strong></td></tr>
+      <tr><th scope="row">Fructose</th><td><strong>GLUT-5</strong>: Na⁺- and energy-independent</td></tr>
+    </tbody>
+  </table></div>
+  <p>Only monosaccharides are absorbed. If a disaccharidase is missing, the sugar reaches the <strong>large intestine</strong>: it draws water in (<strong>osmotic diarrhea</strong>), and bacteria ferment it to small osmotically active compounds plus <strong>CO₂ and H₂</strong> (cramps, flatulence).</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Deficiency</th><th scope="col">Key facts</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Lactose intolerance</th><td><strong>Over 60%</strong> of adults worldwide; up to <strong>90%</strong> of adults of African or Asian descent; least in Northern Europeans. Lactase falls from about <strong>age 2</strong> because less enzyme is made (a regulatory region on <strong>chromosome 2</strong>). Treatment: less milk; yogurt, some cheeses and green vegetables for calcium; lactase-treated products or lactase pills</td></tr>
+      <tr><th scope="row">Sucrase–isomaltase deficiency</th><td>Sucrose intolerance; once thought rare (Inuit), now up to <strong>9%</strong> of Americans of European descent; 25 mutations known. Homozygotes: osmotic diarrhea, mild steatorrhea, irritability, vomiting; carriers can have chronic diarrhea and bloating. Treatment: less sucrose, enzyme replacement</td></tr>
+      <tr><th scope="row">Acquired</th><td>Intestinal disease, malnutrition, mucosa-damaging drugs; brush-border enzymes are lost quickly in <strong>severe diarrhea</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Diagnosis</strong>: oral tolerance tests with each disaccharide, and <strong>breath H₂</strong>, which measures carbohydrate fermented by gut bacteria instead of being absorbed.</p>
+</section>
+
+<section class="lb-section" id="transport">
+  <h2>Glucose transport into cells</h2>
+  <p>Glucose cannot diffuse into cells. It uses one of two systems.</p>
+  <h3>1. Na⁺- and ATP-independent: GLUTs</h3>
+  <p>Fourteen <strong>GLUT</strong> isoforms (GLUT-1 to GLUT-14) carry one glucose at a time (<strong>uniporters</strong>) by <strong>facilitated diffusion</strong>, down its concentration gradient. Each GLUT has 12 transmembrane α-helices and switches between two shapes.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Transporter</th><th scope="col">Location</th><th scope="col">Function</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">GLUT-1</th><td>Most tissues (red cells, blood–brain barrier)</td><td>Basal glucose uptake</td></tr>
+      <tr><th scope="row">GLUT-2</th><td>Liver, kidney, pancreatic β cells</td><td>Moves glucose <strong>in or out</strong> depending on blood glucose; high Km</td></tr>
+      <tr><th scope="row">GLUT-3</th><td>Most tissues (neurons)</td><td>Basal glucose uptake</td></tr>
+      <tr><th scope="row">GLUT-4</th><td>Muscle and fat</td><td>Number in the membrane raised by <strong>insulin</strong></td></tr>
+      <tr><th scope="row">GLUT-5</th><td>Small intestine, testes</td><td>Transports <strong>fructose</strong></td></tr>
+    </tbody>
+  </table></div>
+  <h3>2. Na⁺- and ATP-dependent cotransport: SGLTs</h3>
+  <p>In the <strong>intestinal epithelium, renal tubules and choroid plexus</strong>, glucose is moved <strong>against</strong> its gradient together with Na⁺ moving down its gradient. ATP is used indirectly, by the Na⁺/K⁺-ATPase that keeps Na⁺ low inside the cell (secondary active transport).</p>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: SGLT2 inhibitors</span>
+    <p><strong>SGLT2</strong> in the kidney is the main transporter that reabsorbs glucose. <strong>Gliflozins</strong> block it, so more glucose is lost in the urine and blood glucose falls in type 2 diabetes.</p>
+  </aside>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/gluts-1.jpg" width="1200" height="675" loading="lazy" decoding="async" alt="Table of glucose transporters GLUT1 to GLUT5 with their tissues and whether they are insulin-dependent.">
+    <figcaption>The main GLUTs, where they are and which one responds to insulin. <span class="lb-credit">Lecture slide 7</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=gggC9vctvBQ&amp;t=89s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Glycolysis</a>
+      <span class="lb-when">Watch from 1:29 to 6:30: the GLUT transporters and how glucose enters cells.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="overview">
+  <h2>Glycolysis overview</h2>
+  <p>Glycolysis is used by <strong>all tissues</strong> to oxidise glucose for ATP and to make intermediates for other pathways. It is the <strong>hub</strong> of carbohydrate metabolism: almost every sugar can be turned into glucose.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">Aerobic glycolysis</th><th scope="col">Anaerobic glycolysis</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">End product</th><td><strong>Pyruvate</strong></td><td><strong>Lactate</strong></td></tr>
+      <tr><th scope="row">Where</th><td>Cells with mitochondria and enough O₂</td><td>Cells without mitochondria (<strong>red cells</strong>, parts of the eye) or without enough O₂</td></tr>
+      <tr><th scope="row">NADH</th><td>Reoxidised by the electron transport chain (needs O₂)</td><td>Reoxidised by lactate dehydrogenase</td></tr>
+      <tr><th scope="row">Next</th><td>Pyruvate → acetyl CoA → TCA cycle</td><td>Lactate goes to the blood</td></tr>
+    </tbody>
+  </table></div>
+  <p>The ten reactions fall into an <strong>energy-investment phase</strong> (reactions 1–5, ATP spent to make phosphorylated intermediates) and an <strong>energy-generation phase</strong> (reactions 6–10, ATP made by substrate-level phosphorylation).</p>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/pathway-1.jpg" width="1158" height="1500" loading="lazy" decoding="async" alt="The whole glycolytic pathway from glucose to pyruvate with each enzyme, the three irreversible steps, the ATP and NADH steps, the 2,3-BPG shunt and the fates of pyruvate.">
+    <figcaption>The whole pathway with its enzymes and the three irreversible steps. <span class="lb-credit">Lecture slide 10</span></figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="lb-section" id="investment">
+  <h2>Energy-investment phase</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">#</th><th scope="col">Reaction</th><th scope="col">Enzyme</th><th scope="col">Notes</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">1</th><td>Glucose → glucose 6-phosphate</td><td>Hexokinase I–III / glucokinase (IV)</td><td><strong>Irreversible</strong>; uses 1 ATP (with Mg²⁺); traps glucose in the cell</td></tr>
+      <tr><th scope="row">2</th><td>Glucose 6-P ⇌ fructose 6-P</td><td>Phosphoglucose isomerase</td><td>Reversible, not regulated</td></tr>
+      <tr><th scope="row">3</th><td>Fructose 6-P → fructose 1,6-bisphosphate</td><td><strong>PFK-1</strong></td><td><strong>Irreversible, rate-limiting, committed step</strong>; uses 1 ATP</td></tr>
+      <tr><th scope="row">4</th><td>Fructose 1,6-bisP ⇌ DHAP + glyceraldehyde 3-P</td><td>Aldolase</td><td>Reversible, not regulated; aldolase B (liver) also cleaves fructose 1-P</td></tr>
+      <tr><th scope="row">5</th><td>DHAP ⇌ glyceraldehyde 3-P</td><td>Triose phosphate isomerase</td><td>Gives <strong>2 glyceraldehyde 3-P</strong> per glucose; DHAP is also used for triacylglycerol</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Hexokinase and glucokinase</h3>
+  <p>Phosphorylated sugars cannot cross membranes (no carriers, too polar), so phosphorylation <strong>traps</strong> glucose and commits it to the cell.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">Hexokinase I–III</th><th scope="col">Glucokinase (hexokinase IV)</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Where</th><td>Most tissues</td><td><strong>Liver</strong> parenchymal cells, <strong>pancreatic β cells</strong> (also hypothalamic neurons)</td></tr>
+      <tr><th scope="row">Km for glucose</th><td><strong>Low</strong> (high affinity): works even at low glucose</td><td><strong>High</strong>: works only when glucose is high (after a meal)</td></tr>
+      <tr><th scope="row">Vmax</th><td>Low: does not trap more phosphate or glucose than the cell can use</td><td><strong>High</strong>: liver clears the flood of portal glucose</td></tr>
+      <tr><th scope="row">Inhibited by</th><td><strong>Glucose 6-phosphate</strong> (product)</td><td><strong>Not</strong> by glucose 6-P; indirectly by fructose 6-P via <strong>GKRP</strong></td></tr>
+      <tr><th scope="row">Role</th><td>Basal glucose use</td><td><strong>Glucose sensor</strong>: sets the threshold for insulin secretion</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>GKRP</strong> (glucokinase regulatory protein): with fructose 6-phosphate present, glucokinase binds GKRP tightly and is moved into the <strong>nucleus</strong>, inactive. When glucose rises, glucokinase is released back to the cytosol. GKRP is a competitive inhibitor of glucose use by glucokinase.</p>
+<div class="lb-figures lb-figures-2">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/hk-gk-1.jpg" width="1200" height="546" loading="lazy" decoding="async" alt="Table comparing hexokinase and glucokinase: location, Km, Vmax, induction by insulin, feedback inhibition by glucose 6-phosphate, and MODY.">
+    <figcaption>Hexokinase versus glucokinase. <span class="lb-credit">Lecture slide 12</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/gkrp-1.jpg" width="512" height="565" loading="lazy" decoding="async" alt="In the liver cell, glucokinase bound to glucokinase regulatory protein is held inactive in the nucleus and returns to the cytosol when glucose rises.">
+    <figcaption>Glucokinase is held in the nucleus by GKRP until glucose rises. <span class="lb-credit">Lecture slide 14</span></figcaption>
+  </figure>
+</div>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: MODY 2</span>
+    <p>Inactivating mutations of glucokinase cause <strong>maturity-onset diabetes of the young type 2</strong>: the β cell senses glucose poorly, so insulin secretion is impaired and blood glucose rises.</p>
+  </aside>
+
+  <h3>PFK-1: the main control point</h3>
+  <ul>
+    <li><strong>Inhibited</strong> by high <strong>ATP</strong> (energy-rich signal) and <strong>citrate</strong> (favours glycogen synthesis).</li>
+    <li><strong>Activated</strong> by <strong>AMP</strong> (energy depleted) and, most strongly, by <strong>fructose 2,6-bisphosphate</strong>, which works even when ATP is high.</li>
+  </ul>
+  <p><strong>PFK-2</strong> is a <strong>bifunctional</strong> enzyme: its kinase makes fructose 2,6-bisphosphate and its phosphatase (FBP2) removes it. In the <strong>liver</strong> isozyme, <strong>phosphorylation</strong> turns the kinase off and the phosphatase on; the cardiac isozyme does the opposite, and skeletal muscle PFK-2 is not covalently regulated.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">State</th><th scope="col">Hormones</th><th scope="col">Liver PFK-2</th><th scope="col">Fructose 2,6-bisP</th><th scope="col">Result</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Well fed</th><td>Insulin ↑, glucagon ↓</td><td>Dephosphorylated (kinase active)</td><td>↑</td><td>Glycolysis ↑</td></tr>
+      <tr><th scope="row">Fasting</th><td>Glucagon ↑, insulin ↓</td><td>Phosphorylated (phosphatase active)</td><td>↓</td><td>Glycolysis ↓, gluconeogenesis ↑</td></tr>
+    </tbody>
+  </table></div>
+  <p>Fructose 2,6-bisphosphate also <strong>inhibits fructose 1,6-bisphosphatase</strong> of gluconeogenesis, so the two pathways are not fully active together (no futile cycle).</p>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/pfk-1.jpg" width="614" height="566" loading="lazy" decoding="async" alt="PFK-2 and fructose 2,6-bisphosphatase (a bifunctional enzyme) make and remove fructose 2,6-bisphosphate, which activates PFK-1 along with AMP, while ATP inhibits it.">
+    <figcaption>PFK-2/FBP2 sets the level of fructose 2,6-bisphosphate, the strongest activator of PFK-1. <span class="lb-credit">Lecture slide 15</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=gggC9vctvBQ&amp;t=390s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Glycolysis</a>
+      <span class="lb-when">Watch from 6:30 to 17:24: hexokinase, PFK-1, aldolase and triose phosphate isomerase.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=TnQGcKpahfM&amp;t=294s" target="_blank" rel="noopener">Dr Matt &amp; Dr Mike · Glycolysis Made Easy!</a>
+      <span class="lb-when">Watch from 4:54 to 13:33: preparing glucose and splitting it into two trioses.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="generation">
+  <h2>Energy-generation phase</h2>
+  <p>Each step happens <strong>twice</strong> per glucose (two glyceraldehyde 3-phosphates).</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">#</th><th scope="col">Reaction</th><th scope="col">Enzyme</th><th scope="col">Notes</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">6</th><td>Glyceraldehyde 3-P + Pᵢ + NAD⁺ → <strong>1,3-bisphosphoglycerate</strong> + NADH</td><td>Glyceraldehyde 3-P dehydrogenase</td><td><strong>First oxidation</strong>; the new phosphate bond is high-energy</td></tr>
+      <tr><th scope="row">7</th><td>1,3-BPG + ADP → 3-phosphoglycerate + <strong>ATP</strong></td><td>Phosphoglycerate kinase</td><td>Substrate-level phosphorylation; <strong>reversible</strong>, unlike most kinases; replaces the 2 ATP spent</td></tr>
+      <tr><th scope="row">8</th><td>3-PG ⇌ 2-phosphoglycerate</td><td>Phosphoglycerate mutase</td><td>Freely reversible</td></tr>
+      <tr><th scope="row">9</th><td>2-PG → <strong>phosphoenolpyruvate</strong> (PEP) + H₂O</td><td>Enolase</td><td>Makes a high-energy enol phosphate; reversible; <strong>inhibited by fluoride</strong></td></tr>
+      <tr><th scope="row">10</th><td>PEP + ADP → <strong>pyruvate</strong> + <strong>ATP</strong></td><td><strong>Pyruvate kinase</strong></td><td><strong>Third irreversible step</strong>; substrate-level phosphorylation</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>Cells have little NAD⁺, so the NADH from step 6 must be reoxidised: by <strong>lactate dehydrogenase</strong> (anaerobic) or the <strong>electron transport chain</strong> (aerobic). NADH cannot cross the inner mitochondrial membrane, so the <strong>malate–aspartate</strong> and <strong>glycerol 3-phosphate</strong> shuttles carry its electrons in.</li>
+    <li><strong>Fluoride</strong> in drinking water inhibits enolase in mouth bacteria, lowering their lactate and dental caries.</li>
+  </ul>
+  <h3>2,3-Bisphosphoglycerate in red cells</h3>
+  <p>In red cells, <strong>bisphosphoglycerate mutase</strong> turns some 1,3-BPG into <strong>2,3-BPG</strong>, which raises O₂ delivery; a phosphatase turns it into 3-phosphoglycerate. This shunt skips the ATP of step 7. 2,3-BPG is only a trace in other cells.</p>
+<div class="lb-figures lb-figures-2">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/bpg-1.jpg" width="722" height="604" loading="lazy" decoding="async" alt="In the red cell, 1,3-bisphosphoglycerate is converted by BPG mutase to 2,3-bisphosphoglycerate and back to 3-phosphoglycerate by BPG phosphatase, bypassing the ATP-making step.">
+    <figcaption>The 2,3-BPG shunt of the red cell bypasses phosphoglycerate kinase. <span class="lb-credit">Lecture slide 18</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/arsenate-1.jpg" width="590" height="628" loading="lazy" decoding="async" alt="Normally glyceraldehyde 3-phosphate dehydrogenase uses phosphate to make 1,3-bisphosphoglycerate and then ATP; with arsenate, an unstable arsenate compound forms and breaks down to 3-phosphoglycerate without making ATP.">
+    <figcaption>Arsenate replaces phosphate at glyceraldehyde 3-phosphate dehydrogenase, so no ATP is made at the next step. <span class="lb-credit">Lecture slide 21</span></figcaption>
+  </figure>
+</div>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: arsenic poisoning</span>
+    <p><strong>Trivalent arsenic (arsenite)</strong> inhibits enzymes that need <strong>lipoic acid</strong>, such as the pyruvate dehydrogenase complex. <strong>Pentavalent arsenic (arsenate)</strong> competes with Pᵢ at glyceraldehyde 3-phosphate dehydrogenase; the product hydrolyses spontaneously to 3-phosphoglycerate, so the 1,3-BPG step is bypassed: the pathway is not inhibited, but the cell loses the energy glycolysis normally yields. Arsenate also competes with Pᵢ at ATP synthase.</p>
+  </aside>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=gggC9vctvBQ&amp;t=1044s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Glycolysis</a>
+      <span class="lb-when">Watch from 17:24 to 25:25: glyceraldehyde 3-phosphate dehydrogenase to PEP.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=TnQGcKpahfM&amp;t=813s" target="_blank" rel="noopener">Dr Matt &amp; Dr Mike · Glycolysis Made Easy!</a>
+      <span class="lb-when">Watch from 13:33 to 26:13: the energy-generating steps and pyruvate.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="pk">
+  <h2>Pyruvate kinase and its deficiency</h2>
+  <ul>
+    <li><strong>Feedforward activation</strong>: PK is activated by <strong>fructose 1,6-bisphosphate</strong>, the product of PFK-1, so the two kinases work together. PK is inhibited by ATP.</li>
+    <li><strong>Covalent regulation in the liver only</strong>: glucagon → cAMP → <strong>PKA phosphorylates and inactivates hepatic PK</strong>, so PEP goes into gluconeogenesis instead. A phosphatase reactivates it.</li>
+    <li>Liver and red-cell PK come from the <strong>same gene</strong>, using different transcription start sites.</li>
+  </ul>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: pyruvate kinase deficiency</span>
+    <p>Mature red cells have no mitochondria and depend entirely on glycolysis for ATP, which runs their ion pumps and keeps them flexible. Low PK activity (usually <mark>5–35%</mark> of normal) means less ATP, so red cells change shape and are removed by <strong>splenic macrophages</strong>: <strong>chronic hemolytic anemia</strong>, from mild to transfusion-dependent. PK deficiency is the <strong>most common</strong> inherited glycolytic enzyme defect. The liver is spared because it can make more PK and use oxidative phosphorylation. Severity depends on how low the enzyme is and how much <strong>2,3-BPG</strong> rises to compensate. Most mutant enzymes have <strong>altered kinetics or lower stability</strong>. Heterozygotes resist the most severe forms of <strong>malaria</strong>.</p>
+  </aside>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=gggC9vctvBQ&amp;t=1525s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Glycolysis</a>
+      <span class="lb-when">Watch from 25:25 to 27:10: pyruvate kinase.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="lactate">
+  <h2>Lactate and lactic acidosis</h2>
+  <p><strong>Lactate dehydrogenase (LDH)</strong> reduces pyruvate to lactate and oxidises NADH to NAD⁺. Lactate is the end product of anaerobic glycolysis and the main fate of pyruvate in poorly vascularised tissue (<strong>lens, cornea, kidney medulla</strong>) and in red cells.</p>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/ldh-1.jpg" width="660" height="752" loading="lazy" decoding="async" alt="Lactate dehydrogenase converts pyruvate and NADH to lactate and NAD⁺, which is reused by glyceraldehyde 3-phosphate dehydrogenase, and runs the other way when lactate is oxidised.">
+    <figcaption>LDH regenerates NAD⁺ for glyceraldehyde 3-phosphate dehydrogenase; the reaction runs both ways. <span class="lb-credit">Lecture slide 13</span></figcaption>
+  </figure>
+</div>
+  <ul>
+    <li><strong>Exercising muscle</strong>: NADH production exceeds what the electron transport chain can handle, the NADH/NAD⁺ ratio rises and pyruvate → lactate. Lactate lowers intracellular pH (cramps) and passes into the blood; the liver can make glucose from it.</li>
+    <li><strong>Liver and heart</strong> have a lower NADH/NAD⁺ ratio and <strong>oxidise lactate</strong> back to pyruvate. The liver makes glucose or acetyl CoA from it; the heart burns it completely to CO₂ and water.</li>
+  </ul>
+  <aside class="lb-box lb-clinic">
+    <span class="lb-box-title">In the clinic: lactic acidosis</span>
+    <p>A metabolic acidosis with high plasma lactate, when the circulation collapses: <strong>myocardial infarction, pulmonary embolism, uncontrolled hemorrhage, shock</strong>. Tissues get too little O₂, oxidative phosphorylation fails and cells survive on anaerobic glycolysis, making lactic acid. The extra O₂ needed to recover is the <strong>O₂ debt</strong>; blood lactate gives an early measure of it and of recovery.</p>
+  </aside>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/biochemistry/lec01-glycolysis/acidosis-1.jpg" width="808" height="902" loading="lazy" decoding="async" alt="Circulatory failure, congestive heart failure or respiratory insufficiency cause hypoxia, so muscle relies on anaerobic glycolysis, lactate builds up and lactic acidosis follows.">
+    <figcaption>From poor oxygen delivery to lactic acidosis. <span class="lb-credit">Lecture slide 22</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=gggC9vctvBQ&amp;t=1630s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Glycolysis</a>
+      <span class="lb-when">Watch from 27:10 to 30:55: anaerobic glycolysis and lactate.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="yield">
+  <h2>Energy yield</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col"></th><th scope="col">Anaerobic (glucose → 2 lactate)</th><th scope="col">Aerobic (glucose → 2 pyruvate)</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">ATP used</th><td>2 (steps 1 and 3)</td><td>2</td></tr>
+      <tr><th scope="row">ATP made</th><td>4 (steps 7 and 10, twice each)</td><td>4</td></tr>
+      <tr><th scope="row">Net ATP</th><td><strong>2</strong></td><td><strong>2</strong></td></tr>
+      <tr><th scope="row">Net NADH</th><td><strong>0</strong> (used by LDH)</td><td><strong>2</strong>, each worth about <strong>3 ATP</strong> in the electron transport chain</td></tr>
+    </tbody>
+  </table></div>
+  <p>Pyruvate and lactate still hold <strong>most</strong> of glucose’s energy; the TCA cycle is needed to release it.</p>
+</section>
+
+<section class="lb-section" id="hormones">
+  <h2>Hormonal regulation</h2>
+  <p>Allosteric and covalent control act within <strong>minutes to hours</strong>. Hormones also change <strong>how much enzyme</strong> is made: <strong>10- to 20-fold</strong> changes over <strong>hours to days</strong>.</p>
+  <ul>
+    <li><strong>Carbohydrate-rich meals or insulin</strong> raise transcription of <strong>glucokinase, PFK-1 and PK</strong> in the liver (absorptive state). Insulin acts through <strong>SREBP-1c</strong> and glucose through <strong>ChREBP</strong>, which also switch on fatty acid synthesis genes.</li>
+    <li><strong>High glucagon, low insulin</strong> (fasting, diabetes) lower expression of these three enzymes.</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=xoqyF6DJZ-Y&amp;t=65s" target="_blank" rel="noopener">Ninja Nerd · Metabolism | Regulation of Glycolysis</a>
+      <span class="lb-when">Watch from 1:05 to 22:15: regulation of hexokinase, PFK-1 and pyruvate kinase, and insulin and glucagon.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="fates">
+  <h2>Other fates of pyruvate</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Fate</th><th scope="col">Enzyme</th><th scope="col">Why it matters</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Lactate</th><td>Lactate dehydrogenase</td><td>Regenerates NAD⁺ without O₂</td></tr>
+      <tr><th scope="row">Acetyl CoA</th><td><strong>Pyruvate dehydrogenase complex</strong> (irreversible oxidative decarboxylation)</td><td>Fuel for the TCA cycle and carbon for fatty acid synthesis; important in high-oxidative tissue such as heart</td></tr>
+      <tr><th scope="row">Oxaloacetate</th><td><strong>Pyruvate carboxylase</strong> (biotin-dependent, irreversible)</td><td>Refills the TCA cycle; substrate for gluconeogenesis</td></tr>
+      <tr><th scope="row">Ethanol</th><td>Pyruvate decarboxylase (thiamine) + alcohol dehydrogenase</td><td>Yeast and some microorganisms only, <strong>not humans</strong></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>10</td><td>Reactions of glycolysis</td></tr>
+      <tr><td>3</td><td>Irreversible steps: hexokinase/glucokinase, PFK-1, pyruvate kinase</td></tr>
+      <tr><td>2 / 4 / 2</td><td>ATP used / made / net per glucose</td></tr>
+      <tr><td>2</td><td>NADH per glucose in aerobic glycolysis (0 net in anaerobic)</td></tr>
+      <tr><td>14</td><td>GLUT isoforms; each with 12 transmembrane helices</td></tr>
+      <tr><td>&gt;60% / up to 90%</td><td>Adults with lactose malabsorption worldwide / of African or Asian descent</td></tr>
+      <tr><td>~2 years</td><td>Age when lactase activity starts to fall</td></tr>
+      <tr><td>up to 9%</td><td>Americans of European descent with some SI deficiency</td></tr>
+      <tr><td>5–35%</td><td>Usual residual activity in PK deficiency</td></tr>
+      <tr><td>10–20×</td><td>Change in enzyme amount caused by hormones</td></tr>
+      <tr><td>~3 ATP</td><td>Per NADH entering the electron transport chain</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Pair</th><th scope="col">How to tell them apart</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">SGLT vs GLUT</th><td>SGLT: with Na⁺, <strong>against</strong> the glucose gradient (intestine, kidney). GLUT: facilitated diffusion, <strong>down</strong> the gradient</td></tr>
+      <tr><th scope="row">GLUT-2 vs GLUT-4</th><td>GLUT-2: liver, kidney, β cells, two-way, high Km. GLUT-4: muscle and fat, <strong>insulin</strong> puts more in the membrane</td></tr>
+      <tr><th scope="row">Hexokinase vs glucokinase</th><td>Hexokinase: low Km, low Vmax, inhibited by glucose 6-P. Glucokinase: high Km, high Vmax, controlled by GKRP</td></tr>
+      <tr><th scope="row">PFK-1 vs PFK-2</th><td>PFK-1 makes fructose <strong>1,6</strong>-bisP in glycolysis. PFK-2 makes fructose <strong>2,6</strong>-bisP, the regulator</td></tr>
+      <tr><th scope="row">Arsenite vs arsenate</th><td>Arsenite (trivalent) blocks lipoic-acid enzymes (PDH). Arsenate (pentavalent) replaces Pᵢ at glyceraldehyde 3-P dehydrogenase</td></tr>
+      <tr><th scope="row">Feedforward vs feedback</th><td>PK is <strong>activated</strong> by an earlier product (fructose 1,6-bisP); hexokinase is <strong>inhibited</strong> by its own product</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam traps</span>
+    <ul>
+      <li>The <strong>rate-limiting</strong> step is PFK-1, not hexokinase.</li>
+      <li>Glucokinase is <strong>not</strong> inhibited by glucose 6-phosphate; it is controlled by GKRP and fructose 6-phosphate.</li>
+      <li>Phosphoglycerate kinase makes ATP yet is <strong>reversible</strong>.</li>
+      <li>Liver PK is inactivated by <strong>phosphorylation</strong> (glucagon); red-cell PK is not covalently regulated.</li>
+      <li>Anaerobic glycolysis has <strong>no net NADH</strong>; aerobic glycolysis has 2.</li>
+      <li>Fructose 2,6-bisphosphate <strong>activates</strong> PFK-1 but <strong>inhibits</strong> fructose 1,6-bisphosphatase.</li>
+      <li>Lactase deficiency comes from <strong>less enzyme being made</strong>, not a faulty enzyme.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-card" id="terms" aria-labelledby="terms-title">
+  <h2 id="terms-title">Key terms</h2>
+  <p class="lb-terms"><strong>Glycosidase</strong>: enzyme that hydrolyses glycosidic bonds · <strong>Dextrins</strong>: short branched and unbranched oligosaccharides left by α-amylase · <strong>Disaccharidase</strong>: brush-border enzyme splitting a disaccharide · <strong>SGLT</strong>: sodium-dependent glucose cotransporter · <strong>GLUT</strong>: glucose uniporter for facilitated diffusion · <strong>Facilitated diffusion</strong>: carrier-mediated transport down a gradient · <strong>Secondary active transport</strong>: uphill transport driven by an ion gradient · <strong>Glucokinase</strong>: hexokinase IV of liver and β cells · <strong>GKRP</strong>: protein that holds glucokinase inactive in the nucleus · <strong>Committed step</strong>: first irreversible step unique to a pathway · <strong>Bifunctional enzyme</strong>: one protein with two activities, like PFK-2/FBP2 · <strong>Substrate-level phosphorylation</strong>: ATP made from a high-energy substrate · <strong>Feedforward activation</strong>: activation by an earlier product of the pathway · <strong>2,3-BPG</strong>: red-cell metabolite that releases O₂ from hemoglobin · <strong>Lactic acidosis</strong>: metabolic acidosis from excess lactate · <strong>O₂ debt</strong>: extra O₂ needed to recover from hypoxia · <strong>MODY 2</strong>: diabetes from glucokinase mutations · <strong>Gliflozin</strong>: SGLT2 inhibitor.</p>
+</section>
+
+<details class="lb-slidemap"><summary>Page coverage</summary>
+  <ul>
+    <li data-pages="263-267">Carbohydrate digestion and absorption</li>
+    <li data-pages="267-271">Disaccharide intolerance and its diagnosis</li>
+    <li data-pages="293-296">Glucose transport into cells</li>
+    <li data-pages="297-307">Energy-investment phase and its regulation</li>
+    <li data-pages="307-312">Energy-generation phase, arsenic, 2,3-BPG</li>
+    <li data-pages="312-316">Pyruvate kinase and its deficiency</li>
+    <li data-pages="316-320">Lactate, lactic acidosis, energy yield</li>
+    <li data-pages="320-323">Hormonal regulation, fates of pyruvate</li>
+  </ul>
+</details>
+</article>

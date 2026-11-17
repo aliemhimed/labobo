@@ -50,8 +50,8 @@ export function GuidesCard({ subjectKey, onOpen }) {
         <span className="guides-card-text">
           <span className="mode-name">Study guides</span>
           <span className="mode-desc">
-            Every lecture {m.note} explained slide by slide, with pictures, short videos placed where they help,
-            and a quick quiz at the end.
+            Every lecture {m.note} explained step by step, with pictures and short videos placed where they help
+            {m.guides.some((g) => g.quiz) ? ', and a quick quiz at the end.' : ', then its questions to practise.'}
           </span>
           <span className="guides-card-meta">{m.guides.length} guides · {videos} videos</span>
         </span>
@@ -122,7 +122,7 @@ export function GuidesLibrary({ subjectKey, subjectTitle, onBack, onRead, onUnlo
                   {g.minutes} min read
                   {g.pictures ? ` · ${g.pictures} picture${g.pictures > 1 ? 's' : ''}` : ''}
                   {g.videos ? ` · ${g.videos} video${g.videos > 1 ? 's' : ''}` : ''}
-                  {` · ${g.quiz} quiz questions`}
+                  {g.quiz ? ` · ${g.quiz} quiz questions` : ''}
                 </span>
               </span>
               <ChevronRight />

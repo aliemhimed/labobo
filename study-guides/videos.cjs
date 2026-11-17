@@ -9,7 +9,7 @@
    replaces the boxes it added before, so this file is the one place to edit.
 
    Every video id and chapter time here was read from the video's own page
-   (its chapter list). Channels: Ninja Nerd, Dr Matt & Dr Mike, Medicosis
+   (its chapter list). Channels: mainly Ninja Nerd, Dr Matt & Dr Mike, Medicosis
    Perfectionalis. */
 
 const fs = require('fs');
@@ -337,6 +337,288 @@ const GUIDES = {
       v('8E5VwvN0MCU', NN, 'Antiplatelets, Anticoagulants, and Thrombolytics | Clinical Medicine', '0:37', '30:53', 'antiplatelet drugs, including the P2Y12 blockers'),
       v('8E5VwvN0MCU', NN, 'Antiplatelets, Anticoagulants, and Thrombolytics | Clinical Medicine', '30:53', '58:48', 'heparins, warfarin, fondaparinux, direct thrombin and Xa inhibitors'),
       v('aSRI6BGXX70', NN, 'Antiplatelet, Anticoagulant, Thrombolytic Agents', '2:15:07', '2:26:50', 'heparin adverse effects, including heparin-induced thrombocytopenia'),
+    ],
+  },
+  'gct-2/biochemistry/lec01-glycolysis.html': {
+    transport: [v('gggC9vctvBQ', NN, 'Metabolism | Glycolysis', '1:29', '6:30', 'the GLUT transporters and how glucose enters cells')],
+    investment: [
+      v('gggC9vctvBQ', NN, 'Metabolism | Glycolysis', '6:30', '17:24', 'hexokinase, PFK-1, aldolase and triose phosphate isomerase'),
+      v('TnQGcKpahfM', MM, 'Glycolysis Made Easy!', '4:54', '13:33', 'preparing glucose and splitting it into two trioses'),
+    ],
+    generation: [
+      v('gggC9vctvBQ', NN, 'Metabolism | Glycolysis', '17:24', '25:25', 'glyceraldehyde 3-phosphate dehydrogenase to PEP'),
+      v('TnQGcKpahfM', MM, 'Glycolysis Made Easy!', '13:33', '26:13', 'the energy-generating steps and pyruvate'),
+    ],
+    pk: [v('gggC9vctvBQ', NN, 'Metabolism | Glycolysis', '25:25', '27:10', 'pyruvate kinase')],
+    lactate: [v('gggC9vctvBQ', NN, 'Metabolism | Glycolysis', '27:10', '30:55', 'anaerobic glycolysis and lactate')],
+    hormones: [v('xoqyF6DJZ-Y', NN, 'Metabolism | Regulation of Glycolysis', '1:05', '22:15', 'regulation of hexokinase, PFK-1 and pyruvate kinase, and insulin and glucagon')],
+  },
+  'gct-2/biochemistry/lec02-glycogen-metabolism.html': {
+    synthesis: [v('zVGbd-df7Y8', NN, 'Metabolism | Glycogenesis', '19:12', 'end', 'glycogenin, UDP-glucose, glycogen synthase and the branching enzyme')],
+    degradation: [v('YQV_ODVCzQQ', NN, 'Metabolism | Glycogenolysis', '0:00', '24:13', 'glycogen phosphorylase, the debranching enzyme and glucose release in the liver')],
+    allosteric: [v('NL6ETs9k3Wk', NN, 'Metabolism | Regulation of Glycogen Metabolism', '3:05', '10:26', 'allosteric regulation by AMP, glucose and glucose 6-phosphate')],
+    covalent: [v('NL6ETs9k3Wk', NN, 'Metabolism | Regulation of Glycogen Metabolism', '10:26', '24:39', 'hormonal control: glucagon, adrenaline, calcium and insulin')],
+    gsd: [
+      v('NL6ETs9k3Wk', NN, 'Metabolism | Regulation of Glycogen Metabolism', '24:39', 'end', 'the glycogen storage diseases'),
+      v('Ngjza79OxRY', MP, 'Von Gierke Disease - Glycogen Storage Disease Type 1', '0:00', 'end', 'liver vs muscle storage diseases and von Gierke disease'),
+    ],
+  },
+  'gct-2/biochemistry/lec03-gluconeogenesis.html': {
+    overview: [v('cProcjVNvtU', MM, 'Gluconeogenesis | Everything you need to know!', '0:00', '8:43', 'when and why the liver makes new glucose')],
+    pyruvate: [v('YpV96faQOZc', NN, 'Metabolism | Gluconeogenesis', '3:44', '16:54', 'the pathway: pyruvate carboxylase, PEPCK, fructose 1,6-bisphosphatase and glucose 6-phosphatase')],
+    substrates: [
+      v('YpV96faQOZc', NN, 'Metabolism | Gluconeogenesis', '16:54', '26:10', 'glycerol and amino acids as substrates'),
+      v('ORIx2WYNWqs', NN, 'Metabolism | Regulation of Gluconeogenesis', '0:00', '13:35', 'the Cori cycle and the glucose–alanine cycle'),
+    ],
+    regulation: [v('ORIx2WYNWqs', NN, 'Metabolism | Regulation of Gluconeogenesis', '13:35', 'end', 'how gluconeogenesis is regulated')],
+  },
+  'gct-2/biochemistry/lec04-pentose-phosphate-pathway.html': {
+    oxidative: [v('eXXpUxg9vn4', NN, 'Metabolism | Pentose Phosphate Pathway', '0:00', 'end', 'the oxidative and non-oxidative phases step by step')],
+    nonoxidative: [v('lpHmTl83pQY', NN, 'Metabolism | Regulation of Pentose Phosphate Pathway', '0:00', '20:32', 'how the cell switches between making NADPH, ribose 5-phosphate and ATP')],
+    peroxide: [v('lpHmTl83pQY', NN, 'Metabolism | Regulation of Pentose Phosphate Pathway', '20:32', 'end', 'what NADPH is used for, including glutathione and free radical defence')],
+    g6pd: [v('iTh-hUU5mxE', MP, 'Glucose-6-Phosphate Dehydrogenase (G6PD) Deficiency', '0:00', 'end', 'genetics, triggers, haemolysis, diagnosis and management of G6PD deficiency')],
+  },
+  'gct-2/biochemistry/lec05-monosaccharide-metabolism.html': {
+    fructose: [v('R3voJC1CBXg', 'Dirty Medicine', 'Fructose Metabolism', '0:53', '5:45', 'fructokinase, aldolase B and how fructose enters glycolysis')],
+    'fructose-disorders': [v('R3voJC1CBXg', 'Dirty Medicine', 'Fructose Metabolism', '5:45', 'end', 'essential fructosuria and hereditary fructose intolerance')],
+    galactose: [v('lT1--ba0wU8', 'Dirty Medicine', 'Galactose Metabolism', '0:49', '4:43', 'lactose and the galactose pathway')],
+    galactosemia: [
+      v('lT1--ba0wU8', 'Dirty Medicine', 'Galactose Metabolism', '4:43', '11:08', 'galactokinase deficiency and classic galactosemia'),
+      v('As0kUYghMeA', MP, 'Galactosemia, Galactokinase deficiency, Lactose Intolerance', '0:00', 'end', 'the lactose metabolism disorders compared'),
+    ],
+    lactose: [v('lT1--ba0wU8', 'Dirty Medicine', 'Galactose Metabolism', '11:08', 'end', 'lactose intolerance')],
+  },
+  'gct-2/biochemistry/lec06-erythrocytes-blood-cells.html': {
+    cells: [v('anfpX7NzExg', MM, 'Hematopoiesis | Formation of blood cells', '0:00', 'end', 'stem cells and how each blood cell line forms')],
+    anemia: [v('mOrRJBqm744', NN, 'Hematology | Types of Anemias', '0:52', '10:40', 'iron deficiency and B12/folate deficiency anaemias')],
+    pk: [v('LLypSc9m5GQ', MP, 'Pyruvate Kinase Deficiency | Hemolytic Anemia', '0:00', 'end', 'why red cells lyse when pyruvate kinase is deficient')],
+    g6pd: [v('mOrRJBqm744', NN, 'Hematology | Types of Anemias', '13:34', '19:30', 'G6PD deficiency')],
+    methemoglobin: [v('2RFcH_nlR84', MP, 'Methemoglobinemia - Your Hemoglobin is NOT what it should be!', '0:00', 'end', 'methaemoglobin, its causes and treatment')],
+    iron: [v('ahCy97FVUpM', 'Armando Hasudungan', 'Iron Physiology', '0:00', 'end', 'iron absorption, transport by transferrin and storage in ferritin')],
+    membrane: [
+      v('mOrRJBqm744', NN, 'Hematology | Types of Anemias', '10:40', '13:34', 'hereditary spherocytosis'),
+      v('aBrt7XhA9L0', MP, 'Hereditary Spherocytosis (HS) - Hemolytic Anemia', '0:00', 'end', 'spectrin and ankyrin defects in hereditary spherocytosis'),
+    ],
+    hematopoiesis: [v('kcnOXlr-9Ic', NN, 'Hematology | Erythropoiesis: Red Blood Cell Formation: Part 1', '0:00', 'end', 'erythropoiesis, iron and folate, and erythropoietin from the kidney')],
+    hemoglobinopathies: [
+      v('mOrRJBqm744', NN, 'Hematology | Types of Anemias', '19:30', '25:07', 'sickle cell anaemia'),
+      v('mOrRJBqm744', NN, 'Hematology | Types of Anemias', '30:17', '33:21', 'thalassaemia'),
+    ],
+  },
+  'gct-2/histology/lec01-connective-tissue.html': {
+    overview: [v('0z9rF2kJaXs', MM, 'Connective Tissue | Everything you need to know!', '0:54', '12:14', 'what connective tissue does and its cells, fibres and ground substance')],
+    fibroblasts: [v('xw_ALdt5n-A', 'Byte Size Med', 'Connective Tissue | Connective Tissue Proper', '2:54', '6:30', 'resident and transient connective tissue cells')],
+    collagen: [
+      v('3e2JYMNS_W4', 'Byte Size Med', 'Connective Tissue Fibres | Collagen | Elastin', '1:22', '8:50', 'collagen types, structure and synthesis'),
+      v('03ILx-qr14U', MP, 'Types of collagen (I, II, III, IV, and V)', '0:00', 'end', 'where each collagen type is found'),
+    ],
+    elastic: [v('3e2JYMNS_W4', 'Byte Size Med', 'Connective Tissue Fibres | Collagen | Elastin', '8:50', 'end', 'elastin and elastic fibres')],
+    ground: [v('xw_ALdt5n-A', 'Byte Size Med', 'Connective Tissue | Connective Tissue Proper', '7:54', '11:39', 'ground substance: glycosaminoglycans, proteoglycans and adhesive glycoproteins')],
+  },
+  'gct-2/histology/lec02-types-of-connective-tissue.html': {
+    classification: [
+      v('0z9rF2kJaXs', MM, 'Connective Tissue | Everything you need to know!', '12:14', '20:42', 'how connective tissues are classified'),
+      v('xw_ALdt5n-A', 'Byte Size Med', 'Connective Tissue | Connective Tissue Proper', '11:39', 'end', 'loose and dense connective tissue'),
+    ],
+    brown: [v('X9bO9CVx_xs', 'Catalyst University', 'Uncoupling Proteins (Thermogenin) Produce HEAT!', '0:00', 'end', 'thermogenin, heat production in newborns, and brown vs white fat')],
+  },
+  'gct-2/histology/lec03-cartilage.html': {
+    overview: [v('4inWF4H6pKE', 'Byte Size Med', 'Structure and Types of Cartilage', '1:57', '3:49', 'the components of cartilage')],
+    hyaline: [v('4inWF4H6pKE', 'Byte Size Med', 'Structure and Types of Cartilage', '3:49', '8:05', 'hyaline cartilage, chondrocytes and perichondrium')],
+    elastic: [
+      v('4inWF4H6pKE', 'Byte Size Med', 'Structure and Types of Cartilage', '8:05', '8:55', 'elastic cartilage'),
+      v('bmnwDeS3bAc', MM, 'Types of Cartilage', '6:00', 'end', 'elastic cartilage'),
+    ],
+    fibro: [
+      v('4inWF4H6pKE', 'Byte Size Med', 'Structure and Types of Cartilage', '8:55', 'end', 'fibrocartilage'),
+      v('bmnwDeS3bAc', MM, 'Types of Cartilage', '4:10', '6:00', 'fibrocartilage'),
+    ],
+  },
+  'gct-2/histology/lec04-bone-part-1.html': {
+    overview: [v('S5b4NvdT1ds', MM, 'Bony Tissue | Anatomy of a Long Bone', '0:40', 'end', 'bony tissue and the parts of a long bone')],
+    osteoblasts: [v('QL7oqsBtocg', 'Byte Size Med', 'Bone Cells | Bone Physiology | Bone Remodelling', '1:50', '4:46', 'osteoprogenitor cells and osteoblasts')],
+    osteocytes: [v('QL7oqsBtocg', 'Byte Size Med', 'Bone Cells | Bone Physiology | Bone Remodelling', '4:46', '6:29', 'osteocytes, lacunae and canaliculi')],
+    osteoclasts: [v('QL7oqsBtocg', 'Byte Size Med', 'Bone Cells | Bone Physiology | Bone Remodelling', '6:29', '10:45', 'osteoclasts and bone resorption')],
+    periosteum: [v('MYInVEnnS_I', 'Byte Size Med', 'Structure of Bone | Lamellar Bone', '6:29', '8:35', 'periosteum and endosteum')],
+    types: [v('MYInVEnnS_I', 'Byte Size Med', 'Structure of Bone | Lamellar Bone', '1:13', '6:29', 'compact and cancellous bone, marrow and bone tissue')],
+    lamellar: [v('MYInVEnnS_I', 'Byte Size Med', 'Structure of Bone | Lamellar Bone', '8:35', 'end', 'osteons, lamellae and cancellous bone')],
+  },
+  'gct-2/histology/lec05-bone-part-2-joints.html': {
+    remodeling: [v('QL7oqsBtocg', 'Byte Size Med', 'Bone Cells | Bone Physiology | Bone Remodelling', '10:45', '13:09', 'bone modelling and remodelling')],
+    intramembranous: [v('86V9SNWD_No', 'Byte Size Med', 'Ossification | Bone Formation | Histogenesis of Bone', '4:21', '5:59', 'intramembranous ossification')],
+    endochondral: [v('86V9SNWD_No', 'Byte Size Med', 'Ossification | Bone Formation | Histogenesis of Bone', '5:59', '9:27', 'endochondral ossification')],
+    'growth-plate': [v('86V9SNWD_No', 'Byte Size Med', 'Ossification | Bone Formation | Histogenesis of Bone', '9:27', '11:21', 'the epiphyseal growth plate and growth in length')],
+    appositional: [v('86V9SNWD_No', 'Byte Size Med', 'Ossification | Bone Formation | Histogenesis of Bone', '11:21', 'end', 'growth in width')],
+    repair: [v('Ovbqx5Uwmic', 'Nabil Ebraheim', 'Fracture Healing - Everything You Need To Know', '2:14', 'end', 'the stages of fracture healing and callus formation')],
+    metabolic: [v('iAdF1vvgMmM', MM, 'Osteoporosis', '0:00', 'end', 'bone remodelling, peak bone mass and osteoporosis')],
+    synarthroses: [v('LqCkvj0fTj0', MM, 'Joint Classification', '0:00', 'end', 'how joints are classified')],
+    diarthroses: [v('JO_N1apvidE', MM, 'Synovial Joints', '0:00', 'end', 'the synovial joint capsule, membrane and fluid')],
+  },
+  'gct-2/histology/lec06-skeletal-muscle.html': {
+    types: [v('m20sP2jrj5E', 'Byte Size Med', 'Types of Muscle Tissue | Skeletal Smooth Cardiac Muscle', '0:00', 'end', 'the three muscle types compared')],
+    organization: [v('UKgbfxPTn_s', NN, 'Musculoskeletal System | Muscle Structure and Function', '8:10', '25:25', 'epimysium, perimysium, endomysium and the muscle fibre')],
+    sarcomere: [
+      v('Nrf_g5m8fVM', NN, 'Musculoskeletal System | Sarcomere Structure: Actin &amp; Myosin', '1:57', '10:38', 'sarcomere zones, A bands and I bands'),
+      v('ZiJp8by6r08', 'Byte Size Med', 'Structure of Skeletal Muscle | Skeletal Muscle Bands', '2:31', '5:28', 'the bands of a muscle fibre'),
+    ],
+    filaments: [v('Nrf_g5m8fVM', NN, 'Musculoskeletal System | Sarcomere Structure: Actin &amp; Myosin', '10:38', '27:35', 'thin filaments (actin, tropomyosin, troponin) and thick filaments (myosin)')],
+    sr: [v('ZiJp8by6r08', 'Byte Size Med', 'Structure of Skeletal Muscle | Skeletal Muscle Bands', '5:28', 'end', 'the sarcotubular system: T-tubules and sarcoplasmic reticulum')],
+    contraction: [
+      v('UW47uSLcM2g', NN, 'Musculoskeletal System | Neuromuscular Junction | Sliding Filament Theory', '12:38', 'end', 'calcium and troponin, the cross-bridge cycle and how the bands change'),
+      v('MZLADPduKWw', MM, 'Rigor Mortis and Muscle Contraction', '0:00', 'end', 'why muscles lock in rigor mortis'),
+    ],
+    innervation: [v('UW47uSLcM2g', NN, 'Musculoskeletal System | Neuromuscular Junction | Sliding Filament Theory', '0:00', '12:38', 'the neuromuscular junction and excitation–contraction coupling')],
+    proprioceptors: [v('IXV4fRC6nPc', NN, 'Neurology | Spinal Cord: Stretch Reflex | Muscle Spindle', '3:50', '18:18', 'the muscle spindle, intrafusal fibres and their nerves')],
+    'fiber-types': [
+      v('EH_Eem-VBZg', NN, 'Musculoskeletal System | Type I Muscle Fibers', '0:00', 'end', 'type I fibres compared with type II'),
+      v('Nrf_g5m8fVM', NN, 'Musculoskeletal System | Sarcomere Structure: Actin &amp; Myosin', '27:35', 'end', 'dystrophin and muscular dystrophy'),
+    ],
+  },
+  'gct-2/histology/lec07-cardiac-smooth-muscle.html': {
+    cardiac: [v('AJcfx_S4Bqw', 'Byte Size Med', 'Structure of Cardiac Muscle', '0:27', '2:18', 'cardiac muscle compared with skeletal muscle')],
+    discs: [
+      v('AJcfx_S4Bqw', 'Byte Size Med', 'Structure of Cardiac Muscle', '2:18', '3:06', 'intercalated discs'),
+      v('uDXq6bcAkCg', 'Osmosis from Elsevier', 'Cardiac muscle: Histology', '0:00', 'end', 'cardiac muscle under the microscope'),
+    ],
+    ultra: [v('AJcfx_S4Bqw', 'Byte Size Med', 'Structure of Cardiac Muscle', '5:07', 'end', 'T-tubules in cardiac muscle')],
+    purkinje: [v('AJcfx_S4Bqw', 'Byte Size Med', 'Structure of Cardiac Muscle', '3:06', '5:07', 'conducting cells and contractile cells')],
+    smooth: [v('zp2eIqhvJfc', 'Byte Size Med', 'Structure of Smooth Muscle | Types of Smooth Muscle', '0:00', 'end', 'the appearance, types and structure of smooth muscle')],
+    dense: [
+      v('qEVRoKuoj4U', 'Byte Size Med', 'Smooth Muscle Contraction | Excitation Contraction Coupling', '2:02', '9:10', 'calcium entry, calmodulin and MLCK'),
+      v('ELf8vjpfdxk', MP, 'Smooth Muscles Physiology and Myosin-light Chain Kinase/ Phosphatase', '9:17', '12:05', 'what is unique about smooth muscle and how myosin is regulated'),
+    ],
+    innervation: [v('K2kHnb1x7cE', MM, 'Smooth Muscle vs. Skeletal Muscle', '10:26', '15:18', 'autonomic innervation of smooth muscle and varicosities')],
+  },
+  'gct-2/molecular-biology/lec01-central-dogma.html': {
+    dogma: [v('nqlNcm_mMcI', MM, 'DNA Transcription and Translation | DNA to Protein', '0:00', 'end', 'DNA to RNA to protein in one overview')],
+    bacteria: [v('ZrCx98CtJ_4', NN, 'Cell Biology | DNA Transcription', '0:31', '23:28', 'prokaryotic vs eukaryotic transcription and RNA polymerases')],
+    transcription: [v('ZrCx98CtJ_4', NN, 'Cell Biology | DNA Transcription', '23:28', '50:23', 'initiation, elongation and termination')],
+    polymerases: [v('WQt2wfehtms', MP, 'Posttranscriptional modification (hnRNA to mRNA)', '1:48', '3:45', 'the three eukaryotic RNA polymerases')],
+    processing: [
+      v('ZrCx98CtJ_4', NN, 'Cell Biology | DNA Transcription', '50:23', 'end', 'capping, poly(A) tail, splicing and alternative splicing'),
+      v('WQt2wfehtms', MP, 'Posttranscriptional modification (hnRNA to mRNA)', '3:45', '10:48', 'cap, tail and splicing, with clinical examples'),
+    ],
+  },
+  'gct-2/molecular-biology/lec02-ribozymes-rnai-small-rnas.html': {
+    ribosome: [v('80kxa1zApUM', NN, 'Cell Biology | Translation: Protein Synthesis', '32:53', '38:15', 'ribosome structure and the A, P and E sites')],
+    ribozymes: [v('Nt7Gi9jiznE', 'Quick Biochemistry Basics', 'Ribozymes', '0:00', 'end', 'what ribozymes are, including the ribosomal RNA ribozyme')],
+    rnai: [
+      v('cK-OGB1_ELE', 'Nature Video', 'RNA interference (RNAi)', '0:00', 'end', 'an animated overview of RNAi, Dicer and RISC'),
+      v('7XHXF0x2uKA', 'The Bumbling Biochemist', 'RNA interference (RNAi): miRNA, siRNA, Argonaute', '9:06', '12:32', 'how RNAi works step by step'),
+    ],
+    mirna: [v('7XHXF0x2uKA', 'The Bumbling Biochemist', 'RNA interference (RNAi): miRNA, siRNA, Argonaute', '1:10', '9:06', 'Argonaute and microRNAs')],
+  },
+  'gct-2/molecular-biology/lec03-crispr-noncoding-rnas-genetic-code.html': {
+    mirna: [v('7XHXF0x2uKA', 'The Bumbling Biochemist', 'RNA interference (RNAi): miRNA, siRNA, Argonaute', '2:47', '9:06', 'how microRNAs are made and act')],
+    pirna: [v('rCnjjzDcDCU', 'Easy Peasy', 'What Is piRNA? Piwi-Interacting RNA Explained Simply', '0:00', 'end', 'piRNAs, PIWI proteins and transposons')],
+    crispr: [v('4FBD3qxS-j4', MM, 'CRISPR-Cas 9 | How does it work?', '0:00', 'end', 'CRISPR in bacteria, the guide RNA and Cas9, and its uses')],
+    code: [v('80kxa1zApUM', NN, 'Cell Biology | Translation: Protein Synthesis', '1:41', '23:57', 'the genetic code and its characteristics')],
+    charging: [
+      v('80kxa1zApUM', NN, 'Cell Biology | Translation: Protein Synthesis', '23:57', '27:35', 'tRNA charging'),
+      v('-NhqjgIx1_w', 'Animated Biology With Arpan', 'Aminoacylation of tRNA', '0:00', 'end', 'an animation of aminoacyl-tRNA synthetase'),
+    ],
+  },
+  'gct-2/molecular-biology/lec04-control-of-gene-expression.html': {
+    translation: [v('80kxa1zApUM', NN, 'Cell Biology | Translation: Protein Synthesis', '52:18', 'end', 'elongation: A, P and E sites, peptide bonds and translocation')],
+    levels: [v('ebIpkw3XapE', 'Amoeba Sisters', 'Gene Expression and Regulation', '0:43', '8:15', 'the levels at which gene expression is controlled')],
+    promoters: [v('ZrCx98CtJ_4', NN, 'Cell Biology | DNA Transcription', '23:28', '30:08', 'promoters, the TATA box and transcription factors')],
+    lac: [v('yrJn-7k_5Fc', MP, 'Lac Operon &amp; Trp operon', '0:00', 'end', 'the lac and trp operons, repressor, CAP and the four scenarios')],
+    eukaryotes: [v('TLvXWAWlMh8', MP, 'Control of Gene Expression | Transcription Factors, Enhancers, Promotor', '4:41', '12:08', 'chromatin, transcription factors and enhancers')],
+    combinatorial: [v('TLvXWAWlMh8', MP, 'Control of Gene Expression | Transcription Factors, Enhancers, Promotor', '12:08', '14:17', 'the cortisol example')],
+  },
+  'gct-2/molecular-biology/lec05-cytoskeleton-cell-motility.html': {
+    overview: [v('Msn9eOa2i8I', NN, 'Cytoskeleton Structure &amp; Function', '32:33', '43:08', 'an animated overview of the cytoskeleton')],
+    microtubules: [v('Msn9eOa2i8I', NN, 'Cytoskeleton Structure &amp; Function', '23:01', '32:33', 'microtubule structure and function')],
+    instability: [v('wkBGPGD4yaY', 'Animated Biology With Arpan', 'Dynamic instability of microtubule', '0:00', 'end', 'the GTP cap, catastrophe and treadmilling')],
+    motors: [v('j7nH9-nGF58', 'Dr. G Bhanu Prakash', 'Molecular Motors: Kinesin, Dynein and Myosin', '0:00', 'end', 'kinesin, dynein and myosin in animation')],
+    cilia: [
+      v('9nZYlyFGm50', 'XVIVO Scientific Animation', 'How Do Cilia and Flagella Move?', '0:00', 'end', 'how dynein bends the 9 + 2 axoneme'),
+      v('4SyyAILL_kg', MP, 'Kartagener’s Syndrome - Primary Ciliary Dyskinesia', '0:00', 'end', 'Kartagener’s syndrome and situs inversus'),
+    ],
+  },
+  'gct-2/molecular-biology/lec06-intermediate-actin-filaments.html': {
+    if: [
+      v('Msn9eOa2i8I', NN, 'Cytoskeleton Structure &amp; Function', '14:18', '23:01', 'intermediate filament structure and function'),
+      v('m308ZcpDbpE', 'Cell Bio Clips', 'Intermediate Filaments (Structure and Function)', '0:00', 'end', 'how intermediate filaments assemble and their types'),
+    ],
+    als: [v('_IvReih3P58', MP, 'Amyotrophic Lateral Sclerosis (ALS)', '0:00', '16:07', 'ALS, motor neurons and upper vs lower motor neuron signs')],
+    keratin: [v('KPLSEtJCHo4', 'Osmosis from Elsevier', 'Epidermolysis Bullosa', '0:00', 'end', 'epidermolysis bullosa: symptoms, diagnosis and management')],
+    dmd: [v('fZdgF0qrW-4', MP, 'Duchenne Muscular Dystrophy (DMD)', '0:00', 'end', 'Duchenne muscular dystrophy')],
+    lamina: [v('6Cj97JJlesk', 'MHSc Medical Genomics', 'Progeria: The Genetics of Accelerated Aging', '0:00', '10:32', 'progeria, lamin A and progerin')],
+    actin: [v('Msn9eOa2i8I', NN, 'Cytoskeleton Structure &amp; Function', '0:54', '14:18', 'microfilament (actin) structure and function')],
+    myosin: [v('UW47uSLcM2g', NN, 'Musculoskeletal System | Neuromuscular Junction | Sliding Filament Theory', '12:38', '34:51', 'calcium, troponin and the cross-bridge cycle')],
+  },
+  'gct-2/molecular-biology/lec07-cell-environment-ecm.html': {
+    ecm: [v('cMNx17H3dRU', 'Khan Academy', 'Extracellular matrix', '1:36', 'end', 'the extracellular matrix and collagen fibres')],
+    collagen: [
+      v('3e2JYMNS_W4', 'Byte Size Med', 'Connective Tissue Fibres | Collagen | Elastin', '1:46', '8:50', 'collagen types, structure and synthesis'),
+      v('03ILx-qr14U', MP, 'Types of collagen (I, II, III, IV, and V)', '0:00', 'end', 'where each collagen type is found'),
+    ],
+    diseases: [
+      v('aSyj6NfxRA0', MP, 'Osteogenesis Imperfecta (OI) - Brittle Bone Disease', '0:00', 'end', 'osteogenesis imperfecta'),
+      v('gcxhJK5T37w', MP, 'Marfan Syndrome vs. Ehlers-Danlos Syndrome', '0:00', 'end', 'Marfan and Ehlers–Danlos syndromes compared'),
+      v('iW-4yzHUuWw', MP, 'Alport Syndrome', '6:52', '9:44', 'Alport syndrome and type IV collagen'),
+    ],
+    proteoglycans: [v('xw_ALdt5n-A', 'Byte Size Med', 'Connective Tissue | Connective Tissue Proper', '7:54', '10:50', 'ground substance, glycosaminoglycans and proteoglycans')],
+    fibronectin: [v('xw_ALdt5n-A', 'Byte Size Med', 'Connective Tissue | Connective Tissue Proper', '10:50', '11:39', 'adhesive glycoproteins such as fibronectin and laminin')],
+  },
+  'gct-2/genetics/lec01-genomics-bioinformatics-proteomics.html': {
+    genomics: [
+      v('uQq37JL618Q', 'Shomu’s Biology', 'Whole genome shotgun sequencing', '0:00', 'end', 'shotgun sequencing and assembling contigs'),
+      v('rH6vsoyrc_U', 'Genomics Education Programme', 'Whole genome sequencing: From sample to report', '0:00', 'end', 'whole genome sequencing from sample to report'),
+    ],
+    bioinformatics: [v('S3gr8gjKHhc', 'Rob Edwards', 'BLAST 9 E values', '0:00', 'end', 'what the BLAST E-value means')],
+    methods: [v('FHvblg338Gg', 'Animated Biology With Arpan', '2D gel electrophoresis', '0:00', 'end', 'isoelectric focusing and SDS-PAGE in a 2-D gel')],
+  },
+  'gct-2/genetics/lec02-sequencing-predicting-function.html': {
+    sanger: [
+      v('KTstRrDTmWI', 'Quick Biochemistry Basics', 'Sanger sequencing', '0:00', 'end', 'dideoxynucleotides and chain termination'),
+      v('e2G5zx-OJIw', 'Thermo Fisher Scientific', 'How does Sanger Sequencing Work?', '0:00', 'end', 'automated Sanger sequencing with fluorescent ddNTPs'),
+    ],
+    htp: [
+      v('CZeN-IgjYCo', 'Henrik’s Lab', 'Next Generation Sequencing (Illumina) - An Introduction', '0:00', 'end', 'next-generation sequencing in under five minutes'),
+      v('fCd6B5HRaZ8', 'Illumina', 'Overview of Illumina Sequencing by Synthesis Workflow', '0:00', 'end', 'library preparation, the flow cell and sequencing by synthesis'),
+    ],
+    annotation: [v('S3gr8gjKHhc', 'Rob Edwards', 'BLAST 9 E values', '0:00', 'end', 'what the BLAST E-value means and why query length matters')],
+  },
+  'gct-2/genetics/lec03-human-genome-project.html': {
+    origins: [v('AhsIF-cmoQQ', 'TED-Ed', 'The race to sequence the human genome', '0:00', 'end', 'the history of the Human Genome Project')],
+    goals: [v('qOW5e4BgEa4', 'National Human Genome Research Institute', 'Lessons from the Human Genome Project', '0:00', 'end', 'technology, data sharing and ethics')],
+    snps: [v('tJjXpiWKMyA', '23andMe', 'Genetics 101: What are SNPs?', '0:00', 'end', 'what SNPs are and their impact')],
+    variation: [v('xu7EZtyq3A8', 'UCD Medicine', 'Understanding Copy Number Variation', '0:00', 'end', 'copy number variants')],
+  },
+  'gct-2/genetics/lec04-personal-genome-projects.html': {
+    cmt: [v('r_aLp3SLwso', 'CMT Research Foundation', 'What is Charcot-Marie-Tooth Disease?', '0:00', 'end', 'Charcot–Marie–Tooth disease')],
+    mosaicism: [v('VeFSIZIg48w', 'MRC Weatherall Institute of Molecular Medicine', 'A Quick Introduction to Somatic Mosaicism', '0:00', 'end', 'somatic mosaicism')],
+    exome: [v('ywooWtXD1wM', 'Ambry Genetics', 'What is Exome Sequencing?', '0:00', 'end', 'exome sequencing')],
+    encode: [v('PsV_sEDSE2o', 'National Human Genome Research Institute', 'ENCODE: The Encyclopedia of DNA Elements', '0:00', 'end', 'what ENCODE is and what it found')],
+  },
+  'gct-2/genetics/lec05-chromosome-mutations.html': {
+    types: [v('mKnbGnEQO8M', 'Professor Dave Explains', 'Alteration of Chromosome Number and Structure', '0:58', '5:31', 'aneuploidy, nondisjunction and polyploidy')],
+    nondisjunction: [v('uS3aJ9bLsKU', 'LabXchange', 'Nondisjunction in Meiosis', '0:00', 'end', 'nondisjunction in meiosis I and II and the gametes it makes')],
+    down: [
+      v('2Wbg5_h3Yr4', MP, 'Genetic Diseases - Down Syndrome, Edwards, Patau, Cri-du-chat', '0:25', '4:01', 'Down syndrome'),
+      v('EKtO9DlEgjA', 'Osmosis from Elsevier', 'Down syndrome (Trisomy 21)', '9:25', '12:06', 'features of Down syndrome and prenatal screening'),
+    ],
+    origin: [v('EKtO9DlEgjA', 'Osmosis from Elsevier', 'Down syndrome (Trisomy 21)', '1:51', '5:00', 'meiosis, maternal age and nondisjunction')],
+    patau: [v('2Wbg5_h3Yr4', MP, 'Genetic Diseases - Down Syndrome, Edwards, Patau, Cri-du-chat', '4:01', '9:34', 'Edwards and Patau syndromes')],
+  },
+  'gct-2/genetics/lec06-composition-arrangement-chromosomes.html': {
+    aberrations: [v('cMQCxYj6U0A', 'All Things GC', 'Structural Chromosome Anomalies', '0:20', '9:51', 'deletions, duplications, rings, inversions and translocations')],
+    deletion: [v('cMQCxYj6U0A', 'All Things GC', 'Structural Chromosome Anomalies', '2:01', '3:05', 'deletions')],
+    cri: [
+      v('nvDtk9SoEkY', 'Osmosis from Elsevier', 'Cri du chat syndrome', '0:00', 'end', 'the genetics, features and diagnosis of cri du chat'),
+      v('2Wbg5_h3Yr4', MP, 'Genetic Diseases - Down Syndrome, Edwards, Patau, Cri-du-chat', '10:59', '13:48', 'cri du chat syndrome'),
+    ],
+    duplication: [v('abK4vYlfdjY', 'Pi Learning Center', 'Homologous Recombination: Unequal Crossover', '0:00', 'end', 'how unequal crossing over makes a duplication and a deletion')],
+  },
+  'gct-2/genetics/lec07-gene-duplication-evolution.html': {
+    duplication: [v('G4VINRUe_o4', 'Stated Clearly', 'How Does New Genetic Information Evolve? Gene Duplications', '0:00', 'end', 'how duplicated genes evolve new functions')],
+    cnv: [v('xu7EZtyq3A8', 'UCD Medicine', 'Understanding Copy Number Variation', '0:00', 'end', 'copy number variants')],
+    inversions: [v('cMQCxYj6U0A', 'All Things GC', 'Structural Chromosome Anomalies', '4:45', '5:50', 'inversions')],
+    heterozygotes: [
+      v('THAjvn1cdDM', 'UCD Medicine', 'Paracentric Inversions', '0:00', 'end', 'paracentric inversions and their reproductive risks'),
+      v('QXU7XojaEOs', 'UCD Medicine', 'Pericentric Inversions', '0:00', 'end', 'pericentric inversions, pairing and unbalanced gametes'),
     ],
   },
 };

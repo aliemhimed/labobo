@@ -1,0 +1,322 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct-2" data-part="Molecular Biology" data-type="lecture"
+         data-lectures="1" data-topic="MolBio Lec 1: The Central Dogma"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT II · Molecular Biology · Lecture 1</p>
+  <h1>The Central Dogma</h1>
+  <p class="lb-lede">How information flows from DNA to RNA to protein: the RNA world idea, Garrod’s inborn errors, reverse transcription, split genes, the RNA classes, RNA polymerases in bacteria and eukaryotes, promoters and terminators, and how a pre-mRNA is capped, tailed and spliced.</p>
+  <span class="lb-topic-name">Labobo topic: MolBio Lec 1: The Central Dogma</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li><strong>DNA → RNA → protein</strong> (Crick, 1958). Retroviruses add <strong>RNA → DNA</strong> by <strong>reverse transcriptase</strong>.</li>
+    <li>Eukaryotic genes are split: <strong>exons</strong> (kept) and <strong>introns</strong> (spliced out).</li>
+    <li>RNA in a cell: <strong>rRNA up to 80%</strong>, <strong>tRNA ~15%</strong>, <strong>mRNA &lt;5%</strong>.</li>
+    <li>RNA is made <strong>5′→3′</strong>; the template is read <strong>3′→5′</strong>. The coding strand has the same sequence as the RNA (T for U).</li>
+    <li>Eukaryotes: <strong>Pol I</strong> rRNA (nucleolus), <strong>Pol II</strong> all mRNA, <strong>Pol III</strong> tRNA and 5S rRNA. <em>E. coli</em>: one enzyme, α₂ββ′σ; σ finds the <strong>−10 (TATAAT)</strong> and <strong>−35 (TTGACA)</strong> boxes.</li>
+    <li>mRNA processing: <strong>5′ 7-methylguanosine cap</strong>, <strong>poly(A) tail</strong> (signal AAUAAA), <strong>splicing</strong> (GU…AG, spliceosome); alternative splicing gives several proteins from one gene.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Alberts, Essential Cell Biology 5e, chapter 7; Karp’s Cell and Molecular Biology, chapter 11. By the end you can:</p>
+  <ul>
+    <li>state the central dogma and its retroviral exception;</li>
+    <li>describe split genes and the main classes of RNA;</li>
+    <li>compare bacterial and eukaryotic RNA polymerases, promoters and termination;</li>
+    <li>describe capping, polyadenylation, splicing and alternative splicing, and mitochondrial transcription.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#dogma">The central dogma</a></li>
+    <li><a href="#genes">Genes, exons and introns</a></li>
+    <li><a href="#rna">Classes of RNA</a></li>
+    <li><a href="#transcription">Transcription and RNA polymerase</a></li>
+    <li><a href="#polymerases">Three eukaryotic RNA polymerases</a></li>
+    <li><a href="#bacteria">Transcription in bacteria</a></li>
+    <li><a href="#eukaryotes">Transcription in eukaryotes</a></li>
+    <li><a href="#processing">mRNA structure and processing</a></li>
+    <li><a href="#mito">Mitochondrial transcription</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="dogma">
+  <h2>The central dogma</h2>
+  <ul>
+    <li>Proposed by <strong>Francis Crick in 1958</strong>: genetic information flows DNA → RNA → protein.</li>
+    <li><strong>RNA world hypothesis</strong>: life began with RNA that could self-replicate; RNA catalysis is still essential in protein synthesis.</li>
+    <li><strong>Archibald Garrod (1908)</strong> linked a genetic defect to a missing enzyme: “<strong>inborn errors of metabolism</strong>”. In <strong>alcaptonuria</strong>, the enzyme that oxidises <strong>homogentisic acid</strong> (from phenylalanine and tyrosine breakdown) is missing; the acid is excreted and urine <strong>darkens in air</strong>.</li>
+    <li>A cell expresses different genes at different rates.</li>
+    <li><strong>Retroviruses</strong> (e.g. HIV) carry RNA and copy it into DNA with <strong>reverse transcriptase</strong>, so the dogma becomes DNA ↔ RNA → protein.</li>
+  </ul>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/dogma-1.jpg" width="611" height="462" loading="lazy" decoding="async" alt="The central dogma: DNA replicates, is transcribed into mRNA inside the nucleus and translated into protein in the cytoplasm; RNA retroviruses make DNA by reverse transcription.">
+    <figcaption>The central dogma, with reverse transcription by retroviruses. <span class="lb-credit">Lecture slide 5</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=nqlNcm_mMcI" target="_blank" rel="noopener">Dr Matt &amp; Dr Mike · DNA Transcription and Translation | DNA to Protein</a>
+      <span class="lb-when">Watch from 0:00 to the end: DNA to RNA to protein in one overview.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="genes">
+  <h2>Genes, exons and introns</h2>
+  <ul>
+    <li>Most eukaryotic protein-coding genes are <strong>split</strong>: coding <strong>exons</strong> separated by noncoding <strong>introns</strong> (intervening sequences). Bacterial genes usually are not.</li>
+    <li>The <strong>β-globin gene</strong> has <strong>3 exons and 2 introns</strong>. Introns are often much longer than exons, so the gene is much longer than its mRNA.</li>
+    <li>Exons are the parts that “exit” the nucleus in mRNA; introns are spliced out first.</li>
+    <li>A gene needs exons, start and stop signals and regulatory elements. Most protein-coding genes are <strong>single-copy genes</strong>.</li>
+    <li>Globin gene clusters: adults express <strong>α, β and δ</strong>, with δ very low.</li>
+    <li>Protein synthesis has four steps: <strong>transcription → RNA processing → translation → post-translational processing</strong>.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="rna">
+  <h2>Classes of RNA</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">RNA</th><th scope="col">Share of cell RNA</th><th scope="col">Role</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><strong>rRNA</strong></th><td>Up to <mark>80%</mark></td><td>Platform (and catalyst) of protein synthesis in the ribosome</td></tr>
+      <tr><th scope="row"><strong>tRNA</strong></th><td>About <mark>15%</mark></td><td>“Translates” the mRNA message into amino acids</td></tr>
+      <tr><th scope="row"><strong>mRNA</strong></th><td><mark>&lt;5%</mark></td><td>The plan for the polypeptide</td></tr>
+      <tr><th scope="row">hnRNA</th><td></td><td>Large heterogeneous nuclear RNAs: precursors of mRNA</td></tr>
+      <tr><th scope="row">snRNA / snoRNA</th><td></td><td>Splicing (in snRNPs) / rRNA processing and methylation</td></tr>
+      <tr><th scope="row">scRNA</th><td></td><td>Signal recognition particle</td></tr>
+      <tr><th scope="row">siRNA, miRNA</th><td></td><td>Regulate transcription and translation</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>mRNA, rRNA and tRNA all come from longer <strong>primary transcripts (pre-RNA)</strong>; the DNA segment copied is a <strong>transcription unit</strong>.</li>
+    <li>Primary transcripts are never naked: proteins bind them as they form. They are cut down by “cut-and-paste” steps using small RNAs (<mark>90–300 nt</mark>) and proteins.</li>
+    <li>Genes coding for mRNA are <strong>protein-coding genes</strong>; a gene is <strong>expressed</strong> when its information reaches mRNA and protein.</li>
+  </ul>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/rna-types-1.jpg" width="1200" height="786" loading="lazy" decoding="async" alt="Table of RNA types and their functions: mRNA, rRNA, tRNA, hnRNA, scRNA, snRNA, snoRNA and regulatory RNAs such as siRNA and miRNA.">
+    <figcaption>RNA types and functions. <span class="lb-credit">Lecture slide 8</span></figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="lb-section" id="transcription">
+  <h2>Transcription and RNA polymerase</h2>
+  <ul>
+    <li><strong>DNA-dependent RNA polymerase</strong> copies one DNA strand. It searches for the start site, selects the right ribonucleotide, forms <strong>phosphodiester bonds</strong>, and detects termination signals.</li>
+    <li>Base rules: template T, A, G, C → RNA <strong>A, U, C, G</strong>.</li>
+    <li>The <strong>template strand</strong> guides synthesis; the <strong>nontemplate (coding) strand</strong> has the same sequence as the RNA. Which strand is the template depends on the gene.</li>
+    <li>The polymerase binds the <strong>promoter</strong>, which says which strand is copied and where to start; it needs <strong>transcription factors</strong> to recognise it.</li>
+    <li>The polymerase moves along the template <strong>3′→5′</strong>; RNA grows <strong>5′→3′</strong>. A <strong>terminator</strong> sequence stops it.</li>
+    <li>The polymerase covers ~<mark>35 bp</mark>; the <strong>transcription bubble</strong> of melted DNA is ~<mark>15 bp</mark>; the DNA–RNA hybrid ~<mark>9 bp</mark>.</li>
+    <li>Transcription has three phases: <strong>initiation, elongation, termination</strong>.</li>
+  </ul>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/phases-1.jpg" width="320" height="320" loading="lazy" decoding="async" alt="Initiation: sigma factor and RNA polymerase bind the promoter; elongation: RNA grows as the polymerase moves along; termination: the polymerase reaches the stop sequence and releases the RNA.">
+    <figcaption>Initiation, elongation and termination in bacteria. <span class="lb-credit">Lecture slide 23</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=1408s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 23:28 to 50:23: initiation, elongation and termination.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="polymerases">
+  <h2>Three eukaryotic RNA polymerases</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Enzyme</th><th scope="col">Where</th><th scope="col">Makes</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><strong>RNA polymerase I</strong></th><td><strong>Nucleolus</strong></td><td>Most <strong>rRNAs</strong></td></tr>
+      <tr><th scope="row"><strong>RNA polymerase II</strong></th><td>Nucleus</td><td><strong>All mRNAs</strong> (pre-mRNA); most genes</td></tr>
+      <tr><th scope="row"><strong>RNA polymerase III</strong></th><td>Nucleus</td><td><strong>tRNAs</strong>, <strong>5S rRNA</strong> and other small RNAs; ≥14 subunits, ~700 kDa</td></tr>
+    </tbody>
+  </table></div>
+  <p>The chemistry (forming phosphodiester bonds) is the same in eukaryotes and bacteria. The bacterial enzyme is shaped like a <strong>crab claw</strong> with mobile pincers around a positively charged channel.</p>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/pro-euk-pol-1.jpg" width="799" height="857" loading="lazy" decoding="async" alt="Comparison table: prokaryotic RNA polymerase is a single type of about 400 kDa with a core of five subunits and a sigma factor, making polycistronic RNA; eukaryotic RNA polymerases are types I to V of about 500 kDa with 10 to 20 subunits, making monocistronic RNA and needing transcription factors.">
+    <figcaption>Prokaryotic versus eukaryotic RNA polymerases. <span class="lb-credit">Lecture slide 16</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=WQt2wfehtms&amp;t=108s" target="_blank" rel="noopener">Medicosis Perfectionalis · Posttranscriptional modification (hnRNA to mRNA)</a>
+      <span class="lb-when">Watch from 1:48 to 3:45: the three eukaryotic RNA polymerases.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="bacteria">
+  <h2>Transcription in bacteria</h2>
+  <ul>
+    <li><strong>Gene notation</strong>: the first transcribed nucleotide is <strong>+1</strong>; downstream is positive (drawn right), upstream negative (left).</li>
+    <li><em>E. coli</em> uses <strong>one RNA polymerase</strong> of five subunits: <strong>α₂, β, β′, σ</strong>.</li>
+    <li><strong>σ factor</strong> recognises the promoter: the <strong>−10 box (Pribnow box, TATATT/TATAAT)</strong> and the <strong>−35 box (TTGACA)</strong>.</li>
+    <li>σ brings the core enzyme to DNA: <strong>closed promoter complex</strong>. Strands separate (easy at the <strong>AT-rich −10 box</strong>, two H-bonds per A–T pair): <strong>open promoter complex</strong>, then the transcription bubble.</li>
+    <li>At about <strong>10 nucleotides</strong> of RNA, σ is released. <strong>β</strong> binds nucleotides and forms the bonds; <strong>β′</strong> holds DNA; the <strong>two α</strong> assemble the enzyme on the promoter.</li>
+    <li><strong>Rho-independent</strong> terminator: two GC-rich regions ~10 bp apart, then a run of A. <strong>Rho-dependent</strong>: the <strong>rho</strong> protein frees the RNA from the DNA.</li>
+  </ul>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/components-1.jpg" width="1067" height="799" loading="lazy" decoding="async" alt="Bacterial transcription: the core enzyme with sigma subunit binds the promoter, opens the template strand, begins inserting ribonucleotides, then sigma dissociates and chain elongation continues.">
+    <figcaption>Binding, initiation and chain elongation in bacteria. <span class="lb-credit">Lecture slide 23</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=31s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 0:31 to 23:28: prokaryotic vs eukaryotic transcription and RNA polymerases.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="eukaryotes">
+  <h2>Transcription in eukaryotes</h2>
+  <ul>
+    <li>Happens in the <strong>nucleus</strong>; translation is in the cytoplasm (in bacteria both are together).</li>
+    <li>Needs many <strong>transcription factors</strong> for binding, initiation, elongation and termination.</li>
+    <li>Compact <strong>chromatin</strong> (nucleosomes) must be opened for the polymerase to reach DNA.</li>
+    <li>The primary transcript must be <strong>processed</strong> into mature mRNA.</li>
+    <li>Two classes of transcription factor: <strong>general transcription factors (GTFs)</strong> and <strong>activators/repressors</strong>.</li>
+  </ul>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/pro-euk-1.jpg" width="285" height="300" loading="lazy" decoding="async" alt="In a prokaryote, mRNA is transcribed and translated by ribosomes in the same compartment; in a eukaryote, pre-mRNA is transcribed and processed in the nucleus and the mRNA is translated in the cytoplasm.">
+    <figcaption>Prokaryote: coupled. Eukaryote: transcription and processing in the nucleus. <span class="lb-credit">Lecture slide 22</span></figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="lb-section" id="processing">
+  <h2>mRNA structure and processing</h2>
+  <ul>
+    <li>mRNA has a continuous coding sequence, is found in the cytoplasm, and is translated on ribosomes. About <mark>25%</mark> of globin mRNA is noncoding (5′ and 3′ <strong>UTRs</strong>, which regulate).</li>
+    <li><strong>Capping</strong>: very early, a guanosine joins the 5′ end by a <strong>5′–5′ triphosphate</strong> link and is methylated: <strong>7-methylguanosine cap</strong>.</li>
+    <li><strong>Polyadenylation</strong>: <strong>AAUAAA</strong> about 20 nt upstream signals <strong>poly(A) polymerase</strong>; the tail is <mark>50–250</mark> A.</li>
+    <li>Cap and tail protect the unstable RNA from <strong>nucleases</strong> and lengthen its life; bacterial mRNA, tRNA and rRNA lack them.</li>
+    <li><strong>Splicing</strong> in the nucleus: introns start with <strong>GU</strong> and end with <strong>AG</strong>. <strong>snRNAs</strong> plus proteins form the <strong>spliceosome</strong>; base pairing loops the intron out and the exons are joined. Then mRNA leaves for the cytoplasm.</li>
+    <li><strong>Alternative splicing</strong> also removes some exons, so one gene gives different proteins in different cells or times (e.g. <strong>dynein</strong> motors for different cargo).</li>
+  </ul>
+<div class="lb-figures lb-figures-2">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/cap-1.jpg" width="512" height="458" loading="lazy" decoding="async" alt="Chemical structure of the 7-methylguanosine cap joined to the 5′ end of mRNA by a 5′ to 5′ triphosphate bridge.">
+    <figcaption>The 7-methylguanosine cap and its 5′–5′ triphosphate bridge. <span class="lb-credit">Lecture slide 26</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/processing-1.jpg" width="1187" height="807" loading="lazy" decoding="async" alt="A gene with promoter, three exons and two introns is transcribed and capped; the primary transcript is cleaved at the 3′ end and polyadenylated; splicing removes the introns to give mature mRNA ready for transport.">
+    <figcaption>From gene to mature mRNA: capping, cleavage and poly(A), splicing. <span class="lb-credit">Lecture slide 27</span></figcaption>
+  </figure>
+</div>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec01-central-dogma/alt-splicing-1.jpg" width="1172" height="595" loading="lazy" decoding="async" alt="A gene with exons 1 to 4 is spliced two ways: one mRNA keeps exons 1, 2 and 3 to make protein A, the other keeps exons 1, 2 and 4 to make protein B.">
+    <figcaption>Alternative splicing: one gene, two proteins. <span class="lb-credit">Lecture slide 28</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=3023s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 50:23 to the end: capping, poly(A) tail, splicing and alternative splicing.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=WQt2wfehtms&amp;t=225s" target="_blank" rel="noopener">Medicosis Perfectionalis · Posttranscriptional modification (hnRNA to mRNA)</a>
+      <span class="lb-when">Watch from 3:45 to 10:48: cap, tail and splicing, with clinical examples.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="mito">
+  <h2>Mitochondrial transcription</h2>
+  <ul>
+    <li>A nuclear-encoded polymerase, <strong>POLRMT</strong>, transcribes mitochondrial DNA; it resembles the RNA polymerases of phages <strong>T3 and T7</strong>.</li>
+    <li>It needs <strong>TFAM</strong> and <strong>TFB2M</strong> to start.</li>
+    <li>The circular genome has one promoter per strand; each strand is copied whole, then cut into individual mRNAs, tRNAs and rRNAs.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>1958 / 1908</td><td>Crick’s central dogma / Garrod’s inborn errors</td></tr>
+      <tr><td>80% · 15% · &lt;5%</td><td>rRNA · tRNA · mRNA share of cell RNA</td></tr>
+      <tr><td>35 · 15 · 9 bp</td><td>Polymerase footprint · bubble · DNA–RNA hybrid</td></tr>
+      <tr><td>−10 / −35</td><td>Bacterial promoter boxes (TATAAT / TTGACA)</td></tr>
+      <tr><td>~10 nt</td><td>RNA length when σ leaves</td></tr>
+      <tr><td>50–250 A</td><td>Poly(A) tail length</td></tr>
+      <tr><td>~20 nt</td><td>AAUAAA upstream of the poly(A) site</td></tr>
+      <tr><td>3 exons, 2 introns</td><td>β-globin gene</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Pair</th><th scope="col">How to tell them apart</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Template vs coding strand</th><td>Template is read 3′→5′; coding strand matches the RNA (T instead of U)</td></tr>
+      <tr><th scope="row">Pol I vs Pol III</th><td>Pol I: big rRNAs in the nucleolus. Pol III: tRNA and 5S rRNA</td></tr>
+      <tr><th scope="row">Closed vs open complex</th><td>Closed: polymerase on double-stranded promoter. Open: strands separated at −10</td></tr>
+      <tr><th scope="row">Rho-dependent vs independent</th><td>Rho protein frees RNA vs GC-rich hairpin followed by A run</td></tr>
+      <tr><th scope="row">Exon vs intron</th><td>Exons stay in mRNA; introns (GU…AG) are removed</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam traps</span>
+    <ul>
+      <li><strong>All mRNAs</strong> are made by <strong>Pol II</strong>; 5S rRNA is made by <strong>Pol III</strong>, not Pol I.</li>
+      <li>σ factor recognises the promoter and then <strong>leaves</strong>; β, not σ, forms the bonds.</li>
+      <li>mRNA is the <strong>smallest</strong> fraction of cell RNA.</li>
+      <li>The cap is joined <strong>5′–5′</strong>, not 3′–5′.</li>
+      <li>Bacterial mRNAs have no cap or poly(A) tail.</li>
+      <li>Alcaptonuria: <strong>homogentisic acid</strong> accumulates; urine darkens in air.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-card" id="terms" aria-labelledby="terms-title">
+  <h2 id="terms-title">Key terms</h2>
+  <p class="lb-terms"><strong>Central dogma</strong>: DNA → RNA → protein · <strong>RNA world</strong>: life began with self-replicating RNA · <strong>Inborn error of metabolism</strong>: inherited missing enzyme · <strong>Reverse transcriptase</strong>: RNA-dependent DNA polymerase · <strong>Exon</strong>: kept coding segment · <strong>Intron</strong>: removed intervening segment · <strong>Primary transcript</strong>: unprocessed pre-RNA · <strong>Transcription unit</strong>: DNA copied into one primary transcript · <strong>Promoter</strong>: polymerase binding site · <strong>Terminator</strong>: stop signal · <strong>Template strand</strong>: strand read by the polymerase · <strong>Coding strand</strong>: same sequence as RNA · <strong>Transcription bubble</strong>: locally unwound DNA · <strong>σ factor</strong>: bacterial promoter recogniser · <strong>Pribnow box</strong>: −10 TATAAT · <strong>Rho</strong>: termination protein · <strong>Transcription factor</strong>: protein helping the polymerase · <strong>5′ cap</strong>: 7-methylguanosine · <strong>Poly(A) tail</strong>: 3′ adenosine string · <strong>Spliceosome</strong>: snRNA–protein splicing machine · <strong>Alternative splicing</strong>: different exon choices from one gene · <strong>POLRMT</strong>: mitochondrial RNA polymerase.</p>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2-5">The central dogma</li>
+    <li data-slides="6-7">Genes, exons and introns</li>
+    <li data-slides="8-9">Classes of RNA</li>
+    <li data-slides="10-12, 17">Transcription and RNA polymerase</li>
+    <li data-slides="13-16">Three eukaryotic RNA polymerases</li>
+    <li data-slides="18-21, 23">Transcription in bacteria</li>
+    <li data-slides="22-23">Transcription in eukaryotes</li>
+    <li data-slides="24-28">mRNA structure and processing</li>
+    <li data-slides="29">Mitochondrial transcription</li>
+  </ul>
+</details>
+</article>

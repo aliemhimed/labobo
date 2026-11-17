@@ -1,0 +1,229 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct-2" data-part="Medical Genetics" data-type="lecture"
+         data-lectures="1" data-topic="MG Lec 1: Genomics, Bioinformatics &amp; Proteomics"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT II · Medical Genetics · Lecture 1</p>
+  <h1>Genomics, Bioinformatics &amp; Proteomics</h1>
+  <p class="lb-lede">How whole genomes are sequenced and assembled, how bioinformatics finds and annotates genes (BLAST, identity and E-values, hallmarks of a gene, ORFs), and how proteomics studies the full set of proteins with 2-D gels and mass spectrometry.</p>
+  <span class="lb-topic-name">Labobo topic: MG Lec 1: Genomics, Bioinformatics &amp; Proteomics</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li><strong>Genomics</strong> studies whole genomes. Old way: <strong>positional cloning</strong>, one gene at a time. New way: <strong>whole-genome shotgun sequencing</strong>, then overlapping reads are assembled into <strong>contigs</strong>.</li>
+    <li>First genome sequenced this way: <em>Haemophilus influenzae</em>, <mark>1.83 million bp</mark>, in <mark>1995</mark>.</li>
+    <li>Genomes are read many times (<strong>coverage</strong>); joining the runs is <strong>compiling</strong>.</li>
+    <li><strong>Bioinformatics</strong> finds genes; <strong>annotation</strong> labels them, often with <strong>BLAST</strong>. A <strong>lower E-value</strong> means a more significant match.</li>
+    <li>Gene hallmarks: promoter boxes (TATA, GC, CAAT), splice sites, termination signals, and <strong>open reading frames</strong>.</li>
+    <li><strong>Proteomics</strong> studies the <strong>proteome</strong>: ~20,000 genes → at least <mark>290,000</mark> proteins. Tools: <strong>2-D gel electrophoresis</strong> and <strong>mass spectrometry</strong> (MALDI, m/z).</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Klug, Concepts of Genetics 12e, chapter 21 (genomics, bioinformatics and proteomics). By the end you can:</p>
+  <ul>
+    <li>describe whole-genome shotgun sequencing, contigs, compiling and coverage;</li>
+    <li>explain annotation, BLAST, identity and E-values, and the hallmarks of a gene;</li>
+    <li>define the proteome and explain why it is larger than the genome;</li>
+    <li>describe 2-D gel electrophoresis and mass spectrometry.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#genomics">Genomics and shotgun sequencing</a></li>
+    <li><a href="#bioinformatics">Bioinformatics and annotation</a></li>
+    <li><a href="#hallmarks">Hallmarks of a gene and ORFs</a></li>
+    <li><a href="#proteomics">Proteomics</a></li>
+    <li><a href="#methods">2-D gels and mass spectrometry</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="genomics">
+  <h2>Genomics and shotgun sequencing</h2>
+  <ul>
+    <li><strong>Genomics</strong> is the study of genomes; it lets us sequence entire genomes.</li>
+    <li>Earlier, <strong>positional cloning</strong> mapped DNA sequences to specific chromosomes, identifying <strong>one gene at a time</strong>, and produced DNA libraries.</li>
+    <li><strong>Whole-genome (shotgun) sequencing</strong>: DNA is cut (e.g. by different restriction enzymes) into <strong>overlapping fragments</strong>, each is sequenced, and computer programs align the overlaps into continuous stretches called <strong>contigs</strong>, building up a whole chromosome.</li>
+    <li>In <mark>1995</mark>, the <mark>1.83 million bp</mark> genome of the bacterium <em>Haemophilus influenzae</em> was sequenced this way.</li>
+    <li>Genomes are always sequenced <strong>more than once</strong> (multiple reads) for accuracy. Assembling the final sequence from many runs is <strong>compiling</strong>; <strong>coverage</strong> (depth) is how many times a nucleotide appears at the same position across reads.</li>
+  </ul>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec01-genomics-bioinformatics-proteomics/shotgun-1.jpg" width="931" height="823" loading="lazy" decoding="async" alt="Shotgun sequencing: genomic DNA from a chromosome is cut with different restriction enzymes into overlapping fragments, the fragments are sequenced, and computer programs align identical overlapping sequences to build contigs.">
+    <figcaption>Whole-genome shotgun sequencing and contig assembly. <span class="lb-credit">Klug, Concepts of Genetics (lecture slide 4)</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=uQq37JL618Q" target="_blank" rel="noopener">Shomu’s Biology · Whole genome shotgun sequencing</a>
+      <span class="lb-when">Watch from 0:00 to the end: shotgun sequencing and assembling contigs.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=rH6vsoyrc_U" target="_blank" rel="noopener">Genomics Education Programme · Whole genome sequencing: From sample to report</a>
+      <span class="lb-when">Watch from 0:00 to the end: whole genome sequencing from sample to report.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="bioinformatics">
+  <h2>Bioinformatics and annotation</h2>
+  <p><strong>Bioinformatics</strong> uses computer software and mathematics to organise, share and analyse data on gene structure, sequence and expression. It is used to:</p>
+  <ul>
+    <li>compare DNA sequences and align contigs;</li>
+    <li>identify genes in a genomic sequence;</li>
+    <li>find gene-regulatory sequences;</li>
+    <li>identify structural sequences such as <strong>telomeres</strong>.</li>
+  </ul>
+  <p><strong>Annotation</strong> means identifying genes, regulatory and other sequences after a genome is sequenced and compiled, mainly by comparing it with sequences already in databases. <strong>BLAST</strong> (Basic Local Alignment Search Tool) searches DNA and protein sequence banks.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">Meaning</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><strong>Identity value</strong></th><td>Identical matches between aligned sequences ÷ total bases aligned (e.g. 93%)</td></tr>
+      <tr><th scope="row"><strong>Expect (E) value</strong></th><td>Number of matching sequences expected <strong>by chance</strong>; the <strong>lower</strong> (closer to 0), the more significant the match</td></tr>
+    </tbody>
+  </table></div>
+  <p>This only works if similar sequences are <strong>already in a database</strong>.</p>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec01-genomics-bioinformatics-proteomics/blast-1.jpg" width="1200" height="527" loading="lazy" decoding="async" alt="A BLAST alignment of a query sequence against a database subject sequence, with vertical bars marking identical bases and a few mismatches.">
+    <figcaption>A BLAST alignment: query against a database match. <span class="lb-credit">Lecture slide 8</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=S3gr8gjKHhc" target="_blank" rel="noopener">Rob Edwards · BLAST 9 E values</a>
+      <span class="lb-when">Watch from 0:00 to the end: what the BLAST E-value means.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="hallmarks">
+  <h2>Hallmarks of a gene and ORFs</h2>
+  <ul>
+    <li>Software can search for the hallmark features of genes:
+      <ul>
+        <li><strong>regulatory sequences</strong> upstream: TATA box, GC box, CAAT box;</li>
+        <li><strong>splice sites</strong> between introns and exons;</li>
+        <li><strong>termination sequences</strong> downstream.</li>
+      </ul>
+    </li>
+    <li>Protein-coding genes contain one or more <strong>open reading frames (ORFs)</strong>: sequences that, after transcription and splicing, are translated into a protein.</li>
+  </ul>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Watch out: intron splice sites</span>
+    <p>The slides say introns begin with <strong>CT</strong>. Klug’s figure on the same slide set labels the 5′ splice site <strong>GT</strong> and the 3′ splice site <strong>AG</strong>, which matches the GU…AG rule in RNA. Learn <strong>GT…AG</strong> in DNA, but recognise that the lecture wrote CT.</p>
+  </aside>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec01-genomics-bioinformatics-proteomics/gene-1.jpg" width="1200" height="280" loading="lazy" decoding="async" alt="A gene drawn as a bar: transcription regulatory elements and promoter (TATA, CAAT, GC boxes), translation initiation site, 5′ UTR exon, exons and introns with 5′ splice site GT and 3′ splice site AG, translation termination site, 3′ UTR and polyadenylation site.">
+    <figcaption>Hallmark features that identify a gene. <span class="lb-credit">Klug, Concepts of Genetics (lecture slide 11)</span></figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="lb-section" id="proteomics">
+  <h2>Proteomics</h2>
+  <ul>
+    <li><strong>Proteomics</strong>: identification, characterisation and quantitative analysis of <strong>proteomes</strong>. The <strong>proteome</strong> is the complete set of proteins encoded by a genome.</li>
+    <li>It tells us about protein <strong>structure</strong> (primary to quaternary), <strong>post-translational modifications</strong>, <strong>protein–protein and protein–nucleic acid interactions</strong>, and <strong>cellular localisation</strong>.</li>
+    <li><strong>Proteomes are larger than genomes</strong>, overturning the 1940s “one gene – one enzyme” idea: genes have multiple transcription start sites and make different transcripts (plus alternative splicing). About <mark>20,000</mark> protein-coding genes make at least <mark>290,000</mark> proteins.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="methods">
+  <h2>2-D gels and mass spectrometry</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Method</th><th scope="col">How it works</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><strong>2-D gel electrophoresis (2DGE)</strong></th><td>1st dimension: <strong>isoelectric focusing</strong> separates by isoelectric point (pH where charge is zero). 2nd: <strong>SDS-PAGE</strong> separates by molecular weight. Gives up to several thousand spots, compared with reference gels</td></tr>
+      <tr><th scope="row"><strong>Mass spectrometry</strong></th><td>Ionised samples in gas form; measures the <strong>mass-to-charge (m/z) ratio</strong>. Spectra are matched to databases of known proteins</td></tr>
+      <tr><th scope="row"><strong>MALDI</strong></th><td>Matrix-assisted laser desorption ionisation: a <strong>UV laser</strong> heats, vaporises and ionises peptides; peaks show m/z and abundance</td></tr>
+    </tbody>
+  </table></div>
+  <p>Typical workflow: cut a spot from a 2-D gel → digest with a protease such as <strong>trypsin</strong> → mass spectrometry of the peptides → compare spectra with a database to identify the protein (e.g. a peptide from <em>T. rex</em> matched a synthetic version).</p>
+<div class="lb-figures lb-figures-2">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec01-genomics-bioinformatics-proteomics/2dge-1.jpg" width="667" height="817" loading="lazy" decoding="async" alt="Two-dimensional gel electrophoresis: proteins are first separated by isoelectric focusing in a tube gel from pH 4 to 10, then the tube is laid on an SDS-polyacrylamide gel to separate by molecular weight, giving a pattern of spots.">
+    <figcaption>2-D gel electrophoresis: isoelectric point, then size. <span class="lb-credit">Klug, Concepts of Genetics (lecture slide 19)</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec01-genomics-bioinformatics-proteomics/ms-1.jpg" width="588" height="832" loading="lazy" decoding="async" alt="A protein spot is cut from a 2D gel, digested by trypsin into peptides, analysed by mass spectrometry to produce mass-to-charge spectra, which are compared with a database to identify the peptide sequence.">
+    <figcaption>From gel spot to protein identity by mass spectrometry. <span class="lb-credit">Klug, Concepts of Genetics (lecture slide 21)</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=FHvblg338Gg" target="_blank" rel="noopener">Animated Biology With Arpan · 2D gel electrophoresis</a>
+      <span class="lb-when">Watch from 0:00 to the end: isoelectric focusing and SDS-PAGE in a 2-D gel.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>1995</td><td>First whole-genome shotgun sequence</td></tr>
+      <tr><td>1.83 million bp</td><td><em>H. influenzae</em> genome</td></tr>
+      <tr><td>~20,000</td><td>Human protein-coding genes</td></tr>
+      <tr><td>≥290,000</td><td>Different proteins they make</td></tr>
+      <tr><td>1940s</td><td>One gene – one enzyme hypothesis</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Pair</th><th scope="col">How to tell them apart</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Positional cloning vs shotgun sequencing</th><td>One gene at a time, mapped to a chromosome vs whole genome in random overlapping pieces</td></tr>
+      <tr><th scope="row">Compiling vs coverage</th><td>Compiling: assembling the final sequence. Coverage: how many reads cover each base</td></tr>
+      <tr><th scope="row">Identity vs E-value</th><td>Identity: % identical. E-value: chance matches; lower is better</td></tr>
+      <tr><th scope="row">Genome vs proteome</th><td>All genes vs all proteins (proteome is larger)</td></tr>
+      <tr><th scope="row">2DGE dimensions</th><td>First isoelectric point, then molecular weight</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam traps</span>
+    <ul>
+      <li>A <strong>low</strong> E-value means a <strong>significant</strong> match.</li>
+      <li>BLAST cannot find a gene with no similar sequence in the database.</li>
+      <li>Annotation comes <strong>after</strong> sequencing and compiling.</li>
+      <li>MALDI measures <strong>m/z</strong>, not mass alone.</li>
+      <li>The proteome is bigger than the genome.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-card" id="terms" aria-labelledby="terms-title">
+  <h2 id="terms-title">Key terms</h2>
+  <p class="lb-terms"><strong>Genomics</strong>: study of whole genomes · <strong>Positional cloning</strong>: mapping one gene to a chromosome · <strong>Shotgun sequencing</strong>: sequencing random overlapping fragments · <strong>Contig</strong>: assembled continuous sequence · <strong>Compiling</strong>: assembling the final sequence · <strong>Coverage</strong>: read depth per base · <strong>Bioinformatics</strong>: computational analysis of biological data · <strong>Annotation</strong>: labelling genes and features · <strong>BLAST</strong>: sequence similarity search tool · <strong>Identity value</strong>: percentage of identical bases · <strong>E-value</strong>: matches expected by chance · <strong>ORF</strong>: open reading frame · <strong>Proteome</strong>: all proteins of a genome · <strong>Proteomics</strong>: study of proteomes · <strong>2DGE</strong>: two-dimensional gel electrophoresis · <strong>Isoelectric focusing</strong>: separation by isoelectric point · <strong>Mass spectrometry</strong>: m/z measurement · <strong>MALDI</strong>: laser ionisation of peptides.</p>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2-5">Genomics and shotgun sequencing</li>
+    <li data-slides="6-9">Bioinformatics and annotation</li>
+    <li data-slides="10-13">Hallmarks of a gene and ORFs</li>
+    <li data-slides="14-17">Proteomics</li>
+    <li data-slides="18-22">2-D gels and mass spectrometry</li>
+  </ul>
+</details>
+</article>

@@ -1,0 +1,226 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct-2" data-part="Medical Genetics" data-type="lecture"
+         data-lectures="2" data-topic="MG Lec 2: Sequencing &amp; Predicting Function"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT II · Medical Genetics · Lecture 2</p>
+  <h1>Sequencing &amp; Predicting Function</h1>
+  <p class="lb-lede">How DNA is sequenced (Sanger chain termination, automated capillary sequencers, next-generation sequencing), how draft and reference genomes are built and annotated, the hallmarks of a gene and ORFs, and how gene and protein function is predicted from homologues, protein domains and ChIP.</p>
+  <span class="lb-topic-name">Labobo topic: MG Lec 2: Sequencing &amp; Predicting Function</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li><strong>Sanger sequencing</strong> uses <strong>dideoxynucleotides (ddNTPs)</strong>: they lack the <strong>3′-OH</strong>, so chain growth stops. Fluorescent ddNTPs + <strong>capillary electrophoresis</strong> + laser detector give the sequence.</li>
+    <li><strong>Automated capillary sequencers</strong> made the Human Genome Project feasible: &gt;<mark>2 million bases</mark> per 24 hours.</li>
+    <li><strong>Draft sequences</strong> have gaps; a <strong>reference genome</strong> accepts some error. Multiple reads (<strong>coverage</strong>) are <strong>compiled</strong>.</li>
+    <li><strong>Annotation</strong> with <strong>BLAST</strong>: identity % and <strong>E-value</strong> (lower = more significant; shorter queries match by chance more easily).</li>
+    <li><strong>ORFs</strong> start with <strong>ATG</strong> and end with <strong>TAA, TAG or TGA</strong>.</li>
+    <li>Function prediction: <strong>homologues</strong> (<strong>paralogs</strong> = same species, <strong>orthologs</strong> = different species), protein <strong>domains</strong>, and <strong>ChIP</strong> for DNA-binding proteins.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Klug, Concepts of Genetics 12e, chapters 20–21. By the end you can:</p>
+  <ul>
+    <li>explain Sanger sequencing and high-throughput sequencing;</li>
+    <li>define draft sequence, reference genome, compiling, coverage and annotation;</li>
+    <li>interpret BLAST identity and E-values and list the hallmarks of a gene;</li>
+    <li>explain how homology, domains and ChIP predict gene and protein function.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#sanger">Sanger sequencing</a></li>
+    <li><a href="#htp">High-throughput sequencing</a></li>
+    <li><a href="#draft">Draft and reference genomes</a></li>
+    <li><a href="#annotation">Annotation with BLAST</a></li>
+    <li><a href="#hallmarks">Hallmarks of a gene and ORFs</a></li>
+    <li><a href="#function">Predicting gene and protein function</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="sanger">
+  <h2>Sanger sequencing</h2>
+  <p>The Human Genome Project first used the <strong>Sanger</strong> (chain-termination) method.</p>
+  <ol class="lb-flow">
+    <li>Reaction mix: <strong>template DNA</strong>, a <strong>primer</strong>, <strong>DNA polymerase</strong>, normal <strong>dNTPs</strong> and fluorescently labelled <strong>ddNTPs</strong> (a different colour for each base).</li>
+    <li>The primer is extended; whenever a <strong>ddNTP</strong> is added, synthesis stops, because a dideoxynucleotide has <strong>no 3′-OH</strong> for the next bond.</li>
+    <li>This makes fragments of every length, each ending in a coloured ddNTP.</li>
+    <li><strong>Capillary gel electrophoresis</strong> separates them by size; a <strong>laser and detector</strong> read the colour of each fragment end.</li>
+    <li>A computer builds a <strong>chromatogram</strong> and the sequence.</li>
+  </ol>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec02-sequencing-predicting-function/sanger-1.jpg" width="1139" height="761" loading="lazy" decoding="async" alt="Sanger sequencing: template, primer, DNA polymerase, dNTPs and labelled ddNTPs; a deoxynucleotide with a 3′ OH beside a dideoxynucleotide with 3′ H; primer extension stopping at each ddNTP; fragments separated in a capillary gel and read by a laser detector into a chromatogram.">
+    <figcaption>Chain termination by ddNTPs, capillary separation and laser reading. <span class="lb-credit">Klug, Concepts of Genetics (lecture slide 4)</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=KTstRrDTmWI" target="_blank" rel="noopener">Quick Biochemistry Basics · Sanger sequencing</a>
+      <span class="lb-when">Watch from 0:00 to the end: dideoxynucleotides and chain termination.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=e2G5zx-OJIw" target="_blank" rel="noopener">Thermo Fisher Scientific · How does Sanger Sequencing Work?</a>
+      <span class="lb-when">Watch from 0:00 to the end: automated Sanger sequencing with fluorescent ddNTPs.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="htp">
+  <h2>High-throughput sequencing</h2>
+  <ul>
+    <li>Sequencing billions of base pairs quickly and cheaply was the major problem of the Human Genome Project.</li>
+    <li>The breakthrough: <strong>computer-automated sequencers</strong> with multiple capillary gels, running around the clock and producing over <mark>2 million bases</mark> in <mark>24 hours</mark>.</li>
+    <li>Newer (next-generation) sequencing, shown in the lecture, fragments DNA, adds adapters, amplifies fragments on a <strong>flow cell</strong> (bridge amplification) and reads many fragments in parallel cycle by cycle, then aligns the reads.</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=CZeN-IgjYCo" target="_blank" rel="noopener">Henrik’s Lab · Next Generation Sequencing (Illumina) - An Introduction</a>
+      <span class="lb-when">Watch from 0:00 to the end: next-generation sequencing in under five minutes.</span></li>
+    <li><a href="https://www.youtube.com/watch?v=fCd6B5HRaZ8" target="_blank" rel="noopener">Illumina · Overview of Illumina Sequencing by Synthesis Workflow</a>
+      <span class="lb-when">Watch from 0:00 to the end: library preparation, the flow cell and sequencing by synthesis.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="draft">
+  <h2>Draft and reference genomes</h2>
+  <ul>
+    <li><strong>Draft sequences</strong> often have <strong>gaps</strong> in regions that are hard to analyse.</li>
+    <li>A <strong>reference genome</strong> carries a degree of error that researchers are willing to accept.</li>
+    <li>Genomes are sequenced more than once; <strong>compiling</strong> assembles the final sequence; <strong>coverage</strong> is how many times a nucleotide appears at the same position after compiling.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="annotation">
+  <h2>Annotation with BLAST</h2>
+  <ul>
+    <li><strong>Annotation</strong>: after sequencing and compiling, gene-regulatory and other sequences are identified, mainly by comparison with sequences in databases using <strong>BLAST</strong>.</li>
+    <li><strong>Identity value</strong>: percentage of exact matches (e.g. 93%).</li>
+    <li><strong>E-value</strong>: matches expected by chance. It accounts for <strong>query length</strong>: <strong>shorter</strong> sequences are more likely to match by chance. The lower (closer to 0), the more significant.</li>
+    <li>Comparing genes across species, e.g. human <em>LEP</em> and mouse <em>Lep</em> (leptin), shows high similarity.</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=S3gr8gjKHhc" target="_blank" rel="noopener">Rob Edwards · BLAST 9 E values</a>
+      <span class="lb-when">Watch from 0:00 to the end: what the BLAST E-value means and why query length matters.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="hallmarks">
+  <h2>Hallmarks of a gene and ORFs</h2>
+  <ul>
+    <li>BLAST works only if a similar sequence is already in the database, so software also searches for <strong>hallmarks</strong>:
+      <ul>
+        <li>upstream regulatory sequences: <strong>promoters, enhancers, silencers</strong>; TATA, GC and CAAT boxes;</li>
+        <li><strong>intron splice sites</strong>;</li>
+        <li>downstream <strong>termination sequences</strong>.</li>
+      </ul>
+    </li>
+    <li>Protein-coding genes contain <strong>open reading frames (ORFs)</strong>, typically starting with <strong>ATG</strong> and ending with <strong>TAA, TAG or TGA</strong>.</li>
+  </ul>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Watch out: intron splice sites</span>
+    <p>The slides say most introns begin with <strong>CT</strong> and end with <strong>AG</strong>. Klug’s gene diagram in the same lecture labels the 5′ splice site <strong>GT</strong>, matching the GU…AG rule. Expect GT…AG in standard sources, and know the lecture’s wording.</p>
+  </aside>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec02-sequencing-predicting-function/exons-1.jpg" width="708" height="624" loading="lazy" decoding="async" alt="A long genomic DNA sequence with three exons highlighted in blue, separated by intron sequence.">
+    <figcaption>Exons found within a genomic sequence. <span class="lb-credit">Klug, Concepts of Genetics (lecture slide 14)</span></figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="lb-section" id="function">
+  <h2>Predicting gene and protein function</h2>
+  <ul>
+    <li><strong>Sequence similarity searches</strong> (BLAST) identify <strong>homologous genes</strong>, evolutionarily related genes:
+      <ul>
+        <li><strong>Paralogs</strong>: homologues in the <strong>same species</strong> (arise by duplication);</li>
+        <li><strong>Orthologs</strong>: homologues in <strong>different species</strong> from a common ancestor.</li>
+      </ul>
+    </li>
+    <li>The gene predicts the polypeptide, which can be scanned for <strong>structural domains</strong>: <strong>ion channels, DNA-binding regions</strong> (e.g. helix-turn-helix with a recognition helix), <strong>membrane-spanning regions</strong>. These predict function.</li>
+    <li><strong>Chromatin immunoprecipitation (ChIP)</strong> maps protein–DNA interactions and finds genes regulated by a transcription factor:</li>
+  </ul>
+  <ol class="lb-flow">
+    <li>Isolate chromatin (proteins cross-linked to DNA) and fragment it.</li>
+    <li>Add an antibody to the protein and purify the protein–DNA complexes.</li>
+    <li>Reverse the cross-links, isolate the DNA and sequence it.</li>
+  </ol>
+<div class="lb-figures">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/genetics/lec02-sequencing-predicting-function/chip-1.jpg" width="567" height="891" loading="lazy" decoding="async" alt="ChIP: chromatin with proteins bound to DNA is fragmented, a protein-specific antibody pulls down the protein–DNA complexes, cross-links are reversed and the DNA is isolated and sequenced.">
+    <figcaption>Chromatin immunoprecipitation. <span class="lb-credit">Klug, Concepts of Genetics (lecture slide 19)</span></figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>&gt;2 million bases / 24 h</td><td>Output of automated capillary sequencers</td></tr>
+      <tr><td>93%</td><td>Example identity value in the BLAST slide</td></tr>
+      <tr><td>E → 0</td><td>Most significant match</td></tr>
+      <tr><td>ATG; TAA, TAG, TGA</td><td>ORF start; ORF stops</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Pair</th><th scope="col">How to tell them apart</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">dNTP vs ddNTP</th><td>dNTP has 3′-OH and extends; ddNTP has 3′-H and terminates</td></tr>
+      <tr><th scope="row">Paralog vs ortholog</th><td>Same species (duplication) vs different species (speciation)</td></tr>
+      <tr><th scope="row">Draft vs reference genome</th><td>Draft has gaps; reference is the accepted standard with tolerated error</td></tr>
+      <tr><th scope="row">BLAST vs hallmark search</th><td>BLAST needs known similar sequences; hallmark search finds new genes by features</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam traps</span>
+    <ul>
+      <li>ddNTPs stop synthesis because they lack the <strong>3′</strong>-OH (not the 2′).</li>
+      <li>Short query sequences give <strong>higher</strong> E-values for the same match.</li>
+      <li>Orthologs are in <strong>different</strong> species.</li>
+      <li>ChIP finds where a <strong>protein</strong> binds DNA; it needs an antibody to that protein.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-card" id="terms" aria-labelledby="terms-title">
+  <h2 id="terms-title">Key terms</h2>
+  <p class="lb-terms"><strong>Sanger sequencing</strong>: chain-termination method · <strong>ddNTP</strong>: chain-terminating nucleotide · <strong>Capillary electrophoresis</strong>: size separation in thin tubes · <strong>Chromatogram</strong>: coloured peak trace of the sequence · <strong>High-throughput sequencing</strong>: fast automated sequencing · <strong>Draft sequence</strong>: genome with gaps · <strong>Reference genome</strong>: accepted standard sequence · <strong>Compiling</strong>: assembling reads · <strong>Coverage</strong>: reads per base · <strong>Annotation</strong>: identifying genes and features · <strong>E-value</strong>: chance-match measure · <strong>ORF</strong>: open reading frame · <strong>Homologue</strong>: evolutionarily related gene · <strong>Paralog</strong>: homologue in same species · <strong>Ortholog</strong>: homologue in another species · <strong>Domain</strong>: structural unit of a protein · <strong>ChIP</strong>: chromatin immunoprecipitation.</p>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="2-4">Sanger sequencing</li>
+    <li data-slides="5-6">High-throughput sequencing</li>
+    <li data-slides="7">Draft and reference genomes</li>
+    <li data-slides="8-10, 16">Annotation with BLAST</li>
+    <li data-slides="11-14">Hallmarks of a gene and ORFs</li>
+    <li data-slides="15-19">Predicting gene and protein function</li>
+  </ul>
+</details>
+</article>

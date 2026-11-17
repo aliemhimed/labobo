@@ -1,0 +1,295 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct-2" data-part="Molecular Biology" data-type="lecture"
+         data-lectures="4" data-topic="MolBio Lec 4: Control of Gene Expression"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT II · Molecular Biology · Lecture 4</p>
+  <h1>Control of Gene Expression</h1>
+  <p class="lb-lede">Why cells with the same genome differ, the translation cycle, the steps where expression can be controlled, promoters and regulatory DNA, the trp and lac operons, eukaryotic enhancers, Mediator and chromatin modifiers, combinatorial control, master regulators, and how transcription-factor binding sites are found.</p>
+  <span class="lb-topic-name">Labobo topic: MolBio Lec 4: Control of Gene Expression</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>All cells of an organism share the same DNA; <strong>differentiation</strong> comes from <strong>which genes are expressed</strong> (a typical cell uses about half its genes).</li>
+    <li>Expression can be controlled at every step, but mainly at <strong>transcription</strong>.</li>
+    <li>Bacteria: σ factor finds the promoter. Eukaryotes: Pol II needs <strong>general transcription factors</strong>; <strong>TBP</strong> of <strong>TFIID</strong> binds the <strong>TATA box</strong>.</li>
+    <li><strong>trp operon</strong>: 5 genes, one mRNA, switched off by the <strong>trp repressor</strong> when tryptophan is high. <strong>lac operon</strong> (lacZ, lacY, lacA): ON only when <strong>lactose present</strong> (allolactose removes the repressor) <strong>and glucose absent</strong> (cAMP–CAP activates).</li>
+    <li>Eukaryotic activators bind <strong>enhancers</strong> far away; DNA loops and <strong>Mediator</strong> links them to the promoter; they also recruit <strong>histone acetyltransferases</strong> and <strong>chromatin remodelling</strong> complexes.</li>
+    <li>Binding sites are found by <strong>deletion mapping</strong>, <strong>DNA footprinting</strong> (DNase I) and <strong>ChIP</strong> (ChIP-chip, ChIP-seq).</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Alberts, Essential Cell Biology 5e, chapters 7–8; Karp’s Cell and Molecular Biology, chapter 12. By the end you can:</p>
+  <ul>
+    <li>explain how cell types differ by gene expression and list the levels of control;</li>
+    <li>describe the translation cycle;</li>
+    <li>explain regulation of the trp and lac operons;</li>
+    <li>describe eukaryotic promoters, enhancers, transcription factors and chromatin changes, and methods to map binding sites.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#overview">Overview of gene expression</a></li>
+    <li><a href="#translation">The translation cycle</a></li>
+    <li><a href="#levels">Where expression is controlled</a></li>
+    <li><a href="#promoters">Promoters and regulatory DNA</a></li>
+    <li><a href="#trp">Operons: the trp operon, repressors and activators</a></li>
+    <li><a href="#lac">The lac operon</a></li>
+    <li><a href="#eukaryotes">Eukaryotic regulation at a distance</a></li>
+    <li><a href="#combinatorial">Combinatorial control and master regulators</a></li>
+    <li><a href="#sites">DNA sites and how to find them</a></li>
+    <li><a href="#numbers">Numbers to remember</a></li>
+    <li><a href="#confused">Commonly confused</a></li>
+    <li><a href="#traps">Exam traps</a></li>
+    <li><a href="#terms">Key terms</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="overview">
+  <h2>Overview of gene expression</h2>
+  <ul>
+    <li>Even bacteria switch genes on and off, e.g. to make enzymes for available food.</li>
+    <li>A neuron and a liver cell are hugely different but share the <strong>same genome</strong>: <strong>cell differentiation</strong> is achieved by changes in gene expression.</li>
+    <li>Examples: pancreatic <strong>β cells</strong> make insulin, <strong>α cells</strong> glucagon; <strong>B lymphocytes</strong> make antibodies.</li>
+    <li>A typical differentiated cell expresses only about <strong>half</strong> its genes; the selection differs by cell type.</li>
+    <li>The final amount of a protein depends on the rate of every step, including <strong>degradation</strong> of mRNA and protein.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="translation">
+  <h2>The translation cycle</h2>
+  <p>Before translation, <strong>aminoacyl-tRNA synthetase</strong> charges each tRNA (<strong>amino acid activation</strong> or aminoacylation). Then a four-step cycle repeats:</p>
+  <ol class="lb-flow">
+    <li>A charged tRNA binds the empty <strong>A site</strong> by pairing with the codon. A and P sites are so close that their tRNAs pair with <strong>contiguous</strong> codons, keeping the reading frame.</li>
+    <li>The carboxyl end of the chain is released from the tRNA in the <strong>P site</strong> and joined by a <strong>peptide bond</strong> to the amino acid on the A-site tRNA (catalytic site in the large subunit).</li>
+    <li>The <strong>large subunit</strong> shifts, moving the two tRNAs into the <strong>E and P</strong> sites.</li>
+    <li>The <strong>small subunit</strong> moves exactly <strong>three nucleotides</strong>, ejecting the spent tRNA and emptying the A site.</li>
+  </ol>
+  <p>mRNA is read <strong>5′→3′</strong>; the <strong>N-terminus</strong> is made first and each cycle adds to the <strong>C-terminus</strong>. In prokaryotes the small subunit recognises the <strong>Shine–Dalgarno sequence</strong> on the mRNA.</p>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=80kxa1zApUM&amp;t=3138s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | Translation: Protein Synthesis</a>
+      <span class="lb-when">Watch from 52:18 to the end: elongation: A, P and E sites, peptide bonds and translocation.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="levels">
+  <h2>Where expression is controlled</h2>
+  <p>A cell can control its proteins by regulating:</p>
+  <ol>
+    <li>when and how often a gene is <strong>transcribed</strong> (the main site for most genes);</li>
+    <li>how the transcript is <strong>spliced or processed</strong>;</li>
+    <li>which mRNAs are <strong>exported</strong> to the cytosol;</li>
+    <li>how fast mRNAs are <strong>degraded</strong>;</li>
+    <li>which mRNAs are <strong>translated</strong>;</li>
+    <li>how fast proteins are <strong>destroyed</strong>, and protein <strong>activity</strong>.</li>
+  </ol>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ebIpkw3XapE&amp;t=43s" target="_blank" rel="noopener">Amoeba Sisters · Gene Expression and Regulation</a>
+      <span class="lb-when">Watch from 0:43 to 8:15: the levels at which gene expression is controlled.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="promoters">
+  <h2>Promoters and regulatory DNA</h2>
+  <ul>
+    <li><strong>Transcription regulators</strong> (transcription factors) bind short <strong>regulatory DNA sequences</strong>. In bacteria they bind close to the polymerase site; in eukaryotes they may be <strong>thousands of base pairs</strong> away.</li>
+    <li>A <strong>promoter</strong> binds RNA polymerase and orients it; it has the start site plus recognition sites for <strong>σ factor</strong> (bacteria, released once transcription begins) or <strong>general transcription factors</strong> (eukaryotes).</li>
+    <li><strong>RNA polymerase II</strong> needs GTFs named <strong>TFIIB, TFIID</strong> and so on. Most promoters have a <strong>TATA box</strong>, bound by the <strong>TATA-binding protein (TBP)</strong>, a subunit of <strong>TFIID</strong>; it sets the correct start site.</li>
+    <li>Regulatory sequences range from <mark>~10 bp</mark> simple switches (typical of bacteria) to over <mark>100,000 bp</mark> integrating many signals (eukaryotes). They act only when a regulator binds them.</li>
+    <li>Regulators often bind as <strong>dimers</strong>, doubling the protein–DNA contacts, and cooperate (e.g. <strong>NFAT-1 and AP-1</strong> on a cytokine gene, bending the DNA).</li>
+  </ul>
+<div class="lb-figures lb-figures-2">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec04-control-of-gene-expression/initiation-1.jpg" width="960" height="720" loading="lazy" decoding="async" alt="Eukaryotic initiation: a promoter with a TATA box upstream of the start point; transcription factors bind the TATA box, then RNA polymerase II and more factors join to form the transcription initiation complex, which begins an RNA transcript.">
+    <figcaption>Eukaryotic initiation: TATA box, transcription factors, initiation complex. <span class="lb-credit">Lecture slide 23</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec04-control-of-gene-expression/enhancer-1.jpg" width="799" height="837" loading="lazy" decoding="async" alt="Enhancer versus promoter: an enhancer increases transcription, can be upstream or downstream, binds activators, and works in either orientation; a promoter initiates transcription, lies upstream on the same chromosome, binds RNA polymerase and basal factors, and depends on orientation.">
+    <figcaption>Enhancer versus promoter. <span class="lb-credit">Lecture slide 11 (PEDIAA)</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=ZrCx98CtJ_4&amp;t=1408s" target="_blank" rel="noopener">Ninja Nerd · Cell Biology | DNA Transcription</a>
+      <span class="lb-when">Watch from 23:28 to 30:08: promoters, the TATA box and transcription factors.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="trp">
+  <h2>Operons: the trp operon, repressors and activators</h2>
+  <ul>
+    <li>Bacteria regulate genes according to available food. In <em>E. coli</em>, <strong>five genes</strong> for making <strong>tryptophan</strong> sit together and are transcribed from <strong>one promoter</strong> as one mRNA: an <strong>operon</strong>.</li>
+    <li>Low tryptophan → operon transcribed. High tryptophan → tryptophan activates the <strong>trp repressor</strong>, which binds the operator and switches the genes off.</li>
+    <li><strong>Activators</strong> work on weak promoters: they bind a nearby sequence and contact RNA polymerase to help it start. Their DNA binding is often controlled by a small molecule.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="lac">
+  <h2>The lac operon</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Gene</th><th scope="col">Product</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><strong>lacZ</strong></th><td><strong>β-galactosidase</strong>: splits lactose into glucose and galactose</td></tr>
+      <tr><th scope="row"><strong>lacY</strong></th><td><strong>Lactose permease</strong>: membrane pump importing lactose</td></tr>
+      <tr><th scope="row"><strong>lacA</strong></th><td><strong>Transacetylase</strong>: role in lactose use unclear</td></tr>
+    </tbody>
+  </table></div>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Regulator</th><th scope="col">Senses</th><th scope="col">Action</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><strong>Lac repressor</strong></th><td><strong>Lactose</strong>, via its isomer <strong>allolactose</strong></td><td>Binds the <strong>operator</strong> and blocks transcription; allolactose changes its shape so it lets go</td></tr>
+      <tr><th scope="row"><strong>CAP</strong> (catabolite activator protein)</th><td><strong>Glucose</strong>, via the hunger signal <strong>cAMP</strong></td><td>With cAMP (glucose low) binds the CAP site and helps RNA polymerase bind</td></tr>
+    </tbody>
+  </table></div>
+  <p>The operon is transcribed <strong>only when lactose is present AND glucose is absent</strong>.</p>
+<div class="lb-figures lb-figures-2">
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec04-control-of-gene-expression/lac-1.jpg" width="1200" height="790" loading="lazy" decoding="async" alt="The lac operon: a regulatory lacI gene, then promoter and structural genes lacZ, lacY and lacA transcribed as one mRNA that is translated into z, y and a proteins.">
+    <figcaption>Transcription of the lac operon into one mRNA. <span class="lb-credit">Lecture slide 14</span></figcaption>
+  </figure>
+  <figure class="lb-figure">
+    <img src="/guides/img/slides/gct-2/molecular-biology/lec04-control-of-gene-expression/lac-control-1.jpg" width="1200" height="531" loading="lazy" decoding="async" alt="Regulatory region of the lac operon: CAP bound at the CAP site promotes RNA polymerase binding to the promoter; the repressor bound at the operator blocks RNA polymerase; then lacZ, lacY and lacA.">
+    <figcaption>CAP site, promoter and operator. <span class="lb-credit">Lecture slide 15</span></figcaption>
+  </figure>
+</div>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=yrJn-7k_5Fc" target="_blank" rel="noopener">Medicosis Perfectionalis · Lac Operon &amp; Trp operon</a>
+      <span class="lb-when">Watch from 0:00 to the end: the lac and trp operons, repressor, CAP and the four scenarios.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="eukaryotes">
+  <h2>Eukaryotic regulation at a distance</h2>
+  <ul>
+    <li><strong>Enhancers</strong> raise and <strong>repressor (silencer) elements</strong> lower expression. Like promoters they are short (<mark>50–1,000 bp</mark>) with binding sites, but can lie up to <mark>1 million bp</mark> away, <strong>upstream or downstream</strong>.</li>
+    <li>An activator on a distant enhancer attracts RNA polymerase and GTFs: the DNA <strong>loops</strong>, and the large <strong>Mediator</strong> complex acts as go-between, forming the <strong>transcription initiation complex</strong>.</li>
+    <li>Eukaryotic regulators act in two ways: they affect assembly of the polymerase and GTFs at the promoter, and they <strong>modify local chromatin</strong>.</li>
+    <li>They recruit <strong>histone acetyltransferases</strong> (acetyl groups become binding sites for activating proteins) and <strong>chromatin-remodelling complexes</strong> (make nucleosomal DNA, e.g. the TATA box, accessible).</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=TLvXWAWlMh8&amp;t=281s" target="_blank" rel="noopener">Medicosis Perfectionalis · Control of Gene Expression | Transcription Factors, Enhancers, Promotor</a>
+      <span class="lb-when">Watch from 4:41 to 12:08: chromatin, transcription factors and enhancers.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="combinatorial">
+  <h2>Combinatorial control and master regulators</h2>
+  <ul>
+    <li><strong>Combinatorial control</strong>: a “committee” of regulators decides each gene’s expression; a typical gene has <strong>dozens</strong> of regulators over tens of thousands of base pairs. GTFs are the same for all Pol II genes; regulators differ. Spacer DNA between sites binds nothing.</li>
+    <li>One regulator can still be decisive by completing a combination. <strong>Cortisol</strong>: the cortisol–receptor complex binds a sequence in many liver genes, turning on glucose production in starvation or stress; when cortisol falls they return to normal.</li>
+    <li>Two classes of transcription factor: <strong>general</strong> (core promoter, with the polymerase) and <strong>sequence-specific</strong> (activators or repressors). Sites differ in affinity; usually several factors must bind.</li>
+    <li><strong>Master regulator</strong>: expressing the fly gene <strong>eyeless (Ey)</strong> in leg precursor cells builds a structurally normal <strong>eye on the leg</strong> (not connected to the brain).</li>
+  </ul>
+<aside class="lb-box lb-video" data-auto="video">
+    <span class="lb-box-title">Watch: explains the section above</span>
+    <ul>
+    <li><a href="https://www.youtube.com/watch?v=TLvXWAWlMh8&amp;t=728s" target="_blank" rel="noopener">Medicosis Perfectionalis · Control of Gene Expression | Transcription Factors, Enhancers, Promotor</a>
+      <span class="lb-when">Watch from 12:08 to 14:17: the cortisol example.</span></li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-section" id="sites">
+  <h2>DNA sites and how to find them</h2>
+  <ul>
+    <li><strong>Core promoter</strong>: from about the TATA box to the start site (+1); assembly of the <strong>preinitiation complex</strong> of Pol II and GTFs. TATA box is about <mark>25–30 bases</mark> upstream.</li>
+    <li><strong>Proximal promoter</strong>: <strong>CAAT box</strong> and <strong>GC box</strong>, <mark>100–150 bp</mark> upstream, bound by widespread factors (<strong>NF1, SP1</strong>). TATA sets <em>where</em> transcription starts; CAAT and GC boxes set <em>how often</em>.</li>
+    <li>A <strong>consensus sequence</strong> is the most common nucleotide at each position of aligned related sequences.</li>
+  </ul>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Method</th><th scope="col">How it works</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><strong>Deletion mapping</strong></th><td>Promoters with parts deleted are put into cells. Less transcription → an <strong>activator</strong> site was lost; more → a <strong>repressor</strong> site; no change → unimportant</td></tr>
+      <tr><th scope="row"><strong>DNA footprinting</strong></th><td>Bound protein protects DNA from <strong>DNase I</strong>; the protected stretch (the “footprint”) is the binding site</td></tr>
+      <tr><th scope="row"><strong>Genome-wide location (ChIP)</strong></th><td><strong>Formaldehyde</strong> cross-links factors to DNA; chromatin is sheared and precipitated with an <strong>antibody</strong>; DNA is read on microarrays (<strong>ChIP-chip</strong>) or by sequencing (<strong>ChIP-seq</strong>)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Many binding sites lie far from promoters. Sites bound by all of <strong>Oct4, Sox2 and Nanog</strong> (pluripotency factors in embryonic stem cells) are much more likely to matter.</p>
+</section>
+
+<section class="lb-section" id="numbers">
+  <h2>Numbers to remember</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Value</th><th scope="col">What it is</th></tr></thead>
+    <tbody>
+      <tr><td>~50%</td><td>Genes expressed by a typical differentiated cell</td></tr>
+      <tr><td>3 nt</td><td>Ribosome step per cycle</td></tr>
+      <tr><td>5</td><td>Genes in the trp operon</td></tr>
+      <tr><td>3</td><td>Genes in the lac operon (Z, Y, A)</td></tr>
+      <tr><td>~10 bp to &gt;100,000 bp</td><td>Range of regulatory DNA sequences</td></tr>
+      <tr><td>50–1,000 bp; up to 1 Mb away</td><td>Enhancer size; distance from gene</td></tr>
+      <tr><td>25–30 bp</td><td>TATA box upstream of the start</td></tr>
+      <tr><td>100–150 bp</td><td>CAAT and GC boxes upstream</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="confused">
+  <h2>Commonly confused</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th scope="col">Pair</th><th scope="col">How to tell them apart</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Promoter vs enhancer</th><td>Promoter: at the gene, orientation-dependent, binds polymerase. Enhancer: distant, either side, either orientation, binds activators</td></tr>
+      <tr><th scope="row">Operator vs promoter</th><td>Operator: repressor binding. Promoter: polymerase binding</td></tr>
+      <tr><th scope="row">Lac repressor vs CAP</th><td>Repressor senses lactose (allolactose). CAP senses glucose (cAMP)</td></tr>
+      <tr><th scope="row">TATA vs CAAT/GC boxes</th><td>TATA: start site, core promoter. CAAT/GC: frequency, proximal promoter</td></tr>
+      <tr><th scope="row">Footprinting vs ChIP</th><td>Footprinting: protection from DNase I. ChIP: antibody pull-down of cross-linked DNA, genome-wide</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lb-section" id="traps">
+  <h2>Exam traps</h2>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Exam traps</span>
+    <ul>
+      <li>The lac operon needs <strong>both</strong> lactose present and glucose absent.</li>
+      <li>cAMP is high when glucose is <strong>low</strong>.</li>
+      <li>The lac repressor binds <strong>allolactose</strong>, not glucose.</li>
+      <li>TBP is part of <strong>TFIID</strong>.</li>
+      <li>The <strong>small</strong> subunit moves three nucleotides; the large subunit shifts first.</li>
+      <li>Most genes are controlled mainly at <strong>transcription</strong>.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="lb-card" id="terms" aria-labelledby="terms-title">
+  <h2 id="terms-title">Key terms</h2>
+  <p class="lb-terms"><strong>Differentiation</strong>: specialisation by gene expression · <strong>Shine–Dalgarno sequence</strong>: bacterial ribosome-binding site · <strong>Transcription regulator</strong>: protein binding regulatory DNA · <strong>General transcription factor</strong>: needed at every Pol II promoter · <strong>TATA box</strong>: core promoter element · <strong>TBP</strong>: TATA-binding protein of TFIID · <strong>Operon</strong>: genes transcribed together from one promoter · <strong>Operator</strong>: repressor binding site · <strong>Repressor</strong>: switches genes off · <strong>Activator</strong>: switches genes on · <strong>Allolactose</strong>: lac inducer · <strong>CAP</strong>: cAMP-dependent activator · <strong>β-galactosidase</strong>: lactose-splitting enzyme · <strong>Enhancer</strong>: distant activating element · <strong>Mediator</strong>: activator–polymerase bridge · <strong>Histone acetyltransferase</strong>: adds acetyl groups to histones · <strong>Chromatin remodelling</strong>: making nucleosomal DNA accessible · <strong>Combinatorial control</strong>: many regulators decide one gene · <strong>Master regulator</strong>: factor triggering a whole programme · <strong>Consensus sequence</strong>: most common base at each position · <strong>DNA footprinting</strong>: nuclease-protection mapping · <strong>ChIP</strong>: chromatin immunoprecipitation.</p>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li data-slides="3-5">Overview of gene expression</li>
+    <li data-slides="6-7">The translation cycle</li>
+    <li data-slides="8">Where expression is controlled</li>
+    <li data-slides="9-11">Promoters and regulatory DNA</li>
+    <li data-slides="12-13">trp operon, repressors and activators</li>
+    <li data-slides="14-16">The lac operon</li>
+    <li data-slides="11, 17-18">Eukaryotic regulation at a distance</li>
+    <li data-slides="19-22">Combinatorial control and master regulators</li>
+    <li data-slides="23-27">DNA sites and how to find them</li>
+  </ul>
+</details>
+</article>
