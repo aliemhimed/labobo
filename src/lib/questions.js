@@ -48,10 +48,14 @@ function normalizeAnswer(raw, options, originalOptions) {
   return 0;
 }
 
-/* The question rows still name the original .png/.jpg files; the medart
-   folder was converted to WebP (scripts/optimize_images.py), so point at the
-   converted file. Other folders (SVG diagrams) are untouched. */
-const webpIfLocal = (url) => (url.startsWith('/images/medart/') ? url.replace(/\.(png|jpe?g)$/i, '.webp') : url);
+/* The question rows still name the original .png/.jpg files; these folders
+   hold only WebP copies, so point at the converted file. medart is in the
+   site build (scripts/optimize_images.py); the GCT I histology micrographs
+   (histo, organelles) are in the Supabase question-images bucket, reached
+   through public/_redirects. Other folders (SVG diagrams, histo2 already in
+   WebP) are untouched. */
+const WEBP_FOLDERS = /^\/images\/(medart|histo|organelles)\//;
+const webpIfLocal = (url) => (WEBP_FOLDERS.test(url) ? url.replace(/\.(png|jpe?g)$/i, '.webp') : url);
 
 /** The quiz shows images in a box at most 520x360, so medart images have a
     display copy in /images/medart/sm/ (fitted to 1040x720, see
