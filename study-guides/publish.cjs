@@ -50,8 +50,15 @@ const PUBLISH = {
     include: (g) => typeof g.lecture === 'number',
     tables: { Biochemistry: 'gct2_biochemistry', 'Medical Genetics': 'gct2_genetics', 'Molecular Biology': 'gct2_molecular_biology', Histology: 'gct2_histology' },
   },
+  // GCT IV, pre-midterm: lectures 1–7 of Immunology and Microbiology.
+  'gct-4': {
+    scope: 'pre-midterm',
+    note: 'up to the midterm',
+    include: (g) => typeof g.lecture === 'number' && g.lecture <= 7,
+    tables: { Immunology: 'gct4_immunology', Microbiology: 'gct4_microbiology' },
+  },
 };
-const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology'];
+const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology', 'Immunology', 'Microbiology'];
 
 const attr = (html, name) => new RegExp(`data-${name}="([^"]*)"`).exec(html)?.[1] || '';
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&rsquo;/g, '’');
