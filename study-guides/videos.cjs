@@ -10,7 +10,7 @@
 
    Every video id and chapter time here was read from the video's own page
    (its chapter list). Channels: mainly Ninja Nerd, Dr Matt & Dr Mike, Medicosis
-   Perfectionalis. */
+   Perfectionalis, Armando Hasudungan. */
 
 const fs = require('fs');
 const path = require('path');
@@ -18,6 +18,16 @@ const path = require('path');
 const NN = 'Ninja Nerd';
 const MM = 'Dr Matt &amp; Dr Mike';
 const MP = 'Medicosis Perfectionalis';
+const AH = 'Armando Hasudungan';
+const JJ = 'JJ Medicine';
+const AB = 'Animated biology With arpan';
+const ZF = 'Zero To Finals';
+const SO = 'Stomp On Step 1';
+const DM = 'Dirty Medicine';
+const OS = 'Osmosis from Elsevier';
+const BP = 'Biology Professor';
+const SS = 'Simple Science Answers';
+const MZ = 'Maurice Zwart';
 
 /** One video: v(id, channel, title, from 'm:ss', to 'm:ss' | 'end', what it covers). */
 const v = (id, channel, title, from, to, what) => ({ id, channel, title, from, to, what });
@@ -620,6 +630,184 @@ const GUIDES = {
       v('THAjvn1cdDM', 'UCD Medicine', 'Paracentric Inversions', '0:00', 'end', 'paracentric inversions and their reproductive risks'),
       v('QXU7XojaEOs', 'UCD Medicine', 'Pericentric Inversions', '0:00', 'end', 'pericentric inversions, pairing and unbalanced gametes'),
     ],
+  },
+  // GCT IV, Microbiology
+  'gct-4/microbiology/lec01-basics-of-microbiology.html': {
+    taxonomy: [v('ayFiGn2fYi8', NN, 'Bacteria | Structure and Function', '0:30', '4:55', 'an overview of how a bacterial cell is built')],
+    gram: [v('ayFiGn2fYi8', NN, 'Bacteria | Structure and Function', '48:30', '1:01:29', 'gram-positive vs gram-negative walls and the Gram stain step by step')],
+    peptidoglycan: [v('ayFiGn2fYi8', NN, 'Bacteria | Structure and Function', '25:25', '48:30', 'the cell envelope: peptidoglycan, teichoic acids, periplasm, outer membrane and LPS')],
+    surface: [v('ayFiGn2fYi8', NN, 'Bacteria | Structure and Function', '4:55', '17:54', 'capsule, pili, fimbriae and flagella')],
+    spores: [v('ayFiGn2fYi8', NN, 'Bacteria | Structure and Function', '17:54', '25:25', 'endospores: how they form and why they are hard to kill')],
+    toxins: [
+      v('-9oJPfFTft0', NN, 'Endotoxins vs. Exotoxins', '0:33', '18:13', 'endotoxin (lipid A of LPS) and how it causes fever and shock'),
+      v('-9oJPfFTft0', NN, 'Endotoxins vs. Exotoxins', '18:13', '44:05', 'exotoxins and examples of each type'),
+    ],
+    metabolism: [v('EjiAYCDMl7s', BP, 'Bacteria Oxygen Requirements', '0:00', 'end', 'obligate aerobes, obligate anaerobes, facultative anaerobes and the rest')],
+  },
+  'gct-4/microbiology/lec02-bacterial-genetics-staphylococci.html': {
+    genetics: [v('mg6tXQaiBaI', NN, 'Bacterial Genetics', '0:39', '2:27', 'an overview of the bacterial chromosome and plasmids')],
+    transfer: [v('mg6tXQaiBaI', NN, 'Bacterial Genetics', '2:27', '40:20', 'conjugation, transformation, transduction and transposons')],
+    genus: [v('6BkqWKOG8E0', NN, 'Staphylococcus: Aureus, Epidermidis, Saprophyticus', '0:38', '14:53', 'what staphylococci look like, where they live and how they are told apart')],
+    toxins: [
+      v('6BkqWKOG8E0', NN, 'Staphylococcus: Aureus, Epidermidis, Saprophyticus', '14:53', '27:51', 'how S. aureus causes disease: its enzymes and toxins'),
+      v('9Dx2t2y9pu4', MP, 'Staphylococcus aureus Characteristics', '0:00', 'end', 'S. aureus structure and virulence factors'),
+    ],
+    diseases: [
+      v('6BkqWKOG8E0', NN, 'Staphylococcus: Aureus, Epidermidis, Saprophyticus', '34:13', '43:50', 'the clinical features of S. aureus infections'),
+      v('nKhpAu4eO9M', MP, 'Staphylococcus Aureus Diseases | Skin, Toxic Shock Syndrome, Food poisoning', '0:00', 'end', 'skin infections, toxic shock syndrome, food poisoning and the other S. aureus diseases'),
+    ],
+    cons: [
+      v('6BkqWKOG8E0', NN, 'Staphylococcus: Aureus, Epidermidis, Saprophyticus', '27:51', '34:13', 'how S. epidermidis and S. saprophyticus cause disease'),
+      v('6BkqWKOG8E0', NN, 'Staphylococcus: Aureus, Epidermidis, Saprophyticus', '43:50', '47:57', 'their clinical features: device infections and UTI'),
+    ],
+    lab: [
+      v('r5BM28ij9Cs', MP, 'Staphylococcus aureus Lab Diagnosis and Treatment', '0:00', 'end', 'lab tests for S. aureus and how it is treated'),
+      v('6BkqWKOG8E0', NN, 'Staphylococcus: Aureus, Epidermidis, Saprophyticus', '47:57', '1:00:58', 'treatment of each staphylococcus, including MRSA'),
+    ],
+  },
+  'gct-4/microbiology/lec03-streptococci.html': {
+    genus: [v('1mtJSN2pOSU', MP, 'Streptococci - Introduction and Classification (Group A, Group B, Group D)', '0:00', 'end', 'haemolysis and the Lancefield groups')],
+    gas: [v('0_lm8d3loU4', MP, 'Streptococcus Pyogenes - Group A Strept (GABS) Characteristics', '0:00', 'end', 'group A strep structure, M protein and its toxins and enzymes')],
+    'gas-dis': [v('ab8-uq_bu74', MP, 'Streptococcus pyogenes diseases', '0:00', 'end', 'pharyngitis, scarlet fever, skin infections and toxic shock')],
+    sequelae: [v('uYeZUVt5j6Q', MP, 'Antistreptolysin O (ASO) titer for Streptococcus pyogenes (Rheumatic Fever, APSGN)', '0:00', 'end', 'the ASO titre and the post-streptococcal diseases it points to')],
+    gbs: [v('rOTuGeuszA8', MP, 'Streptococcus agalactiae (Group B Strept or GBS)', '0:00', 'end', 'group B strep and neonatal sepsis, meningitis and pneumonia')],
+    pneumo: [v('gOz2XcZt3L8', MP, 'Streptococcus pneumoniae (pneumococci)', '0:00', 'end', 'the pneumococcus: capsule, virulence and the diseases it causes')],
+    entero: [v('02UF3_OTy4c', MP, 'Enterococcus (Enterococci) Characteristics and Diseases', '0:00', 'end', 'enterococci, their resistance and the infections they cause')],
+  },
+  'gct-4/microbiology/lec04-gram-positive-rods.html': {
+    perfringens: [
+      v('Yy0MbiM1Udk', MP, 'Clostridium perfringens Characteristics', '0:00', 'end', 'C. perfringens and its alpha toxin'),
+      v('ClK8jECXHF8', MP, 'Gas gangrene &amp; Myonecrosis — Clostridium perfringens', '0:00', 'end', 'how gas gangrene develops'),
+    ],
+    botulinum: [
+      v('M1Rw_MsNAH0', MP, 'Clostridium botulinum Toxin (Botox) - Characteristics', '0:00', 'end', 'how botulinum toxin blocks acetylcholine release'),
+      v('Qbtc8D9NkhM', MP, 'Four Types of Botulism', '0:00', 'end', 'food-borne, infant, wound and inhalation botulism'),
+    ],
+    tetani: [
+      v('YQKT9ZkeEkM', MP, 'Clostridium Tetani characteristics | Tetanospasmin', '0:00', 'end', 'C. tetani and how tetanospasmin causes spastic paralysis'),
+      v('XzCHVQXfZ9s', MP, 'Tetanus Disease (Clostridium tetani)', '0:00', 'end', 'the clinical picture, prevention and treatment of tetanus'),
+    ],
+    difficile: [
+      v('ZMOqNwNg2DY', NN, 'Clostridioides Difficile (C. diff) | Clinical Medicine', '0:34', '16:47', 'risk factors and how C. diff toxins damage the colon'),
+      v('ZMOqNwNg2DY', NN, 'Clostridioides Difficile (C. diff) | Clinical Medicine', '16:47', '40:00', 'the classic findings, including pseudomembranous colitis'),
+      v('ZMOqNwNg2DY', NN, 'Clostridioides Difficile (C. diff) | Clinical Medicine', '1:07:09', '1:31:50', 'how C. diff is diagnosed and treated'),
+    ],
+    bacillus: [
+      v('l8LKhJMNlD4', MP, 'Bacillus anthracis characteristics', '0:00', 'end', 'B. anthracis, its capsule and anthrax toxin'),
+      v('PiCDRLm1upY', MP, 'Anthrax - Causes, Symptoms, Diagnosis, Treatment', '0:00', 'end', 'cutaneous, inhalational and GI anthrax'),
+    ],
+    diphtheria: [
+      v('2Nskyh58xZU', MP, 'Corynebacterium Diphtheriae Characteristics', '0:00', 'end', 'C. diphtheriae and how diphtheria toxin works'),
+      v('K3nIAwEfM8E', MP, 'Diphtheria - Pseudomembranous pharyngitis, Myocarditis, Neuropathy', '0:00', 'end', 'the pseudomembrane and the heart and nerve complications'),
+    ],
+    listeria: [
+      v('kVl20ufCGMg', MP, 'Listeria monocytogenes Characteristics', '0:00', 'end', 'Listeria, tumbling motility and how it spreads cell to cell'),
+      v('kyvRdlKwiMM', MP, 'Listeriosis (disease) | Listeria Food Poisoning', '0:00', 'end', 'listeriosis in pregnancy, newborns and the immunocompromised'),
+    ],
+  },
+  'gct-4/microbiology/lec05-neisseria.html': {
+    'mening-dis': [v('8dF3ba4zfUE', DM, 'Neisseria Meningitidis', '0:00', 'end', 'the meningococcus, meningitis and meningococcaemia')],
+    gc: [v('ae2ylRZpkvA', NN, 'STI | Gonorrhea | Clinical Medicine', '0:35', '3:42', 'the gonococcus and how it spreads')],
+    'gc-clinic': [
+      v('ae2ylRZpkvA', NN, 'STI | Gonorrhea | Clinical Medicine', '20:19', '45:00', 'how gonorrhoea causes disease and how it presents in men and women'),
+      v('x2UsFW1foX4', AH, 'Neisseria gonorrhea (STI) symptoms, pathophysiology, complications and treatment', '0:00', 'end', 'a short summary of gonorrhoea from infection to treatment'),
+    ],
+    'gc-comp': [v('ae2ylRZpkvA', NN, 'STI | Gonorrhea | Clinical Medicine', '3:42', '20:19', 'neonatal gonococcal infection, including ophthalmia neonatorum')],
+    'gc-dx': [v('ae2ylRZpkvA', NN, 'STI | Gonorrhea | Clinical Medicine', '45:00', '1:10:17', 'how gonorrhoea is diagnosed and treated')],
+  },
+  'gct-4/microbiology/lec06-enterobacteriaceae-1.html': {
+    uti: [
+      v('S3-HtGWJh5Q', NN, 'Urinary Tract Infection (UTI) | Clinical Medicine', '3:49', '10:32', 'the organisms behind UTI, led by E. coli'),
+      v('S3-HtGWJh5Q', NN, 'Urinary Tract Infection (UTI) | Clinical Medicine', '28:10', '46:26', 'cystitis and pyelonephritis'),
+    ],
+    pathotypes: [v('uY3ZXVKlEwA', SS, 'E.Coli: ETEC, EPEC, EIEC, and EHEC', '0:00', 'end', 'the diarrhoea-causing E. coli types and how each one works')],
+    hus: [v('EjjZfHhDeGE', MP, 'Hemolytic Uremic Syndrome (HUS)', '0:00', 'end', 'how Shiga toxin leads to haemolytic anaemia, low platelets and kidney failure')],
+    shigella: [v('BEAwYmBMqrU', JJ, 'Shigellosis (Shigella) “A Cause of Bloody Diarrhea”', '0:00', 'end', 'how Shigella invades the gut and causes dysentery')],
+    salmonella: [v('-keXD1n_3Tg', OS, 'Salmonellosis - causes, symptoms, diagnosis, treatment, pathology', '0:00', 'end', 'non-typhoidal Salmonella gastroenteritis')],
+    typhoid: [v('XkZTS8ep5wQ', JJ, 'Typhoid Fever: Pathogenesis, Symptoms, Diagnosis, Treatment, Vaccine', '0:00', 'end', 'typhoid fever from infection to vaccine')],
+    klebsiella: [v('ol6JtmNVskU', AB, 'Klebsiella pneumoniae | clinical presentation, risk factors and treatment', '0:00', 'end', 'Klebsiella pneumonia and who gets it')],
+  },
+  'gct-4/microbiology/lec07-enterobacteriaceae-2-hospital-gram-negatives.html': {
+    cholera: [v('WYwo0JvT51Y', JJ, 'Cholera (Vibrio Cholerae) Pathophysiology, Risk Factors, Symptoms, Diagnosis, and Treatment', '0:00', 'end', 'how cholera toxin causes rice-water diarrhoea, and how cholera is treated')],
+    campylo: [v('tuHhVCyBgAI', AB, 'Campylobacter jejuni | Pathology | Campylobacter jejuni and Guillain Barre syndrome', '0:00', 'end', 'Campylobacter enteritis and its link to Guillain-Barré')],
+    gbs: [v('YYFYaNUaKOM', MP, 'Guillain-Barré Syndrome - Acute Inflammatory Demyelinating Polyradiculoneuropathy', '0:00', 'end', 'how Guillain-Barré develops and presents')],
+    helico: [
+      v('y-shOXdsJeA', AH, 'Microbiology - Helicobacter Pylori (Ulcer)', '0:00', 'end', 'how H. pylori survives in the stomach and causes ulcers'),
+      v('noAYOkCzByM', MP, 'Eradication of Helicobacter Pylori Bacteria | The Triple Regimen &amp; The Quadruple Regimen', '0:00', 'end', 'the triple and quadruple eradication regimens'),
+    ],
+    yersinia: [v('N2aAJURMJcQ', MZ, 'Yersinia enterocolitica - The Great Mimic of Appendicitis', '0:00', 'end', 'Yersinia enteritis and why it mimics appendicitis')],
+    pseudomonas: [v('6-C8aMU7Bvc', AB, 'Pseudomonas aeruginosa | Pathogenesis | identification and treatment', '0:00', 'end', 'Pseudomonas virulence, infections and treatment')],
+  },
+  // GCT IV, Immunology
+  'gct-4/immunology/lec01-acquired-immunodeficiencies.html': {
+    virus: [
+      v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '1:09', '3:35', 'HIV vs AIDS, and HIV-1 vs HIV-2'),
+      v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '12:02', '31:19', 'the viral enzymes (reverse transcriptase, integrase, protease) and the HIV genes'),
+    ],
+    entry: [v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '3:35', '12:02', 'the virion, CD4 and co-receptor binding, and fusion')],
+    cycle: [v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '37:17', '48:07', 'the HIV life cycle')],
+    transmission: [v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '31:19', '37:17', 'how HIV is transmitted')],
+    course: [v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '48:07', '1:19:50', 'acute infection, chronic infection, AIDS and opportunistic infections')],
+    diagnosis: [v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '1:19:50', '1:34:51', 'HIV testing, CD4 count and viral load')],
+    treatment: [v('yrUTuZFAi2k', NN, 'HIV/AIDS | Clinical Medicine', '1:34:51', '1:43:27', 'antiretroviral drug targets, regimens, PrEP and PEP')],
+  },
+  'gct-4/immunology/lec02-type-1-2-hypersensitivity.html': {
+    defs: [
+      v('0nuTgZNZJi4', MP, 'Introduction to Hypersensitivity Reactions', '0:00', 'end', 'the four types of hypersensitivity'),
+      v('xWCIgE1HKfA', MM, 'Hypersensitivity Immune Responses', '0:00', 'end', 'types I to IV side by side'),
+    ],
+    type1: [v('q8x0KQVq4MY', MP, 'Type I Hypersensitivity Reaction (HSN-I) | Asthma, Atopy, Anaphylaxis', '0:00', 'end', 'IgE, mast cells and the type I reaction')],
+    mediators: [v('xy_YYLOzyk0', MP, 'Histamine - H1 receptors, H2 receptors, H3, H4 - Allergy and Anaphylaxis', '0:00', 'end', 'histamine and its receptors in allergy')],
+    anaphylaxis: [
+      v('bFKxnsVimls', MM, 'Anaphylaxis', '0:00', 'end', 'what happens in anaphylaxis and why adrenaline works'),
+      v('5RG_ZXLLPpk', MP, 'Anaphylactic Shock (Anaphylaxis) | Distributive Shock Pathophysiology', '0:00', 'end', 'anaphylactic shock as a distributive shock'),
+    ],
+    type2: [v('NvJAQd3fa4c', MP, 'Type II Hypersensitivity Reaction (HSN-II)', '0:00', 'end', 'antibody-mediated cell destruction and its examples')],
+  },
+  'gct-4/immunology/lec03-type-3-4-hypersensitivity-autoimmunity.html': {
+    type3: [v('uK_Is7ZJqqw', MP, 'Type III Hypersensitivity Reaction (HSN-III)', '0:00', 'end', 'immune complex deposition and the diseases it causes')],
+    type4: [v('fOhKTTmDuYw', MP, 'Type IV Hypersensitivity Reaction (HSN-IV) | Let’s make a Granuloma!', '0:00', 'end', 'T cell-mediated injury, delayed-type hypersensitivity and granulomas')],
+    tolerance: [v('vDwNpDT-8L0', AB, 'Immune Tolerance and autoimmunity (overview)', '0:00', 'end', 'central and peripheral tolerance and how autoimmunity starts')],
+  },
+  'gct-4/immunology/lec04-sle-rheumatoid-arthritis.html': {
+    sle: [
+      v('g9dSVkqzs7k', AH, 'Systemic Lupus Erythematosus (SLE) - signs and symptoms, pathophysiology, investigations, treatment', '0:00', 'end', 'SLE from pathogenesis to treatment'),
+      v('qq8ezVd1Cbc', MP, 'Anti-double Stranded DNA (Anti-dsDNA) Antibodies - Systemic Lupus Erythematosus', '0:00', 'end', 'anti-dsDNA and what it tells you in SLE'),
+    ],
+    ra: [v('PxzZNok5MPc', MP, 'Rheumatoid Arthritis (RA) - Introduction - Autoimmune Disease', '0:00', 'end', 'an introduction to rheumatoid arthritis')],
+    'ra-path': [v('ld8PhyAHov8', AH, 'Rheumatoid Arthritis Pathophysiology (signs and symptoms)', '0:00', 'end', 'synovitis, pannus and joint destruction')],
+  },
+  'gct-4/immunology/lec05-scleroderma-sjogren.html': {
+    ssc: [v('vez85zdCw-A', ZF, 'Systemic Sclerosis and Scleroderma: Visual Explanation for Students', '0:00', 'end', 'a short overview of systemic sclerosis')],
+    path: [v('06gfp27zerk', MP, 'Scleroderma Pathogenesis and Clinical Manifestations (Detailed Explanation)', '0:00', 'end', 'vascular damage, autoimmunity and fibrosis in scleroderma')],
+    raynaud: [v('SKylpFb9ZMY', AH, 'Raynaud’s Phenomenon - mechanism', '0:00', 'end', 'why the fingers go white, blue and red')],
+    types: [v('GSZQn8IJt60', MP, 'Scleroderma Subtypes (5 Types of Systemic Sclerosis incl. Limited vs Diffuse Scleroderma)', '0:00', 'end', 'limited vs diffuse disease and the other subtypes')],
+    organs: [v('qRJcAQxvFIE', MP, 'Scleroderma (Systemic Sclerosis) - Signs, Symptoms, Pathophysiology', '0:00', 'end', 'skin, GI, lung, heart and kidney involvement')],
+    sjogren: [v('6alq4Ps6xcY', MP, 'Sjögren Syndrome - Dry eyes, Dry mouth, Arthritis', '0:00', 'end', 'what Sjögren’s is and why the glands dry up')],
+    'sj-dx': [v('M_no4hcSjWY', MP, 'Sjögren Syndrome - Diagnosis and Management', '0:00', 'end', 'how Sjögren’s is diagnosed and managed')],
+  },
+  'gct-4/immunology/lec06-systemic-vasculitis.html': {
+    mechanisms: [v('xHRwhK835QE', NN, 'Vasculitis | Clinical Medicine', '0:21', '13:04', 'how large, medium and small vessel vasculitis damage the vessel wall')],
+    anca: [v('-BDfi-xgQZs', AH, 'ANCA Associated Vasculitis (Anti-Neutrophil Cytoplasmic Antibody) - Causes, Pathophysiology, Types', '0:00', 'end', 'how ANCA activate neutrophils, and the ANCA vasculitides')],
+    gpa: [v('xHRwhK835QE', NN, 'Vasculitis | Clinical Medicine', '22:22', '31:30', 'the small vessel vasculitides: GPA, EGPA, MPA, IgA vasculitis and cryoglobulinaemic vasculitis')],
+    gca: [v('xHRwhK835QE', NN, 'Vasculitis | Clinical Medicine', '13:04', '17:11', 'giant cell arteritis and Takayasu arteritis')],
+    kawasaki: [v('xHRwhK835QE', NN, 'Vasculitis | Clinical Medicine', '17:11', '22:22', 'polyarteritis nodosa and Kawasaki disease')],
+    pan: [v('q6UzA2ooZ_A', AH, 'Polyarteritis Nodosa and Kawasaki Disease (Medium Vessel Vasculitis)', '0:00', 'end', 'polyarteritis nodosa and Kawasaki disease')],
+    buerger: [v('4v0gxzqAPaw', ZF, 'Understanding Buerger Disease (Thromboangiitis Obliterans)', '0:00', 'end', 'Buerger disease and its link to smoking')],
+  },
+  'gct-4/immunology/lec07-inflammatory-myopathies.html': {
+    forms: [
+      v('0ggz1X7LqZk', AH, 'Understanding Inflammatory Myopathies - Dermatomyositis, Polymyositis, Antisynthetase syndrome', '0:00', 'end', 'the inflammatory myopathies and how they differ'),
+      v('WXLnd15kunE', JJ, 'Idiopathic Inflammatory Myopathies | Polymyositis vs Dermatomyositis', '0:00', 'end', 'polymyositis vs dermatomyositis'),
+    ],
+    skin: [v('ekRZkjTlgro', AH, 'Dermatomyositis Overview', '0:00', 'end', 'dermatomyositis, including the heliotrope rash and Gottron papules')],
+  },
+  'gct-4/immunology/lec07-transplantology.html': {
+    basics: [v('2OoT-RQO6Sw', SO, 'Transplant Rejection, Hyperacute Acute Chronic Graft versus Host', '0:29', '6:38', 'graft types and an overview of rejection')],
+    hyperacute: [v('2OoT-RQO6Sw', SO, 'Transplant Rejection, Hyperacute Acute Chronic Graft versus Host', '6:38', '8:22', 'hyperacute rejection')],
+    acute: [v('2OoT-RQO6Sw', SO, 'Transplant Rejection, Hyperacute Acute Chronic Graft versus Host', '8:22', '9:03', 'acute rejection')],
+    chronic: [v('2OoT-RQO6Sw', SO, 'Transplant Rejection, Hyperacute Acute Chronic Graft versus Host', '9:03', '10:34', 'chronic rejection')],
+    gvhd: [v('2OoT-RQO6Sw', SO, 'Transplant Rejection, Hyperacute Acute Chronic Graft versus Host', '10:34', 'end', 'graft-versus-host disease')],
   },
 };
 
