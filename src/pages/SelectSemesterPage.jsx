@@ -7,6 +7,8 @@ const SEMESTERS = [
     desc: 'GCT I, Body Systems, Medical Chemistry, Medical Physics, Clinical & Professional Skills 1, Medicine & Art, History of Medicine' },
   { id: '2', label: 'Semester 2', fill: 'mint', tilt: 1.3,
     desc: 'GCT II, Body Systems II, Clinical & Professional Skills 2, Scientific Reasoning, History of Medicine' },
+  { id: '3', label: 'Semester 3', fill: 'orange', tilt: 1.2,
+    desc: 'GCT III (Biochemistry, Immunology & Biophysics)' },
   { id: '4', label: 'Semester 4', fill: 'violet', tilt: -1.1,
     desc: 'GCT IV (Immunology & Microbiology), Body Systems IV (Anatomy, Physiology & Medical Imaging)' },
 ];

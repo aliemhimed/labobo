@@ -55,6 +55,10 @@ const ALLOWED_TABLES = [
   'scientific_reasoning',
   // Both semesters
   'history_of_medicine',
+  // Semester 3
+  'gct3_biochemistry',
+  'gct3_immunology',
+  'gct3_biophysics',
   // Semester 4
   'gct4_immunology',
   'gct4_microbiology',

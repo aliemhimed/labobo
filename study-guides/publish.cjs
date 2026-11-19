@@ -50,6 +50,12 @@ const PUBLISH = {
     include: (g) => typeof g.lecture === 'number',
     tables: { Biochemistry: 'gct2_biochemistry', 'Medical Genetics': 'gct2_genetics', 'Molecular Biology': 'gct2_molecular_biology', Histology: 'gct2_histology' },
   },
+  'gct-3': {
+    scope: 'lectures',
+    note: 'covered so far',
+    include: (g) => typeof g.lecture === 'number',
+    tables: { Biochemistry: 'gct3_biochemistry', Immunology: 'gct3_immunology', Biophysics: 'gct3_biophysics' },
+  },
 };
 const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology'];
 

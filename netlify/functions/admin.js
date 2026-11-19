@@ -61,6 +61,7 @@ const BANKS = [
   { subject: 'Clinical & Professional Skills II', semester: '2', tables: ['clinical_skills_2'] },
   { subject: 'Scientific Reasoning', semester: '2', tables: ['scientific_reasoning'] },
   { subject: 'History of Medicine', semester: '1 & 2', tables: ['history_of_medicine'] },
+  { subject: 'GCT III', semester: '3', tables: ['gct3_biochemistry', 'gct3_immunology', 'gct3_biophysics'] },
   { subject: 'GCT IV', semester: '4', tables: ['gct4_immunology', 'gct4_microbiology'] },
   { subject: 'Body Systems IV', semester: '4', tables: ['bs4_anatomy', 'bs4_physiology', 'bs4_imaging'] },
 ];
@@ -74,6 +75,7 @@ const TABLE_PART = {
   gct2_biochemistry: 'Biochemistry', gct2_genetics: 'Genetics', gct2_molecular_biology: 'Molecular Biology', gct2_histology: 'Histology',
   bs_anatomy: 'Anatomy', bs_physiology: 'Physiology', bs_imaging: 'Imaging',
   bs2_anatomy: 'Anatomy', bs2_physiology: 'Physiology', bs2_imaging: 'Imaging',
+  gct3_biochemistry: 'Biochemistry', gct3_immunology: 'Immunology', gct3_biophysics: 'Biophysics',
   gct4_immunology: 'Immunology', gct4_microbiology: 'Microbiology',
   bs4_anatomy: 'Anatomy', bs4_physiology: 'Physiology', bs4_imaging: 'Imaging',
 };
@@ -240,6 +242,7 @@ async function snapshot(tz) {
     students: out.users?.total ?? null,
     semester_1: sem('1'),
     semester_2: sem('2'),
+    semester_3: sem('3'),
     semester_4: sem('4'),
     no_semester: out.users?.no_semester ?? null,
     signups_7d: out.users?.last_7d ?? null,
@@ -775,7 +778,7 @@ async function createAnnouncement(body, caller) {
   const message = typeof body.message === 'string' ? body.message.trim() : '';
   if (!message || message.length > 500) return fail(400, 'The message must be 1-500 characters');
   const tone = TONES.has(body.tone) ? body.tone : 'info';
-  const semester = ['1', '2', '4'].includes(body.semester) ? body.semester : null;
+  const semester = ['1', '2', '3', '4'].includes(body.semester) ? body.semester : null;
   let endsAt = null;
   if (body.ends_at) {
     const d = new Date(body.ends_at);
