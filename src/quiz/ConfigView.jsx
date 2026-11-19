@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PageHead from '../components/PageHead.jsx';
 import { LockedNote, LockedTopics } from '../components/Plan.jsx';
 import DailyCard from './DailyCard.jsx';
-import { MIDTERM_LAST, lectureNumber, planSet } from '../lib/utils.js';
+import { MIDTERM_LAST, isClinical, lectureNumber, planSet } from '../lib/utils.js';
 
 const LEADERBOARD_LENGTH = 30;
 // Each part's chips take a card colour, in the same order as study mode.
@@ -16,8 +16,8 @@ const sum = (list) => list.reduce((n, x) => n + x, 0);
    `allKeys` every key the student has; `onChoose(set | null)` changes it
    (null = all lectures, including any that appear later). */
 export default function ConfigView({
-  config, mode, subjectIndex, chosen, allKeys, onChoose, examLength, setExamLength, onStart, onHome,
-  daily, onStartDaily,
+  config, mode, questions, subjectIndex, chosen, allKeys, onChoose, examLength, setExamLength, onStart, onHome,
+  daily, onStartDaily, clinicalOnly = false, setClinicalOnly,
 }) {
   const isExam = mode === 'exam';
   const [open, setOpen] = useState(false);
@@ -50,10 +50,16 @@ export default function ConfigView({
   }
 
   // What the chosen lectures can supply, and the set that comes out of it.
-  const pools = {};
-  Object.keys(config.ratio).forEach((s) => {
-    pools[s] = sum(Object.keys(subjectIndex[s] || {}).map((t) => (chosen.has(`${s}::${t}`) ? subjectIndex[s][t].length : 0)));
-  });
+  const countIn = (list, clinical) => (clinical ? list.filter((i) => isClinical(questions?.[i])).length : list.length);
+  const poolsFor = (clinical) => {
+    const out = {};
+    Object.keys(config.ratio).forEach((s) => {
+      out[s] = sum(Object.keys(subjectIndex[s] || {}).map((t) => (chosen.has(`${s}::${t}`) ? countIn(subjectIndex[s][t], clinical) : 0)));
+    });
+    return out;
+  };
+  const clinicalAvailable = sum(Object.values(poolsFor(true)));
+  const pools = poolsFor(clinicalOnly);
   const available = sum(Object.values(pools));
   const plan = planSet(examLength, config.ratio, pools);
   const setSize = sum(Object.values(plan));
@@ -143,6 +149,23 @@ export default function ConfigView({
           </div>
         ) : null}
       </fieldset>
+
+      {setClinicalOnly && (clinicalAvailable > 0 || clinicalOnly) ? (
+        <fieldset className="count-picker">
+          <legend>Question type</legend>
+          <div className="scope-row">
+            <button type="button" className="scope-chip" aria-pressed={!clinicalOnly} onClick={() => setClinicalOnly(false)}>
+              All questions
+            </button>
+            <button type="button" className="scope-chip" aria-pressed={clinicalOnly} onClick={() => setClinicalOnly(true)}>
+              Clinical cases only
+            </button>
+          </div>
+          <p className="config-note">
+            {clinicalAvailable.toLocaleString()} clinical case question{clinicalAvailable === 1 ? '' : 's'} in the lectures you chose.
+          </p>
+        </fieldset>
+      ) : null}
 
       <fieldset className="count-picker">
         <legend>Number of questions</legend>

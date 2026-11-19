@@ -91,6 +91,8 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
     return new Set(allTopicKeys.filter((k) => pickedTopics.has(k)));
   }, [allTopicKeys, pickedTopics]);
   const [reportFor, setReportFor] = useState(null);
+  // "Clinical cases only": draw the set from case-vignette questions alone.
+  const [clinicalOnly, setClinicalOnly] = useState(false);
 
   const wrong = useWrong(store);
   const history = useHistory(store);
@@ -169,9 +171,9 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
   }
 
   function startConfigured(mode) {
-    const picked = buildQuizFromTopics(examLength, config.ratio, questions, chosenTopics);
+    const picked = buildQuizFromTopics(examLength, config.ratio, questions, chosenTopics, clinicalOnly);
     if (!picked.length) return;
-    startSession(mode, picked, chosenTopics.size < allTopicKeys.length);
+    startSession(mode, picked, chosenTopics.size < allTopicKeys.length || clinicalOnly);
   }
 
   /* The free plan's daily set: the server draws it and keeps it, the
@@ -404,6 +406,7 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
           <ConfigView config={config} mode={mode} questions={questions} subjectIndex={subjectIndex}
                       chosen={chosenTopics} allKeys={allTopicKeys} onChoose={setPickedTopics}
                       examLength={examLength} setExamLength={setExamLength}
+                      clinicalOnly={clinicalOnly} setClinicalOnly={setClinicalOnly}
                       onStart={() => startConfigured(mode)}
                       daily={daily} onStartDaily={(request) => startDaily(mode, request)}
                       onHome={goHome} />

@@ -135,10 +135,23 @@ export const topicKey = (q) => `${q.subject}::${q.topic}`;
 
 /* Pick `total` question indices from the chosen lectures only (`selected` is
    a Set of topic keys), split across subjects as planSet decides. */
-export function buildQuizFromTopics(total, ratio, questions, selected) {
+/* A clinical question is a case vignette: a patient of a given age, or a
+   presentation, history or examination. Spotted from the stem, so every
+   bank (old and new) gets the filter without tagging rows by hand. */
+const CLINICAL_AGE = /\b\d{1,3}[- ]?(?:year|month|week|day)s?[- ]old\b/i;
+const CLINICAL_WORDS = /\b(?:patient|presents? (?:with|to)|is brought (?:to|in)|comes to the|emergency department|physical examination|physician|complains? of|was admitted|on examination)\b/i;
+const CLINICAL_PERSON = /^(?:an?|the) (?:young |pregnant |premature |elderly |previously healthy )?(?:man|woman|boy|girl|child|infant|newborn|baby|neonate|toddler|teenager|adolescent|young adult|adult|family|couple|mother|father)\b/i;
+export function isClinical(q) {
+  const stem = (q?.q || '').trim();
+  return CLINICAL_AGE.test(stem) || CLINICAL_WORDS.test(stem) || CLINICAL_PERSON.test(stem);
+}
+
+export function buildQuizFromTopics(total, ratio, questions, selected, clinicalOnly = false) {
   const pools = {};
   questions.forEach((q, i) => {
-    if (selected.has(topicKey(q))) (pools[q.subject] ||= []).push(i);
+    if (!selected.has(topicKey(q))) return;
+    if (clinicalOnly && !isClinical(q)) return;
+    (pools[q.subject] ||= []).push(i);
   });
   const sizes = Object.fromEntries(Object.entries(pools).map(([s, list]) => [s, list.length]));
   const plan = planSet(total, ratio, sizes);
