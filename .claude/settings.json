@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./dist/**)",
+      "Read(./node_modules/**)",
+      "Read(./graphify-out/cache/**)",
+      "Read(./study-guides/img/**)",
+      "Read(./study-guides/preview/**)",
+      "Read(./package-lock.json)",
+      "Read(./deno.lock)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
