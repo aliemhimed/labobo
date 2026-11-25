@@ -82,7 +82,7 @@ const MAX_BODY_BYTES = 5.5 * 1024 * 1024;
 // Supabase caps a single REST response; page through anything larger.
 const PAGE_SIZE = 1000;
 
-const BASE_COLS = 'id,ord,topic,q,options,answer,explanation,image,images';
+const BASE_COLS = 'id,ord,topic,q,options,answer,explanation,image,images,option_notes';
 // Only the clinical skills banks have a display_topic column; asking for it elsewhere 400s.
 const TABLES_WITH_DISPLAY_TOPIC = ['clinical_skills', 'clinical_skills_2'];
 

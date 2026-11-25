@@ -774,3 +774,15 @@ button.history-row:hover { background: var(--sheet); }
 /* "12 questions match" under the Study search (StudyView.jsx). */
 .sf-count { margin: 8px 2px 0; color: var(--ink-soft); font-size: var(--t-14); font-weight: 600; }
 .sf-count:empty { display: none; }
+
+/* Why each wrong option is wrong (OptionNotes.jsx), under the explanation. */
+.option-notes { margin-top: 14px; padding-top: 12px; border-top: 1.5px dashed var(--edge); }
+.option-notes-title { font: 700 var(--t-14)/1.3 var(--font-ui); color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+.option-notes ul { display: grid; gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
+.option-notes li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; font: 400 var(--t-16)/1.5 var(--font-read); color: var(--ink); }
+.option-notes li b {
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--edge); font: 700 var(--t-14)/1 var(--font-ui);
+}
+.option-notes li.picked b { border-color: var(--wrong); color: var(--wrong); }
+.option-notes li em { font-style: normal; font-weight: 700; color: var(--wrong); }

@@ -5,6 +5,7 @@ import SheetMap from './SheetMap.jsx';
 import { useEqualOptionHeights } from '../hooks/useEqualOptionHeights.js';
 import { useQuizShortcuts } from '../hooks/useQuizShortcuts.js';
 import { LETTERS } from '../lib/utils.js';
+import OptionNotes from './OptionNotes.jsx';
 import { Check, Cross } from '../components/Icons.jsx';
 
 /* Post-exam review: every answer visible, original option order (no
@@ -85,6 +86,8 @@ export default function ReviewView({
                 : `Not answered. The answer is ${LETTERS[question.answer]}.`}
           </p>
           {question.explanation ? <p className="explanation-text">{question.explanation}</p> : null}
+          <OptionNotes question={question} picked={wasAnswered && !isCorrect ? answer.selected : null}
+                       letterOf={(i) => LETTERS[i]} />
         </div>
         <div className="q-nav">
           <button type="button" className="btn" disabled={index === 0} onClick={() => setIndex(index - 1)}>Previous</button>

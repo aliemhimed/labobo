@@ -49,7 +49,7 @@ const SUBJECT_TABLES = {
   'history-of-medicine': ['history_of_medicine'],
 };
 
-const BASE_COLS = 'id,ord,topic,q,options,answer,explanation,image,images';
+const BASE_COLS = 'id,ord,topic,q,options,answer,explanation,image,images,option_notes';
 const TABLES_WITH_DISPLAY_TOPIC = ['clinical_skills', 'clinical_skills_2'];
 const selectFor = (t) => (TABLES_WITH_DISPLAY_TOPIC.includes(t) ? `${BASE_COLS},display_topic` : BASE_COLS);
 const topicOf = (row) => row.display_topic || row.topic || '';

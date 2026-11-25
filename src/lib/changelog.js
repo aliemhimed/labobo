@@ -7,6 +7,13 @@ export const SHOW_DAYS = 30;
 
 export const CHANGELOG = [
   {
+    id: '2026-11-26-option-notes',
+    date: '2026-11-26',
+    semester: '1',
+    title: 'Why each wrong answer is wrong',
+    body: 'GCT I and Body Systems questions after the midterm now explain every wrong option too, not just the right answer. Pick an answer in practice or study to see them.',
+  },
+  {
     id: '2026-11-26-review-tools',
     date: '2026-11-26',
     title: 'Spaced review, starred questions and a better search',

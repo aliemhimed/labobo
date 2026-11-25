@@ -1,6 +1,6 @@
 # Live database schema (Supabase `boukmowybmtfqkinuvqj`, `public`)
 
-Snapshot taken 2026-11-24 from the live database; client_errors and push_subscriptions added 2026-11-26. Read this instead of calling `list_tables`. To refresh it, run `supabase/schema-snapshot.sql` with the Supabase `execute_sql` tool and replace everything below this header with the `md` value it returns. Refresh after every migration.
+Snapshot taken 2026-11-24 from the live database; client_errors, push_subscriptions and option_notes added 2026-11-26. Read this instead of calling `list_tables`. To refresh it, run `supabase/schema-snapshot.sql` with the Supabase `execute_sql` tool and replace everything below this header with the `md` value it returns. Refresh after every migration.
 
 ## Tables
 Column notation: `name type`, `!` not null, `=default`. Tables with the same columns share a line.
@@ -10,6 +10,8 @@ Column notation: `name type`, `!` not null, `=default`. Tables with the same col
 - **bs2_anatomy, bs2_imaging, bs2_physiology, bs4_anatomy, bs4_imaging, bs4_physiology, bs_anatomy, bs_imaging, bs_physiology, medicine_art**: same, but topic text!
 - **history_of_medicine, medical_chemistry, medical_physics, scientific_reasoning**: same, but topic text!, ord integer (nullable)
 - **clinical_skills, clinical_skills_2**: id bigint!, ord integer!, topic text!, display_topic text!, q text!, options jsonb!, answer integer!, explanation text='', image text='', images jsonb='[]', created_at timestamptz=now()
+
+- **All question banks** also have option_notes jsonb!='{}' (added 2026-11-26): why each wrong option is wrong, { "<option index>": "note" }. Filled for GCT I and Body Systems I lectures 8+ (scripts/option-notes.cjs).
 
 ### App tables
 - **admin_log**: id bigint!, at timestamptz!=now(), admin_email text!, action text!, target text, details jsonb!='{}'
