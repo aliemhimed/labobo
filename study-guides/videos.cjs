@@ -621,6 +621,370 @@ const GUIDES = {
       v('QXU7XojaEOs', 'UCD Medicine', 'Pericentric Inversions', '0:00', 'end', 'pericentric inversions, pairing and unbalanced gametes'),
     ],
   },
+  // Body Systems I, post-midterm
+  'body-systems/anatomy/lec08-muscles-head.html': {
+    facial: [v('F_O0Rj3IWn8', NN, 'Muscles of the Head &amp; Neck | Anatomy Model', '1:37', '4:54', 'the muscles of facial expression around the eye, nose and mouth')],
+    mastication: [v('uEP4wYX01eo', 'AnatomyZone', 'Muscles of Mastication - Anatomy Tutorial', '0:39', 'end', 'temporalis, masseter and the pterygoids, and the jaw movements they make')],
+  },
+  'body-systems/anatomy/lec09-muscles-neck.html': {
+    superficial: [v('eD3Ds3GIt9M', 'Kenhub', 'Sternocleidomastoid Muscle: Function &amp; Anatomy - Human Body', '0:00', 'end', 'the sternocleidomastoid, its attachments and actions')],
+    suprahyoid: [
+      v('W3PBV9XoQvI', MP, 'Triangles of the Neck - Muscles of Neck - Anatomy of the Head and Neck - Anatomy Series', '17:49', '19:19', 'the suprahyoid muscles of the floor of the mouth'),
+      v('ELs0nWAHfEQ', 'Kenhub', 'Suprahyoid muscles (preview) - Human Anatomy', '0:00', 'end', 'the suprahyoid muscles, their origins, insertions and actions'),
+    ],
+    infrahyoid: [
+      v('W3PBV9XoQvI', MP, 'Triangles of the Neck - Muscles of Neck - Anatomy of the Head and Neck - Anatomy Series', '19:19', '23:21', 'the infrahyoid (strap) muscles and their functions'),
+      v('HCk5tL7aWZY', 'Kenhub', 'Infrahyoid muscles: Origin, insertion, innervation and function (preview) - Human Anatomy', '0:00', 'end', 'the infrahyoid muscles, their innervation and function'),
+    ],
+    suboccipital: [v('XNHAioK34AM', 'Osmosis from Elsevier', 'Anatomy of the suboccipital region', '0:00', 'end', 'the suboccipital muscles and the suboccipital triangle')],
+    scalenes: [v('hcDHwSs9DI0', 'Kenhub', 'Scalene Muscles of the Neck - Human Anatomy', '0:00', 'end', 'the anterior, middle and posterior scalenes')],
+    triangles: [v('W3PBV9XoQvI', MP, 'Triangles of the Neck - Muscles of Neck - Anatomy of the Head and Neck - Anatomy Series', '12:46', '31:58', 'the anterior and posterior triangles of the neck and what lies in each')],
+  },
+  'body-systems/anatomy/lec10-muscles-thorax.html': {
+    intercostals: [
+      v('QisaWVtTC4E', NN, 'Muscles of the Thorax &amp; Abdomen | Anatomy Model', '2:45', '4:16', 'the intercostal muscles and serratus anterior'),
+      v('c-2Yk9rBCcA', NN, 'Anatomy of the Thoracic Wall', '9:02', '12:07', 'the muscles of the thoracic wall'),
+    ],
+    'other-intrinsic': [v('QisaWVtTC4E', NN, 'Muscles of the Thorax &amp; Abdomen | Anatomy Model', '4:16', '6:07', 'the deeper thoracic muscles')],
+    diaphragm: [v('6IK-YHK1ToM', 'Kenhub', 'Diaphragm - Definition, Function, Muscle &amp; Anatomy', '0:00', 'end', 'the diaphragm, its attachments, openings, nerve supply and function')],
+    extrinsic: [v('QisaWVtTC4E', NN, 'Muscles of the Thorax &amp; Abdomen | Anatomy Model', '1:02', '2:45', 'pectoralis major and the chest muscles that act on the arm')],
+  },
+  'body-systems/anatomy/lec11-muscles-back.html': {
+    superficial: [v('ZpJFOn-9NCs', NN, 'Muscles of the Back | Anatomy Model', '0:11', '3:17', 'trapezius, latissimus dorsi, rhomboids and the scapular muscles of the back')],
+    erector: [v('ZpJFOn-9NCs', NN, 'Muscles of the Back | Anatomy Model', '3:17', '3:59', 'the erector spinae')],
+  },
+  'body-systems/anatomy/lec12-abdominal-muscles-inguinal-canal.html': {
+    flat: [v('mxOajxO8mX0', 'AnatomyZone', 'Muscles of the Anterior Abdominal Wall - 3D Anatomy Tutorial', '7:20', 'end', 'the external oblique, internal oblique and transversus abdominis')],
+    vertical: [v('mxOajxO8mX0', 'AnatomyZone', 'Muscles of the Anterior Abdominal Wall - 3D Anatomy Tutorial', '1:19', '7:20', 'the linea alba, rectus abdominis, pyramidalis and the rectus sheath')],
+    posterior: [v('_G__kbKFRFg', 'Kenhub', 'Muscles of the Abdominal Wall | Anatomy Made Easy', '11:17', '15:52', 'quadratus lumborum, psoas major, psoas minor and iliacus')],
+    canal: [v('kyysICQWXH4', 'Kenhub', 'Anatomy of the inguinal canal', '0:00', '6:52', 'the walls of the inguinal canal and what passes through it')],
+    rings: [v('_G__kbKFRFg', 'Kenhub', 'Muscles of the Abdominal Wall | Anatomy Made Easy', '17:33', '19:23', 'the inguinal canal and the superficial and deep rings')],
+    hernias: [v('nmD6nZdJtuU', 'Armando Hasudungan', 'Introduction to Direct and Indirect Inguinal Hernia', '0:30', 'end', 'direct and indirect inguinal hernias and how they differ')],
+  },
+  'body-systems/anatomy/lec13-upper-limb-muscles.html': {
+    girdle: [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '0:00', '1:18', 'the shoulder and chest muscles that move the shoulder girdle')],
+    shoulder: [
+      v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '1:18', '5:17', 'the scapular muscles of the shoulder'),
+      v('ebKIbyW5zp4', 'Kenhub', 'Rotator cuff mastery: 4 Muscles explained - Human Anatomy', '0:52', '12:19', 'subscapularis, teres minor, supraspinatus and infraspinatus'),
+    ],
+    arm: [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '5:17', '8:25', 'the muscles of the front and back of the upper arm')],
+    extensors: [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '8:25', '9:34', 'the forearm extensors')],
+    flexors: [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '9:34', '12:29', 'the forearm flexors')],
+    hand: [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '12:29', 'end', 'the muscles of the hand')],
+  },
+  'body-systems/imaging/lec08-pelvis.html': {
+    bones: [v('YR2M2MvY_y8', 'Radiology Tutorials', 'Pelvis Anatomy | Radiology anatomy part 1 prep | Pelvic X-ray interpretation', '1:00', '8:04', 'the pelvic bones in 3D and their bony landmarks on the radiograph')],
+    triradiate: [v('YR2M2MvY_y8', 'Radiology Tutorials', 'Pelvis Anatomy | Radiology anatomy part 1 prep | Pelvic X-ray interpretation', '0:25', '1:00', 'how the pelvic bones develop')],
+    ligaments: [v('YR2M2MvY_y8', 'Radiology Tutorials', 'Pelvis Anatomy | Radiology anatomy part 1 prep | Pelvic X-ray interpretation', '16:08', 'end', 'the pelvic ligaments')],
+    xray: [v('YR2M2MvY_y8', 'Radiology Tutorials', 'Pelvis Anatomy | Radiology anatomy part 1 prep | Pelvic X-ray interpretation', '8:04', '10:24', 'the lines and columns read on the pelvic radiograph')],
+    views: [v('aLqjg4kWPlM', 'Orthopaedic Academy', 'OrthoConcepts - Radiographic Pelvic Views | Inlet &amp; Outlet Views', '0:13', 'end', 'the inlet and outlet views of the pelvis')],
+    fractures: [
+      v('qntokA5Topk', 'X-Ray Review: Learn Radiology Fast!', '10 Common Pelvic fractures on X ray Every Clinician Must Recognize', '2:05', '2:40', 'stable versus unstable pelvic fractures'),
+      v('eCa1LxddRak', 'nabil ebraheim', 'Pelvic Fractures - Everything You Need To Know', '1:45', '8:05', 'the types and classifications of pelvic fracture'),
+    ],
+    cases: [v('qntokA5Topk', 'X-Ray Review: Learn Radiology Fast!', '10 Common Pelvic fractures on X ray Every Clinician Must Recognize', '2:40', '5:20', 'avulsion fractures, Duverney fractures and the sprung pelvis on X-ray')],
+  },
+  'body-systems/imaging/lec09-muscles.html': {
+    us: [v('_-Jhn7lk7XU', 'The POCUS Atlas', 'Normal Sonoanatomy of the Musculoskeletal Layers', '0:00', 'end', 'how skin, fat, muscle, tendon and bone look on ultrasound')],
+    mri: [v('UKLvLsK36qo', 'Radiology Tutorials', 'T1 vs T2 weighted MRI images: How to tell the difference', '0:00', 'end', 'telling T1 from T2 weighted MRI images')],
+  },
+  'body-systems/imaging/lec10-head-neck.html': {
+    eye: [
+      v('f_rb6FMVHPk', 'AnatomyZone', 'Extraocular Muscles | Eye Anatomy', '0:00', 'end', 'the levator palpebrae, recti and oblique muscles of the eye'),
+      v('uDgSXUCHhh8', 'Radiology Tutorials', 'Eye &amp; Orbit Anatomy Explained | Radiology Anatomy', '7:57', '9:57', 'the extra-ocular muscles on CT and MRI'),
+    ],
+    mastication: [v('uEP4wYX01eo', 'AnatomyZone', 'Muscles of Mastication - Anatomy Tutorial', '0:00', 'end', 'masseter, temporalis and the pterygoid muscles')],
+    hyoid: [v('0AxsGqGY1qw', 'Kenhub', 'Muscles attached to the hyoid bone - Quick Anatomy', '0:00', 'end', 'the suprahyoid and infrahyoid muscles')],
+  },
+  'body-systems/imaging/lec11-back.html': {
+    superficial: [v('aTtGQWhadPY', 'Kenhub', 'Superficial Back Muscles Made EASY (Trapezius, Lats &amp; More)', '1:08', '10:03', 'trapezius, latissimus dorsi, rhomboids and levator scapulae')],
+    intermediate: [v('Z7fO9xh2_nM', 'Kenhub', 'Deep muscles of the back: intermediate layer - Quick Anatomy', '0:00', 'end', 'the erector spinae: iliocostalis, longissimus and spinalis')],
+    deep: [v('kynv6ZxBKBY', 'Kenhub', 'Deep muscles of the back: deep layer - Quick Anatomy', '0:00', 'end', 'semispinalis, multifidus and rotatores')],
+    axial: [v('feHB0mGnpBs', 'Stanford Radiology', 'Lumbar Spine MRI by Eric Tranvinh, MD, Stanford Radiology', '2:01', '3:25', 'normal sagittal and axial lumbar MRI anatomy')],
+  },
+  'body-systems/imaging/lec12-chest-abdomen-pelvis.html': {
+    chest: [v('QisaWVtTC4E', NN, 'Muscles of the Thorax &amp; Abdomen | Anatomy Model', '0:00', '8:07', 'the chest wall muscles: pectoralis, intercostals, serratus and deep thorax muscles')],
+    pectorals: [v('QisaWVtTC4E', NN, 'Muscles of the Thorax &amp; Abdomen | Anatomy Model', '1:02', '2:45', 'the pectoralis major and its actions')],
+    diaphragm: [
+      v('6IK-YHK1ToM', 'Kenhub', 'Diaphragm - Definition, Function, Muscle &amp; Anatomy', '0:00', 'end', 'the diaphragm, its openings and function'),
+      v('wI2wC-trYxM', 'Radiology Tutorials', 'Chest X-ray Anatomy | Radiology anatomy part 1 prep', '18:05', '20:54', 'how the diaphragm looks on the chest X-ray'),
+    ],
+    abdomen: [v('_G__kbKFRFg', 'Kenhub', 'Muscles of the Abdominal Wall | Anatomy Made Easy', '2:06', '11:17', 'rectus abdominis, the oblique muscles and transversus abdominis')],
+    pelvis: [v('ZyX-z3OkE8I', 'Kenhub', 'Muscles of the pelvic floor - Quick Anatomy', '0:00', 'end', 'puborectalis, pubococcygeus, iliococcygeus and coccygeus')],
+    emphysema: [v('8UJqkkKY8XU', 'Chest X Ray Mastery', 'Subcutaneous Emphysema Chest X Ray', '0:00', 'end', 'subcutaneous emphysema on the chest X-ray')],
+  },
+  'body-systems/imaging/lec13-upper-limb-muscles.html': {
+    shoulder: [
+      v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '0:00', '5:17', 'the shoulder, chest and scapular muscles'),
+      v('aFdVfQ8JJBA', 'Radiology Tutorials', 'Rotator Cuff Anatomy Explained (Shoulder MRI) | Radiology Anatomy', '3:26', '10:18', 'the rotator cuff muscles and how they look on shoulder MRI'),
+    ],
+    arm: [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '5:17', '8:25', 'the muscles of the upper arm, front and back')],
+    'arm-mri': [v('3n46I8dQrQ4', 'David Wang', 'Upper Arm MRI Anatomy Atlas', '0:00', 'end', 'axial MRI of the upper arm, level by level')],
+    'ant-forearm': [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '9:34', '12:29', 'the forearm flexor muscles')],
+    'post-forearm': [
+      v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '8:25', '9:34', 'the forearm extensor muscles'),
+      v('cHrqpfqVHKM', 'David Wang', 'Forearm MRI Anatomy Atlas', '0:00', 'end', 'axial MRI of the forearm muscles'),
+    ],
+    hand: [v('ToNL6jMEjuE', NN, 'Muscles of the Upper Limb', '12:29', 'end', 'the muscles of the hand')],
+  },
+  'body-systems/imaging/lec14-lower-limb-muscles.html': {
+    'posterior-thigh': [v('h21uat41m14', 'The Noted Anatomist', 'Posterior compartment thigh muscles', '0:00', 'end', 'the hamstring muscles, their actions and nerve supply')],
+    'thigh-mri': [v('keUtewALoNE', 'Radiology Rendezvous', 'MRI Hip and Thigh: Muscles (Rule of 3-4-5-6)', '0:00', 'end', 'the thigh muscles on MRI')],
+    'posterior-leg': [v('9QkHMbhZ8ZU', 'Kenhub', 'Calf anatomy: Gastrocnemius &amp; soleus muscles', '5:16', '10:55', 'gastrocnemius, soleus, plantaris and their actions')],
+    'leg-mri': [v('2Z6z-xNJOUs', 'Dr Christoph Agten', 'How to read MRI of a Calf Injury', '0:20', '4:09', 'reading the calf muscles on MRI in a case of gastrocnemius injury')],
+  },
+  'body-systems/physiology/lec08-nervous-organization.html': {
+    neuron: [v('qOmmqu6_g3s', NN, 'Neurology | Neuron Anatomy &amp; Function', '0:32', '28:43', 'neuron structure: dendrites, soma, axon and how the axon carries impulses')],
+    types: [v('qOmmqu6_g3s', NN, 'Neurology | Neuron Anatomy &amp; Function', '28:43', 'end', 'the types of neuron and their functional classification')],
+    glia: [v('w2gI-IAokJg', NN, 'Neurology | Glial Cells: Astrocytes, Oligodendrocytes, Schwann Cells, Ependymal Cells, Microglia', '0:00', 'end', 'the glial cells and what each one does')],
+  },
+  'body-systems/physiology/lec09-membrane-action-potentials.html': {
+    resting: [v('Jk_9IhHVOTk', NN, 'Neurology | Resting Membrane, Graded, Action Potentials', '0:36', '12:23', 'the resting membrane potential, leak channels and the sodium-potassium pump')],
+    equilibrium: [v('Jk_9IhHVOTk', NN, 'Neurology | Resting Membrane, Graded, Action Potentials', '12:23', '17:04', 'equilibrium potential and the Nernst potential')],
+    ap: [v('Jk_9IhHVOTk', NN, 'Neurology | Resting Membrane, Graded, Action Potentials', '31:24', '45:42', 'threshold, depolarization and repolarization of the action potential')],
+    propagation: [v('Jk_9IhHVOTk', NN, 'Neurology | Resting Membrane, Graded, Action Potentials', '52:14', 'end', 'the absolute and relative refractory periods')],
+  },
+  'body-systems/physiology/lec10-synaptic-neuromuscular-transmission.html': {
+    psp: [v('Jk_9IhHVOTk', NN, 'Neurology | Resting Membrane, Graded, Action Potentials', '17:04', '31:24', 'graded potentials and temporal and spatial summation')],
+    nmj: [v('OGTMvG7fN-M', NN, 'Musculoskeletal System | Neuromuscular Junction | Neuromuscular Transmission: Part 1', '0:00', 'end', 'the motor neuron, acetylcholine release and repolarization at the neuromuscular junction')],
+    'nmj-drugs': [v('31ri-1Nv61M', NN, 'Musculoskeletal System | Neuromuscular Junction Pathologies: Part 4', '16:18', 'end', 'myasthenia gravis, Lambert-Eaton syndrome, acetylcholinesterase, succinylcholine and dendrotoxin')],
+  },
+  'body-systems/physiology/lec11-skeletal-muscle-excitation.html': {
+    nmj: [v('A96kAMPZXv8', NN, 'Musculoskeletal System | Neuromuscular Junction | Excitation Contraction Coupling: Part 2', '0:28', '15:03', 'the synaptic cleft, nicotinic receptors, resting potential and the endplate potential')],
+    map: [v('A96kAMPZXv8', NN, 'Musculoskeletal System | Neuromuscular Junction | Excitation Contraction Coupling: Part 2', '15:03', '23:26', 'how the muscle action potential is generated')],
+    tsystem: [v('A96kAMPZXv8', NN, 'Musculoskeletal System | Neuromuscular Junction | Excitation Contraction Coupling: Part 2', '23:26', '29:34', 'T tubules and triads')],
+    ecc: [v('A96kAMPZXv8', NN, 'Musculoskeletal System | Neuromuscular Junction | Excitation Contraction Coupling: Part 2', '29:34', '34:16', 'calcium release from the sarcoplasmic reticulum')],
+    pulse: [v('A96kAMPZXv8', NN, 'Musculoskeletal System | Neuromuscular Junction | Excitation Contraction Coupling: Part 2', '34:16', 'end', 'repolarization and a summary of the events')],
+  },
+  'body-systems/physiology/lec12-skeletal-contraction.html': {
+    structure: [v('Nrf_g5m8fVM', NN, 'Musculoskeletal System | Sarcomere Structure: Actin &amp; Myosin', '0:00', '10:38', 'the sarcomere, its zones and its bands')],
+    filaments: [v('Nrf_g5m8fVM', NN, 'Musculoskeletal System | Sarcomere Structure: Actin &amp; Myosin', '10:38', '24:17', 'the thin filament (actin, troponin, tropomyosin) and the thick filament (myosin)')],
+    cycle: [v('UW47uSLcM2g', NN, 'Musculoskeletal System | Neuromuscular Junction | Sliding Filament Theory: Part 3', '12:38', '34:50', 'calcium binding troponin and the cross-bridge cycle')],
+    types: [
+      v('EH_Eem-VBZg', NN, 'Musculoskeletal System | Type I Muscle Fibers', '0:00', 'end', 'type I fibers: slow, oxidative and fatigue resistant'),
+      v('bMV5BDoP8dY', NN, 'Musculoskeletal System | Type II Muscle Fibers | Type IIa &amp; IIx', '0:00', 'end', 'type IIa and IIx fibers and how they differ from type I'),
+    ],
+    units: [v('MLSxhTGkkPc', NN, 'Musculoskeletal System | Muscle Mechanics | Twitch, Summation, &amp; Tetanus', '16:08', 'end', 'frequency summation and tetanus')],
+    rigor: [v('Nrf_g5m8fVM', NN, 'Musculoskeletal System | Sarcomere Structure: Actin &amp; Myosin', '27:34', 'end', 'dystrophin and muscular dystrophy')],
+  },
+  'body-systems/physiology/lec13-smooth-muscle.html': {
+    types: [v('2EeUy7xopdo', NN, 'Musculoskeletal System | Smooth Muscle', '6:50', '15:30', 'the types of smooth muscle')],
+    potentials: [v('2EeUy7xopdo', NN, 'Musculoskeletal System | Smooth Muscle', '17:48', '26:05', 'pacemaker cells, slow waves and voltage-gated calcium channels')],
+    nerves: [v('2EeUy7xopdo', NN, 'Musculoskeletal System | Smooth Muscle', '26:05', '30:20', 'how the nervous system stimulates smooth muscle')],
+    calcium: [v('2EeUy7xopdo', NN, 'Musculoskeletal System | Smooth Muscle', '30:20', 'end', 'calcium and smooth muscle contraction')],
+  },
+  'body-systems/physiology/lec14-cardiac-muscle.html': {
+    heart: [v('xqmyODnxVhU', MM, 'Cardiac Action Potentials', '0:45', '2:22', 'the structure of the myocardium and its cell types')],
+    syncytium: [v('xqmyODnxVhU', MM, 'Cardiac Action Potentials', '12:25', '14:03', 'gap junctions and spread of the impulse between cells')],
+    ap: [v('xqmyODnxVhU', MM, 'Cardiac Action Potentials', '14:03', '18:51', 'depolarization and the plateau of the contractile cell action potential')],
+    phases: [v('xqmyODnxVhU', MM, 'Cardiac Action Potentials', '14:03', '17:08', 'the phases of the ventricular action potential, including the plateau')],
+    ecc: [v('xqmyODnxVhU', MM, 'Cardiac Action Potentials', '17:08', '18:51', 'calcium and cardiac muscle contraction')],
+  },
+  'body-systems/physiology/lec15-muscle-metabolism.html': {
+    atp: [v('L-bm0-X-HLQ', MP, 'Muscle Metabolism - Creatine Phosphokinase (CPK), Glycolysis, TCA cycle, ETC - Physiology', '5:42', '10:42', 'how muscle gets its energy: ATP and creatine phosphate')],
+    systems: [v('bMV5BDoP8dY', NN, 'Musculoskeletal System | Type II Muscle Fibers | Type IIa &amp; IIx', '6:10', '11:06', 'glycogen, respiration and the creatine phosphate pathway in fast fibers')],
+    fuels: [v('EH_Eem-VBZg', NN, 'Musculoskeletal System | Type I Muscle Fibers', '17:00', '19:43', 'energy storage and fuel in slow oxidative fibers')],
+  },
+  'body-systems/anatomy/lec14-muscles-lower-limb.html': {
+    gluteal: [v('6g5tWNKAWAM', 'Kenhub', 'Gluteal muscles: Anatomy and function', '0:31', '15:09', 'gluteus maximus, medius, minimus and tensor fasciae latae with the IT band')],
+    'pelvic-floor': [v('CsKC2FTFahE', 'Corporis', 'The Pelvic Floor Muscles, Explained', '1:13', '8:01', 'the pelvis, levator ani, perineum, genital muscles and sphincters')],
+    'anterior-thigh': [v('8trLEtQYDGw', 'AnatomyZone', 'Muscles of the Thigh Part 1 - Anterior Compartment - Anatomy Tutorial', '0:00', 'end', 'the anterior thigh muscles, their femoral nerve supply and actions')],
+    'medial-thigh': [v('V-ZPc5vG6J8', 'Kenhub', 'Anatomy of the Hip Adductor Muscles - Human Anatomy | Kenhub', '0:00', 'end', 'the six hip adductors, the obturator nerve and the adductor canal')],
+    leg: [v('mlnq-HjWRbA', 'Corporis', 'How to Remember Every Muscle of the Lower Limb and Leg', '8:23', '9:42', 'the anterior and fibularis (lateral) leg muscles')],
+    'posterior-leg': [v('mlnq-HjWRbA', 'Corporis', 'How to Remember Every Muscle of the Lower Limb and Leg', '9:42', '11:20', 'the posterior and medial lower leg muscles and the tarsal tunnel')],
+    foot: [v('mlnq-HjWRbA', 'Corporis', 'How to Remember Every Muscle of the Lower Limb and Leg', '11:20', '14:45', 'the arches, dorsal foot and plantar foot muscles')],
+  },
+  /* ── Body Systems II, post-midterm ─────────────────────────────── */
+  "body-systems-2/anatomy/lec08-lower-limb-vessels.html": {
+    "overview": [
+      v("qowdtKHYmZA", NN, "Circulatory System | Arteries of the Lower Limb | Flow Chart", "0:00", "end", "the arteries of the lower limb on a flow chart, from the systemic circulation down the limb"),
+      v("JNczJx2ju3I", "AnatomyZone", "Lower Limb Arteries Overview - 3D Anatomy Tutorial", "0:00", "end", "lower limb arteries in 3D, from the abdominal aorta and iliac arteries to the femoral and tibial arteries"),
+    ],
+    "veins": [
+      v("AinzrO_qnHw", "AnatomyZone", "Lower Limb Veins Overview - 3D Anatomy Tutorial", "0:00", "end", "lower limb veins in 3D, superficial and deep, the adductor hiatus, both saphenous veins and the perforating veins"),
+      v("Xxdux7z9poU", NN, "Circulatory System | Veins of the Thorax, Abdomen &amp; Lower Limbs | Flow Chart", "0:00", "6:01", "lower limb venous anatomy"),
+      v("EmoOicZqXhI", NN, "Circulatory System | Arteries &amp; Veins of the Upper &amp; Lower Limbs | Wire Man Model", "21:04", "24:16", "veins of the lower limb on the wire man model"),
+    ],
+    "femoral": [
+      v("-Obyz2hMsb8", "AnatomyZone", "Femoral Triangle - Anatomy Tutorial", "0:00", "end", "boundaries and contents of the femoral triangle"),
+      v("qowdtKHYmZA", NN, "Circulatory System | Arteries of the Lower Limb | Flow Chart", "3:45", "5:45", "the femoral artery"),
+    ],
+    "profunda": [v("IslbAQxDUt0", "AnatomyZone", "Thigh Arteries - 3D Anatomy Tutorial", "1:30", "end", "the thigh artery and the perforating arteries")],
+    "knee": [
+      v("qowdtKHYmZA", NN, "Circulatory System | Arteries of the Lower Limb | Flow Chart", "5:45", "7:13", "the popliteal artery"),
+      v("-QsTZy2gga8", "AnatomyZone", "Popliteal Fossa", "0:00", "end", "boundaries, floor, roof and contents of the popliteal fossa, including the popliteal artery and vein"),
+    ],
+    "leg": [
+      v("qowdtKHYmZA", NN, "Circulatory System | Arteries of the Lower Limb | Flow Chart", "7:13", "8:25", "the posterior tibial artery"),
+      v("EmoOicZqXhI", NN, "Circulatory System | Arteries &amp; Veins of the Upper &amp; Lower Limbs | Wire Man Model", "8:39", "12:05", "lower limb arteries on the wire man model"),
+    ],
+    "foot": [
+      v("EmoOicZqXhI", NN, "Circulatory System | Arteries &amp; Veins of the Upper &amp; Lower Limbs | Wire Man Model", "12:05", "16:07", "foot and plantar arteries"),
+      v("EmoOicZqXhI", NN, "Circulatory System | Arteries &amp; Veins of the Upper &amp; Lower Limbs | Wire Man Model", "24:16", "end", "foot veins"),
+    ],
+  },
+  "body-systems-2/anatomy/lec09-neck-cranial-vessels.html": {
+    "superficial-veins": [v("4a5DIya9EuA", MP, "Neck Veins - Jugular veins (IJV, EJV, AJV), Subclavian veins - Anatomy of the Head &amp; Neck", "8:52", "12:26", "venous drainage of the neck, the jugular veins")],
+    "cca": [v("4JCVKEuRexg", MP, "Carotid Arteries - Internal Carotid Artery (ICA), External Carotid Artery (ECA) - Anatomy of Neck", "5:55", "8:02", "the carotid body and carotid sinus")],
+    "ica": [v("4JCVKEuRexg", MP, "Carotid Arteries - Internal Carotid Artery (ICA), External Carotid Artery (ECA) - Anatomy of Neck", "8:02", "9:12", "external versus internal carotid artery")],
+    "eca": [
+      v("K-qtoLS3L4w", "AnatomyZone", "External Carotid Branches - 3D Anatomy Tutorial", "0:00", "end", "the branches of the external carotid artery in 3D"),
+      v("4JCVKEuRexg", MP, "Carotid Arteries - Internal Carotid Artery (ICA), External Carotid Artery (ECA) - Anatomy of Neck", "10:11", "11:58", "external carotid branches"),
+      v("kJf8wdJPZeQ", NN, "Circulatory System | Arteries of the Head &amp; Neck | Flow Chart", "0:00", "end", "arteries of the head and neck on a flow chart"),
+    ],
+    "ijv": [
+      v("4j5AbArXYLg", "Kenhub - Learn Human Anatomy", "FULL VIDEO: Main veins of the head and neck - Human Anatomy | Kenhub", "2:16", "5:55", "the internal jugular vein"),
+      v("4a5DIya9EuA", MP, "Neck Veins - Jugular veins (IJV, EJV, AJV), Subclavian veins - Anatomy of the Head &amp; Neck", "8:52", "12:26", "venous drainage of the neck, the jugular veins"),
+    ],
+    "thyroid": [v("uoFj6XuCBPg", "Kenhub - Learn Human Anatomy", "Blood supply and innervation of the thyroid and parathyroid glands - Quick Anatomy | Kenhub", "0:00", "3:05", "superior and inferior thyroid arteries and venous drainage of the thyroid")],
+    "subclavian": [
+      v("uTB0jW_5_-g", "Kenhub - Learn Human Anatomy", "Subclavian artery - Quick Anatomy | Kenhub", "0:00", "end", "the subclavian artery, vertebral artery, thyrocervical trunk and costocervical trunk"),
+      v("6BiNn0L_4K0", MP, "Subclavian Artery - Carotid Arteries (CCA, ICA, ECA) - Anatomy of the Head &amp; Neck", "12:18", "15:17", "branches of the subclavian artery"),
+    ],
+    "posterior": [v("4j5AbArXYLg", "Kenhub - Learn Human Anatomy", "FULL VIDEO: Main veins of the head and neck - Human Anatomy | Kenhub", "5:55", "7:58", "the subclavian vein")],
+    "pharynx-larynx": [v("4JCVKEuRexg", MP, "Carotid Arteries - Internal Carotid Artery (ICA), External Carotid Artery (ECA) - Anatomy of Neck", "14:16", "16:08", "pharyngeal and laryngeal arterial supply")],
+    "brain": [v("6VMiKeAvvTY", NN, "Circulatory System | Circle of Willis Circulation", "0:00", "15:33", "the arteries of the brain and the circle of Willis, vertebral and carotid systems")],
+    "sinuses": [
+      v("TX5Fxrg4SD4", "AnatomyZone", "Dural Venous Sinuses | 3D Anatomy Tutorial", "0:00", "3:59", "the dural venous sinuses, including the straight, transverse and sigmoid sinuses and the confluence"),
+      v("S5auxUantv0", NN, "Circulatory System | Veins of the Head &amp; Neck | Flow Chart", "0:00", "10:32", "venous sinuses of the brain"),
+    ],
+    "cavernous": [
+      v("xnZnrottTN0", "Kenhub - Learn Human Anatomy", "Cavernous Sinus - Location, Drainage &amp; Function - Human Anatomy | Kenhub", "0:00", "end", "location, contents and drainage of the cavernous sinus"),
+      v("TX5Fxrg4SD4", "AnatomyZone", "Dural Venous Sinuses | 3D Anatomy Tutorial", "3:59", "end", "cavernous sinus anatomy and its contents"),
+    ],
+  },
+  "body-systems-2/anatomy/lec10-face-scalp-vessels.html": {
+    "face-veins": [v("4a5DIya9EuA", MP, "Neck Veins - Jugular veins (IJV, EJV, AJV), Subclavian veins - Anatomy of the Head &amp; Neck", "13:35", "16:14", "facial veins and clinical relevance")],
+    "maxillary": [v("6hrEhX9UHps", MP, "Maxillary Artery - External Carotid Artery (ECA) - Anatomy of Head &amp; Neck", "16:07", "20:02", "the branches of the maxillary artery")],
+    "mma": [v("0H9sIyNmygQ", NN, "Neurology | Brain Meninges | Epidural, Subdural, Subarachnoid, &amp; Intracerebral Hematomas", "11:13", "20:44", "epidural haematoma")],
+    "nose": [v("iIZLZMeuyKQ", "Kenhub - Learn Human Anatomy", "Blood vessels of nasal cavity (preview) - Human Anatomy | Kenhub", "1:01", "end", "arterial supply of the nasal cavity from the facial and maxillary arteries")],
+  },
+  "body-systems-2/anatomy/lec11-nasal-cavities.html": {
+    "nerves": [v("7XX-oCBl1jM", MP, "Anatomy of Nose (Nasal Cavity) - Concha, Meatus, Choana, Nares - Anatomy of the Head and Neck", "19:49", "21:03", "vascular and nerve supply of the nose")],
+    "sinuses": [
+      v("9YDYXwI4J-w", MP, "Anatomy of Sinuses (Paranasal Sinuses)- Anatomy of the Head and Neck", "13:38", "16:45", "paranasal sinus overview"),
+      v("iwwFPQk7SJU", "Armando Hasudungan", "Clinical Anatomy  - Nasal Cavity and Sinuses", "1:07", "1:59", "the paranasal sinuses"),
+    ],
+    "walls": [v("7XX-oCBl1jM", MP, "Anatomy of Nose (Nasal Cavity) - Concha, Meatus, Choana, Nares - Anatomy of the Head and Neck", "16:20", "18:29", "the septum and the sinus openings")],
+    "lateral": [
+      v("7XX-oCBl1jM", MP, "Anatomy of Nose (Nasal Cavity) - Concha, Meatus, Choana, Nares - Anatomy of the Head and Neck", "13:37", "16:20", "lateral nasal wall anatomy"),
+      v("9YDYXwI4J-w", MP, "Anatomy of Sinuses (Paranasal Sinuses)- Anatomy of the Head and Neck", "5:13", "10:26", "the nasal cavity, meatuses and what drains into them"),
+    ],
+    "vessels": [
+      v("9YDYXwI4J-w", MP, "Anatomy of Sinuses (Paranasal Sinuses)- Anatomy of the Head and Neck", "12:26", "13:38", "blood and nerve supply of the nose"),
+      v("iIZLZMeuyKQ", "Kenhub - Learn Human Anatomy", "Blood vessels of nasal cavity (preview) - Human Anatomy | Kenhub", "1:01", "end", "arterial supply of the nasal cavity from the facial and maxillary arteries"),
+    ],
+  },
+  "body-systems-2/anatomy/lec12-pharynx.html": {
+    "palate": [v("vG51_LZW7xM", MP, "Anatomy of Palate - Hard vs. Soft Palate - Palatine Muscles - Anatomy of the Head &amp; Neck", "7:20", "9:20", "palate muscle anatomy")],
+    "muscles": [
+      v("huqrVe00V20", MP, "Anatomy of the Pharynx - Pharyngeal Muscles - Anatomy of the Head and Neck", "9:07", "14:12", "the pharyngeal constrictor muscles and pharyngeal muscle innervation"),
+      v("CDNjZo-raHM", "Kenhub - Learn Human Anatomy", "Muscles of the pharynx: Anatomy and functions", "1:51", "8:26", "the constrictors and the longitudinal muscles of the pharynx"),
+    ],
+    "tonsils": [v("35ISWsTD-6I", "Armando Hasudungan", "Tonsils - Clinical Anatomy (Palatine, lingual, tubal, adenoids)", "0:00", "end", "palatine, lingual and tubal tonsils and the adenoids")],
+    "vessels": [v("huqrVe00V20", MP, "Anatomy of the Pharynx - Pharyngeal Muscles - Anatomy of the Head and Neck", "14:12", "17:10", "arterial supply of the pharynx")],
+  },
+  "body-systems-2/anatomy/lec13-larynx.html": {
+    "cartilages": [
+      v("Z3S2dD9BrSY", "AnatomyZone", "Larynx - Cartilages - 3D Anatomy Tutorial", "0:00", "end", "the cartilages of the larynx in 3D"),
+      v("Bh9cDldOIPE", "Kenhub - Learn Human Anatomy", "Larynx - Membranes, ligaments and muscles - Human Anatomy | Kenhub", "4:03", "10:57", "laryngeal cartilages"),
+    ],
+    "ligaments": [v("jqTKSorDRJo", "AnatomyZone", "Larynx - Ligaments, Membranes, Vocal Cords - 3D Anatomy Tutorial", "2:11", "10:30", "the cricothyroid ligament and the quadrangular membrane")],
+    "joints": [v("Bh9cDldOIPE", "Kenhub - Learn Human Anatomy", "Larynx - Membranes, ligaments and muscles - Human Anatomy | Kenhub", "10:57", "11:50", "the laryngeal joints")],
+    "cavity": [v("jqTKSorDRJo", "AnatomyZone", "Larynx - Ligaments, Membranes, Vocal Cords - 3D Anatomy Tutorial", "10:30", "end", "the vocal cords")],
+    "muscles": [
+      v("lqeDLsP1ISE", "AnatomyZone", "Muscles of the Larynx - Part 1 - 3D Anatomy Tutorial", "0:00", "end", "the intrinsic muscles of the larynx, part 1"),
+      v("GEMquo7qxpg", "AnatomyZone", "Muscles of the Larynx - Part 2 - 3D Anatomy Tutorial", "0:00", "end", "the intrinsic muscles of the larynx, part 2"),
+      v("9ewUfLkRv1k", "AnatomyZone", "Introduction to Muscle Actions of the Larynx", "0:00", "end", "what the laryngeal muscles do"),
+      v("Bh9cDldOIPE", "Kenhub - Learn Human Anatomy", "Larynx - Membranes, ligaments and muscles - Human Anatomy | Kenhub", "18:00", "26:23", "the intrinsic muscles of the larynx"),
+    ],
+    "vessels": [v("HwLP2alyyOA", MP, "Anatomy of the Larynx - The Best Explanation! - Anatomy of Head &amp; Neck", "21:20", "23:52", "vascular and lymphatic drainage of the larynx")],
+  },
+  "body-systems-2/anatomy/lec14-pleura-lungs.html": {
+    "cavities": [
+      v("qiZrjs8c2Ck", "Armando Hasudungan", "Lung Pleura - Clinical Anatomy and Physiology", "0:00", "7:20", "the lung pleura"),
+      v("hog2PeS3K5k", NN, "Anatomy of the Lungs and Pleura", "20:31", "24:08", "pleural anatomy"),
+    ],
+    "reflections": [v("qiZrjs8c2Ck", "Armando Hasudungan", "Lung Pleura - Clinical Anatomy and Physiology", "7:20", "12:38", "body landmarks of the pleura")],
+    "clinic": [v("qiZrjs8c2Ck", "Armando Hasudungan", "Lung Pleura - Clinical Anatomy and Physiology", "12:38", "end", "clinical anatomy of the pleura")],
+    "lungs": [v("fg_MCplYv4Y", "Kenhub - Learn Human Anatomy", "Lungs: Definition, Location &amp; Structure - Human Anatomy | Kenhub", "0:16", "1:38", "right and left lung lobes, fissures and surfaces of the lung")],
+    "bronchi": [
+      v("hog2PeS3K5k", NN, "Anatomy of the Lungs and Pleura", "1:13", "13:00", "the tracheobronchial tree"),
+      v("hog2PeS3K5k", NN, "Anatomy of the Lungs and Pleura", "13:00", "20:31", "lung parenchyma and segmental anatomy"),
+    ],
+    "vessels": [v("hog2PeS3K5k", NN, "Anatomy of the Lungs and Pleura", "24:08", "29:12", "pulmonary and bronchial circulation")],
+  },
+  "body-systems-2/anatomy/lec15-breast-diaphragm.html": {
+    "breast": [v("XAJloclkR2c", MP, "Anatomy of Thorax - Anatomy of Pectoral Region - Anatomy of Upper Limbs - Brachial Plexus", "27:49", "30:07", "fascia and breast")],
+    "breastvessels": [v("8duR_lXZFUI", "Kenhub - Learn Human Anatomy", "Blood Vessels of the Female Breast (preview) - Human Anatomy | Kenhub", "0:30", "1:05", "the internal thoracic artery supplying the breast")],
+    "muscles": [v("XAJloclkR2c", MP, "Anatomy of Thorax - Anatomy of Pectoral Region - Anatomy of Upper Limbs - Brachial Plexus", "32:39", "37:04", "the pectoral muscles")],
+    "diaphragm": [
+      v("6IK-YHK1ToM", "Kenhub - Learn Human Anatomy", "Diaphragm - Definition, Function, Muscle &amp; Anatomy | Kenhub", "0:00", "end", "definition, function and anatomy of the diaphragm"),
+      v("SRLIpt4ObMg", MP, "Clinically-Oriented Anatomy of the Thorax (part 1)", "33:36", "36:36", "the diaphragm in clinically oriented anatomy of the thorax"),
+    ],
+  },
+  "body-systems-2/physiology/lec08-kidneys-long-term-bp.html": {
+    "ras": [v("ibjodC7Ft7U", MM, "Renin Angiotensin Aldosterone system", "0:00", "end", "how the renin-angiotensin-aldosterone system manages blood pressure")],
+    "primary": [v("CnWFcOJBqRk", NN, "Cardiovascular | Blood Pressure Regulation | Hypertension", "0:00", "end", "how blood pressure becomes chronically elevated: cardiac output and resistance, sympathetic tone, renal sodium handling and chronic RAAS activation")],
+  },
+  "body-systems-2/physiology/lec09-cardiac-output-venous-return.html": {
+    "vr-control": [v("0O3FfHPE9PU", NN, "Cardiovascular | Cardiac Output", "0:00", "end", "cardiac output as heart rate times stroke volume, the Frank-Starling mechanism, preload, afterload and venous return")],
+  },
+  "body-systems-2/physiology/lec10-heart-sounds-defects.html": {
+    "sounds": [v("9DzhhagWeNc", NN, "Heart Sounds &amp; Murmurs | Clinical Medicine", "1:01", "9:21", "the S1 and S2 heart sounds, then S3 and S4")],
+    "murmurs": [v("9DzhhagWeNc", NN, "Heart Sounds &amp; Murmurs | Clinical Medicine", "22:14", "36:26", "systolic, diastolic and continuous murmurs")],
+    "valve-disease": [v("KiI9WMXBV_o", NN, "Valvular Heart Diseases | Clinical Medicine", "12:04", "14:54", "the pathophysiology of rheumatic fever")],
+    "aortic": [v("KiI9WMXBV_o", NN, "Valvular Heart Diseases | Clinical Medicine", "6:43", "12:04", "the pathophysiology of aortic stenosis and aortic regurgitation")],
+    "mitral": [v("KiI9WMXBV_o", NN, "Valvular Heart Diseases | Clinical Medicine", "0:39", "6:43", "the pathophysiology of mitral stenosis and mitral regurgitation")],
+    "pda": [v("3Z0npv4wzmM", "Osmosis from Elsevier", "Patent ductus arteriosus - physiology, pathology, clinical manifestations, diagnosis, treatment", "0:00", "end", "patent ductus arteriosus, a persistent communication between the aorta and pulmonary artery")],
+    "fallot": [
+      v("hTG-ZQuOuAU", MP, "Tetralogy of Fallot (TOF) | Cyanotic Congenital Heart Disease (CHD) | Cardiology", "0:00", "end", "a five-minute review of tetralogy of Fallot"),
+      v("m-PdQwT8mPU", NN, "Cyanotic Congenital Heart Defects", "1:24", "10:03", "tetralogy of Fallot"),
+    ],
+  },
+  "body-systems-2/physiology/lec11-pulmonary-ventilation.html": {
+    "pressures": [v("uYm4l_alVV0", NN, "Respiratory | Mechanics of Breathing: Pressure Changes | Part 1", "0:00", "end", "the pressure changes that occur during the mechanics of breathing")],
+    "compliance": [v("BTwgmMfqOW4", NN, "Respiratory | Compliance &amp; Elasticity", "0:00", "end", "compliance and elasticity: surface tension, lung elasticity, the thoracic cage and surfactant")],
+    "surfactant": [
+      v("B_XzUDClgac", MP, "Lung Surfactant - Surface Tension - Alveoli - Type II Pneumocytes - NRDS - Physiology", "0:00", "end", "surface tension in the alveoli, surfactant from type II pneumocytes and its lack in newborn respiratory distress"),
+      v("gjLCu8qe2nI", NN, "Respiratory | Surface Tension &amp; Surfactant in Alveoli", "0:00", "end", "surface tension, Laplace's law and surfactant in the alveoli"),
+    ],
+    "volumes": [
+      v("mNadr6bGEMU", NN, "Respiratory | Spirometry: Lung Volumes &amp; Capacities", "0:00", "end", "tidal volume, reserve volumes, residual volume and the lung capacities"),
+      v("VX2Biw_qRoU", MM, "Lung Volumes and Capacities", "0:00", "end", "lung volumes and capacities"),
+    ],
+  },
+  "body-systems-2/physiology/lec12-pulmonary-circulation.html": {
+    "anatomy": [v("aJPwUnZtycQ", NN, "Circulatory System | Pulmonary Circulation", "0:00", "end", "the flow of blood through the pulmonary circuit and the structures involved")],
+  },
+  "body-systems-2/physiology/lec13-gas-exchange.html": {
+    "physics": [v("YGGG_gKi0m8", NN, "Respiratory | External Respiration: Partial Pressures and Solubilities", "0:00", "end", "Dalton's law, partial pressures, gas solubility and how oxygen and carbon dioxide cross the respiratory membrane")],
+    "membrane": [v("Wn_f23qus1k", NN, "Respiratory | External Respiration: Thickness &amp; Surface Area of Respiratory Membrane", "0:00", "end", "the structure of the respiratory membrane and how its thickness and surface area affect gas exchange")],
+    "vaq": [
+      v("4OetlK7YQOY", MM, "Ventilation (V) Perfusion (Q) Coupling", "0:00", "end", "what the ventilation-perfusion ratio is and why it matters clinically"),
+      v("yUtngVm93-c", NN, "Respiratory | External Respiration: Ventilation Perfusion Coupling", "0:00", "end", "matching ventilation to perfusion, and the V/Q ratio from apex to base of the lung"),
+    ],
+  },
+  "body-systems-2/physiology/lec14-o2-co2-transport.html": {
+    "hb": [v("bhJarMGNFw4", NN, "Respiratory | Oxygen-Hemoglobin Dissociation Curve", "0:00", "end", "the S-shaped oxygen-hemoglobin dissociation curve and loading of oxygen in the lungs and unloading in the tissues")],
+    "shifts": [
+      v("bhJarMGNFw4", NN, "Respiratory | Oxygen-Hemoglobin Dissociation Curve", "0:00", "end", "right and left shifts of the curve: CO2, pH, temperature, 2,3-BPG, carbon monoxide and fetal hemoglobin (Bohr effect)"),
+      v("BYGPkRFvzOc", "Armando Hasudungan", "Oxygen - Haemoglobin Dissociation Curve - Physiology", "0:00", "end", "how oxygen binds and releases from haemoglobin under varying conditions"),
+    ],
+    "co2": [v("pFQVq6ArdSw", MM, "Gas Transport", "0:00", "end", "how oxygen and carbon dioxide are transported around the body")],
+  },
+  "body-systems-2/physiology/lec15-regulation-of-respiration.html": {
+    "center": [
+      v("_KNAKKNbq20", NN, "Respiratory | Regulation of Breathing: Respiratory Centers: Part 1", "0:00", "end", "the medullary respiratory centers, the dorsal and ventral respiratory groups"),
+      v("GqkMzds77f8", MM, "Neural Control of Breathing | Respiratory System", "0:00", "end", "how the brain controls breathing"),
+    ],
+    "chem": [v("fWBhmrrSPUk", NN, "Respiratory | Regulation of Breathing: Central &amp; Peripheral Chemoreceptors: Part 2", "0:00", "end", "central chemoreceptors responding to CO2 and pH, then the peripheral chemoreceptors")],
+    "periph": [v("fWBhmrrSPUk", NN, "Respiratory | Regulation of Breathing: Central &amp; Peripheral Chemoreceptors: Part 2", "0:00", "end", "central and peripheral chemoreceptors and their response to blood gases and pH")],
+    "combined": [v("P_4wk33cTVo", NN, "Respiratory | Respiration at High Altitudes", "0:00", "end", "acute and chronic adaptations to high altitude")],
+    "exercise": [v("6B3TUj2cLgo", NN, "Respiratory | Respiration During Exercise", "0:00", "end", "how ventilation rises during exercise through neural input, chemical signals and feedback from muscles and joints")],
+    "other": [v("gSVtW1HcV3c", NN, "Respiratory | Regulation of Breathing: Factors Influencing Rate and Depth: Part 3", "0:00", "end", "neural, chemical and mechanical factors that influence the rate and depth of breathing")],
+    "periodic": [v("rtbBQ3Uptm8", NN, "Pulmonary Sleep Disorders: Sleep Apnea, Obesity Hypoventilation Syndrome | Clinical Medicine", "0:41", "8:40", "the pathophysiology of obstructive sleep apnea")],
+  },
 };
 
 const seconds = (t) => t.split(':').reduce((s, x) => s * 60 + Number(x), 0);

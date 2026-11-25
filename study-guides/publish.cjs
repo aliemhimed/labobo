@@ -34,12 +34,12 @@ const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
 const DRY = process.argv.includes('--dry');
 const PROD = process.argv.includes('--prod');
 
-// GCT I, pre-midterm: lectures and weeks 1–7 of every part. GCT II: every guide in study-guides/gct-2.
+// GCT I: every guide, pre- and post-midterm. GCT II: every guide in study-guides/gct-2.
 const PUBLISH = {
   gct: {
-    scope: 'pre-midterm',
-    note: 'up to the midterm',
-    include: (g) => typeof g.lecture === 'number' && g.lecture <= 7,
+    scope: 'lectures',
+    note: 'whole semester',
+    include: (g) => typeof g.lecture === 'number',
     // Each part's question table: a guide is free when its lectures are in free_topics for it.
     tables: { Biochemistry: 'gct_biochemistry', 'Medical Genetics': 'gct_genetics', 'Molecular Biology': 'gct_molecular_biology', Histology: 'gct_histology' },
   },
@@ -57,8 +57,22 @@ const PUBLISH = {
     include: (g) => typeof g.lecture === 'number' && g.lecture <= 7,
     tables: { Immunology: 'gct4_immunology', Microbiology: 'gct4_microbiology' },
   },
+  // Body Systems I, post-midterm: lectures 8–15 of Anatomy, Physiology and Medical Imaging.
+  'body-systems': {
+    scope: 'post-midterm',
+    note: 'after the midterm',
+    include: (g) => typeof g.lecture === 'number' && g.lecture >= 8,
+    tables: { Anatomy: 'bs_anatomy', Physiology: 'bs_physiology', 'Medical Imaging': 'bs_imaging' },
+  },
+  // Body Systems II, post-midterm: Anatomy lectures 8–15 and Physiology lectures 8–15.
+  'body-systems-2': {
+    scope: 'post-midterm',
+    note: 'after the midterm',
+    include: (g) => typeof g.lecture === 'number' && g.lecture >= 8,
+    tables: { Anatomy: 'bs2_anatomy', Physiology: 'bs2_physiology', 'Medical Imaging': 'bs2_imaging' },
+  },
 };
-const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology', 'Immunology', 'Microbiology'];
+const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology', 'Immunology', 'Microbiology', 'Anatomy', 'Physiology', 'Medical Imaging'];
 
 const attr = (html, name) => new RegExp(`data-${name}="([^"]*)"`).exec(html)?.[1] || '';
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&rsquo;/g, '’');
