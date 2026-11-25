@@ -514,7 +514,7 @@
   .home-side .say::after { left: -12px; bottom: auto; top: calc(50% - 10px); transform: rotate(135deg); }
   .home-side .log { grid-area: log; }
   .home-side .ig-card { grid-column: 1 / -1; }
-  .home-side .side-review { display: none; }
+  .home-side .side-review { grid-column: 1 / -1; transform: rotate(-0.6deg); }
   .home-title { max-width: none; }
 }
 @media (max-width: 767px) {
@@ -566,7 +566,6 @@
 
 /* ── Reviews (components/Reviews.jsx) ─────────────────────────────── */
 
-.review-wall { margin-top: 64px; }
 .review-notes {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -697,6 +696,18 @@
   overflow: hidden;
 }
 .side-review figcaption { font: 800 var(--t-16)/1 var(--font-display); }
+.side-review { position: relative; }
+.side-review-body { animation: side-review-in 0.35s ease-out; }
+@keyframes side-review-in { from { opacity: 0; transform: translateY(4px); } }
+.side-review-next {
+  position: absolute; top: 8px; right: 8px;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--card-ink); background: transparent; color: var(--card-ink);
+  font: 800 16px/1 var(--font-display); cursor: pointer;
+}
+.side-review-next:hover { background: rgba(11, 18, 51, 0.08); }
+.side-review-next:focus-visible { outline: 3px solid var(--card-ink); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .side-review-body { animation: none; } }
 
 /* iPad portrait: the sidebar is stacked above the subjects, so the review
    sits beside the streak card instead of under it. */
@@ -797,3 +808,74 @@
 @media (prefers-reduced-motion: reduce) {
   .trial-pill { animation: none; transition: none; }
 }
+
+/* ── Home extras (components/HomeExtras.jsx) ──────────────────────── */
+
+.start-here, .you-asked {
+  position: relative;
+  margin-top: 28px;
+  padding: 20px 22px;
+  border: var(--line) solid var(--card-ink);
+  border-radius: 18px;
+  background: var(--fill-mint);
+  color: var(--card-ink);
+  box-shadow: 5px 5px 0 var(--hard);
+}
+.start-here h2, .you-asked h2 { font: 800 var(--t-20, 1.25rem)/1.2 var(--font-display); }
+.start-here ol { margin: 12px 0 16px; padding-left: 22px; display: grid; gap: 8px; line-height: 1.5; }
+.start-here .btn { display: inline-flex; }
+
+.you-asked { background: var(--fill-violet); padding-right: 56px; }
+.you-asked-tag { font: 800 var(--t-14)/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.you-asked p:last-of-type { margin-top: 6px; line-height: 1.5; }
+.you-asked-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border: 0; border-radius: 50%; background: transparent; color: var(--card-ink); cursor: pointer;
+}
+.you-asked-close:hover { background: rgba(11, 18, 51, 0.1); }
+.you-asked-close svg { width: 18px; height: 18px; }
+
+.due-today { margin-top: 32px; }
+.due-sub { margin: -6px 0 14px; color: var(--ink-soft); }
+
+.countdown {
+  align-self: stretch;
+  padding: 14px 18px;
+  border: var(--line) solid var(--edge);
+  border-radius: 18px;
+  background: var(--sheet);
+  box-shadow: 5px 5px 0 var(--hard);
+}
+.countdown-title { font: 800 var(--t-16)/1.2 var(--font-display); }
+.countdown-days { margin-top: 6px; color: var(--ink-soft); font-weight: 600; }
+.countdown-days b { color: var(--ink); font: 800 2.2rem/1 var(--font-display); letter-spacing: -0.03em; margin-right: 4px; }
+.countdown-foot { margin-top: 8px; color: var(--ink-soft); font-size: var(--t-14); line-height: 1.45; }
+.countdown-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; }
+.countdown-fields label { display: grid; gap: 4px; font-size: var(--t-14); font-weight: 600; color: var(--ink-soft); }
+.countdown-fields input {
+  min-width: 0; padding: 8px 10px;
+  border: 2px solid var(--edge); border-radius: var(--r-control);
+  background: var(--paper); color: var(--ink); font: inherit; font-weight: 600;
+}
+.countdown-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
+.link-btn {
+  padding: 4px 0; border: 0; background: none; color: var(--ink-soft);
+  font: 700 var(--t-14)/1.2 var(--font-ui); text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.link-btn:hover { color: var(--ink); }
+@media (max-width: 860px) {
+  .home-side .countdown { grid-column: 1 / -1; }
+}
+.reminder {
+  align-self: stretch;
+  padding: 14px 18px;
+  border: var(--line) dashed var(--edge);
+  border-radius: 18px;
+}
+.reminder select {
+  padding: 2px 6px; border: 2px solid var(--edge); border-radius: 8px;
+  background: var(--paper); color: var(--ink); font: inherit; font-weight: 700;
+}
+.reminder-error { margin-top: 8px; color: var(--wrong); font-size: var(--t-14); font-weight: 600; }
+@media (max-width: 860px) { .home-side .reminder { grid-column: 1 / -1; } }

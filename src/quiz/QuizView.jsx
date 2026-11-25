@@ -8,9 +8,10 @@ const TITLES = {
   exam: 'Exam',
   'review-wrong': 'Wrong answers',
 };
+const REVIEW_TITLES = { due: 'Due for review', starred: 'Starred questions' };
 
 export default function QuizView({
-  config, questions, qIds, answers, index, quizMode,
+  config, questions, qIds, answers, index, quizMode, reviewKind,
   setIndex, getDisplayOrder, onSelect, onReport,
   onExit, onSubmitExam, onFinish, dismissMeme,
 }) {
@@ -23,7 +24,7 @@ export default function QuizView({
 
   return (
     <div className="container narrow">
-      <PageHead backLabel={subjectTitle} onBack={onExit} title={TITLES[quizMode] || 'Questions'}>
+      <PageHead backLabel={subjectTitle} onBack={onExit} title={(quizMode === 'review-wrong' && REVIEW_TITLES[reviewKind]) || TITLES[quizMode] || 'Questions'}>
         {isExam ? <button type="button" className="btn primary" onClick={onSubmitExam}>Submit exam</button> : null}
       </PageHead>
 

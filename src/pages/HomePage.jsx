@@ -10,7 +10,8 @@ import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
 import { PlanStrip, TrialButton } from '../components/Plan.jsx';
-import { ReviewNote, ReviewPrompt, ReviewWall } from '../components/Reviews.jsx';
+import { ReviewNote, ReviewPrompt } from '../components/Reviews.jsx';
+import { DueToday, ExamCountdown, ReminderCard, StartHere, YouAsked } from '../components/HomeExtras.jsx';
 import { InstagramGlyph } from '../components/Icons.jsx';
 import { INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/contact.js';
 import { SUBJECTS, inSemester } from '../lib/subjects.js';
@@ -196,6 +197,7 @@ export default function HomePage() {
     ? Object.fromEntries(subjects.map((s) => [s.key, s.sources.reduce((n, src) => n + (tableCounts[src.table] ?? 0), 0)]))
     : {};
 
+  const totalQuestions = Object.values(counts).reduce((n, c) => n + c, 0);
   const resumable = subjects.filter((s) => progress[s.key]?.resumeMode);
   // Study guides: the subjects that have them, and the guide last read on this device.
   const { catalog } = useGuideCatalog();
@@ -226,14 +228,16 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="home">
+      <main id="main" tabIndex={-1} className="home">
         <aside className="home-side">
           <p className="say" role="status">{quip || bubbleText(log)}</p>
           <button type="button" className="mascot" onClick={poke} aria-label="Labobo, tap for a study tip">
-            <img key={hop} className={hop ? 'hop' : ''} src="/theme/mascot-lg.webp"
+            <img key={hop} className={hop ? 'hop' : ''} src="/theme/mascot-lg.webp" fetchPriority="high"
                  width="400" height="732" alt="" draggable="false" />
           </button>
           <StudyLog log={log} />
+          <ExamCountdown key={semester} semester={semester} totalQuestions={totalQuestions} />
+          <ReminderCard />
           <ReviewNote />
           <a className="ig-card" href={INSTAGRAM_PROFILE} target="_blank" rel="noopener noreferrer">
             <span className="ig-badge" aria-hidden="true"><InstagramGlyph /></span>
@@ -247,6 +251,7 @@ export default function HomePage() {
         <div className="home-main">
           <AnnouncementBanner semester={semester} />
           <PlanStrip />
+          <YouAsked semester={semester} />
           <h1 className="home-title">{firstName ? `Hey ${firstName}, pick a subject.` : 'Pick a subject.'}</h1>
           <p className="home-sub">
             Semester {semester} subjects. Each one has study, practice and exam modes, plus
@@ -258,6 +263,9 @@ export default function HomePage() {
             <TrialButton />
             <ReviewPrompt activeDays={log.activeDays} />
           </div>
+
+          {log.answered === 0 && !resumable.length && !reading ? <StartHere subjects={subjects} /> : null}
+          <DueToday subjects={subjects} storageVersion={storageVersion} />
 
           {resumable.length || reading ? (
             <section className="resume" aria-labelledby="resume-title">
@@ -307,8 +315,6 @@ export default function HomePage() {
               );
             })}
           </div>
-
-          <ReviewWall />
         </div>
       </main>
     </>

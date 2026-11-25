@@ -9,7 +9,7 @@
           `current` into its copy and tries again with base = current.version
 
    `data` is one subject's localStorage progress (see src/lib/progressSync.js):
-   { history: [], wrong: {}, cleared: {}, flashcards: {} }. Only those four
+   { history: [], wrong: {}, cleared: {}, flashcards: {}, srs: {}, starred: {} }. Only those six
    keys are kept, and the whole thing is size-capped. Rows are keyed by the
    verified caller, never by anything in the request. */
 
@@ -33,6 +33,8 @@ function cleanData(d) {
     wrong: isMap(d.wrong) ? d.wrong : {},
     cleared: isMap(d.cleared) ? d.cleared : {},
     flashcards: isMap(d.flashcards) ? d.flashcards : {},
+    srs: isMap(d.srs) ? d.srs : {},
+    starred: isMap(d.starred) ? d.starred : {},
   };
 }
 

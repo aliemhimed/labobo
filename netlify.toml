@@ -79,6 +79,21 @@
   to   = "/.netlify/functions/questions"
   status = 200
 
+[[redirects]]
+  from = "/api/client-error"
+  to   = "/.netlify/functions/client-error"
+  status = 200
+
+[[redirects]]
+  from = "/api/push"
+  to   = "/.netlify/functions/push"
+  status = 200
+
+# The daily study reminder: runs every hour and sends to the students whose
+# chosen hour it is (netlify/functions/push-reminders.js).
+[functions."push-reminders"]
+  schedule = "@hourly"
+
 # SPA fallback — every other path is handled by React Router.
 # Must stay last so it doesn't shadow the /api rules above.
 [[redirects]]

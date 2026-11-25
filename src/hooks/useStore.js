@@ -7,3 +7,5 @@ import { subscribe } from '../lib/storage.js';
 
 export const useHistory = (store) => useSyncExternalStore(subscribe, store.getHistory);
 export const useWrong = (store) => useSyncExternalStore(subscribe, store.getWrong);
+export const useSrs = (store) => useSyncExternalStore(subscribe, store.getSrs);
+export const useStarred = (store) => useSyncExternalStore(subscribe, store.getStarred);

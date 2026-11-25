@@ -22,7 +22,7 @@ export default function TermsPage() {
         </Link>
       </header>
 
-      <main className="terms">
+      <main id="main" tabIndex={-1} className="terms">
         <h1>Terms, refunds and privacy</h1>
         <p className="terms-updated">Last updated {UPDATED}</p>
 

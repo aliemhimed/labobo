@@ -18,6 +18,8 @@ const WRONG_MAX = 1500;
 const WRONG_ATTEMPTS_MAX = 10;
 const FLASHCARDS_MAX = 4000;
 const CLEARED_MAX = 3000;
+const SRS_MAX = 3000;
+const STARRED_MAX = 2000;
 
 /* ── change notification ─────────────────────────────────────────── */
 
@@ -164,10 +166,14 @@ const keysFor = (prefix) => ({
   // "never synced here" when merging two devices' lists.
   CLEARED: `${prefix}.cleared`,
   FLASHCARDS: `labobo_fc_${prefix}`,
+  // question id -> { box, due, last }: when a missed question comes back (lib/srs.js)
+  SRS: `${prefix}.srs`,
+  // question id -> { on, at }: questions the student starred
+  STARRED: `${prefix}.starred`,
 });
 
 export function createSubjectStore(prefix) {
-  const { HISTORY, WRONG, CLEARED, FLASHCARDS } = keysFor(prefix);
+  const { HISTORY, WRONG, CLEARED, FLASHCARDS, SRS, STARRED } = keysFor(prefix);
 
   migrate(prefix);
 
@@ -194,6 +200,12 @@ export function createSubjectStore(prefix) {
 
     getFlashcards: () => read(FLASHCARDS, {}),
     setFlashcards: (d) => save(FLASHCARDS, capMap(d, FLASHCARDS_MAX, (c) => c.last || 0)),
+
+    getSrs: () => read(SRS, {}),
+    setSrs: (d) => save(SRS, capMap(d, SRS_MAX, (c) => c.last || 0)),
+
+    getStarred: () => read(STARRED, {}),
+    setStarred: (d) => save(STARRED, capMap(d, STARRED_MAX, (c) => c.at || 0)),
   };
 }
 
@@ -202,7 +214,10 @@ export function createSubjectStore(prefix) {
 /** One subject's progress as a plain object (see progressSync.js). */
 export function readProgress(prefix) {
   const s = createSubjectStore(prefix);
-  return { history: s.getHistory(), wrong: s.getWrong(), cleared: s.getCleared(), flashcards: s.getFlashcards() };
+  return {
+    history: s.getHistory(), wrong: s.getWrong(), cleared: s.getCleared(), flashcards: s.getFlashcards(),
+    srs: s.getSrs(), starred: s.getStarred(),
+  };
 }
 
 /** Replace one subject's progress with `data` (already merged). Doesn't
@@ -215,6 +230,8 @@ export function applyProgress(prefix, data) {
     s.setWrong(data.wrong || {});
     s.setCleared(data.cleared || {});
     s.setFlashcards(data.flashcards || {});
+    s.setSrs(data.srs || {});
+    s.setStarred(data.starred || {});
   } finally {
     applyingRemote = false;
   }

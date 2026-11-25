@@ -12,7 +12,7 @@ function Shell({ config, children }) {
   return (
     <>
       <TopBar subtitle={config.title.replace(/ MCQ$/, '')} />
-      <div id="root">{children}</div>
+      <main id="main" tabIndex={-1}>{children}</main>
     </>
   );
 }
@@ -21,9 +21,11 @@ export default function SubjectPage({ subjectKey }) {
   const config = getSubject(subjectKey);
   const { questions, locked, extra, daily, status, error, reload } = useQuestions(config);
 
+  // Once the questions are in, QuizEngine names the screen in the title.
+  const waiting = status === 'loading' || status === 'error' || status === 'empty';
   useEffect(() => {
-    if (config) document.title = config.docTitle;
-  }, [config]);
+    if (config && waiting) document.title = config.docTitle;
+  }, [config, waiting]);
 
   if (!config) return <p>Unknown subject.</p>;
   const name = config.title.replace(/ MCQ$/, '');

@@ -1,5 +1,6 @@
 import { displaySrc } from '../lib/questions.js';
 import { Flag } from '../components/Icons.jsx';
+import { useStars } from './stars.js';
 
 /* If a display copy is missing (an image added without re-running
    scripts/optimize_images.py), fall back to the full-size file once. */
@@ -15,6 +16,8 @@ function fallBackToOriginal(e) {
    (GCT's Biochemistry, Genetics…), not when it repeats it. */
 export default function QuestionBody({ question, onReport, subjectTitle = '' }) {
   const showSubject = question.subject && !subjectTitle.startsWith(question.subject);
+  const stars = useStars();
+  const starred = stars?.isStarred(question.id);
   return (
     <>
       <div className="q-head">
@@ -22,9 +25,17 @@ export default function QuestionBody({ question, onReport, subjectTitle = '' }) 
           {showSubject ? <span className="q-subject">{question.subject}</span> : null}
           <span className="q-topic">{question.topic}</span>
         </p>
-        <button type="button" className="report-btn" onClick={onReport}>
-          <Flag />Report a problem
-        </button>
+        <span className="q-actions">
+          {stars ? (
+            <button type="button" className={'star-btn' + (starred ? ' on' : '')} aria-pressed={starred}
+                    onClick={() => stars.toggle(question.id)}>
+              <span aria-hidden="true">{starred ? '★' : '☆'}</span>{starred ? 'Starred' : 'Star'}
+            </button>
+          ) : null}
+          <button type="button" className="report-btn" onClick={onReport}>
+            <Flag />Report a problem
+          </button>
+        </span>
       </div>
 
       <p className="q-text">{question.q}</p>

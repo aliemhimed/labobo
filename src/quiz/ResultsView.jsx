@@ -1,8 +1,29 @@
+import { useState } from 'react';
 import SheetMap from './SheetMap.jsx';
 import { Breakdown, TopicBreakdown } from './Breakdown.jsx';
 
 /* The marked sheet: what you scored in words, every question as a right or
    wrong bubble (tap one to review it), then where the marks were lost. */
+function ShareButton({ record, subjectTitle, kind }) {
+  const [state, setState] = useState('idle');
+  async function share() {
+    setState('busy');
+    try {
+      // The drawing code loads only when someone shares.
+      const { shareScore } = await import('../lib/shareCard.js');
+      const how = await shareScore({ subject: subjectTitle, kind, correct: record.correct, total: record.questionCount, score: record.score });
+      setState(how === 'downloaded' ? 'saved' : 'idle');
+    } catch {
+      setState('failed');
+    }
+  }
+  return (
+    <button type="button" className="btn" onClick={share} disabled={state === 'busy'}>
+      {state === 'busy' ? 'Making the picture…' : state === 'saved' ? 'Picture saved' : state === 'failed' ? 'Couldn’t make it, try again' : 'Share my score'}
+    </button>
+  );
+}
+
 export default function ResultsView({ record, marks, subjectTitle, onHome, onReview }) {
   if (!record) { onHome(); return null; }
 
@@ -24,6 +45,7 @@ export default function ResultsView({ record, marks, subjectTitle, onHome, onRev
 
       <div className="results-actions">
         <button type="button" className="btn primary" onClick={() => onReview(0)}>Review answers</button>
+        <ShareButton record={record} subjectTitle={subjectTitle} kind={kind} />
         <button type="button" className="btn" onClick={onHome}>Back to {subjectTitle}</button>
       </div>
 

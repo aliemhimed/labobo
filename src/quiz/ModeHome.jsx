@@ -13,11 +13,21 @@ const MODES = [
     desc: 'A full set with answers held back until you submit, then scored.' },
 ];
 
-export default function ModeHome({ title, subjectKey, questionCount, topicCount, wrongCount, historyCount, onGo }) {
+export default function ModeHome({
+  title, subjectKey, questionCount, topicCount, wrongCount, historyCount,
+  dueCount = 0, dueTomorrowCount = 0, starredCount = 0, onGo,
+}) {
   const tools = [
+    { key: 'review-due', name: 'Due for review today', icon: '⏰', fill: 'coral',
+      meta: dueCount ? `${dueCount} question${dueCount !== 1 ? 's' : ''} you missed, back on schedule`
+        : dueTomorrowCount ? `All done. ${dueTomorrowCount} come back tomorrow` : 'Missed questions come back after 1, 3, 7 and 21 days',
+      disabled: dueCount === 0, flagged: dueCount > 0 },
     { key: 'review-wrong', name: 'Review wrong answers', icon: '🔁', fill: 'blue',
       meta: wrongCount ? `${wrongCount} question${wrongCount !== 1 ? 's' : ''}` : 'None yet',
       disabled: wrongCount === 0, flagged: wrongCount > 0 },
+    { key: 'starred', name: 'Starred questions', icon: '⭐', fill: 'mint',
+      meta: starredCount ? `${starredCount} saved` : 'Tap the star on any question to save it',
+      disabled: starredCount === 0 },
     { key: 'flashcards', name: 'Flashcards', icon: '🗂️', fill: 'orange', meta: 'Spaced repetition by topic' },
     { key: 'dashboard', name: 'Performance', icon: '📊', fill: 'yellow',
       meta: historyCount ? `${historyCount} session${historyCount !== 1 ? 's' : ''}` : 'No sessions yet' },

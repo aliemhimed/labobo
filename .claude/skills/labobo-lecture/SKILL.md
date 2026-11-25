@@ -25,7 +25,22 @@ Valid tables are the ones in `ALLOWED_TABLES` in `netlify/functions/questions.js
 
 Course materials are under `C:\Users\AliEm\Documents\eu\Sem 1\` (also `Sem 2`, `Sem 4`): per subject, a `PPTs` folder with the lecture decks, the syllabus at the subject root, `books` with the textbooks and `pastpapers`.
 
-**Start from the course index when the subject has one** (built so far: GCT II, at `Documents\eu\Sem 2\GCT2\_index\`; read its `README.md`). Its `syllabus-map.md` gives, per week, the deck as slide-numbered text (`lectures/`), the topic label, the syllabus topics, and an excerpt file with exactly the syllabus book pages (`excerpts/`); `exam-profile.md` says how the exams are written and how hard to pitch the questions; `books/` holds whole textbooks as page-marked text for gap filling. A week's **Notes** line overrides the steps below (for example "BOOK ONLY": write from the excerpt and ignore the deck). A new deck: extract it with the same slide-text format and add the week to `sources/gct2-weeks.cjs`, then run `node sources/build-index.cjs` there. Pictures that carry content in a deck are only in the .pptx: unzip `ppt/media` and look at them.
+**Start from the course index when the subject has one** (built so far: GCT II, at `Documents\eu\Sem 2\GCT2\_index\`, the rest of Semester 2 (Body Systems II, Clinical Skills II, Scientific Reasoning, History of Medicine) at `Documents\eu\Sem 2\_index\`, and all of Semester 4, GCT IV and Body Systems IV, at `Documents\eu\Sem 4\_index\`; read its `README.md`). The Semester 2 index uses `sources/sem2-weeks.cjs` + `node sources/build-index.cjs`, and its map marks weeks **NOT IN BANK** and **BOOK ONLY**. The Semester 4 index has its own scripts: `sources/sem4-weeks.cjs` + `node sources/build-map.cjs` instead of `gct2-weeks.cjs`, and some deck PDFs need `sources/degly.cjs` because their fonts are embedded by glyph id. Its `syllabus-map.md` gives, per week, the deck as slide-numbered text (`lectures/`), the topic label, the syllabus topics, and an excerpt file with exactly the syllabus book pages (`excerpts/`); `exam-profile.md` says how the exams are written and how hard to pitch the questions; `books/` holds whole textbooks as page-marked text for gap filling. A week's **Notes** line overrides the steps below (for example "BOOK ONLY": write from the excerpt and ignore the deck). A new deck: extract it with the same slide-text format and add the week to `sources/gct2-weeks.cjs`, then run `node sources/build-index.cjs` there. Pictures that carry content in a deck are only in the .pptx: unzip `ppt/media` and look at them.
+
+### Saving tokens: text first, a Sonnet reader, then write
+
+Raw decks and books are the most expensive thing in a Labobo session. Do the reading cheaply:
+
+1. **Text, never page images.** If the subject has a course index, its `lectures/` file is the deck text. Otherwise run
+   `node .claude/skills/labobo-lecture/deck-to-text.cjs "<deck or folder>"`
+   which writes `_text/<name>.md` next to the deck (slide-numbered, with picture file names and speaker notes) and skips decks already done. It warns when a deck's text is scrambled (run `degly.cjs`) or when most slides are pictures only (the content is in the pictures, so they must be looked at).
+2. **Send the reading to the `lecture-reader` agent** (`.claude/agents/lecture-reader.md`, runs on Sonnet). Give it the lecture name, the deck text path, the syllabus file, the book excerpt or book file with the pages to check, the past papers, and the pictures worth looking at. It returns a slide-numbered fact sheet with the syllabus entry, gaps, slide/book conflicts and past-paper hits. Steps 1 to 4 below are its job; check its **Gaps** and **Conflicts** sections yourself.
+3. **Write Parts A and B from the fact sheet.** Open the deck text or a picture yourself only to check a doubtful fact, a conflict, or a picture for the guide. Do not re-read the whole deck.
+4. **Mechanical steps** (checking the existing topic labels and questions, the insert, the row count, `build.cjs`, `npm run guides`) need no judgement. When the questions are already in the data script, they can be handed to a Sonnet `general-purpose` agent (`model: sonnet`) with the exact commands.
+
+Small decks (under about 15 teaching slides of text) are cheaper to read directly than to send to the agent.
+
+### Source steps (done by the reader)
 
 1. **Syllabus first.** Find this lecture's entry (by number or title): the topics it should cover and the book or chapters it names. No entry: say so in the checks and carry on.
 2. **Read the whole lecture.** Note which syllabus topics it covers well and which are missing or thin.

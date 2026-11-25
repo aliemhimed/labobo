@@ -19,7 +19,9 @@ import { GuideReader, GuidesLibrary } from './Guides.jsx';
 import { findGuide, useGuideCatalog } from '../lib/guides.js';
 import { openSubscribeDialog } from '../lib/access.js';
 import { initialSession, restoreSession, serializeSession, sessionReducer } from './session.js';
-import { useHistory, useWrong } from '../hooks/useStore.js';
+import { useHistory, useSrs, useStarred, useWrong } from '../hooks/useStore.js';
+import { dueIds, dueTomorrow, updateSrs } from '../lib/srs.js';
+import { StarContext, starredIds } from './stars.js';
 import { buildSubjectIndex } from '../lib/questions.js';
 import { createSubjectStore, loadOptionSeed, onStorageError, saveOptionSeed, saveSession } from '../lib/storage.js';
 import { supaInsert } from '../lib/supabase.js';
@@ -42,7 +44,14 @@ const VIEWS = new Set([
   ...NEEDS_QUIZ, ...NEEDS_RECORD,
 ]);
 
-const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const VIEW_TITLES = {
+  study: 'Study', 'practice-config': 'Practice', 'exam-config': 'Exam', practice: 'Practice', exam: 'Exam',
+  'review-wrong': 'Review', 'review-after-exam': 'Review answers', 'exam-results': 'Results',
+  'exam-detail': 'Session details', 'flashcards-config': 'Flashcards', flashcards: 'Flashcards',
+  dashboard: 'Performance', guides: 'Study guides',
+};
+
+const prefersReducedMotion =() => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const NO_EXTRA = [];
 
@@ -96,10 +105,21 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
 
   const wrong = useWrong(store);
   const history = useHistory(store);
+  const srs = useSrs(store);
+  const starred = useStarred(store);
+  const due = useMemo(() => dueIds(srs, wrong), [srs, wrong]);
+  const starList = useMemo(() => starredIds(starred), [starred]);
+  const stars = useMemo(() => ({
+    isStarred: (id) => !!starred[id]?.on,
+    toggle: (id) => {
+      const cur = store.getStarred();
+      store.setStarred({ ...cur, [id]: { on: !cur[id]?.on, at: Date.now() } });
+    },
+  }), [starred, store]);
   const leaderboard = useLeaderboard(config.leaderboardSubject);
   const [memeEl, triggerMeme, dismissMeme] = useMeme(session.mode);
 
-  const { mode: quizMode, qIds, answers, index, record } = session;
+  const { mode: quizMode, qIds, answers, index, record, kind: reviewKind } = session;
 
   /* Keep an in-progress quiz across refreshes. */
   useEffect(() => {
@@ -132,9 +152,14 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
     window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
   }, [view, splat]);
 
+  /* The tab title names the screen as well as the subject, so history and
+     bookmarks tell an exam apart from a guide. */
+  const [, guideFolder, guideSlug] = view === 'guides' ? splat.split('/') : [];
+  const guideTitle = guideSlug ? findGuide(guideCatalog, config.path, guideFolder, guideSlug)?.title : null;
   useEffect(() => {
-    document.title = config.docTitle;
-  }, [config.docTitle]);
+    const screen = guideTitle || VIEW_TITLES[view];
+    document.title = screen ? `${screen} · ${config.docTitle}` : config.docTitle;
+  }, [config.docTitle, view, guideTitle]);
 
   /* The router applies navigation as a transition, so a plain dispatch next to
      it could render first and trip the "nothing to show" redirect below. Doing
@@ -165,9 +190,9 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
 
   /* ── starting each mode ─────────────────────────────────────────── */
 
-  function startSession(mode, picked, custom = false) {
+  function startSession(mode, picked, custom = false, kind = null) {
     setOptionSeed(uid());
-    commit({ type: 'start', mode, qIds: picked, custom }, mode);
+    commit({ type: 'start', mode, qIds: picked, custom, kind }, mode);
   }
 
   function startConfigured(mode) {
@@ -207,23 +232,38 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
     startSession(pendingDaily.mode, picked, true);
   }, [pendingDaily, idToIndex]); // startSession is a plain function, new each render
 
-  function startReviewWrong() {
-    const ids = Object.keys(wrong)
+  /* Wrong answers, questions due for spaced review, and starred questions
+     all run as a 'review-wrong' set; `kind` names the screen. */
+  function startReviewList(kind, list, keepOrder = false) {
+    const ids = list
       .map((id) => idToIndex.get(id))
       .filter((i) => i !== undefined);
     if (!ids.length) {
       toast('Nothing to review: those questions are no longer in the bank.');
       return;
     }
-    startSession('review-wrong', shuffle(ids));
+    startSession('review-wrong', keepOrder ? ids : shuffle(ids), false, kind);
   }
 
   function handleGo(key) {
-    if (key === 'review-wrong') startReviewWrong();
+    if (key === 'review-wrong') startReviewList('wrong', Object.keys(wrong));
+    else if (key === 'review-due') startReviewList('due', due);
+    else if (key === 'starred') startReviewList('starred', starList, true);
     else if (key === 'flashcards') go('flashcards-config');
     else if (key === 'leaderboard') leaderboard.openBoard();
     else go(key); // study, practice-config, exam-config, dashboard
   }
+
+  /* A link from the home page can ask for a set straight away
+     ("3 questions due for review"). Run it once, then drop the request so
+     Back and refresh don't start it again. */
+  const startRequest = view === 'home' ? location.state?.start : null;
+  useEffect(() => {
+    if (startRequest !== 'review-due') return;
+    navigate(location.pathname, { replace: true, state: null });
+    if (due.length) handleGo('review-due');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startRequest]);
 
   /* ── answering ──────────────────────────────────────────────────── */
 
@@ -287,6 +327,10 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
     });
     store.setWrong(wrongMap);
     store.setCleared(cleared);
+    store.setSrs(updateSrs(store.getSrs(), answers.map((a) => {
+      const q = questions[a.qIdx];
+      return { id: q?.id, correct: !!q && a.selected !== null && a.selected === q.answer };
+    })));
 
     supaInsert('sessions', {
       subject: config.sessionSubject,
@@ -366,7 +410,7 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
 
   const shared = {
     config, questions, subjectIndex, store, user,
-    qIds, answers, index, quizMode,
+    qIds, answers, index, quizMode, reviewKind,
     setIndex, getDisplayOrder,
     onSelect: selectOption,
     onReport: (qIdx) => setReportFor(qIdx),
@@ -387,6 +431,9 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
                     questionCount={bank.length}
                     topicCount={topicCount}
                     wrongCount={Object.keys(wrong).length}
+                    dueCount={due.length}
+                    dueTomorrowCount={dueTomorrow(srs)}
+                    starredCount={starList.length}
                     historyCount={history.length}
                     onGo={handleGo} />
         );
@@ -448,6 +495,8 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
       case 'dashboard':
         body = (
           <Dashboard store={store} subjectTitle={subjectTitle} onHome={goHome}
+                     practisable={allTopicKeys}
+                     onPractise={(keys) => { setPickedTopics(new Set(keys)); go('practice-config'); }}
                      onOpen={(rec) => commit({ type: 'view-record', record: rec }, 'exam-detail')} />
         );
         break;
@@ -479,15 +528,15 @@ export default function QuizEngine({ config, questions: bank, extra = NO_EXTRA, 
   }
 
   return (
-    <>
+    <StarContext.Provider value={stars}>
       <TopBar subtitle={subjectTitle} onBrandClick={goHome} onLogout={logout} />
-      <div id="root">{body}</div>
+      <main id="main" tabIndex={-1}>{body}</main>
       {memeEl}
       {leaderboard.element}
       {confirmEl}
       {reportFor !== null && questions[reportFor] ? (
         <ReportModal question={questions[reportFor]} onClose={() => setReportFor(null)} />
       ) : null}
-    </>
+    </StarContext.Provider>
   );
 }

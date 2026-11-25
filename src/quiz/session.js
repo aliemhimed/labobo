@@ -8,8 +8,10 @@ import { loadSession } from '../lib/storage.js';
      startedAt ms timestamp an exam/practice began (drives the leaderboard time)
      custom    true when the set was drawn from hand-picked lectures, not the
                whole subject; such an exam stays off the leaderboard
+     kind      for 'review-wrong' sets: 'wrong' | 'due' | 'starred', which list
+               the questions came from (names the screen)
      record    the saved result being shown on the results / detail / review screens */
-export const initialSession = { mode: null, qIds: [], answers: [], index: 0, startedAt: null, custom: false, record: null };
+export const initialSession = { mode: null, qIds: [], answers: [], index: 0, startedAt: null, custom: false, kind: null, record: null };
 
 const slotsFor = (qIds) => qIds.map((qIdx) => ({ qIdx, selected: null }));
 
@@ -18,7 +20,7 @@ export function sessionReducer(state, action) {
     case 'start':
       return {
         ...initialSession, mode: action.mode, qIds: action.qIds, answers: slotsFor(action.qIds),
-        startedAt: Date.now(), custom: !!action.custom,
+        startedAt: Date.now(), custom: !!action.custom, kind: action.kind || null,
       };
     case 'select': {
       const answers = state.answers.slice();
@@ -59,6 +61,7 @@ export function serializeSession(s, questions) {
     index: s.index,
     startedAt: s.startedAt,
     custom: s.custom,
+    kind: s.kind,
     record: s.record,
   };
 }
@@ -77,6 +80,7 @@ export function restoreSession(prefix, idToIndex) {
     index: Math.min(saved.index || 0, Math.max(0, slots.length - 1)),
     startedAt: saved.startedAt || null,
     custom: !!saved.custom,
+    kind: saved.kind || null,
     record: saved.record || null,
   };
 }

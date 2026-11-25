@@ -4,16 +4,26 @@ import { useHistory, useWrong } from '../hooks/useStore.js';
 import { Breakdown } from './Breakdown.jsx';
 import { fmtDate, scoreClass } from '../lib/utils.js';
 
-export default function Dashboard({ store, subjectTitle, onHome, onOpen }) {
+const WEAK_MIN_ANSWERS = 4;
+const WEAK_SHOWN = 3;
+
+export default function Dashboard({ store, subjectTitle, onHome, onOpen, practisable = [], onPractise }) {
   const hist = useHistory(store);
   const wrongMap = useWrong(store);
-  const { wrong, avg, totalAnswered, bySubj, worst } = useMemo(() => {
+  const { wrong, avg, totalAnswered, bySubj, worst, weak } = useMemo(() => {
     const wrong = Object.keys(wrongMap).length;
     let totalAnswered = 0, totalCorrect = 0;
     const bySubj = {};
+    const byTopic = {};
     hist.forEach((r) => {
       totalAnswered += r.questionCount;
       totalCorrect += r.correct;
+      Object.values(r.topicStats || {}).forEach((t) => {
+        const k = `${t.subject}::${t.topic}`;
+        if (!byTopic[k]) byTopic[k] = { key: k, topic: t.topic, correct: 0, total: 0 };
+        byTopic[k].correct += t.correct;
+        byTopic[k].total += t.total;
+      });
       Object.entries(r.subjectStats || {}).forEach(([s, st]) => {
         if (!bySubj[s]) bySubj[s] = { correct: 0, total: 0 };
         bySubj[s].correct += st.correct;
@@ -27,8 +37,14 @@ export default function Dashboard({ store, subjectTitle, onHome, onOpen }) {
       const p = st.total ? Math.round((100 * st.correct) / st.total) : 0;
       if (p < worstPct && st.total >= 5) { worstPct = p; worst = s; }
     });
-    return { wrong, avg, totalAnswered, bySubj, worst };
+    // Lectures with enough answers to judge, weakest first, below 75%.
+    const weak = Object.values(byTopic)
+      .filter((t) => t.total >= WEAK_MIN_ANSWERS && t.correct / t.total < 0.75)
+      .sort((a, b) => a.correct / a.total - b.correct / b.total);
+    return { wrong, avg, totalAnswered, bySubj, worst, weak };
   }, [hist, wrongMap]);
+  const open = new Set(practisable);
+  const weakShown = weak.filter((t) => open.has(t.key)).slice(0, WEAK_SHOWN);
 
   // Per-subject figures only say something when a set spans several banks.
   const multiSubject = Object.keys(bySubj).length > 1;
@@ -54,6 +70,26 @@ export default function Dashboard({ store, subjectTitle, onHome, onOpen }) {
               <div className="figure"><dt>Weakest subject</dt><dd className="figure-text">{worst}</dd></div>
             ) : null}
           </dl>
+
+          {weakShown.length && onPractise ? (
+            <section className="bd-section weak" aria-labelledby="dash-weak-title">
+              <h2 id="dash-weak-title" className="section-title">Your weakest lectures</h2>
+              <ul className="weak-list">
+                {weakShown.map((t) => (
+                  <li key={t.key} className="weak-row">
+                    <span className="weak-name">{t.topic}</span>
+                    <span className="weak-pct">{Math.round((100 * t.correct) / t.total)}% of {t.total}</span>
+                    <button type="button" className="btn" onClick={() => onPractise([t.key])}>Practise this</button>
+                  </li>
+                ))}
+              </ul>
+              {weakShown.length > 1 ? (
+                <button type="button" className="btn primary weak-all" onClick={() => onPractise(weakShown.map((t) => t.key))}>
+                  Practise all {weakShown.length} together
+                </button>
+              ) : null}
+            </section>
+          ) : null}
 
           {multiSubject ? (
             <section className="bd-section" aria-labelledby="dash-subject-title">

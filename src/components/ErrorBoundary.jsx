@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { reportError } from '../lib/errorReport.js';
 
 /* Last line of defence: an exception while rendering shows a way out instead
    of a blank page. Progress lives in localStorage, so a reload loses nothing. */
@@ -11,6 +12,8 @@ export default class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error('[render error]', error, info?.componentStack);
+    const stack = [error?.stack, info?.componentStack && `Components:${info.componentStack}`].filter(Boolean).join('\n');
+    reportError('render', { message: error?.message || String(error), stack });
   }
 
   render() {

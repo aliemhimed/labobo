@@ -249,7 +249,7 @@ export default function LoginPage() {
       </div>
     </header>
 
-    <main className="landing">
+    <main id="main" tabIndex={-1} className="landing">
       <div className="hero">
       <div className="hero-text">
         <h1>Practice questions for every lecture.</h1>
