@@ -1,0 +1,227 @@
+<article class="lb-guide" lang="en" dir="ltr"
+         data-subject="gct-3" data-part="Biophysics" data-type="lecture"
+         data-lectures="6" data-topic="Biophys Lec 6: Membrane Potential and Muscle Contraction"
+         data-language="EN" data-version="1">
+
+<header class="lb-head">
+  <p class="lb-kicker">GCT III · Biophysics · Lecture 6</p>
+  <h1>Membrane Potential and Muscle Contraction</h1>
+  <p class="lb-lede">The membrane as a capacitor, the resting potential and the Nernst and Goldman–Hodgkin–Katz equations, driving force, the phases of the action potential and its conduction, then the three muscle types, the sarcomere, actin, myosin and accessory proteins, the cross-bridge cycle and Ca²⁺ control in skeletal, cardiac and smooth muscle.</p>
+  <span class="lb-topic-name">Labobo topic: Biophys Lec 6: Membrane Potential and Muscle Contraction</span>
+</header>
+
+<section class="lb-card" aria-labelledby="sixty">
+  <h2 id="sixty">In 60 seconds</h2>
+  <ul>
+    <li>The bilayer is a poor conductor with charge on both faces: a <strong>capacitor</strong>, field ~200 000 V/cm. Neurons and cardiac cells rest at about <strong>−70 mV</strong>, non-excitable cells −60 to −80 mV, photoreceptors about −20 mV.</li>
+    <li><strong>Nernst</strong>: V<sub>eq</sub> = (RT/zF) ln([X]<sub>out</sub>/[X]<sub>in</sub>). <strong>GHK</strong> combines K⁺, Na⁺ and Cl⁻ weighted by permeability (p<sub>K</sub> : p<sub>Na</sub> : p<sub>Cl</sub> = 1 : 0.05 : 0.45 at rest).</li>
+    <li>Driving force V<sub>DF</sub> = V<sub>m</sub> − V<sub>eq</sub>. At rest K⁺ leaks out, Na⁺ and Cl⁻ leak in; the Na⁺/K⁺ pump maintains gradients.</li>
+    <li>Action potential: all-or-nothing; Na⁺ channels open (overshoot), then inactivate as K⁺ channels open (repolarisation, hyperpolarisation). Bulk concentrations do not change. Myelin (Schwann cells, oligodendrocytes) gives conduction at <strong>nodes of Ranvier</strong>.</li>
+    <li>Sarcomere: Z–Z; A band (myosin + overlap), H band (myosin only), I band (actin only), M line. Sliding filament model (1954).</li>
+    <li>Ca²⁺ from the SR (DHPR → ryanodine receptor) binds <strong>troponin C</strong>, moving tropomyosin; ATP releases myosin (no ATP = <strong>rigor mortis</strong>). SR Ca²⁺-ATPase: 2 Ca²⁺ per ATP. Smooth muscle has <strong>no troponin</strong> and no sarcomeres.</li>
+  </ul>
+</section>
+
+<section class="lb-card" aria-labelledby="objectives">
+  <h2 id="objectives">Learning objectives</h2>
+  <p>Lecture by G. Tvauri. By the end you can:</p>
+  <ul>
+    <li>explain why the membrane behaves as a capacitor and give typical resting potentials;</li>
+    <li>use the Nernst and GHK equations and the driving-force concept;</li>
+    <li>describe the phases of the action potential and saltatory conduction;</li>
+    <li>compare skeletal, cardiac and smooth muscle;</li>
+    <li>describe sarcomere bands, thin and thick filaments and accessory proteins;</li>
+    <li>explain the cross-bridge cycle and excitation–contraction coupling.</li>
+  </ul>
+</section>
+
+<nav class="lb-toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">Contents</h2>
+  <ol>
+    <li><a href="#resting">Resting membrane potential</a></li>
+    <li><a href="#equations">Nernst, GHK and driving force</a></li>
+    <li><a href="#ap">The action potential</a></li>
+    <li><a href="#muscletypes">Three types of muscle</a></li>
+    <li><a href="#sarcomere">Sarcomere and filaments</a></li>
+    <li><a href="#contraction">Cross-bridge cycle and Ca²⁺ control</a></li>
+    <li><a href="#cardiacsmooth">Cardiac and smooth muscle</a></li>
+    <li><a href="#check">Check yourself</a></li>
+  </ol>
+</nav>
+
+<section class="lb-section" id="resting">
+  <h2>Resting membrane potential</h2>
+  <p>Electrostatics underlies membrane potentials (Coulomb's law, electric field, work moving a charge). The hydrophobic bilayer is a poor conductor with charges on both sides, so it acts as a <strong>capacitor</strong>; the voltage gradient is about <strong>200 000 V/cm</strong>. Cells are slightly negative inside.</p>
+  <p>The potential arises from <strong>unequal ion concentrations</strong> (Na⁺, K⁺, Cl⁻, anions A⁻) plus <strong>selective ion channels</strong>, and is measured with fine glass microelectrodes filled with 3 M KCl.</p>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th>Cell</th><th>Typical V<sub>m</sub></th></tr></thead>
+    <tbody>
+      <tr><td>Neuron, cardiac muscle</td><td>about −70 mV</td></tr>
+      <tr><td>Non-excitable cells</td><td>−60 to −80 mV</td></tr>
+      <tr><td>Photoreceptors</td><td>about −20 mV</td></tr>
+    </tbody>
+  </table></div>
+  <p>In non-excitable cells V<sub>m</sub> stays at rest; excitable cells (neurons, muscle) fire rapid changes. Terms: <strong>depolarisation</strong> (less negative), <strong>hyperpolarisation</strong> (more negative).</p>
+</section>
+
+<section class="lb-section" id="equations">
+  <h2>Nernst, GHK and driving force</h2>
+  <p>If a membrane is permeable to K⁺ only (e.g. 150 mM inside, 5 mM outside), K⁺ diffuses out until the electrical pull balances the concentration gradient: the <strong>equilibrium (Nernst) potential</strong>.</p>
+  <p><strong>V<sub>eq</sub> = (RT / zF) · ln([X]<sub>out</sub> / [X]<sub>in</sub>)</strong>, with R = 8.314 J/(K·mol), F = 96 485 C/mol, z = valence.</p>
+  <p>Real cells are permeable to several ions, so the <strong>Goldman–Hodgkin–Katz equation</strong> weights each by permeability:</p>
+  <p>V<sub>m</sub> = (RT/F) · ln[(p<sub>K</sub>[K⁺]<sub>o</sub> + p<sub>Na</sub>[Na⁺]<sub>o</sub> + p<sub>Cl</sub>[Cl⁻]<sub>i</sub>) / (p<sub>K</sub>[K⁺]<sub>i</sub> + p<sub>Na</sub>[Na⁺]<sub>i</sub> + p<sub>Cl</sub>[Cl⁻]<sub>o</sub>)]</p>
+  <p>At rest p<sub>K</sub> : p<sub>Na</sub> : p<sub>Cl</sub> ≈ <strong>1 : 0.05 : 0.45</strong>, so V<sub>m</sub> lies close to E<sub>K</sub>. Raising the permeability to an ion moves V<sub>m</sub> toward that ion's Nernst potential.</p>
+  <p><strong>Driving force</strong>: V<sub>DF</sub> = V<sub>m</sub> − V<sub>eq</sub>. Its sign gives the direction of ion flow. In a resting neuron K⁺ flows <strong>out</strong>, Na⁺ and Cl⁻ flow <strong>in</strong>; the <strong>Na⁺/K⁺-ATPase</strong> restores the gradients, and the kidneys keep extracellular Na⁺ and K⁺ constant. The Na⁺ gradient also powers secondary active transport (e.g. Na⁺–glucose).</p>
+  <aside class="lb-box lb-trap">
+    <span class="lb-box-title">Watch out</span>
+    <p>For Cl⁻ (z = −1) the inside and outside concentrations swap places in the GHK equation. Also, Na⁺ and K⁺ concentrations do <strong>not</strong> measurably change during one action potential; only tiny amounts of ions cross.</p>
+  </aside>
+</section>
+
+<section class="lb-section" id="ap">
+  <h2>The action potential</h2>
+  <p>An action potential is <strong>all-or-nothing</strong>: once threshold is reached it fires at full size.</p>
+  <ol start="0">
+    <li><strong>Rest.</strong></li>
+    <li><strong>Depolarisation to threshold</strong>: voltage-gated Na⁺ channels activate.</li>
+    <li><strong>Overshoot</strong>: more Na⁺ channels open, Na⁺ permeability soars and V<sub>m</sub> becomes positive (positive feedback, the Hodgkin cycle).</li>
+    <li><strong>Peak</strong>: Na⁺ channels inactivate; K⁺ channels activate.</li>
+    <li><strong>Repolarisation</strong>: K⁺ permeability high, Na⁺ low.</li>
+    <li><strong>Hyperpolarisation</strong> (undershoot) until K⁺ channels close.</li>
+  </ol>
+  <p>The voltage-gated Na⁺ channel has three states: closed (resting), open, and inactivated.</p>
+  <h3>Conduction</h3>
+  <p>Squids speed conduction with very wide axons (lower resistance). Vertebrates use <strong>myelin</strong>: Na⁺ and K⁺ channels cluster at the <strong>nodes of Ranvier</strong>, so impulses jump node to node. Myelin is made by <strong>Schwann cells</strong> (one axon each, peripheral) and <strong>oligodendrocytes</strong> (up to about 40 axons, CNS).</p>
+</section>
+
+<section class="lb-section" id="muscletypes">
+  <h2>Three types of muscle</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th></th><th>Skeletal</th><th>Cardiac</th><th>Smooth</th></tr></thead>
+    <tbody>
+      <tr><td>Control</td><td>Voluntary, motor neurons</td><td>Involuntary; pacemaker cells</td><td>Involuntary; autonomic, hormones, stretch</td></tr>
+      <tr><td>Cells</td><td>Long, cylindrical, multinucleate</td><td>Branched, one nucleus, intercalated discs</td><td>Spindle-shaped, one nucleus</td></tr>
+      <tr><td>Striated</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+      <tr><td>Self-stimulating</td><td>No</td><td>Yes (spreads cell to cell)</td><td>Yes (spreads cell to cell)</td></tr>
+      <tr><td>Speed / fatigue</td><td>Fast; fatigues easily</td><td>Intermediate; does not fatigue</td><td>Slow, rhythmic; fatigues slowly</td></tr>
+      <tr><td>Energy use</td><td>High (mitochondria, creatine phosphate, myoglobin)</td><td>Intermediate (many mitochondria)</td><td>Low</td></tr>
+    </tbody>
+  </table></div>
+  <p>Skeletal muscle organisation: each fibre is wrapped in <strong>endomysium</strong> (with capillaries), fibres group into fascicles wrapped in <strong>perimysium</strong>, and the whole muscle is wrapped in <strong>epimysium</strong>; these connective tissues contain collagen and elastin.</p>
+</section>
+
+<section class="lb-section" id="sarcomere">
+  <h2>Sarcomere and filaments</h2>
+  <div class="lb-table-wrap"><table class="lb-table">
+    <thead><tr><th>Band / line</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td>Sarcomere</td><td>From one Z line to the next</td></tr>
+      <tr><td>A band</td><td>Whole length of myosin thick filaments, including overlap with actin</td></tr>
+      <tr><td>H band</td><td>Thick filaments only (no overlap)</td></tr>
+      <tr><td>M line</td><td>Centre, where thick filaments are anchored</td></tr>
+      <tr><td>I band</td><td>Thin (actin) filaments only</td></tr>
+      <tr><td>Z line</td><td>Anchors thin filaments</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Actin (thin filaments)</h3>
+  <p>Six isoforms (α-skeletal, α-cardiac, α-vascular, γ-enteric, β- and γ-cytoplasmic), about 80% identical. Globular <strong>G-actin</strong> (~43 kDa, with an ATP site) polymerises into <strong>F-actin</strong>, about 7–8 nm wide, with a helical repeat of about 37 nm (14 monomers). Monomers add at the <strong>plus end</strong> (critical concentration ~1 µM) and leave the minus end (~8 µM): treadmilling between those concentrations.</p>
+  <ul>
+    <li><strong>Tropomyosin</strong>: rigid coiled-coil dimer (~41 nm) lying along 7 actin monomers.</li>
+    <li><strong>Troponin</strong>: <strong>TnT</strong> binds tropomyosin, <strong>TnI</strong> inhibits actin–myosin interaction, <strong>TnC</strong> binds Ca²⁺.</li>
+    <li><strong>Tropomodulin</strong> caps and regulates filament length.</li>
+  </ul>
+  <h3>Myosin II (thick filaments)</h3>
+  <p>Two heavy chains (~200 kDa) forming a coiled-coil tail (heptad repeat with hydrophobic residues at positions a and d) and two globular motor heads, each with two light chains (~18–20 kDa). Tails pack into the thick filament with heads projecting.</p>
+  <h3>Accessory proteins</h3>
+  <ul>
+    <li>M line: <strong>myomesin</strong> and <strong>C-protein</strong> cross-link thick filaments and titin; <strong>creatine kinase</strong> regenerates ATP from phosphocreatine.</li>
+    <li>Z disc: <strong>CapZ</strong> caps actin; <strong>α-actinin</strong> cross-links actin.</li>
+    <li><strong>Titin</strong> (~3.5 MDa) links myosin to the Z disc and acts as a spring; <strong>nebulin</strong> sets the number of actin monomers in thin filaments.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="contraction">
+  <h2>Cross-bridge cycle and Ca²⁺ control</h2>
+  <p>The <strong>sliding filament model</strong> (1954): filaments slide past each other without shortening, so the I and H bands narrow while the A band stays the same. Energy is required.</p>
+  <ol>
+    <li>ATP hydrolysis cocks the myosin head, which contacts actin.</li>
+    <li>Release of Pi and a conformational change produce the <strong>power stroke</strong> (about 10 nm).</li>
+    <li>ADP is released; the head stays bound until a new <strong>ATP</strong> binds and detaches it. With no ATP, heads stay attached: <strong>rigor mortis</strong>.</li>
+  </ol>
+  <h3>Regulation by Ca²⁺</h3>
+  <p>In relaxed muscle, tropomyosin and TnI block myosin-binding sites on actin. When <strong>Ca²⁺ binds TnC</strong>, the troponin–tropomyosin complex shifts and myosin heads can bind.</p>
+  <h3>Excitation–contraction coupling</h3>
+  <ul>
+    <li>The action potential travels down <strong>T-tubules</strong>.</li>
+    <li>The voltage-sensing <strong>dihydropyridine receptor (DHPR)</strong> signals the SR Ca²⁺ release channel, the <strong>ryanodine receptor</strong>.</li>
+    <li>Ca²⁺ is pumped back into the SR (1–5% of muscle volume) by <strong>Ca²⁺-ATPase</strong>, <strong>2 Ca²⁺ per ATP</strong>, causing relaxation.</li>
+    <li><strong>Calsequestrin</strong> binds 40–43 Ca²⁺ per molecule inside the SR, storing Ca²⁺ while keeping free SR Ca²⁺ low so the pump can work.</li>
+  </ul>
+</section>
+
+<section class="lb-section" id="cardiacsmooth">
+  <h2>Cardiac and smooth muscle</h2>
+  <h3>Cardiac</h3>
+  <p>Similar to skeletal muscle but cells are joined by intercalated discs with desmosomes (maculae adherentes), fasciae adherentes and <strong>gap junctions</strong>; Purkinje fibres conduct impulses. Cardiac myosin II has <strong>lower ATPase activity</strong> than skeletal myosin. Thin filaments use cardiac isoforms of actin, tropomyosin and troponin, with six thin filaments around each thick filament, and Ca²⁺–troponin regulation.</p>
+  <h3>Smooth</h3>
+  <ul>
+    <li>No sarcomeres; individual fusiform cells (20 µm in small vessels to 200–300 µm in the gut), linked by gap junctions; they also make connective-tissue matrix.</li>
+    <li><strong>Dense bodies</strong> containing α-actinin replace Z discs.</li>
+    <li><strong>No troponin</strong>; about twice as much actin–tropomyosin; <strong>12 thin filaments per thick</strong> (versus 6 in striated muscle).</li>
+    <li>Smooth myosin has two heavy and four light chains; isolated, it does not form filaments and its ATPase is blocked until regulated (light-chain phosphorylation).</li>
+  </ul>
+</section>
+
+<section class="lb-section lb-quiz" id="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li class="lb-q"><p>The resting potential of a neuron is about:</p>
+      <ol><li>+30 mV</li><li>−20 mV</li><li>−70 mV</li><li>−120 mV</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong></p></details></li>
+    <li class="lb-q"><p>The GHK equation differs from Nernst because it:</p>
+      <ol><li>Ignores temperature</li><li>Includes several ions weighted by permeability</li><li>Applies to one ion only</li><li>Uses only extracellular concentrations</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>At rest the membrane is most permeable to:</p>
+      <ol><li>Na⁺</li><li>K⁺</li><li>Ca²⁺</li><li>Cl⁻</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>The overshoot of the action potential is caused by:</p>
+      <ol><li>K⁺ efflux</li><li>Na⁺ influx</li><li>Cl⁻ influx</li><li>The Na⁺/K⁺ pump</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Ion channels in myelinated axons are concentrated at:</p>
+      <ol><li>Internodes</li><li>Nodes of Ranvier</li><li>The soma only</li><li>Schwann cell nuclei</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>During contraction, which band stays the same length?</p>
+      <ol><li>I band</li><li>H band</li><li>A band</li><li>Sarcomere</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong></p></details></li>
+    <li class="lb-q"><p>Ca²⁺ starts contraction by binding:</p>
+      <ol><li>Tropomyosin</li><li>Troponin C</li><li>Troponin I</li><li>Myosin light chain only</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Rigor mortis occurs because:</p>
+      <ol><li>Ca²⁺ is absent</li><li>No ATP is available to detach myosin</li><li>Actin depolymerises</li><li>Titin breaks</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>The SR Ca²⁺ release channel is the:</p>
+      <ol><li>DHPR</li><li>Ryanodine receptor</li><li>Calsequestrin</li><li>Na⁺ channel</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>B.</strong></p></details></li>
+    <li class="lb-q"><p>Smooth muscle lacks:</p>
+      <ol><li>Actin</li><li>Myosin</li><li>Troponin</li><li>Tropomyosin</li></ol>
+      <details class="lb-answer"><summary>Show answer</summary><p><strong>C.</strong></p></details></li>
+  </ol>
+</section>
+
+<section class="lb-section" id="terms">
+  <h2>Key terms</h2>
+  <p class="lb-terms"><strong>Membrane capacitance</strong>: charge storage by the bilayer · <strong>Nernst potential</strong>: equilibrium potential of one ion · <strong>GHK equation</strong>: V<sub>m</sub> from several ions · <strong>Driving force</strong>: V<sub>m</sub> − V<sub>eq</sub> · <strong>Threshold</strong>: point where firing becomes inevitable · <strong>Saltatory conduction</strong>: node-to-node · <strong>Sarcomere</strong>: Z to Z · <strong>Troponin T/I/C</strong>: binds tropomyosin / inhibits / binds Ca²⁺ · <strong>Titin, nebulin</strong>: giant scaffold proteins · <strong>DHPR / ryanodine receptor</strong>: voltage sensor / SR Ca²⁺ channel · <strong>Calsequestrin</strong>: SR Ca²⁺ buffer · <strong>Dense body</strong>: smooth-muscle Z-disc equivalent.</p>
+</section>
+
+<details class="lb-slidemap"><summary>Slide coverage</summary>
+  <ul>
+    <li>Electrostatics; membrane as capacitor; resting potentials of different cells</li>
+    <li>Establishment of the potential; Nernst equation; GHK equation; driving force; maintenance</li>
+    <li>Action potential phases, Na⁺ channel states, conduction and myelin</li>
+    <li>Skeletal, cardiac and smooth muscle compared; muscle connective tissue</li>
+    <li>Sarcomere bands; actin, tropomyosin, troponin, tropomodulin; myosin II; accessory proteins</li>
+    <li>Sliding filament model, cross-bridge cycle, Ca²⁺ regulation, SR and excitation–contraction coupling</li>
+    <li>Cardiac muscle filaments and junctions; smooth muscle structure and filaments</li>
+  </ul>
+</details>
+</article>

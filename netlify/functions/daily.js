@@ -43,6 +43,7 @@ const SUBJECT_TABLES = {
   'body-systems-2': ['bs2_anatomy', 'bs2_physiology', 'bs2_imaging'],
   'clinical-2': ['clinical_skills_2'],
   'scientific-reasoning': ['scientific_reasoning'],
+  'gct-3': ['gct3_biochemistry', 'gct3_immunology', 'gct3_biophysics'],
   'gct-4': ['gct4_immunology', 'gct4_microbiology'],
   'body-systems-4': ['bs4_anatomy', 'bs4_physiology', 'bs4_imaging'],
   'history-of-medicine': ['history_of_medicine'],

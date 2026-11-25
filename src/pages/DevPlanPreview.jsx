@@ -1,4 +1,7 @@
-import { LockedContext, LockedLectures, LockedNote, PlanStripView, SubscribeView } from '../components/Plan.jsx';
+import {
+  LockedContext, LockedLectures, LockedNote, PlanStripView, SubscribeView, TrialButtonView, TrialDialogView,
+} from '../components/Plan.jsx';
+import '../styles/home.css';
 import { DecidedList, PaymentCard } from '../components/admin/PaymentsTab.jsx';
 import DailyCard from '../quiz/DailyCard.jsx';
 import { SUBJECTS } from '../lib/subjects.js';
@@ -116,6 +119,30 @@ export default function DevPlanPreview() {
         <Frame title="Pass switched on, with its three devices"><Subscribe access={ACCESS.passDevices} payment={PAYMENT.none} /></Frame>
         <Frame title="Pass in use on another phone"><Subscribe access={ACCESS.passBlocked} payment={PAYMENT.none} /></Frame>
         <Frame title="Before 14 November"><Subscribe access={ACCESS.before} payment={PAYMENT.none} /></Frame>
+      </div>
+
+      <div className="dev-grid">
+        <Frame title="Home: Try the free trial, next to Give us a review">
+          <div className="home-actions">
+            <TrialButtonView trial={TRIAL} onClick={noop} />
+            <button type="button" className="review-pill"><span aria-hidden="true">⭐</span> Give us a review</button>
+          </div>
+          <div className="home-actions">
+            <TrialButtonView trial={TRIAL} busy error="This university address has already used its free trial" onClick={noop} />
+          </div>
+          <div className="home-actions">
+            <p className="trial-started-note" role="status">
+              <b>Your free trial has started 🎉</b> Every lecture is open until 19 November, 9:41 PM.
+            </p>
+          </div>
+        </Frame>
+        <Frame title="Home trial button, Gmail account: confirm @eu.edu.ge first">
+          <div className="dialog dev-dialog">
+            <TrialDialogView trial={NO_TRIAL} email="student@gmail.com" onClose={noop} onSignOut={noop}
+                             onSendCode={async (email) => ({ sent: true, email: email.toLowerCase() })}
+                             onVerifyCode={async () => { throw new Error('That code is not right. Check the email and try again'); }} />
+          </div>
+        </Frame>
       </div>
 
       <Frame title="Home page strip: free, trial, pass" wide>

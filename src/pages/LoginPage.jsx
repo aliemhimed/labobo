@@ -50,7 +50,7 @@ const WAYS = [
 // Taken in any semester, so they are listed apart from the semester subjects.
 const ELECTIVES = ['history-of-medicine', 'physics', 'chemistry', 'medicine-art'];
 const SUBJECT_GROUPS = [
-  ...['1', '2', '4'].map((sem) => ({
+  ...['1', '2', '3', '4'].map((sem) => ({
     name: `Semester ${sem}`,
     keys: Object.keys(SUBJECTS).filter((k) => !ELECTIVES.includes(k) && inSemester(SUBJECTS[k], sem)),
   })),

@@ -50,6 +50,12 @@ const PUBLISH = {
     include: (g) => typeof g.lecture === 'number',
     tables: { Biochemistry: 'gct2_biochemistry', 'Medical Genetics': 'gct2_genetics', 'Molecular Biology': 'gct2_molecular_biology', Histology: 'gct2_histology' },
   },
+  'gct-3': {
+    scope: 'lectures',
+    note: 'covered so far',
+    include: (g) => typeof g.lecture === 'number',
+    tables: { Biochemistry: 'gct3_biochemistry', Immunology: 'gct3_immunology', Biophysics: 'gct3_biophysics' },
+  },
   // GCT IV, pre-midterm: lectures 1–7 of Immunology and Microbiology.
   'gct-4': {
     scope: 'pre-midterm',
@@ -72,7 +78,7 @@ const PUBLISH = {
     tables: { Anatomy: 'bs2_anatomy', Physiology: 'bs2_physiology', 'Medical Imaging': 'bs2_imaging' },
   },
 };
-const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology', 'Immunology', 'Microbiology', 'Anatomy', 'Physiology', 'Medical Imaging'];
+const PART_ORDER = ['Biochemistry', 'Medical Genetics', 'Molecular Biology', 'Histology', 'Immunology', 'Biophysics', 'Microbiology', 'Anatomy', 'Physiology', 'Medical Imaging'];
 
 const attr = (html, name) => new RegExp(`data-${name}="([^"]*)"`).exec(html)?.[1] || '';
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&rsquo;/g, '’');
@@ -216,7 +222,7 @@ async function publish() {
     });
     gone += (await res.json()).length;
   }
-  await call('remove old subjects', `/rest/v1/study_guide_sets?subject=not.in.(${quoted(subjects)})`, { method: 'DELETE' });
+  // Subjects not listed in PUBLISH (e.g. gct-4, published separately) are left alone.
   const stale = [...have.keys()].filter((name) => !pictures.has(name));
   for (let i = 0; i < stale.length; i += 100) {
     await call('remove old pictures', `/storage/v1/object/${BUCKET}`, { method: 'DELETE', ...jsonBody({ prefixes: stale.slice(i, i + 100) }) });

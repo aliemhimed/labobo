@@ -242,6 +242,25 @@ export const SUBJECTS = {
     sources: [{ table: 'scientific_reasoning', subject: 'Scientific Reasoning' }],
   },
 
+  'gct-3': {
+    path: 'gct-3',
+    title: 'GCT III MCQ',
+    description: 'Biochemistry, Immunology & Biophysics',
+    docTitle: 'GCT III — Studywith Labobo',
+    storagePrefix: 'gct3',
+    leaderboardSubject: 'GCT III',
+    sessionSubject: 'GCT III',
+    semester: '3',
+    examLengths: [30, 60, 90, 120, 150, 180, 210],
+    // Exam weighting (points): Immunology 6, Biophysics 6, Biochemistry 4 (Histology 4, not yet added).
+    ratio: { Immunology: 3, Biophysics: 3, Biochemistry: 2 },
+    sources: [
+      { table: 'gct3_biochemistry', subject: 'Biochemistry' },
+      { table: 'gct3_immunology', subject: 'Immunology' },
+      { table: 'gct3_biophysics', subject: 'Biophysics' },
+    ],
+  },
+
   'gct-4': {
     path: 'gct-4',
     title: 'GCT IV MCQ',

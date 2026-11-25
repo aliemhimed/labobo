@@ -9,7 +9,7 @@ import { useProfile } from '../hooks/useProfile.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import ProfileMenu from '../components/ProfileMenu.jsx';
 import AnnouncementBanner from '../components/AnnouncementBanner.jsx';
-import { PlanStrip } from '../components/Plan.jsx';
+import { PlanStrip, TrialButton } from '../components/Plan.jsx';
 import { ReviewNote, ReviewPrompt } from '../components/Reviews.jsx';
 import { DueToday, ExamCountdown, ReminderCard, StartHere, YouAsked } from '../components/HomeExtras.jsx';
 import { InstagramGlyph } from '../components/Icons.jsx';
@@ -55,6 +55,7 @@ const DECK_LOOK = {
   'body-systems-2': { glyph: '🫀', fill: 'mint', topics: ['Anatomy', 'Physiology', 'Medical Imaging'] },
   'clinical-2': { glyph: '💉', fill: 'coral', topics: ['Clinical procedures', 'Communication', 'Professional practice'] },
   'scientific-reasoning': { glyph: '🔬', fill: 'violet', topics: ['Health research process'] },
+  'gct-3': { glyph: '🧪', fill: 'orange', topics: ['Biochemistry', 'Immunology', 'Biophysics'] },
   'gct-4': { glyph: '🦠', fill: 'violet', topics: ['Immunology', 'Microbiology'] },
   'body-systems-4': { glyph: '🫀', fill: 'mint', topics: ['Anatomy', 'Physiology', 'Medical Imaging'] },
   'history-of-medicine': { glyph: '📜', fill: 'orange', topics: ['Prehistoric', 'Mesopotamia', 'Egypt', 'India', 'China', 'Greece'] },
@@ -258,7 +259,10 @@ export default function HomePage() {
             {withGuides.map((s) => ` ${s.name} also has a study guide for every lecture ${guidesFor(catalog, s.key).note}.`).join('')}
           </p>
 
-          <ReviewPrompt activeDays={log.activeDays} />
+          <div className="home-actions">
+            <TrialButton />
+            <ReviewPrompt activeDays={log.activeDays} />
+          </div>
 
           {log.answered === 0 && !resumable.length && !reading ? <StartHere subjects={subjects} /> : null}
           <DueToday subjects={subjects} storageVersion={storageVersion} />

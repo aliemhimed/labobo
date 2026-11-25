@@ -987,6 +987,86 @@ const GUIDES = {
   },
 };
 
+// GCT III Biochemistry (added 19 Nov 2026). Ids, titles and chapter times read from each video's page.
+const DR = 'Dirty Medicine', JJ = 'JJ Medicine', OS = 'Osmosis from Elsevier', AL = 'Alila Medical Media', CU = 'Catalyst University';
+Object.assign(GUIDES, {
+  'gct-3/biochemistry/lec01-neurotransmitters.html': {
+    catechol: [
+      v('yuMP6lQ-Ueo', JJ, 'Catecholamine Biosynthesis Pathway', '0:00', 'end', 'tyrosine to dopamine, norepinephrine and epinephrine, with every enzyme and cofactor'),
+      v('afzWLmd72Rk', NN, 'Endocrinology | Adrenal Medulla | Catecholamines', '7:25', '13:42', 'catecholamine synthesis in the adrenal medulla'),
+    ],
+    pheo: [
+      v('rFoc4ACFehQ', NN, 'Parkinson’s Disease | Causes &amp; Pathophysiology | Part 2', '0:00', 'end', 'loss of dopaminergic neurons, α-synuclein and Lewy bodies'),
+      v('RYLI-4zEi-I', MM, 'Parkinson’s disease | Dopamine and the basal ganglia', '0:00', 'end', 'why losing nigral dopamine upsets movement'),
+    ],
+    serotonin: [v('Ve_dS8Ft6U8', MP, 'Carcinoid Syndrome | Serotonin-Secreting Tumors', '0:00', 'end', 'why carcinoid causes flushing, diarrhoea, right-heart valve disease and high 5-HIAA')],
+    alzheimer: [v('v5gdH_Hydes', OS, 'Alzheimer’s disease - plaques, tangles, causes, symptoms &amp; pathology', '0:00', 'end', 'amyloid plaques, tau tangles and loss of cholinergic neurons')],
+    glugaba: [v('a8X15B1skF0', CU, 'GABA Biosynthesis and Catabolism', '0:00', 'end', 'glutamate decarboxylase, GABA transaminase and their B6 cofactor')],
+  },
+  'gct-3/biochemistry/lec02-kidney-minerals.html': {
+    proximal: [v('rcvRiglLLL0', MM, 'Acid Base Balance | Renal Regulation', '8:39', '14:13', 'how the proximal tubule reclaims filtered bicarbonate')],
+    collecting: [v('rcvRiglLLL0', MM, 'Acid Base Balance | Renal Regulation', '14:13', 'end', 'H⁺ excretion, urinary buffers and new bicarbonate')],
+    capmg: [
+      v('uxCw4qovZXE', MM, 'Calcium &amp; Phosphate Homeostasis', '0:00', 'end', 'how PTH, calcitriol and calcitonin control calcium and phosphate'),
+      v('IVPaUMOxYB4', AL, 'Magnesium Metabolism and Hypomagnesemia, Animation', '0:00', 'end', 'magnesium handling and what happens when it is low'),
+    ],
+    copper: [
+      v('yjsMSWh2U6s', MP, 'Menkes Disease - Menkes Kinky Hair Syndrome - Copper', '0:00', 'end', 'ATP7A and the copper enzymes that fail'),
+      v('OYaDTnxTKag', MP, 'Wilson disease (Hepatolenticular Degeneration) - Copper', '0:00', 'end', 'ATP7B, low ceruloplasmin and copper deposits'),
+    ],
+    iron: [v('_CWMUt8Xi_Y', MP, 'Iron Studies - Iron Absorption - Ferrous (Fe2+), Ferric (Fe3+), TIBC, Ferritin, Transferrin - Part 1', '0:00', 'end', 'iron absorption, transport and how to read iron studies')],
+  },
+  'gct-3/biochemistry/lec03-lipid-digestion.html': {
+    stomach: [v('ja-MWkFNvDg', NN, 'Gastrointestinal | Digestion &amp; Absorption of Lipids', '5:52', '14:06', 'oral and gastric lipases')],
+    bileacids: [v('WdORLvO3HeI', JJ, 'Bile Acid Synthesis | Classic and Alternative Pathways | Primary and Secondary Bile Acids', '0:00', 'end', 'the classical and alternative pathways and secondary bile acids')],
+    bile: [v('ja-MWkFNvDg', NN, 'Gastrointestinal | Digestion &amp; Absorption of Lipids', '14:06', '23:18', 'how bile emulsifies fat')],
+    pancreas: [v('ja-MWkFNvDg', NN, 'Gastrointestinal | Digestion &amp; Absorption of Lipids', '23:18', '34:43', 'pancreatic lipase, colipase, phospholipase A₂ and cholesterol esterase')],
+    absorption: [v('ja-MWkFNvDg', NN, 'Gastrointestinal | Digestion &amp; Absorption of Lipids', '34:43', 'end', 'micelles, absorption, re-esterification and chylomicrons')],
+    chylo: [v('wQY0xpwqPfQ', NN, 'Metabolism | Lipoprotein Metabolism | Chylomicrons, VLDL, IDL, LDL, &amp; HDL', '12:52', '27:57', 'chylomicron assembly, lymphatic transport, LPL and remnant uptake')],
+    cf: [v('x0YXkBE5fVo', MP, 'Cystic Fibrosis - Definition, Pathogenesis, Symptoms and Complications', '0:00', 'end', 'CFTR, salty sweat, pancreatic insufficiency and infertility')],
+  },
+  'gct-3/biochemistry/lec04-fatty-acid-synthesis.html': {
+    citrate: [v('nBFSz63T1c0', NN, 'Metabolism | Fatty Acid Synthesis: Part 1', '0:00', 'end', 'glucose to cytosolic acetyl-CoA, the citrate shuttle and NADPH')],
+    fas: [v('iKcvb1IihcM', NN, 'Metabolism | Fatty Acid Synthesis: Part 2 (Updated)', '12:19', 'end', 'acetyl-CoA carboxylase and each step of fatty acid synthase up to palmitate')],
+    nadph: [v('iKcvb1IihcM', NN, 'Metabolism | Fatty Acid Synthesis: Part 2 (Updated)', '4:45', '12:19', 'the pentose phosphate pathway as the NADPH source')],
+    tag: [v('v-5RcGtSa8Y', NN, 'Metabolism | Triglyceride Synthesis', '0:00', 'end', 'glycerol 3-phosphate, phosphatidic acid and TAG assembly in liver and adipose tissue')],
+  },
+  'gct-3/biochemistry/lec05-fatty-acid-oxidation.html': {
+    transport: [v('OyQ1cgBw8HA', NN, 'Metabolism | Fatty Acid Oxidation: Part 1', '0:00', '18:47', 'fat mobilisation, activation and the carnitine shuttle')],
+    betaox: [
+      v('OyQ1cgBw8HA', NN, 'Metabolism | Fatty Acid Oxidation: Part 1', '18:47', 'end', 'the four steps of β-oxidation'),
+      v('jxylGoJP9jY', NN, 'Metabolism | Fatty Acid Oxidation: Part 2', '8:41', '14:59', 'the ATP yield of palmitate'),
+    ],
+    oddchain: [v('jxylGoJP9jY', NN, 'Metabolism | Fatty Acid Oxidation: Part 2', '14:59', '25:28', 'propionyl-CoA to succinyl-CoA')],
+    peroxisome: [v('jxylGoJP9jY', NN, 'Metabolism | Fatty Acid Oxidation: Part 2', '25:28', 'end', 'peroxisomal oxidation and fatty acid oxidation disorders')],
+    ketones: [
+      v('BlR9DkUAUkI', NN, 'Metabolism | Ketone Metabolism', '0:00', 'end', 'ketone synthesis in the liver, use in tissues and ketoacidosis'),
+      v('u2yCChjGEIY', MM, 'Ketogenesis &amp; Diabetic Ketoacidosis (DKA)', '0:00', 'end', 'why type 1 diabetes leads to ketoacidosis'),
+    ],
+  },
+  'gct-3/biochemistry/lec06-cholesterol-lipoproteins.html': {
+    synthesis: [v('nurZ2nNovp8', NN, 'Metabolism | Cholesterol Metabolism', '1:04', '16:06', 'cholesterol synthesis from acetyl-CoA, the rate-limiting step and structure')],
+    regulation: [v('nurZ2nNovp8', NN, 'Metabolism | Cholesterol Metabolism', '25:52', 'end', 'regulation of cholesterol synthesis')],
+    vldl: [v('wQY0xpwqPfQ', NN, 'Metabolism | Lipoprotein Metabolism | Chylomicrons, VLDL, IDL, LDL, &amp; HDL', '27:57', '44:20', 'VLDL synthesis, IDL and the formation of LDL')],
+    ldlr: [v('wQY0xpwqPfQ', NN, 'Metabolism | Lipoprotein Metabolism | Chylomicrons, VLDL, IDL, LDL, &amp; HDL', '44:20', '50:36', 'LDL uptake, oxidised LDL and foam cells')],
+    hdl: [v('wQY0xpwqPfQ', NN, 'Metabolism | Lipoprotein Metabolism | Chylomicrons, VLDL, IDL, LDL, &amp; HDL', '50:36', 'end', 'HDL, reverse cholesterol transport and lipoprotein profiles')],
+    disorders: [v('gE9cIQ9vz0k', NN, 'Hyperlipidemia | Clinical Medicine', '0:41', '21:05', 'the inherited hyperlipidaemias and their complications')],
+  },
+  'gct-3/biochemistry/lec07-water-soluble-vitamins.html': {
+    b1: [
+      v('DuBDw2d9lDI', MP, 'Beriberi - Vitamin B1 Deficiency - Thiamine Deficiency', '0:00', 'end', 'wet and dry beriberi'),
+      v('7zjABcYH3xI', MP, 'Wernicke-Korsakoff Syndrome (WKS) - Biochemistry', '0:00', 'end', 'Wernicke encephalopathy and Korsakoff syndrome'),
+    ],
+    b2: [v('sf9ztQd39wo', MP, 'Water-Soluble Vitamins - Vitamin B1, B2, B3, B5, B7, B9, B12, Vitamin C', '14:24', '16:35', 'riboflavin')],
+    b3: [v('sf9ztQd39wo', MP, 'Water-Soluble Vitamins - Vitamin B1, B2, B3, B5, B7, B9, B12, Vitamin C', '16:35', '22:22', 'niacin and pellagra')],
+    b6: [v('yadAyuOvlkc', MM, 'B Vitamins | B1, B2, B3, B5, B6, B7, B9, B12', '16:41', '19:17', 'B6 and amino acid metabolism')],
+    b7: [v('sf9ztQd39wo', MP, 'Water-Soluble Vitamins - Vitamin B1, B2, B3, B5, B7, B9, B12, Vitamin C', '27:03', '28:43', 'biotin')],
+    b9: [v('XcKsctwgDcg', MP, 'Folate Deficiency vs. Vitamin B12 Deficiency', '0:00', 'end', 'how to tell folate from B12 deficiency')],
+    b12: [v('sf9ztQd39wo', MP, 'Water-Soluble Vitamins - Vitamin B1, B2, B3, B5, B7, B9, B12, Vitamin C', '35:38', '45:02', 'B12 absorption, causes of deficiency, homocysteine and folate vs B12')],
+    vitc: [v('sf9ztQd39wo', MP, 'Water-Soluble Vitamins - Vitamin B1, B2, B3, B5, B7, B9, B12, Vitamin C', '28:52', '32:54', 'vitamin C and scurvy')],
+  },
+});
+
 const seconds = (t) => t.split(':').reduce((s, x) => s * 60 + Number(x), 0);
 
 function box(videos) {
