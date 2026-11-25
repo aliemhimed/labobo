@@ -1,6 +1,6 @@
 # Live database schema (Supabase `boukmowybmtfqkinuvqj`, `public`)
 
-Snapshot taken 2026-11-24 from the live database. Read this instead of calling `list_tables`. To refresh it, run `supabase/schema-snapshot.sql` with the Supabase `execute_sql` tool and replace everything below this header with the `md` value it returns. Refresh after every migration.
+Snapshot taken 2026-11-24 from the live database; client_errors and push_subscriptions added 2026-11-26. Read this instead of calling `list_tables`. To refresh it, run `supabase/schema-snapshot.sql` with the Supabase `execute_sql` tool and replace everything below this header with the `md` value it returns. Refresh after every migration.
 
 ## Tables
 Column notation: `name type`, `!` not null, `=default`. Tables with the same columns share a line.
@@ -14,12 +14,14 @@ Column notation: `name type`, `!` not null, `=default`. Tables with the same col
 ### App tables
 - **admin_log**: id bigint!, at timestamptz!=now(), admin_email text!, action text!, target text, details jsonb!='{}'
 - **announcements**: id bigint!, message text!, tone text!='info', semester text, starts_at timestamptz!=now(), ends_at timestamptz, created_at timestamptz!=now(), created_by text
+- **client_errors**: id bigint!, at timestamptz!=now(), user_id text, kind text!='error', message text!, stack text, url text, user_agent text, release text, fingerprint text! — browser crash reports (netlify/functions/client-error.js, admin Errors tab)
 - **daily_sets**: user_id uuid!, subject text!, mode text!, day date!, scope text!, question_ids text[]!, created_at timestamptz!=now()
 - **daily_visits**: user_id text!, day date!, hits integer!=1, first_seen timestamptz!=now(), last_seen timestamptz!=now()
 - **free_topics**: tb text!, topic text!
 - **leaderboard_entries**: id bigint!, device_id text!, handle text!, subject text!, score_pct numeric!, total_questions integer!, week_start date!, completed_at timestamptz=now(), time_seconds integer
 - **payment_accounts**: id bigint!, bank text!, holder text!, iban text!, position integer!=0, active boolean!=true
 - **payment_requests**: id bigint!, user_id uuid!, reference text!, receipt_path text!, status text!='pending', created_at timestamptz!=now(), decided_at timestamptz, decided_by text, note text
+- **push_subscriptions**: endpoint text! (pk), user_id uuid!, p256dh text, auth text, remind_hour smallint!=19, tz text!='Asia/Tbilisi', created_at timestamptz!=now(), last_sent date, failures smallint!=0 — daily study reminder (push.js, push-reminders.js)
 - **profiles**: id uuid!, username text, email text, semester text, created_at timestamptz!=now(), updated_at timestamptz!=now()
 - **question_reports**: id bigint!, question_text text, subject text, topic text, reason text, note text, device_id text, reported_at timestamptz=now(), created_at timestamptz=now(), question_id text, resolved_at timestamptz, resolved_by text
 - **question_stats**: question_id text!, attempts integer!=0, picks jsonb!='{}', last_at timestamptz!=now()

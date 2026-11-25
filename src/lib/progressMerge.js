@@ -6,7 +6,9 @@
      history     [{ id, date, ... }]              finished sets, newest first
      wrong       { qid: [{ date, examId, selected }] }
      cleared     { qid: ISO date }                last answered correctly
-     flashcards  { qid: { due, last, ... } } */
+     flashcards  { qid: { due, last, ... } }
+     srs         { qid: { box, due, last } }      spaced review of missed questions
+     starred     { qid: { on, at } }              bookmarks; on:false is an unstar */
 
 const HISTORY_MAX = 200;
 const WRONG_ATTEMPTS_MAX = 10;
@@ -49,11 +51,12 @@ function mergeWrong(wa = {}, wb = {}, ca = {}, cb = {}) {
   return { wrong, cleared };
 }
 
-/* Per card, the most recently reviewed copy wins. */
-function mergeFlashcards(a = {}, b = {}) {
+/* Per entry, the copy with the newer `stamp` wins (a flashcard or review
+   schedule: last reviewed; a star: last toggled). */
+function newestWins(a = {}, b = {}, stamp = 'last') {
   const out = { ...a };
-  for (const [id, card] of Object.entries(b)) {
-    if (!out[id] || (card?.last || 0) > (out[id]?.last || 0)) out[id] = card;
+  for (const [id, entry] of Object.entries(b)) {
+    if (!out[id] || (entry?.[stamp] || 0) > (out[id]?.[stamp] || 0)) out[id] = entry;
   }
   return out;
 }
@@ -62,7 +65,9 @@ export function mergeProgress(a = {}, b = {}) {
   return {
     history: mergeHistory(a.history, b.history),
     ...mergeWrong(a.wrong, b.wrong, a.cleared, b.cleared),
-    flashcards: mergeFlashcards(a.flashcards, b.flashcards),
+    flashcards: newestWins(a.flashcards, b.flashcards),
+    srs: newestWins(a.srs, b.srs),
+    starred: newestWins(a.starred, b.starred, 'at'),
   };
 }
 
@@ -80,4 +85,5 @@ function stable(v) {
 
 export const isEmptyProgress = (d) =>
   !d || (!d.history?.length && !Object.keys(d.wrong || {}).length
-    && !Object.keys(d.cleared || {}).length && !Object.keys(d.flashcards || {}).length);
+    && !Object.keys(d.cleared || {}).length && !Object.keys(d.flashcards || {}).length
+    && !Object.keys(d.srs || {}).length && !Object.keys(d.starred || {}).length);

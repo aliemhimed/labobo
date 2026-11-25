@@ -6,6 +6,7 @@ import './lib/install.js'; // first, to catch the browser's one-time install eve
 import App from './App.jsx';
 import { AuthProvider } from './lib/auth.jsx';
 import { initTheme } from './lib/theme.js';
+import { installErrorReporting } from './lib/errorReport.js';
 import '@fontsource-variable/bricolage-grotesque/wght.css';
 import '@fontsource-variable/figtree/wght.css';
 import './styles/tokens.css';
@@ -13,6 +14,7 @@ import './styles/base.css';
 import './styles/home.css';
 
 initTheme();
+installErrorReporting();
 
 // Offline shell + installability (public/sw.js). Production only: in dev it
 // would cache Vite's modules and fight hot reload.

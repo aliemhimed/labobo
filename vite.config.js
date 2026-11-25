@@ -85,6 +85,8 @@ function netlifyFunctionsDev() {
 
 export default defineConfig({
   plugins: [react(), netlifyFunctionsDev()],
+  // Tags crash reports with the deploy they came from (Netlify sets COMMIT_REF).
+  define: { __BUILD_ID__: JSON.stringify((process.env.COMMIT_REF || '').slice(0, 7) || new Date().toISOString().slice(0, 16)) },
   server: { port: 5173 },
   build: {
     outDir: 'dist',

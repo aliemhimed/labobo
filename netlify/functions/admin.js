@@ -815,6 +815,31 @@ const REVIEW_STATUSES = new Set(['approved', 'hidden', 'pending']);
 /* Each review with `author`: who wrote it, whatever name it is shown under.
    An anonymous review is anonymous to other students, not to the admins who
    decide whether it goes on the home page. */
+/* Browser crash reports from the last 14 days, grouped: one row per
+   fingerprint with how often, how many students, when last, and the newest
+   copy's details. */
+async function errorsView() {
+  const since = new Date(Date.now() - 14 * 86_400_000).toISOString();
+  const list = await rows(`/client_errors?at=gte.${since}&select=at,user_id,kind,message,stack,url,user_agent,release,fingerprint&order=at.desc&limit=2000`);
+  const groups = new Map();
+  for (const e of list) {
+    let g = groups.get(e.fingerprint);
+    if (!g) {
+      g = { fingerprint: e.fingerprint, count: 0, users: new Set(), first: e.at, last: e.at, sample: e };
+      groups.set(e.fingerprint, g);
+    }
+    g.count++;
+    if (e.user_id) g.users.add(e.user_id);
+    if (e.at < g.first) g.first = e.at;
+  }
+  return {
+    total: list.length,
+    groups: [...groups.values()]
+      .map(({ users, ...g }) => ({ ...g, users: users.size }))
+      .sort((a, b) => b.last.localeCompare(a.last)),
+  };
+}
+
 async function reviewsView() {
   const list = await rows('/reviews?select=id,user_id,name,anonymous,rating,body,status,created_at,updated_at,decided_at,decided_by&order=updated_at.desc&limit=200');
   const ids = [...new Set(list.map((r) => r.user_id).filter(Boolean))];
@@ -878,6 +903,7 @@ exports.handler = async (event) => {
       if (view === 'questions') return json(200, await questionsView());
       if (view === 'announcements') return json(200, await announcementsView());
       if (view === 'reviews') return json(200, await reviewsView());
+      if (view === 'errors') return json(200, await errorsView());
       if (view === 'payments') return json(200, await paymentsView());
       if (view === 'log') return json(200, await logView());
       if (user) {

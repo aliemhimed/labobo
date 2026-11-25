@@ -29,6 +29,7 @@ const LEGACY = {
 export default function App() {
   return (
     <ErrorBoundary>
+      <a className="skip-link" href="#main">Skip to content</a>
       <Routes>
         {/* Admins skip the semester gate; the API itself enforces who may see data. */}
         <Route path="/admin" element={<AuthGate><Suspense fallback={null}><AdminPage /></Suspense></AuthGate>} />

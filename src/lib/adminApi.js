@@ -37,6 +37,7 @@ export const fetchQuestions = (signal) => request({ signal }, '?view=questions')
 export const fetchAnnouncements = (signal) => request({ signal }, '?view=announcements');
 export const fetchLog = (signal) => request({ signal }, '?view=log');
 export const fetchReviews = (signal) => request({ signal }, '?view=reviews');
+export const fetchErrors = (signal) => request({ signal }, '?view=errors');
 
 const post = (body) => request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 export const deleteUser = (id) => post({ action: 'delete_user', id });

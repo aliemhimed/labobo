@@ -252,6 +252,27 @@ button.map-bubble:hover { transform: translateY(-3px); background: var(--marker)
 .report-btn:hover { background: var(--wrong-wash); color: var(--wrong); }
 .report-btn svg { width: 16px; height: 16px; }
 
+/* Star (bookmark) next to the report button. */
+.q-actions { flex: none; display: inline-flex; align-items: center; gap: 4px; }
+.star-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: -4px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: var(--r-control);
+  background: none;
+  color: var(--ink-soft);
+  font: 600 var(--t-14)/1 var(--font-ui);
+  cursor: pointer;
+}
+.star-btn span { font-size: 18px; line-height: 1; }
+.star-btn:hover { background: var(--marker); color: var(--card-ink); }
+.star-btn.on { color: var(--ink); }
+.star-btn.on span { color: #B87800; }
+.star-btn:focus-visible, .report-btn:focus-visible { outline: 3px solid var(--focus, currentColor); outline-offset: 2px; }
+
 .q-text {
   margin-bottom: 24px;
   font: 500 clamp(1.125rem, 2.2vw, 1.3125rem)/1.55 var(--font-read);
@@ -655,7 +676,7 @@ button.history-row:hover { background: var(--sheet); }
   .option { min-height: 52px; gap: 12px; padding: 10px 12px 10px 10px; }
   .bubble { width: 34px; height: 34px; }
   .map-bubble { width: 36px; height: 36px; }
-  .report-btn { font-size: 0; gap: 0; }
+  .report-btn, .star-btn { font-size: 0; gap: 0; }
   .report-btn svg { width: 18px; height: 18px; }
 
   .sf-search { flex-basis: 100%; }
@@ -729,3 +750,27 @@ button.history-row:hover { background: var(--sheet); }
 .daily-card p { margin: 0 0 14px; color: var(--ink-soft); font: 500 var(--t-14)/1.5 var(--font-ui); }
 .daily-actions { margin-top: 14px; }
 .daily-actions .btn { max-width: 100%; white-space: normal; }
+
+/* Weakest lectures on the Performance screen (Dashboard.jsx). */
+.weak-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.weak-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 2px solid var(--edge);
+  border-radius: 14px;
+  background: var(--paper, transparent);
+}
+.weak-name { font-weight: 700; overflow-wrap: anywhere; }
+.weak-pct { color: var(--wrong); font-weight: 700; font-variant-numeric: tabular-nums; }
+.weak-all { margin-top: 14px; }
+@media (max-width: 560px) {
+  .weak-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .weak-row .btn { grid-column: 1 / -1; }
+}
+
+/* "12 questions match" under the Study search (StudyView.jsx). */
+.sf-count { margin: 8px 2px 0; color: var(--ink-soft); font-size: var(--t-14); font-weight: 600; }
+.sf-count:empty { display: none; }

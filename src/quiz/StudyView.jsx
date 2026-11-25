@@ -12,6 +12,21 @@ import { trackStudy } from '../lib/study.js';
 // Each subject's chips take a card colour, in the same order as the home deck.
 const CHIP_FILLS = ['blue', 'mint', 'orange', 'violet', 'coral', 'yellow'];
 
+/* Search text, folded so "Hb" finds "HB", "beta-lactam" finds "beta lactam"
+   and accents don't matter. */
+const fold = (s) => String(s || '').normalize('NFD').replace(/\p{M}/gu, '')
+  .toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+const searchText = new WeakMap();
+function haystack(q) {
+  let s = searchText.get(q);
+  if (s === undefined) {
+    s = ' ' + fold([q.q, ...(q.options || []), q.explanation, q.topic].join(' ')) + ' ';
+    searchText.set(q, s);
+  }
+  return s;
+}
+const SEARCH_DELAY_MS = 250;
+
 /* Study mode owns its own little session: the pool is derived from the
    filters, and a new pool (new filters, or an explicit Shuffle) starts
    fresh. Filters/pool/position are mirrored to sessionStorage so a refresh
@@ -31,6 +46,13 @@ export default function StudyView({
 
   const [selectedTopics, setSelectedTopics] = useState(() => new Set(restored?.topics ?? allTopicKeys));
   const [search, setSearch] = useState(() => restored?.search ?? '');
+  // The pool follows the search a moment after typing stops, so each
+  // keystroke doesn't reshuffle the questions.
+  const [term, setTerm] = useState(search);
+  useEffect(() => {
+    const id = setTimeout(() => setTerm(search), SEARCH_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [search]);
   const [shuffleTick, setShuffleTick] = useState(0);
   // The topic chips fold away so the question comes first.
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -44,17 +66,22 @@ export default function StudyView({
       usedRestoreRef.current = true;
       if (restoredPool) return restoredPool.qIdxs;
     }
-    const term = search.trim().toLowerCase();
+    // Every word must appear somewhere in the question, its options, its
+    // explanation or its lecture name, in any order.
+    const words = fold(term).split(' ').filter(Boolean);
     const pool = [];
     questions.forEach((q, i) => {
       if (!selectedTopics.has(`${q.subject}::${q.topic}`)) return;
-      if (term && !(q.q + ' ' + q.options.join(' ')).toLowerCase().includes(term)) return;
+      if (words.length) {
+        const text = haystack(q);
+        if (!words.every((w) => text.includes(w))) return;
+      }
       pool.push(i);
     });
     return shuffle(pool);
     // shuffleTick re-runs the shuffle on demand
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questions, selectedTopics, search, shuffleTick]);
+  }, [questions, selectedTopics, term, shuffleTick]);
 
   /* Progress belongs to one pool; a new pool starts fresh (or resumes the
      restored one, on the very first render). */
@@ -118,7 +145,7 @@ export default function StudyView({
                 title="Study" />
       <section className="study-filter" aria-label="Choose which questions to study">
         <div className="sf-bar">
-          <input type="search" className="sf-search" aria-label="Search questions" placeholder="Search questions"
+          <input type="search" className="sf-search" aria-label="Search questions" placeholder="Search questions, answers, explanations"
                  value={search} onChange={(e) => setSearch(e.target.value)} />
           <button type="button" className={'sf-toggle' + (filtered ? ' active' : '')} aria-expanded={filtersOpen}
                   aria-controls="study-topics" onClick={() => setFiltersOpen((o) => !o)}>
@@ -127,6 +154,10 @@ export default function StudyView({
           </button>
           <button type="button" className="sf-shuffle" onClick={() => setShuffleTick((t) => t + 1)}>Shuffle</button>
         </div>
+
+        <p className="sf-count" role="status" aria-live="polite">
+          {term.trim() ? `${qIds.length.toLocaleString()} question${qIds.length === 1 ? ' matches' : 's match'} "${term.trim()}"` : ''}
+        </p>
 
         {filtersOpen ? (
           <div id="study-topics" className="sf-panel">

@@ -73,3 +73,26 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(staleWhileRevalidate(request, MEDIA));
   }
 });
+
+/* ── Daily study reminder (netlify/functions/push-reminders.js) ──────
+   The push has no payload; the text lives here. Tapping it opens (or
+   focuses) the app on the home page. */
+self.addEventListener('push', (event) => {
+  event.waitUntil(self.registration.showNotification('Keep your streak going 🔥', {
+    body: 'You haven’t studied today yet. Ten questions takes five minutes.',
+    icon: '/theme/icon-192.png',
+    badge: '/theme/icon-192.png',
+    tag: 'labobo-daily',
+    renotify: false,
+  }));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil((async () => {
+    const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const open = wins.find((w) => new URL(w.url).origin === self.location.origin);
+    if (open) { await open.focus(); return; }
+    await self.clients.openWindow('/');
+  })());
+});

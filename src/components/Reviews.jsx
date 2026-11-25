@@ -10,10 +10,8 @@ import {
 } from '../lib/reviews.js';
 
 const MAX = 400;
-// The wall stays hidden until there are enough reviews not to look empty.
+// The side note stays hidden until there are enough reviews to rotate through.
 const MIN_TO_SHOW = 3;
-const TILTS = [-1.4, 1.1, -0.8, 1.5, -1.2, 0.9];
-const FILLS = ['yellow', 'mint', 'blue', 'coral', 'violet', 'orange'];
 const STATUS = {
   pending: 'Thanks! We read every review, and yours will appear on the home page once it’s approved.',
   approved: 'Your review is on the home page. Thank you!',
@@ -224,40 +222,36 @@ function useApprovedReviews() {
   }).data || [];
 }
 
-/* One approved review under the streak card (desktop and iPad; CSS hides it
-   on phones). A different one, picked at random, each time the page opens. */
+const ROTATE_MS = 12_000;
+
+/* One approved review under the streak card. It starts on a random one and
+   moves to another every few seconds, pausing while the pointer or keyboard
+   focus is on it (and when the tab is hidden, since timers slow down then). */
 export function ReviewNote() {
   const items = useApprovedReviews();
-  const pick = useMemo(() => Math.random(), []);
-  if (items.length < MIN_TO_SHOW) return null;
-  const r = items[Math.floor(pick * items.length)];
+  const start = useMemo(() => Math.random(), []);
+  const [step, setStep] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const enough = items.length >= MIN_TO_SHOW;
+
+  useEffect(() => {
+    if (!enough || paused) return undefined;
+    const id = setInterval(() => { if (!document.hidden) setStep((n) => n + 1); }, ROTATE_MS);
+    return () => clearInterval(id);
+  }, [enough, paused]);
+
+  if (!enough) return null;
+  const r = items[(Math.floor(start * items.length) + step) % items.length];
   return (
-    <figure className="side-review">
-      <StarRow n={r.rating} />
-      <blockquote dir="auto">{r.body}</blockquote>
-      <figcaption>{r.name}</figcaption>
+    <figure className="side-review" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}
+            onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+      <div key={r.id} className="side-review-body">
+        <StarRow n={r.rating} />
+        <blockquote dir="auto">{r.body}</blockquote>
+        <figcaption>{r.name}</figcaption>
+      </div>
+      <button type="button" className="side-review-next" onClick={() => setStep((n) => n + 1)}
+              aria-label="Show another review">↻</button>
     </figure>
-  );
-}
-
-/* Approved reviews as sticky notes, at the bottom of the home page. */
-export function ReviewWall() {
-  const items = useApprovedReviews();
-  if (items.length < MIN_TO_SHOW) return null;
-
-  return (
-    <section className="review-wall" aria-labelledby="review-wall-title">
-      <h2 id="review-wall-title" className="section-title">What students say</h2>
-      <ul className="review-notes">
-        {items.slice(0, 12).map((r, i) => (
-          <li key={r.id} className={'review-note fill-' + FILLS[i % FILLS.length]}
-              style={{ '--tilt': TILTS[i % TILTS.length] + 'deg' }}>
-            <StarRow n={r.rating} />
-            <p dir="auto">{r.body}</p>
-            <b>{r.name}</b>
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }

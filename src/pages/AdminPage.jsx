@@ -8,6 +8,7 @@ import QuestionsTab from '../components/admin/QuestionsTab.jsx';
 import AnnouncementsTab from '../components/admin/AnnouncementsTab.jsx';
 import LogTab from '../components/admin/LogTab.jsx';
 import ReviewsTab from '../components/admin/ReviewsTab.jsx';
+import ErrorsTab from '../components/admin/ErrorsTab.jsx';
 import PaymentsTab from '../components/admin/PaymentsTab.jsx';
 import { RetentionPanel, QuietPanel } from '../components/admin/Retention.jsx';
 import { Stat, Panel, DayBars, HBars, Table, ago, pct, num } from '../components/admin/parts.jsx';
@@ -213,7 +214,7 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
 
 export default function AdminPage() {
   const [params, setParams] = useSearchParams();
-  const tab = ['users', 'payments', 'questions', 'announcements', 'reviews', 'log'].includes(params.get('tab')) ? params.get('tab') : 'overview';
+  const tab = ['users', 'payments', 'questions', 'announcements', 'reviews', 'errors', 'log'].includes(params.get('tab')) ? params.get('tab') : 'overview';
   const studentId = params.get('u');
 
   const setView = (next) => setParams(next, { replace: false });
@@ -247,7 +248,7 @@ export default function AdminPage() {
   return (
     <>
       <TopBar subtitle="Admin" />
-      <main className="container adm">
+      <main id="main" tabIndex={-1} className="container adm">
         <PageHead title="Admin dashboard">
           <span className="adm-updated" aria-live="polite">
             {error ? 'Refresh failed · ' : ''}Updated {ago(new Date(dataUpdatedAt).toISOString())}
@@ -274,6 +275,9 @@ export default function AdminPage() {
           <button type="button" role="tab" aria-selected={tab === 'reviews'} onClick={() => setView({ tab: 'reviews' })}>
             Reviews
           </button>
+          <button type="button" role="tab" aria-selected={tab === 'errors'} onClick={() => setView({ tab: 'errors' })}>
+            Errors
+          </button>
           <button type="button" role="tab" aria-selected={tab === 'log'} onClick={() => setView({ tab: 'log' })}>
             Log
           </button>
@@ -287,6 +291,7 @@ export default function AdminPage() {
           : tab === 'questions' ? <QuestionsTab onOpenUser={openUser} />
             : tab === 'announcements' ? <AnnouncementsTab />
               : tab === 'reviews' ? <ReviewsTab />
+              : tab === 'errors' ? <ErrorsTab />
               : tab === 'log' ? <LogTab />
                 : <Overview data={data} onOpenUser={openUser} onOpenQuestions={() => setView({ tab: 'questions' })} />}
       </main>

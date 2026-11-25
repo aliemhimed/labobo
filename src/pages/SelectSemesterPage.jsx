@@ -31,7 +31,7 @@ export default function SelectSemesterPage() {
   }
 
   return (
-    <main className="semester">
+    <main id="main" tabIndex={-1} className="semester">
       <h1>Which semester are you in?</h1>
       <p className="lede">
         This decides which subjects you see. You can change it later from your profile menu.
