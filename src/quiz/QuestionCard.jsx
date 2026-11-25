@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import QuestionBody from './QuestionBody.jsx';
+import OptionNotes from './OptionNotes.jsx';
 import { useEqualOptionHeights } from '../hooks/useEqualOptionHeights.js';
 import { useQuizShortcuts } from '../hooks/useQuizShortcuts.js';
 import { LETTERS } from '../lib/utils.js';
@@ -82,6 +83,8 @@ export default function QuestionCard({
               {gotItRight ? 'Correct.' : `Incorrect. The answer is ${LETTERS[correctDisplayPos]}.`}
             </p>
             {question.explanation ? <p className="explanation-text">{question.explanation}</p> : null}
+            <OptionNotes question={question} picked={gotItRight ? null : answer.selected}
+                         letterOf={(i) => LETTERS[displayOrder.indexOf(i)]} />
           </div>
         ) : null}
       </div>

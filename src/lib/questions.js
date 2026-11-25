@@ -13,7 +13,7 @@ import { SUBJECTS } from './subjects.js';
    ============================================================ */
 
 const PAGE_SIZE = 1000;
-const BASE_COLS = 'id,ord,topic,q,options,answer,explanation,image,images';
+const BASE_COLS = 'id,ord,topic,q,options,answer,explanation,image,images,option_notes';
 /* Only clinical_skills carries a display_topic column; asking for it on any
    other table makes PostgREST return 400. */
 const selectFor = (source) => (source.displayTopic ? `${BASE_COLS},display_topic` : BASE_COLS);
@@ -25,6 +25,16 @@ function normalizeOptions(raw) {
   if (Array.isArray(raw)) return raw.map((o) => String(o));
   if (raw && typeof raw === 'object') return Object.values(raw).map((o) => String(o));
   return [];
+}
+
+function normalizeNotes(raw, count) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out = {};
+  for (const [k, v] of Object.entries(raw)) {
+    const i = Number(k);
+    if (Number.isInteger(i) && i >= 0 && i < count && typeof v === 'string' && v.trim()) out[i] = v.trim();
+  }
+  return out;
 }
 
 function normalizeAnswer(raw, options, originalOptions) {
@@ -91,6 +101,8 @@ function toQuestion(row, subject, topicMap, imageBase) {
     options,
     answer: normalizeAnswer(row.answer, options, row.options),
     explanation: row.explanation || '',
+    // Why each wrong option is wrong, by stored option index (quiz/OptionNotes.jsx).
+    optionNotes: normalizeNotes(row.option_notes, options.length),
     images: normalizeImages(row, imageBase),
   };
 }
