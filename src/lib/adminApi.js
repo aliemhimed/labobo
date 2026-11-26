@@ -49,7 +49,11 @@ export const endAnnouncement = (id) => post({ action: 'end_announcement', id });
 export const grantTeacher = (email, subjects) => post({ action: 'grant_teacher', email, subjects });
 export const setTeacherSubjects = (id, subjects) => post({ action: 'set_teacher_subjects', id, subjects });
 export const revokeTeacher = (id) => post({ action: 'revoke_teacher', id });
-export const setReviewStatus = (id, status) => post({ action: 'set_review_status', id, status });
+export const fetchSharedQuestions = (signal) => request({ signal }, '?view=shared_questions');
+export const fetchBankTopics = (table, signal) => request({ signal }, `?view=bank_topics&table=${encodeURIComponent(table)}`);
+export const approveShared = (id, table, topic) => post({ action: 'approve_shared', id, table, topic });
+export const rejectShared = (id) => post({ action: 'reject_shared', id });
+export const setReviewStatus =(id, status) => post({ action: 'set_review_status', id, status });
 
 /** Downloads every student as a CSV file (the server logs the export). */
 export async function downloadStudentsCsv() {

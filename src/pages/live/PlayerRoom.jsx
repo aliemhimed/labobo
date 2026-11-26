@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
+import { fetchResults, useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
+import { feedSpacedReview } from '../../lib/liveReview.js';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -32,6 +33,13 @@ export default function PlayerRoom() {
   const autoIn = useAutoNext(state, offsetMs);
 
   useEffect(() => { setNotice(''); setSendError(''); }, [q?.position]);
+
+  // When the quiz ends, put this student's answers into their spaced review.
+  const finished = r?.stage === 'finished';
+  useEffect(() => {
+    if (!finished) return;
+    fetchResults(roomId).then((res) => feedSpacedReview(roomId, res)).catch(() => {});
+  }, [finished, roomId]);
 
   async function pick(choice) {
     if (!q || sent?.position === q.position) return;

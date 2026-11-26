@@ -4,6 +4,7 @@ import { fetchTeachers, grantTeacher, revokeTeacher, setTeacherSubjects } from '
 import { bankGroups, tableLabelMap } from '../../lib/liveSubjects.js';
 import { useConfirm } from '../Confirm.jsx';
 import { Panel, Table } from './parts.jsx';
+import SharedQuestions from './SharedQuestions.jsx';
 
 const KEY = ['admin-teachers'];
 const day = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '');
@@ -116,6 +117,7 @@ export default function TeachersTab() {
   return (
     <div className="adm-grid">
       {confirmElement}
+      <SharedQuestions />
       <Panel title="Add a teacher" note="can host Labobo Live quizzes" wide>
         <AddTeacher />
       </Panel>

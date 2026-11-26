@@ -251,3 +251,12 @@ textarea.adm-input { min-height: 84px; padding: 10px 12px; resize: vertical; lin
 .adm-subject-group legend { font: 700 var(--t-12) var(--font-ui); color: var(--ink-muted); padding: 0 4px; }
 .adm-check { display: flex; gap: 8px; align-items: flex-start; font-weight: 500; font-size: var(--t-14); color: var(--ink); }
 .adm-check input { margin-top: 3px; }
+
+/* Teachers' shared questions */
+.adm-shared { border-top: 1.5px solid var(--rule); padding: 12px 0; }
+.adm-shared:first-of-type { border-top: 0; }
+.adm-shared-q { margin: 0 0 6px; font-weight: 700; color: var(--ink); white-space: pre-wrap; }
+.adm-shared-opts { margin: 0 0 6px; padding-left: 22px; font-size: var(--t-14); color: var(--ink); }
+.adm-shared-opts li.right { color: var(--correct); font-weight: 700; }
+.adm-shared-pick { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.adm-shared-pick .adm-field { flex: 1 1 220px; }

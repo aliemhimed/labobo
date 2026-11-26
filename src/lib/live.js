@@ -166,7 +166,18 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
   // Realtime. Events are applied at once, then the state is re-read.
   useEffect(() => {
     if (!roomId) return undefined;
+    let me = null;
+    supabase.auth.getSession().then(({ data }) => { me = data.session?.user?.id ?? null; });
+    let unsubs = [];
     const onRoomEvent = (event, payload) => {
+      // Removed by the teacher: leave the room's channel at once, then show it.
+      if (event === 'kicked' && payload.user && payload.user === me) {
+        unsubs.forEach((u) => u());
+        unsubs = [];
+        setConnected(false);
+        refresh();
+        return;
+      }
       setState((s) => {
         if (!s) return s;
         if (event === 'question') {
@@ -188,7 +199,7 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
       // Players spread their re-reads over half a second; the host needs none.
       refreshSoon(asHost ? 0 : 500);
     };
-    const unsubs = [listen(`live:${roomId}`, onRoomEvent, (status) => {
+    unsubs = [listen(`live:${roomId}`, onRoomEvent, (status) => {
       const ok = status === 'SUBSCRIBED';
       setConnected(ok);
       if (ok) refresh(); // anything missed while disconnected

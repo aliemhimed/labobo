@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import TopBar from '../../components/TopBar.jsx';
 import { fetchResults } from '../../lib/live.js';
+import { feedSpacedReview } from '../../lib/liveReview.js';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 const day = (d) => (d ? new Date(d).toLocaleDateString() : '');
@@ -82,6 +84,8 @@ function HostResults({ data }) {
 
 function StudentResults({ data }) {
   const { room, me, board, review, answers } = data;
+  // Live answers join the student's spaced review (once per room).
+  useEffect(() => { feedSpacedReview(room.id, data); }, [room.id, data]);
   return (
     <>
       <h1 className="live-title">{room.title}</h1>
