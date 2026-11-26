@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../lib/auth.jsx';
 import { fetchResults, useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
 import { feedSpacedReview } from '../../lib/liveReview.js';
+import { TimerSticker } from './LiveBits.jsx';
 import CasePlay from './CasePlay.jsx';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -147,7 +148,6 @@ export default function PlayerRoom() {
   ) : null;
   const mine = me.answer || (q && sent?.position === q.position ? { choice: sent.choice } : null);
   const total = Math.max(1, (r.settings?.seconds || 20) * 1000);
-  const pct = Math.min(100, (left / total) * 100);
 
   let body = null;
   if (caseRoom && stage !== 'lobby') {
@@ -184,9 +184,8 @@ export default function PlayerRoom() {
       <>
         <div className="live-q-top">
           <span>Question {r.current + 1} of {r.total}</span>
-          <span className="live-secs">{r.paused ? 'Paused' : `${Math.ceil(left / 1000)} s`}</span>
+          <TimerSticker msLeft={left} totalMs={total} paused={r.paused} size="sm" />
         </div>
-        <div className="live-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></div>
         {r.paused ? <p className="live-paused">Paused by the teacher</p> : null}
         <h1 className="live-q-text">{q.q}</h1>
         {q.image ? <img className="live-q-img" src={q.image} alt="" /> : null}

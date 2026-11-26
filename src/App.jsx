@@ -21,6 +21,8 @@ const LiveApp = lazy(() => import('./pages/live/LiveApp.jsx'));
 // site has neither the route nor the page.
 const DevPlanPreview = import.meta.env.DEV ? lazy(() => import('./pages/DevPlanPreview.jsx')) : null;
 const DevGuidesPreview = import.meta.env.DEV ? lazy(() => import('./pages/DevGuidesPreview.jsx')) : null;
+// Labobo Live screens with demo data: in development, or in a build made with VITE_LIVE_DEMO=1.
+const DevLivePreview = import.meta.env.DEV || import.meta.env.VITE_LIVE_DEMO === '1' ? lazy(() => import('./pages/DevLivePreview.jsx')) : null;
 /* The old site was a folder of .html files. Keep those URLs working so
    existing links and bookmarks don't break. */
 const LEGACY = {
@@ -40,7 +42,8 @@ export default function App() {
         {/* Public: readable before signing in or paying. */}
         <Route path="/terms" element={<Suspense fallback={null}><TermsPage /></Suspense>} />
         {DevPlanPreview ? <Route path="/dev/plan" element={<Suspense fallback={null}><DevPlanPreview /></Suspense>} /> : null}
-        {DevGuidesPreview ? <Route path="/dev/guides" element={<Suspense fallback={null}><DevGuidesPreview /></Suspense>} /> : null}        <Route path="/*" element={<StudentApp />} />
+        {DevGuidesPreview ? <Route path="/dev/guides" element={<Suspense fallback={null}><DevGuidesPreview /></Suspense>} /> : null}
+        {DevLivePreview ? <Route path="/dev/live/*" element={<Suspense fallback={null}><DevLivePreview /></Suspense>} /> : null}        <Route path="/*" element={<StudentApp />} />
       </Routes>
       <InstallPrompt />
       <HelpButton />
