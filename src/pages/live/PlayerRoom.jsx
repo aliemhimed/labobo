@@ -3,9 +3,9 @@ import { celebrate } from '../../lib/confetti.js';
 import { prefersReducedMotion } from '../../lib/settings.js';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../lib/auth.jsx';
-import { fetchResults, useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
+import { fetchResults, useAutoNext, useLiveRoom } from '../../lib/live.js';
 import { feedSpacedReview } from '../../lib/liveReview.js';
-import { TimerSticker } from './LiveBits.jsx';
+import { ClinicalBadge, ReadingNote, TimerSticker, useQuestionClock, usePowerupLeft } from './LiveBits.jsx';
 import CasePlay from './CasePlay.jsx';
 import { CardSheet, CastPanel, EffectBanner, SpellBar } from './SpellBits.jsx';
 import { PARALYSIS_MS, TACHYCARDIA_SHARE, scrambleText } from '../../lib/spells.js';
@@ -68,7 +68,8 @@ export default function PlayerRoom() {
   const q = state?.question;
   // Rooms hosted by a pass holder have a host, not a teacher.
   const who = r?.settings?.kind === 'student' ? 'host' : 'teacher';
-  const left = useCountdown(r?.deadline, offsetMs, r?.paused, r?.paused_left_ms);
+  const { left, readLeft, reading, total } = useQuestionClock(r, offsetMs);
+  const puLeft = usePowerupLeft(r, offsetMs);
   const autoIn = useAutoNext(state, offsetMs);
 
   useEffect(() => { setNotice(''); setSendError(''); }, [q?.position]);
@@ -114,6 +115,7 @@ export default function PlayerRoom() {
         const out = await act('vote', { position: q.position, choice });
         if (out?.status === 'late') setNotice('Too late. Time was up.');
         else if (out?.status === 'closed') setNotice('This question is closed.');
+        else if (out?.status === 'reading') setNotice('Answers are not open yet. Read the question.');
         else if (out?.status === 'captain') setNotice('You are the captain. Tap an answer to answer.');
       } catch (e) {
         setVoted(before);
@@ -128,6 +130,7 @@ export default function PlayerRoom() {
       const out = await act('answer', { position: q.position, choice });
       if (out?.status === 'late') setNotice('Too late. Time was up.');
       else if (out?.status === 'closed') setNotice('This question is closed.');
+      else if (out?.status === 'reading') { setSent(null); setNotice('Answers are not open yet. Read the question.'); }
       else if (out?.status === 'not_captain') setNotice('Only the captain answers. Tap to suggest an answer.');
       else if (out?.status === 'paralyzed') { setSent(null); setNotice("You're paralysed for the first 5 seconds."); }
     } catch (e) {
@@ -182,7 +185,6 @@ export default function PlayerRoom() {
     </div>
   ) : null;
   const mine = me.answer || (q && sent?.position === q.position ? { choice: sent.choice } : null);
-  const total = Math.max(1, (r.settings?.seconds || 20) * 1000);
 
   // Power-ups (friends' rooms, individual mode): what is acting on this question.
   const sp = !team && !caseRoom ? state.spells || null : null;
@@ -229,8 +231,10 @@ export default function PlayerRoom() {
       <div className={`lv-fx${fx.has('cataract') ? ' lv-fx-cataract' : ''}`}>
         <div className="live-q-top">
           <span>Question {r.current + 1} of {r.total}</span>
-          <span className={tachy ? 'lv-heartbeat' : undefined}><TimerSticker msLeft={shownLeft} totalMs={shownTotal} paused={r.paused} size="sm" /></span>
+          <span className={tachy ? 'lv-heartbeat' : undefined}><TimerSticker msLeft={reading ? shownTotal : shownLeft} totalMs={shownTotal} paused={r.paused} size="sm" /></span>
         </div>
+        <ClinicalBadge question={q} settings={r.settings} />
+        {reading ? <ReadingNote msLeft={readLeft} /> : null}
         {r.paused ? <p className="live-paused">Paused by the {who}</p> : null}
         <EffectBanner effects={sp?.effects} />
         {tachy ? <p className="lv-badge">Tachycardia: 60% of the time</p> : null}
@@ -240,7 +244,7 @@ export default function PlayerRoom() {
           {fx.has('scotoma') ? <span className="lv-scotoma" aria-hidden="true" /> : null}
         </div>
         {q.image ? <img className="live-q-img" src={q.image} alt="" /> : null}
-        <div className={`live-options${paralysedMs > 0 ? ' is-frozen' : ''}`} style={paralysedMs > 0 ? { '--frost': paralysedMs / PARALYSIS_MS } : undefined}>
+        {reading ? null : <div className={`live-options${paralysedMs > 0 ? ' is-frozen' : ''}`} style={paralysedMs > 0 ? { '--frost': paralysedMs / PARALYSIS_MS } : undefined}>
           {q.options.map((o, i) => (hidden.has(i) ? null : (
             <button key={i} type="button" className={`live-opt c${i % 4}${chosen(i) ? ' is-chosen' : ''}`}
                     disabled={answered || r.paused || paralysedMs > 0 || (tachy && shownLeft <= 0)} onClick={() => pick(i)}>
@@ -253,12 +257,12 @@ export default function PlayerRoom() {
               ) : <span>{tx(o)}</span>}
             </button>
           )))}
-        </div>
-        {paralysedMs > 0 ? <p className="live-status" role="status">Paralysed: you can answer in {Math.ceil(paralysedMs / 1000)} s</p> : null}
+        </div>}
+        {!reading && paralysedMs > 0 ? <p className="live-status" role="status">Paralysed: you can answer in {Math.ceil(paralysedMs / 1000)} s</p> : null}
         {team && advisor && captainChose != null ? <p className="live-status" role="status">Captain chose {LETTERS[captainChose]}</p> : null}
         {team && advisor && captainChose == null && myVote != null ? <p className="live-status" role="status">{notice || 'Suggestion sent. You can change it until the captain answers.'}</p> : null}
         {team && !advisor && answered ? <p className="live-status" role="status">{notice || 'Answer sent for your team. Wait for the reveal.'}</p> : null}
-        {!team && answered ? <p className="live-status" role="status">{notice || 'Answer sent. Wait for the reveal.'}</p> : null}
+        {!reading && !team && answered ? <p className="live-status" role="status">{notice || 'Answer sent. Wait for the reveal.'}</p> : null}
         {team && notice && !answered && myVote == null ? <p className="live-status" role="status">{notice}</p> : null}
         {sendError ? <p className="form-error" role="alert">{sendError}</p> : null}
       </div>
@@ -330,6 +334,7 @@ export default function PlayerRoom() {
       {stage !== 'lobby' && !caseRoom ? teamBar : null}
       {sp && stage !== 'finished' ? <SpellBar spells={sp} /> : null}
       {/* Casting comes first between questions, where it can't be missed. */}
+      {sp && puLeft > 0 ? <p className="lv-pu-note" role="status">Power-up time · {puLeft} s — use your power-up now</p> : null}
       {sp && (stage === 'reveal' || stage === 'leaderboard') ? <CastPanel spells={sp} act={act} /> : null}
       {body}
       {sp?.cards ? <CardSheet cards={sp.cards} onPick={pickSpell} busy={pickBusy} error={pickError} /> : null}

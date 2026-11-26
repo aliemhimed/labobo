@@ -51,6 +51,10 @@ export const saveQuiz = (quiz) => livePost('save_quiz', quiz);
 export const deleteQuiz = (id) => livePost('delete_quiz', { id });
 export const createRoom = (room) => livePost('create_room', room);
 export const joinRoom = (code, nickname) => livePost('join', { code, nickname });
+/** Lecture names and counts, { table: [{ topic, n }] } (stored topic values). */
+export const fetchLectures = (tables) => liveGet({ view: 'lectures', tables: tables.join(',') });
+/** Teacher: start a saved quiz; the server picks and builds the questions. */
+export const startQuiz = (quizId, settings, title) => livePost('start_quiz', { quiz_id: quizId, settings, title });
 
 // Case-scenario rooms (see netlify/functions/live.js).
 export const fetchCaseView = (room) => liveGet({ view: 'cases', room });
@@ -90,10 +94,19 @@ function realtimeClient() {
 
 /** Subscribe to one private topic. Returns an unsubscribe function. */
 function listen(topic, onEvent, onStatus) {
-  const channel = realtimeClient().channel(topic, { config: { private: true } });
-  channel.on('broadcast', { event: '*' }, (msg) => onEvent(msg.event, msg.payload || {}));
-  channel.subscribe((status) => onStatus?.(status));
-  return () => { realtimeClient().removeChannel(channel); };
+  let channel;
+  try {
+    channel = realtimeClient().channel(topic, { config: { private: true } });
+    channel.on('broadcast', { event: '*' }, (msg) => onEvent(msg.event, msg.payload || {}));
+    channel.subscribe((status) => onStatus?.(status));
+  } catch (e) {
+    // e.g. "WebSocket not available: The operation is insecure" — the room
+    // keeps working by re-reading its state (useLiveRoom polls when offline).
+    console.warn('[live] realtime unavailable', e?.message || e);
+    onStatus?.('CHANNEL_ERROR');
+    return () => {};
+  }
+  return () => { try { realtimeClient().removeChannel(channel); } catch { /* already gone */ } };
 }
 
 // ── Clock ────────────────────────────────────────────────────────────
@@ -133,6 +146,8 @@ export function useLiveRoom(roomId, { asHost = false, onEvent } = {}) {
   const [connected, setConnected] = useState(false);
   const [version, setVersion] = useState(0);
   const offsetRef = useRef(0);
+  const bestRtt = useRef(Infinity);
+  const bestAt = useRef(0);
   const [offsetMs, setOffsetMs] = useState(0);
   const refreshTimer = useRef(null);
   const closing = useRef(null);
@@ -146,8 +161,14 @@ export function useLiveRoom(roomId, { asHost = false, onEvent } = {}) {
       const s = await liveGet({ view: 'state', room: roomId });
       const t1 = Date.now();
       if (s.server_now) {
-        offsetRef.current = Date.parse(s.server_now) - (t0 + t1) / 2;
-        setOffsetMs(offsetRef.current);
+        // A slow reply (a cold server) skews the estimate, so keep the one
+        // from the fastest round trip seen recently.
+        const rtt = t1 - t0;
+        if (rtt <= bestRtt.current * 1.5 || Date.now() - bestAt.current > 60_000) {
+          if (rtt < bestRtt.current || Date.now() - bestAt.current > 60_000) { bestRtt.current = rtt; bestAt.current = Date.now(); }
+          offsetRef.current = Date.parse(s.server_now) - (t0 + t1) / 2;
+          setOffsetMs(offsetRef.current);
+        }
       }
       setState(s);
       setError(null);
@@ -233,6 +254,13 @@ export function useLiveRoom(roomId, { asHost = false, onEvent } = {}) {
     return listen(`live-team:${roomId}:${teamNo}`, () => refreshSoon(150));
   }, [asHost, roomId, teamNo, refreshSoon]);
 
+  // No live connection (blocked or dropped): keep the room moving by polling.
+  useEffect(() => {
+    if (!roomId || connected) return undefined;
+    const id = setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 3000);
+    return () => clearInterval(id);
+  }, [roomId, connected, refresh]);
+
   // Close the question once its time is up. The host closes right at the
   // deadline; players only after the grace, spread out, so the game moves
   // on even if the teacher's laptop has dropped. The server ignores extras.
@@ -240,9 +268,12 @@ export function useLiveRoom(roomId, { asHost = false, onEvent } = {}) {
   useEffect(() => {
     clearTimeout(closing.current);
     if (!room || room.stage !== 'question' || room.paused || !room.deadline) return undefined;
-    const wait = msLeft(room.deadline, offsetRef.current) + (asHost ? 150 : GRACE_MS + 300 + Math.random() * 1500);
-    closing.current = setTimeout(async () => {
-      try { await livePost('close', { room: roomId }); } catch { /* someone else closed it */ }
+    const wait = msLeft(room.deadline, offsetRef.current) + GRACE_MS + (asHost ? 250 : 600 + Math.random() * 1500);
+    closing.current = setTimeout(async function tryClose() {
+      let out = null;
+      try { out = await livePost('auto_close', { room: roomId }); } catch { /* someone else closed it */ }
+      // Our clock ran ahead of the server's: try again shortly.
+      if (out?.status === 'too_early') { closing.current = setTimeout(tryClose, 700); return; }
       refreshSoon(asHost ? 0 : 500);
     }, Math.max(0, wait));
     return () => clearTimeout(closing.current);

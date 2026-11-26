@@ -14,6 +14,17 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/home.css';
 
+// After a deploy an open tab may ask for files that were renamed; reload
+// once to pick up the new version instead of failing.
+window.addEventListener('vite:preloadError', (e) => {
+  try {
+    if (sessionStorage.getItem('labobo.reloadedForDeploy')) return;
+    sessionStorage.setItem('labobo.reloadedForDeploy', '1');
+    e.preventDefault();
+    window.location.reload();
+  } catch { /* storage blocked: let the error show */ }
+});
+
 initTheme();
 initSettings();
 installErrorReporting();

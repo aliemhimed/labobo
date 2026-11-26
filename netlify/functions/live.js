@@ -32,6 +32,11 @@
      answer       { room, position, choice }
      pick_spell   { room, index }   power-ups: keep one of the offered cards
      cast         { room, target? }   power-ups: cast the held spell between questions
+     auto_close   { room }   timers: close the question once the deadline (+1 s) has passed; never early
+     next         { room, force? }   force skips the power-up time
+     start_quiz   { quiz_id, settings, title? }   teacher: fixed + random questions picked and built here
+     GET view=lectures&tables=a,b   hosts: lecture names + counts ([{ topic, n }]) per bank
+     create_student_room { lectures: [{ table, topic }], count, settings }   the server picks the questions
      auto_next    { room }   auto mode: anyone in the room, once the reveal's time is up
      vote         { room, position, choice }   team rooms: an advisor's pick (the captain uses answer)
      make_teams   { room }   team rooms, lobby: (re)make the teams at random
@@ -91,7 +96,7 @@ async function hasPass(caller) {
 
 // Actions only teachers may take; every other host action is also open to
 // pass holders, for their own rooms (the database checks who the host is).
-const TEACHER_ONLY = new Set(['save_quiz', 'delete_quiz', 'create_room', 'save_case_set', 'delete_case_set', 'create_case_room', 'upload_image']);
+const TEACHER_ONLY = new Set(['save_quiz', 'delete_quiz', 'create_room', 'start_quiz', 'save_case_set', 'delete_case_set', 'create_case_room', 'upload_image']);
 
 async function getTeacher(userId) {
   const [r] = await rows(`/teachers?user_id=eq.${encodeURIComponent(userId)}&select=user_id,subjects`);
@@ -135,8 +140,17 @@ function cleanSettings(s) {
     advance: o.advance === 'auto' ? 'auto' : 'teacher',
     // Power-ups: only acted on in friends' rooms in individual mode (live_spells_on).
     spells: o.spells === true,
+    // Seconds the question shows alone before the answers open.
+    read_seconds: [0, 3, 5, 8].includes(Number(o.read_seconds)) ? Number(o.read_seconds) : 5,
+    // Clinical-case questions get double time.
+    clinical_double: o.clinical_double !== false,
   };
 }
+
+const CLINICAL_AGE = /\b\d{1,3}[- ]?(?:year|month|week|day)s?[- ]old\b/i;
+const CLINICAL_WORDS = /\b(?:patient|presents? (?:with|to)|is brought (?:to|in)|comes to the|emergency department|physical examination|physician|complains? of|was admitted|on examination)\b/i;
+const CLINICAL_PERSON = /^(?:an?|the) (?:young |pregnant |premature |elderly |previously healthy )?(?:man|woman|boy|girl|child|infant|newborn|baby|neonate|toddler|teenager|adolescent|young adult|adult|family|couple|mother|father)\b/i;
+const isClinical = (stem) => { const s = String(stem || '').trim(); return CLINICAL_AGE.test(s) || CLINICAL_WORDS.test(s) || CLINICAL_PERSON.test(s); };
 
 /** One question as a teacher sent it, or null if malformed. */
 function cleanQuestion(x) {
@@ -153,6 +167,7 @@ function cleanQuestion(x) {
     source_table: ALLOWED_TABLES.includes(x.source_table) ? x.source_table : null,
     source_id: Number.isSafeInteger(x.source_id) ? x.source_id : null,
     custom_id: UUID.test(x.custom_id || '') ? x.custom_id : null,
+    clinical: isClinical(q),
   };
 }
 
@@ -389,6 +404,77 @@ function cleanDraft(list) {
   }));
 }
 
+// ── Lecture lists and random picks (done in the database) ────────────
+
+/** { table: [{ topic, n }] } for up to 12 banks the caller may use. */
+async function lecturesView(raw, allowed) {
+  const tables = [...new Set(String(raw || '').split(',').map((x) => x.trim()).filter(Boolean))];
+  if (!tables.length || tables.length > 12) return fail(400, 'Ask for 1-12 tables');
+  if (tables.some((x) => !allowed.includes(x))) return fail(403, 'That subject is not available to you');
+  const lists = await Promise.all(tables.map((x) => rpc('live_bank_topics', { p_table: x })));
+  return json(200, { tables: Object.fromEntries(tables.map((x, i) => [x, lists[i]])) }, { 'Cache-Control': 'private, max-age=300' });
+}
+
+/** Random questions from lectures: [{ table, topic }] -> built questions (server-side). */
+async function pickFromLectures(lectures, count, exclude = new Map()) {
+  const byTable = new Map();
+  for (const l of lectures) { if (!byTable.has(l.table)) byTable.set(l.table, []); byTable.get(l.table).push(l.topic); }
+  const ids = [];
+  for (const [table, topics] of byTable) {
+    const got = await rpc('live_bank_pick', { p_table: table, p_topics: topics, p_limit: count, p_exclude: exclude.get(table) || [] });
+    for (const id of got || []) ids.push({ table, id });
+  }
+  // Mix the banks, then take what's needed.
+  for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+  return buildBankQuestions(ids.slice(0, count));
+}
+
+/** Bank ids -> questions built on the server (never text sent by a client). */
+async function buildBankQuestions(picks) {
+  const byTable = new Map();
+  for (const p of picks) { if (!byTable.has(p.table)) byTable.set(p.table, []); byTable.get(p.table).push(p.id); }
+  const rowsBy = new Map();
+  for (const [table, ids] of byTable) {
+    const list = await rows(`/${table}?id=in.(${[...new Set(ids)].join(',')})&select=id,q,options,answer,explanation,image,images`);
+    for (const r of list) rowsBy.set(`${table}:${r.id}`, bankQuestion(r, table));
+  }
+  return picks.map((p) => rowsBy.get(`${p.table}:${p.id}`)).filter(Boolean).map(cleanQuestion).filter(Boolean);
+}
+
+/** Lectures as a client sent them: [{ table, topic }] within `allowed`. */
+function cleanLectures(list, allowed) {
+  return (Array.isArray(list) ? list : [])
+    .filter((l) => l && allowed.includes(l.table) && typeof l.topic === 'string' && l.topic.trim())
+    .slice(0, 200).map((l) => ({ table: l.table, topic: l.topic.trim().slice(0, 200) }));
+}
+
+/** Start a teacher's saved quiz: its fixed questions plus random ones from its lectures, built here. */
+async function startQuiz(host, body, teacher) {
+  if (!UUID.test(body.quiz_id || '')) return fail(400, 'Invalid quiz');
+  const [quiz] = await rows(`/live_quizzes?id=eq.${body.quiz_id}&owner=eq.${host}&select=id,title,settings`);
+  if (!quiz) return fail(404, 'No such quiz');
+  const items = await rows(`/live_quiz_items?quiz_id=eq.${quiz.id}&select=position,source_table,source_id,custom_id,custom_questions(q,options,answer,explanation,image)&order=position.asc`);
+  const fixed = [];
+  const bankPicks = items.filter((i) => i.source_table && teacher.subjects.includes(i.source_table)).map((i) => ({ table: i.source_table, id: i.source_id }));
+  fixed.push(...(await buildBankQuestions(bankPicks)));
+  for (const i of items) {
+    if (i.custom_questions) { const c = cleanQuestion({ ...i.custom_questions, custom_id: i.custom_id }); if (c) fixed.push(c); }
+  }
+  const pool = cleanLectures(quiz.settings?.pool, teacher.subjects);
+  const count = Math.max(1, Math.min(MAX_QUESTIONS, Number(quiz.settings?.count) || fixed.length || 10));
+  const exclude = new Map();
+  for (const p of bankPicks) { if (!exclude.has(p.table)) exclude.set(p.table, []); exclude.get(p.table).push(p.id); }
+  const random = pool.length && count > fixed.length ? await pickFromLectures(pool, count - fixed.length, exclude) : [];
+  const questions = [...fixed, ...random];
+  for (let i = questions.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [questions[i], questions[j]] = [questions[j], questions[i]]; }
+  if (!questions.length) return fail(400, 'This quiz has no questions available');
+  const out = await rpc('live_create_room', {
+    p_host: host, p_title: str(body.title, 120) || quiz.title, p_settings: cleanSettings(body.settings),
+    p_questions: questions.map(shuffled), p_quiz: quiz.id,
+  });
+  return json(200, { ...out, questions: questions.length, short: questions.length < count });
+}
+
 // ── Student rooms (pass holders) ──────────────────────────────────────
 
 /** A pass holder's quick room: the client picks bank questions at random
@@ -397,6 +483,14 @@ function cleanDraft(list) {
     their own text in front of their friends. One running room per student:
     starting a new one closes the previous one. */
 async function createStudentRoom(caller, body) {
+  const lectures = cleanLectures(body.lectures, ALLOWED_TABLES);
+  if (lectures.length) {
+    if (!(await allowRequest(caller.id, 'live_student_room', 20, 3600))) return fail(429, 'Too many rooms. Try again later.');
+    const count = Math.max(1, Math.min(MAX_QUESTIONS, Number(body.count) || 10));
+    const questions = await pickFromLectures(lectures, count);
+    if (!questions.length) return fail(400, 'Those lectures have no questions');
+    return await openStudentRoom(caller, body, questions);
+  }
   const picks = Array.isArray(body.picks) ? body.picks.slice(0, MAX_QUESTIONS) : [];
   if (!picks.length) return fail(400, 'Choose at least one lecture');
   if (picks.some((p) => !ALLOWED_TABLES.includes(p?.table) || !Number.isSafeInteger(p?.id))) return fail(400, 'A question is not valid');
@@ -412,6 +506,10 @@ async function createStudentRoom(caller, body) {
   const questions = picks.map((p) => rowsBy.get(`${p.table}:${p.id}`)).filter(Boolean).map(cleanQuestion).filter(Boolean);
   if (!questions.length) return fail(400, 'Those questions are not available');
 
+  return await openStudentRoom(caller, body, questions);
+}
+
+async function openStudentRoom(caller, body, questions) {
   // Close this student's earlier rooms that are still running.
   const old = await rest(`/live_rooms?host=eq.${caller.id}&stage=neq.finished&settings->>kind=eq.student`, {
     method: 'PATCH', body: JSON.stringify({ stage: 'finished', finished_at: new Date().toISOString() }),
@@ -485,6 +583,11 @@ exports.handler = async (event) => {
       }
 
       const teacher = await getTeacher(caller.id);
+      if (view === 'lectures') {
+        const pass = !teacher && (await hasPass(caller));
+        if (!teacher && !pass) return fail(403, 'Hosting a room needs a pass');
+        return await lecturesView(tables, teacher ? teacher.subjects : ALLOWED_TABLES);
+      }
       if (view === 'hosted') {
         if (!teacher && !(await hasPass(caller))) return fail(403, 'Hosting a room needs a pass');
         return json(200, { rooms: await rpc('live_hosted', { p_host: caller.id }) });
@@ -515,6 +618,11 @@ exports.handler = async (event) => {
       case 'close': {
         const bad = needRoom(); if (bad) return bad;
         return statusReply(await rpc('live_close', { p_room: room, p_user: caller.id }));
+      }
+      case 'auto_close': {
+        // Timers on screens and phones: refused before the deadline + grace.
+        const bad = needRoom(); if (bad) return bad;
+        return statusReply(await rpc('live_auto_close', { p_room: room, p_user: caller.id }));
       }
       case 'vote': {
         const bad = needRoom(); if (bad) return bad;
@@ -572,6 +680,7 @@ exports.handler = async (event) => {
       case 'save_quiz': return await saveQuiz(caller.id, body, teacher);
       case 'delete_quiz': return await deleteQuiz(caller.id, body.id);
       case 'create_room': return await createRoom(caller.id, body, teacher);
+      case 'start_quiz': return await startQuiz(caller.id, body, teacher);
       case 'save_case_set': return await saveCaseSet(caller.id, body);
       case 'delete_case_set': return await deleteCaseSet(caller.id, body.id);
       case 'create_case_room': return await createCaseRoom(caller.id, body);
@@ -592,7 +701,8 @@ exports.handler = async (event) => {
       case 'board':
       case 'finish': {
         const bad = needRoom(); if (bad) return bad;
-        const fn = { next: 'live_next', board: 'live_show_board', finish: 'live_finish' }[body.action];
+        if (body.action === 'next') return statusReply(await rpc('live_next', { p_room: room, p_host: caller.id, p_force: body.force === true }));
+        const fn = { board: 'live_show_board', finish: 'live_finish' }[body.action];
         return statusReply(await rpc(fn, { p_room: room, p_host: caller.id }));
       }
       case 'reject_team_name': {

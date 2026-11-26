@@ -1,0 +1,7 @@
+Spell effects on the Labobo Live projector.
+
+Player: Effekseer for WebGL 1.70e, MIT License, https://github.com/effekseer/EffekseerForWebGL
+Effects and textures: from the EffekseerForWebGL test resources (MIT). Arrow1, Blow1 and
+Cure1 are from "tktk Effect" by tktk, distributed by Effekseer under CC0
+(https://effekseer.github.io/en/contribute.html). Thanks to Effekseer and tktk.
+Texture/star.png and Parts/Particle_3.png are stand-ins copied from other textures here.

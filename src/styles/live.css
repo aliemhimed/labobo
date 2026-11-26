@@ -327,7 +327,7 @@ button.lv-spell:disabled { opacity: 0.55; cursor: default; }
 .lv-casts.is-big { margin-top: 1em; padding: 0.5em 0.9em; border-radius: var(--r-sheet); box-shadow: 6px 6px 0 var(--hard); }
 .lv-casts.is-big h2 { font-size: clamp(1.1rem, 2.2vw, 2.2rem); }
 .lv-casts.is-big li { font: 600 clamp(1.1rem, 2.4vw, 2.4rem)/1.3 var(--font-display); }
-.proj-toast { position: fixed; left: 50%; bottom: 4vh; transform: translateX(-50%); z-index: 20; max-width: 90vw; margin: 0; padding: 0.5em 1em;
+.proj-toast { position: fixed; left: 0; right: 0; bottom: 4vh; z-index: 40; width: fit-content; max-width: 80vw; margin: 0 auto; padding: 0.5em 1em; overflow-wrap: anywhere;
   font: 800 clamp(1.2rem, 2.8vw, 2.8rem)/1.2 var(--font-display); text-align: center; background: var(--marker); color: var(--card-ink);
   border: var(--line) solid var(--card-ink); border-radius: var(--r-sheet); box-shadow: 6px 6px 0 var(--hard); }
 
@@ -372,10 +372,30 @@ button.lv-spell:disabled { opacity: 0.55; cursor: default; }
 .live-result.ok { animation: lv-pop 0.4s var(--ease-pop) both; }
 
 /* Projector: spell messages stamp in; an Antidote block bursts; a steal moves points. */
-.proj-toast { position: relative; animation: lv-stamp 0.5s var(--ease-out) both; }
+.proj-toast { animation: lv-stamp 0.5s var(--ease-out) both; }
+.proj-toast.has-pu { bottom: 15vh; }
 .proj-toast p { margin: 0; }
 .proj-toast.is-blocked::before { content: ''; position: absolute; left: 50%; top: 50%; width: 120%; aspect-ratio: 1; border-radius: 50%;
   border: 6px solid var(--fill-mint); pointer-events: none; animation: lv-ring 0.8s ease-out forwards; }
 .proj-steal { display: flex; justify-content: center; gap: 2em; margin-top: 0.3em; font: 800 0.8em/1 var(--font-display); }
 .proj-steal .is-minus { color: var(--wrong); animation: lv-down 1.4s 0.3s ease-in forwards; }
 .proj-steal .is-plus { color: var(--correct); animation: lv-up 1.4s 0.3s ease-in forwards; }
+
+/* ── Reading time, clinical cases, power-up time (round 5) ───────── */
+.lv-reading { margin: 0; padding: 6px 14px; text-align: center; font: 800 var(--t-16)/1.3 var(--font-display);
+  background: var(--fill-yellow); color: var(--card-ink); border: var(--line) solid var(--card-ink); border-radius: 99px; justify-self: center; }
+.lv-reading b { font-size: 1.25em; }
+.lv-reading.is-big { margin-top: auto; align-self: center; padding: 0.3em 1.1em; font-size: clamp(1.5rem, 3.4vw, 3.4rem); box-shadow: 5px 5px 0 var(--hard); }
+.lv-clinical { background: var(--fill-mint); }
+.lv-clinical.is-big { padding: 0.15em 0.8em; font-size: clamp(1rem, 2.2vw, 2.2rem); }
+.proj-timewrap { display: inline-flex; align-items: center; gap: 0.8em; }
+.lv-pu-note { margin: 0; padding: 8px 12px; text-align: center; font: 800 var(--t-14)/1.3 var(--font-display);
+  background: var(--marker); color: var(--card-ink); border: var(--line) solid var(--card-ink); border-radius: var(--r-control); }
+.proj-pu { position: fixed; left: 0; right: 0; bottom: 3vh; z-index: 30; width: fit-content; max-width: 80vw; margin: 0 auto; padding: 0.3em 1.1em;
+  font: 800 clamp(1.3rem, 3vw, 3rem)/1.2 var(--font-display); text-align: center; background: var(--marker); color: var(--card-ink);
+  border: var(--line) solid var(--card-ink); border-radius: var(--r-sheet); box-shadow: 6px 6px 0 var(--hard); }
+.proj-pu b { margin-left: 0.3em; }
+
+/* Effekseer spell effects (projector only, src/lib/spellFx.js); under the banner. */
+.spell-fx-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 39; }
+html.reduce-motion .spell-fx-canvas { display: none; }

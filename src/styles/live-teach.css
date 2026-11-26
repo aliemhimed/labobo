@@ -209,3 +209,20 @@ textarea.lv-chart { font: inherit; resize: vertical; }
 .lt-card { box-shadow: 6px 6px 0 var(--hard); }
 .lt-step > h2 { font: 800 var(--t-24)/1.15 var(--font-display); letter-spacing: -0.01em; }
 textarea.lt-input.lv-chart { padding: 0.35em 0.9em 0.5em 2.6em; line-height: var(--ln); }
+
+/* Round 5: hidden attribute wins over display rules; phone host controls. */
+.lt [hidden] { display: none !important; }
+.lt-stageline { margin: 0 0 12px; font: 700 var(--t-14)/1.4 var(--font-ui); color: var(--ink-soft); }
+.lt-compact h2 { font-size: var(--t-18); margin-bottom: 8px; }
+.lt-fold > summary { cursor: pointer; font: 700 var(--t-16)/1.3 var(--font-display); min-height: 44px; display: flex; align-items: center; }
+.lt-fold[open] > summary { margin-bottom: 10px; }
+.lt-actbar { display: none; }
+.lt-more-list { display: grid; gap: 10px; margin-top: 12px; }
+.lt-more-list .btn { min-height: 48px; width: 100%; }
+@media (max-width: 699px) {
+  .lt.has-actbar { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+  .lt-actbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: flex; gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: var(--sheet); border-top: var(--line) solid var(--edge); }
+  .lt-actbar .btn { flex: 1 1 0; min-width: 0; min-height: 52px; font-size: var(--t-16); padding: 0 10px; white-space: normal; line-height: 1.15; }
+  .lt-actbar .lt-actbar-more { flex: 0 0 auto; min-width: 76px; }
+}

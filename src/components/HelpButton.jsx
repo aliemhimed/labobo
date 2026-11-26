@@ -26,8 +26,8 @@ export default function HelpButton() {
   }, [open]);
 
   if (pathname.startsWith('/admin')) return null;
-  // Live: it would cover answer D on phones and sit on the projector screen.
-  if (/\/live\/(play|screen)\//.test(pathname)) return null;
+  // Live: it would cover answer D on phones, the host's bottom bar, and sit on the projector screen.
+  if (/\/live\/(play|screen|teach\/room)\//.test(pathname)) return null;
 
   return (
     <div className="help" ref={rootRef}>

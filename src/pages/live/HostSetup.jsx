@@ -4,10 +4,10 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import TopBar from '../../components/TopBar.jsx';
 import PageHead from '../../components/PageHead.jsx';
 import { SUBJECTS, inSemester } from '../../lib/subjects.js';
-import { loadQuestions } from '../../lib/questions.js';
 import { useProfile } from '../../hooks/useProfile.js';
 import { openSubscribeDialog } from '../../lib/access.js';
-import { SECONDS_CHOICES, fetchLiveMe, lastSettings, livePost, rememberSettings } from '../../lib/live.js';
+import { SECONDS_CHOICES, fetchLectures, fetchLiveMe, lastSettings, livePost, rememberSettings } from '../../lib/live.js';
+import { displayTopic } from '../../lib/liveSubjects.js';
 import '../../styles/live-teach.css';
 
 /* Quick setup for pass holders: pick a subject and lectures, then start a
@@ -30,15 +30,6 @@ function Choice({ label, value, onChange, options }) {
   );
 }
 
-function shuffle(list) {
-  const a = [...list];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 function Setup() {
   const navigate = useNavigate();
   const profile = useProfile();
@@ -46,7 +37,7 @@ function Setup() {
   const [subject, setSubject] = useState('');
   const [ticked, setTicked] = useState(() => new Set());
   const [count, setCount] = useState(10);
-  const [settings, setSettings] = useState(() => lastSettings());
+  const [settings, setSettings] = useState(() => ({ read_seconds: 5, clinical_double: true, ...lastSettings() }));
   const [name, setName] = useState('');
   const set = (key) => (value) => setSettings((s) => ({ ...s, [key]: value }));
 
@@ -54,43 +45,38 @@ function Setup() {
   const mine = entries.filter(([, cfg]) => semester && inSemester(cfg, semester));
   const others = entries.filter(([, cfg]) => !(semester && inSemester(cfg, semester)));
 
+  // Lecture names and counts come from the server (no question text is loaded).
+  const tables = useMemo(() => (subject ? [...new Set(SUBJECTS[subject].sources.map((x) => x.table))] : []), [subject]);
   const bank = useQuery({
-    queryKey: ['live-host-bank', subject], enabled: !!subject, staleTime: 5 * 60_000,
-    queryFn: () => loadQuestions(SUBJECTS[subject]),
+    queryKey: ['live-host-lectures', subject], enabled: !!subject, staleTime: 5 * 60_000,
+    queryFn: () => fetchLectures(tables),
   });
 
-  // Lectures in the order the questions come, with their questions.
-  const lectures = useMemo(() => {
-    const map = new Map();
-    for (const q of bank.data?.questions || []) {
-      if (!map.has(q.topic)) map.set(q.topic, []);
-      map.get(q.topic).push(q);
-    }
-    return [...map].map(([topic, questions]) => ({ topic, questions }));
-  }, [bank.data]);
+  // Lectures in the order the server gives them, one per bank table.
+  const lectures = useMemo(() => tables.flatMap((table) => (bank.data?.tables?.[table] || [])
+    .map(({ topic, n }) => ({ key: `${table}|${topic}`, table, topic, n, name: displayTopic(table, topic) }))), [tables, bank.data]);
 
   useEffect(() => { setTicked(new Set()); }, [subject]);
 
-  const pool = useMemo(() => lectures.filter((l) => ticked.has(l.topic)).flatMap((l) => l.questions), [lectures, ticked]);
-  const max = Math.min(MAX_COUNT, pool.length);
+  const chosen = useMemo(() => lectures.filter((l) => ticked.has(l.key)), [lectures, ticked]);
+  const poolN = chosen.reduce((n, l) => n + l.n, 0);
+  const max = Math.min(MAX_COUNT, poolN);
   const wanted = max === 0 ? 0 : Math.min(count, max);
-  const toggle = (topic) => setTicked((s) => { const n = new Set(s); if (n.has(topic)) n.delete(topic); else n.add(topic); return n; });
+  const toggle = (key) => setTicked((s) => { const n = new Set(s); if (n.has(key)) n.delete(key); else n.add(key); return n; });
 
   const start = useMutation({
     mutationFn: () => {
       rememberSettings(settings);
-      const picks = shuffle(pool).slice(0, wanted).map((q) => {
-        const i = q.id.lastIndexOf(':');
-        return { table: q.id.slice(0, i), id: Number(q.id.slice(i + 1)) };
-      });
       return livePost('create_student_room', {
         title: name.trim() || 'Study game',
+        lectures: chosen.map((l) => ({ table: l.table, topic: l.topic })),
+        count: wanted,
         settings: {
           mode: settings.mode, seconds: settings.seconds, team_size: settings.team_size, names: settings.names,
           leaderboard: settings.leaderboard, review: settings.review, advance: settings.advance,
+          read_seconds: settings.read_seconds ?? 5, clinical_double: settings.clinical_double !== false,
           spells: settings.mode === 'individual' && settings.spells !== false,
         },
-        picks,
       });
     },
     onSuccess: (room) => navigate(`/live/teach/room/${room.id}`),
@@ -120,22 +106,22 @@ function Setup() {
         {subject ? (
           <section aria-labelledby="lh-lec">
             <h2 id="lh-lec" style={{ fontSize: 'var(--t-21)', marginBottom: 10 }}>Lectures</h2>
-            {bank.isLoading ? <p className="lt-muted" role="status">Loading questions…</p>
+            {bank.isLoading ? <p className="lt-muted" role="status">Loading lectures…</p>
               : bank.error ? (
-                <p className="lt-error" role="alert">Could not load the questions: {bank.error.message}{' '}
+                <p className="lt-error" role="alert">Could not load the lectures: {bank.error.message}{' '}
                   <button type="button" className="btn sm" onClick={() => bank.refetch()}>Try again</button></p>
               ) : lectures.length === 0 ? <p className="lt-muted">No questions are open to you in this subject.</p> : (
                 <div className="lt-card">
                   <div className="lt-controls" style={{ marginBottom: 10 }}>
-                    <button type="button" className="btn sm" onClick={() => setTicked(new Set(lectures.map((l) => l.topic)))}>Select all</button>
+                    <button type="button" className="btn sm" onClick={() => setTicked(new Set(lectures.map((l) => l.key)))}>Select all</button>
                     <button type="button" className="btn sm" onClick={() => setTicked(new Set())}>Clear</button>
-                    <span className="lt-muted">{ticked.size} of {lectures.length} lectures, {plural(pool.length, 'question')}</span>
+                    <span className="lt-muted">{ticked.size} of {lectures.length} lectures, {plural(poolN, 'question')}</span>
                   </div>
                   <div className="lt-lectures">
                     {lectures.map((l) => (
-                      <label key={l.topic} className="lt-check">
-                        <input type="checkbox" checked={ticked.has(l.topic)} onChange={() => toggle(l.topic)} />
-                        <span>{l.topic} <span className="lt-muted">({l.questions.length})</span></span>
+                      <label key={l.key} className="lt-check">
+                        <input type="checkbox" checked={ticked.has(l.key)} onChange={() => toggle(l.key)} />
+                        <span>{l.name} <span className="lt-muted">({l.n})</span></span>
                       </label>
                     ))}
                   </div>
@@ -155,11 +141,15 @@ function Setup() {
               {QUICK.map((n) => <button key={n} type="button" aria-pressed={wanted === n} disabled={n > max} onClick={() => setCount(n)}>{n}</button>)}
             </div>
           </div>
-          {pool.length ? <p className="lt-muted" style={{ marginTop: 8 }}>{max} available from the lectures you ticked.</p> : null}
+          {poolN ? <p className="lt-muted" style={{ marginTop: 8 }}>{max} available from the lectures you ticked.</p> : null}
         </section>
 
         <Choice label="Seconds per question" value={settings.seconds} onChange={set('seconds')}
                 options={SECONDS_CHOICES.map((n) => [n, String(n)])} />
+        <Choice label="Reading time" value={settings.read_seconds ?? 5} onChange={set('read_seconds')}
+                options={[[0, 'Off'], [3, '3 s'], [5, '5 s'], [8, '8 s']]} />
+        <Choice label="Clinical cases get double time" value={settings.clinical_double !== false} onChange={set('clinical_double')}
+                options={[[true, 'On'], [false, 'Off']]} />
         <Choice label="Mode" value={settings.mode} onChange={set('mode')}
                 options={[['individual', 'Individual'], ['teams', 'Teams']]} />
         {settings.mode === 'teams' ? (

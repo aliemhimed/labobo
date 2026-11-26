@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
-import { useAutoNext, useCaseView, useCountdown, useLiveRoom } from '../../lib/live.js';
-import { CodeTag, TimerSticker } from './LiveBits.jsx';
+import { useAutoNext, useCaseView, useLiveRoom } from '../../lib/live.js';
+import { ClinicalBadge, CodeTag, ReadingNote, TimerSticker, useQuestionClock, usePowerupLeft } from './LiveBits.jsx';
 import { celebrate } from '../../lib/confetti.js';
 import { CastList, spellEventText } from './SpellBits.jsx';
+import { playSpellFx } from '../../lib/spellFx.js';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -31,9 +32,13 @@ export default function Projector() {
   const { room: roomId } = useParams();
   const [toast, setToast] = useState(null);
   const toastTimer = useRef(null);
+  // The stage when a spell event arrives (the event handler outlives renders).
+  const stageRef = useRef(null);
   const showSpell = (p) => {
     const text = spellEventText(p);
     if (!text) return;
+    // Effects play between questions only, never over a question.
+    if (stageRef.current !== 'question') playSpellFx(p);
     clearTimeout(toastTimer.current);
     setToast({ text, kind: p.blocked ? 'blocked' : p.spell === 'point_steal' && p.amount > 0 ? 'steal' : 'cast', amount: p.amount, by: p.by, target: p.target, key: Date.now() });
     toastTimer.current = setTimeout(() => setToast(null), 6000);
@@ -52,7 +57,9 @@ export default function Projector() {
   const caseRoom = state?.room?.settings?.mode === 'cases';
   const { cases: caseView } = useCaseView(caseRoom ? roomId : null, version);
   const r = state?.room;
-  const left = useCountdown(r?.deadline, offsetMs, r?.paused, r?.paused_left_ms);
+  stageRef.current = r?.stage || null;
+  const { left, readLeft, reading, total: answerMs } = useQuestionClock(r, offsetMs);
+  const puLeft = usePowerupLeft(r, offsetMs);
   const autoIn = useAutoNext(state, offsetMs);
 
   if (error && !state) {
@@ -127,12 +134,16 @@ export default function Projector() {
           {isReveal ? (
             <span>{reveal?.counts?.answered ?? 0} of {teamRoom ? teams.length : state.players} {teamRoom ? 'teams ' : ''}answered</span>
           ) : (
-            <TimerSticker msLeft={left} totalMs={(r.settings?.seconds || 20) * 1000} paused={r.paused} />
+            <span className="proj-timewrap">
+              <ClinicalBadge question={q} settings={r.settings} size="big" />
+              <TimerSticker msLeft={reading ? answerMs : left} totalMs={answerMs} paused={r.paused} />
+            </span>
           )}
         </div>
         <h1 className="proj-q-text">{q.q}</h1>
         {q.image ? <img className="proj-q-img" src={q.image} alt="" /> : null}
-        <div className="proj-options">
+        {!isReveal && reading ? <ReadingNote msLeft={readLeft} size="big" /> : null}
+        {!isReveal && reading ? null : <div className="proj-options">
           {q.options.map((o, i) => {
             const cls = isReveal ? (i === reveal?.answer ? ' is-correct' : ' is-dim') : '';
             return (
@@ -147,14 +158,14 @@ export default function Projector() {
               </div>
             );
           })}
-        </div>
+        </div>}
         {isReveal ? (
           <>
             {reveal?.explanation ? <p className="proj-expl">{reveal.explanation}</p> : null}
             <CastList casts={state.casts} big />
             {autoIn != null ? <p className="proj-answered">Next question in {autoIn} s</p> : null}
           </>
-        ) : (
+        ) : reading ? null : (
           <p className="proj-answered">{state.counts?.answered ?? 0} of {teamRoom ? teams.length : state.players} {teamRoom ? 'teams ' : ''}answered</p>
         )}
         {r.paused && !isReveal ? <div className="proj-paused"><span>Paused</span></div> : null}
@@ -205,8 +216,9 @@ export default function Projector() {
   return (
     <main className="proj">
       {body}
+      {puLeft > 0 ? <div className="proj-pu" role="status">Power-up time <b>{puLeft}</b></div> : null}
       {toast && stage !== 'question' ? (
-        <div key={toast.key} className={`proj-toast is-${toast.kind}`} role="status">
+        <div key={toast.key} className={`proj-toast is-${toast.kind}${puLeft > 0 ? ' has-pu' : ''}`} role="status">
           <p>{toast.text}</p>
           {toast.kind === 'steal' ? (
             <div className="proj-steal" aria-hidden="true">
