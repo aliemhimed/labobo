@@ -38,6 +38,7 @@ function describe(caller, access, pending = null) {
     lock_start: LOCK_START.toISOString(),
     access: access.kind,
     expires_at: access.expires_at,
+    teacher: !!access.teacher,
     device: access.device || null,
     trial: {
       days: TRIAL_DAYS,

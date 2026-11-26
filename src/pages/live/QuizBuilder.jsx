@@ -159,7 +159,7 @@ function Builder({ existing, id, mine }) {
     mutationFn: () => saveQuiz({
       ...(id ? { id } : {}),
       title: title.trim(),
-      subject: tables.map((t) => labels.get(t)).join(', ').slice(0, 80),
+      subject: tables.map((t) => labels.get(t)).join(', ').slice(0, 300),
       settings: lastSettings(),
       pool: [...lectures].map(splitLectureKey),
       count: total,

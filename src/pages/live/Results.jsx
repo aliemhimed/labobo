@@ -16,8 +16,13 @@ function csvCell(v) {
 
 function downloadCsv(data) {
   const total = data.room.total;
-  const head = ['Rank', 'Name', 'Email', 'Nickname', 'Score', 'Correct', 'Total questions', 'Left app'];
-  const lines = [head, ...data.players.map((p) => [p.rank, p.name, p.email, p.nickname, p.score, p.correct, total, p.away])];
+  // Team quizzes: add each student's team (teams list members by name).
+  const teamOf = new Map();
+  for (const tm of data.teams || []) for (const m of tm.members || []) teamOf.set(m, tm.name);
+  const withTeams = teamOf.size > 0;
+  const head = ['Rank', 'Name', 'Email', 'Nickname', ...(withTeams ? ['Team'] : []), 'Score', 'Correct', 'Total questions', 'Left app'];
+  const lines = [head, ...data.players.map((p) => [p.rank, p.name, p.email, p.nickname, ...(withTeams ? [teamOf.get(p.name) || ''] : []),
+    p.score, p.correct, total, p.away])];
   const csv = lines.map((l) => l.map(csvCell).join(',')).join('\r\n');
   const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
   const a = document.createElement('a');

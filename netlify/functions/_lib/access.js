@@ -52,7 +52,8 @@ function trialEmail(caller) {
     `event` (payments) the device is not checked. */
 async function getAccess(caller, event) {
   const access = await getPlan(caller);
-  if (event && caller && isLocked() && (access.kind === 'pass' || access.kind === 'trial')) {
+  // Teachers are not held to devices (they teach from lecture-hall computers).
+  if (event && caller && isLocked() && !access.teacher && (access.kind === 'pass' || access.kind === 'trial')) {
     access.device = await checkDevice(caller.id, readDevice(event));
   }
   return access;
@@ -78,6 +79,10 @@ async function getPlan(caller) {
   const live = (list) => list.map((r) => r.expires_at).filter((t) => new Date(t).getTime() > now).sort().pop() || null;
   const pass = live(subs);
   if (pass) return { kind: 'pass', expires_at: pass, trial_used: trials.length > 0, uni_email: email };
+  // Labobo Live teachers (admin Teachers tab) read the whole bank for free,
+  // with no end date: reported as a pass with `teacher: true`.
+  const [teacher] = await rows(`/teachers?user_id=eq.${id}&select=user_id`);
+  if (teacher) return { kind: 'pass', expires_at: null, teacher: true, trial_used: trials.length > 0, uni_email: email };
   if (!isLocked()) return { kind: 'open', expires_at: null, trial_used: trials.length > 0, uni_email: email };
   const trial = live(trials);
   if (trial) return { kind: 'trial', expires_at: trial, trial_used: true, uni_email: email };

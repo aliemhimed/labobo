@@ -219,7 +219,7 @@ async function saveQuiz(owner, body, teacher) {
   }
 
   const quizRow = {
-    owner, title, subject: str(body.subject, 80),
+    owner, title, subject: str(body.subject, 300),
     // Room settings, plus the lectures to draw random questions from and the
     // quiz length. Random questions are drawn fresh each time it starts.
     settings: { ...cleanSettings(body.settings), pool: lectures, count },
