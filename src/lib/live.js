@@ -52,6 +52,14 @@ export const deleteQuiz = (id) => livePost('delete_quiz', { id });
 export const createRoom = (room) => livePost('create_room', room);
 export const joinRoom = (code, nickname) => livePost('join', { code, nickname });
 
+// Case-scenario rooms (see netlify/functions/live.js).
+export const fetchCaseView = (room) => liveGet({ view: 'cases', room });
+export const fetchCaseSets = () => liveGet({ view: 'case_sets' });
+export const fetchCaseSet = (id) => liveGet({ view: 'case_set', id });
+export const saveCaseSet = (set) => livePost('save_case_set', set);
+export const deleteCaseSet = (id) => livePost('delete_case_set', { id });
+export const createCaseRoom = (room) => livePost('create_case_room', room);
+
 /** Settings a new room starts with (the "More options" defaults). */
 export const DEFAULT_SETTINGS = Object.freeze({ seconds: 20, names: 'nicknames', leaderboard: 'top5', review: true, advance: 'teacher', mode: 'individual', team_size: 3 });
 export const SECONDS_CHOICES = [10, 15, 20, 30, 45, 60, 90];
@@ -122,6 +130,7 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
   const [state, setState] = useState(null);
   const [error, setError] = useState(null);
   const [connected, setConnected] = useState(false);
+  const [version, setVersion] = useState(0);
   const offsetRef = useRef(0);
   const [offsetMs, setOffsetMs] = useState(0);
   const refreshTimer = useRef(null);
@@ -139,6 +148,7 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
       }
       setState(s);
       setError(null);
+      setVersion((v) => v + 1);
     } catch (e) {
       setError(e);
     }
@@ -268,7 +278,23 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
     return out;
   }, [roomId, refreshSoon]);
 
-  return { state, error, offsetMs, connected, refresh, act };
+  return { state, error, offsetMs, connected, refresh, act, version };
+}
+
+/**
+ * The case-room view (GET view=cases), re-read whenever useLiveRoom re-reads
+ * the room (every team or host event does), so drafts, submissions and marks
+ * stay in sync. Returns { cases, error, reload }.
+ */
+export function useCaseView(roomId, version) {
+  const [cases, setCases] = useState(null);
+  const [error, setError] = useState(null);
+  const reload = useCallback(async () => {
+    if (!roomId) return;
+    try { setCases(await fetchCaseView(roomId)); setError(null); } catch (e) { setError(e); }
+  }, [roomId]);
+  useEffect(() => { reload(); }, [reload, version]);
+  return { cases, error, reload };
 }
 
 /** Seconds until the next question in auto mode, or null when not counting down. */

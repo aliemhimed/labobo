@@ -33,6 +33,17 @@
      name_team    { room, name }   team rooms, lobby: the team's first captain names it
      reject_team_name { room, team }   teacher: the team goes back to "Team <n>" and is asked again
      moderate act 'move'  { user, value: team no }   team rooms: move a student
+   Case-scenario rooms (mode 'cases', teacher-marked, no timer):
+     GET view=cases&room=        host: cases, teams' progress, answers, marks; player: own team's
+                                 current case (no right answers) and draft, or everything after release
+     GET view=case_sets | view=case_set&id=   teacher's saved case sets
+     save_case_set   { id?, title, subject, cases: [{ scenario, questions: [{ kind: 'options'|'open', q, options, answer, max }] }] }
+     delete_case_set { id }
+     create_case_room { set_id, title?, settings: { names, team_size } }   frozen from the saved set
+     case_draft   { room, position, answers: [{ choice, text }] }   any team member, current case only
+     case_submit  { room, position }   locks the case
+     case_mark    { room, position, team, question, mark (0..max | null), comment }   teacher
+     case_release { room }   teacher: ends the room and shows teams their marks
      away         { room }
 
    Teachers are rows in `teachers`, granted by an admin (admin.js). */
@@ -265,6 +276,93 @@ async function createRoom(host, body, teacher) {
   return json(200, out);
 }
 
+// ── Case-scenario sets (teacher) ──────────────────────────────────────
+
+/** A case set's cases as a teacher sent them, or a reason string if invalid. */
+function cleanCases(list) {
+  if (!Array.isArray(list) || !list.length) return 'Add at least one case';
+  if (list.length > 50) return 'At most 50 cases';
+  const out = [];
+  for (const [ci, c] of list.entries()) {
+    const scenario = str(c?.scenario, 5000);
+    const qs = Array.isArray(c?.questions) ? c.questions : [];
+    if (!scenario) return `Case ${ci + 1} needs a scenario`;
+    if (!qs.length || qs.length > 6) return `Case ${ci + 1} needs 1 to 6 questions`;
+    const questions = [];
+    for (const [qi, q] of qs.entries()) {
+      const kind = q?.kind === 'open' ? 'open' : 'options';
+      const text = str(q?.q, 2000);
+      const max = Number.isInteger(q?.max) ? Math.max(1, Math.min(100, q.max)) : 5;
+      if (!text) return `Case ${ci + 1}, question ${qi + 1} has no text`;
+      if (kind === 'open') { questions.push({ kind, q: text, max }); continue; }
+      const options = Array.isArray(q.options) ? q.options.map((o) => str(String(o ?? ''), 500)).filter(Boolean) : [];
+      if (options.length < 2 || options.length > 6) return `Case ${ci + 1}, question ${qi + 1} needs 2 to 6 options`;
+      if (!Number.isInteger(q.answer) || q.answer < 0 || q.answer >= options.length) return `Case ${ci + 1}, question ${qi + 1} needs a correct option`;
+      questions.push({ kind, q: text, options, answer: q.answer, max });
+    }
+    out.push({ scenario, questions });
+  }
+  return out;
+}
+
+async function caseSetsView(owner) {
+  const list = await rows(`/case_sets?owner=eq.${owner}&select=id,title,subject,cases,updated_at&order=updated_at.desc`);
+  return json(200, { sets: list.map((s) => ({ id: s.id, title: s.title, subject: s.subject, updated_at: s.updated_at, count: s.cases.length })) });
+}
+
+async function caseSetView(owner, id) {
+  if (!UUID.test(id || '')) return fail(400, 'Invalid case set');
+  const [set] = await rows(`/case_sets?id=eq.${id}&owner=eq.${owner}&select=id,title,subject,cases,updated_at`);
+  return set ? json(200, { set }) : fail(404, 'No such case set');
+}
+
+async function saveCaseSet(owner, body) {
+  const title = str(body.title, 120);
+  if (!title) return fail(400, 'Give the case set a title');
+  const cases = cleanCases(body.cases);
+  if (typeof cases === 'string') return fail(400, cases);
+  const row = { owner, title, subject: str(body.subject, 300), cases, updated_at: new Date().toISOString() };
+  if (UUID.test(body.id || '')) {
+    const res = await rest(`/case_sets?id=eq.${body.id}&owner=eq.${owner}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(row) });
+    if (!res.ok) throw new Error(`case set update ${res.status} ${await res.text()}`);
+    const [saved] = await res.json();
+    return saved ? json(200, { id: saved.id }) : fail(404, 'No such case set');
+  }
+  const res = await rest('/case_sets', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(row) });
+  if (!res.ok) throw new Error(`case set insert ${res.status} ${await res.text()}`);
+  return json(200, { id: (await res.json())[0].id });
+}
+
+async function deleteCaseSet(owner, id) {
+  if (!UUID.test(id || '')) return fail(400, 'Invalid case set');
+  const res = await rest(`/case_sets?id=eq.${id}&owner=eq.${owner}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`case set delete ${res.status} ${await res.text()}`);
+  return json(200, { ok: true });
+}
+
+/** A case room from one of the teacher's saved sets (frozen on the server). */
+async function createCaseRoom(host, body) {
+  if (!UUID.test(body.set_id || '')) return fail(400, 'Choose a case set');
+  const [set] = await rows(`/case_sets?id=eq.${body.set_id}&owner=eq.${host}&select=title,cases`);
+  if (!set) return fail(404, 'No such case set');
+  const s = cleanSettings({ ...(body.settings || {}), mode: 'teams' });
+  const out = await rpc('live_create_case_room', {
+    p_host: host, p_title: str(body.title, 120) || set.title,
+    p_settings: { names: s.names, team_size: s.team_size, leaderboard: 'none', review: true },
+    p_cases: set.cases,
+  });
+  return json(200, out);
+}
+
+/** A team's answers for one case: [{ choice, text }] per question. */
+function cleanDraft(list) {
+  if (!Array.isArray(list) || list.length > 6) return null;
+  return list.map((a) => ({
+    choice: Number.isInteger(a?.choice) && a.choice >= 0 && a.choice < 6 ? a.choice : null,
+    text: str(a?.text, 4000),
+  }));
+}
+
 // ── Everyone in a room ────────────────────────────────────────────────
 
 async function join(caller, body) {
@@ -313,6 +411,11 @@ exports.handler = async (event) => {
         return out ? json(200, out) : fail(404, 'Not available');
       }
       if (view === 'history') return json(200, { sessions: await rpc('live_history', { p_user: caller.id }) });
+      if (view === 'cases') {
+        if (!UUID.test(room || '')) return fail(400, 'Invalid room');
+        const out = await rpc('live_case_view', { p_room: room, p_user: caller.id });
+        return out ? json(200, out) : fail(404, 'Not available');
+      }
 
       const teacher = await getTeacher(caller.id);
       if (!teacher) return fail(403, 'Teachers only');
@@ -320,6 +423,8 @@ exports.handler = async (event) => {
       if (view === 'quizzes') return await quizzesView(caller.id);
       if (view === 'quiz') return await quizView(caller.id, id);
       if (view === 'hosted') return json(200, { rooms: await rpc('live_hosted', { p_host: caller.id }) });
+      if (view === 'case_sets') return await caseSetsView(caller.id);
+      if (view === 'case_set') return await caseSetView(caller.id, id);
       return fail(400, 'Unknown view');
     }
 
@@ -354,6 +459,17 @@ exports.handler = async (event) => {
         if (out.status === 'too_short') return json(400, { error: 'Use at least 2 characters', code: 'too_short' });
         return statusReply(out);
       }
+      case 'case_draft': {
+        const bad = needRoom(); if (bad) return bad;
+        const answers = cleanDraft(body.answers);
+        if (!Number.isInteger(body.position) || !answers) return fail(400, 'Invalid answers');
+        return statusReply(await rpc('live_case_draft', { p_room: room, p_user: caller.id, p_position: body.position, p_answers: answers }));
+      }
+      case 'case_submit': {
+        const bad = needRoom(); if (bad) return bad;
+        if (!Number.isInteger(body.position)) return fail(400, 'Invalid case');
+        return statusReply(await rpc('live_case_submit', { p_room: room, p_user: caller.id, p_position: body.position }));
+      }
       case 'auto_next': {
         const bad = needRoom(); if (bad) return bad;
         return statusReply(await rpc('live_auto_next', { p_room: room, p_user: caller.id }));
@@ -372,6 +488,22 @@ exports.handler = async (event) => {
       case 'save_quiz': return await saveQuiz(caller.id, body, teacher);
       case 'delete_quiz': return await deleteQuiz(caller.id, body.id);
       case 'create_room': return await createRoom(caller.id, body, teacher);
+      case 'save_case_set': return await saveCaseSet(caller.id, body);
+      case 'delete_case_set': return await deleteCaseSet(caller.id, body.id);
+      case 'create_case_room': return await createCaseRoom(caller.id, body);
+      case 'case_mark': {
+        const bad = needRoom(); if (bad) return bad;
+        const { position, team, question } = body;
+        const mark = body.mark === null ? null : body.mark;
+        if (![position, team, question].every(Number.isInteger) || !(mark === null || Number.isInteger(mark))) return fail(400, 'Invalid mark');
+        const out = await rpc('live_case_mark', { p_room: room, p_host: caller.id, p_position: position, p_team: team, p_question: question, p_mark: mark, p_comment: str(body.comment, 1000) });
+        if (out.status === 'bad_mark') return json(400, { error: `Marks go from 0 to ${out.max}`, code: 'bad_mark' });
+        return statusReply(out);
+      }
+      case 'case_release': {
+        const bad = needRoom(); if (bad) return bad;
+        return statusReply(await rpc('live_case_release', { p_room: room, p_host: caller.id }));
+      }
       case 'next':
       case 'board':
       case 'finish': {
