@@ -144,6 +144,7 @@ export function PlanStripView({ data }) {
     );
   }
   if (data.access === 'pass') {
+    if (data.teacher) return <p className="plan-strip pass"><b>Full access</b> Every lecture is open for teachers.</p>;
     return <p className="plan-strip pass"><b>Full access</b> Your pass runs until {formatDay(data.expires_at)}.</p>;
   }
   if (data.access === 'trial') {
@@ -382,7 +383,9 @@ export function SubscribeView({
       ) : null}
 
       {access?.access === 'pass' ? (
-        <p className="subscribe-status ok">You have full access until <b>{formatDay(access.expires_at)}</b>.</p>
+        <p className="subscribe-status ok">{access.teacher
+          ? 'You have full access as a teacher.'
+          : <>You have full access until <b>{formatDay(access.expires_at)}</b>.</>}</p>
       ) : null}
       {access?.access === 'trial' ? (
         <p className="subscribe-status">
