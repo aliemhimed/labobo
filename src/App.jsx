@@ -8,6 +8,7 @@ import InstallPrompt from './components/InstallPrompt.jsx';
 import HelpButton from './components/HelpButton.jsx';
 import { ReviewDialogHost } from './components/Reviews.jsx';
 import { SubscribeDialogHost } from './components/Plan.jsx';
+import { SettingsDialogHost } from './components/Settings.jsx';
 import { AuthGate, SemesterGate } from './components/AuthGate.jsx';
 import { SUBJECTS } from './lib/subjects.js';
 import { loadSubjectPage } from './pages/loadSubjectPage.js';
@@ -64,6 +65,7 @@ function StudentApp() {
         </Suspense>
         <ReviewDialogHost />
         <SubscribeDialogHost />
+        <SettingsDialogHost />
       </SemesterGate>
     </AuthGate>
   );

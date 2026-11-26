@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { prefersReducedMotion } from '../lib/settings.js';
 
 const SPOKEN = { correct: 'right', wrong: 'wrong', answered: 'answered' };
 
@@ -17,7 +18,7 @@ export default function SheetMap({ marks, current = -1, onJump, wrap = false, la
     const bubble = list?.children[current];
     if (!list || !bubble) return;
     const target = bubble.offsetLeft - list.clientWidth / 2 + bubble.offsetWidth / 2;
-    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const smooth = !prefersReducedMotion();
     list.scrollTo({ left: Math.max(0, target), behavior: smooth ? 'smooth' : 'auto' });
   }, [current, wrap, marks.length]);
 

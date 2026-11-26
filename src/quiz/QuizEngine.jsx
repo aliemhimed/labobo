@@ -18,6 +18,7 @@ import ExamDetail from './ExamDetail.jsx';
 import { GuideReader, GuidesLibrary } from './Guides.jsx';
 import { findGuide, useGuideCatalog } from '../lib/guides.js';
 import { openSubscribeDialog } from '../lib/access.js';
+import { prefersReducedMotion } from '../lib/settings.js';
 import { initialSession, restoreSession, serializeSession, sessionReducer } from './session.js';
 import { useHistory, useSrs, useStarred, useWrong } from '../hooks/useStore.js';
 import { dueIds, dueTomorrow, updateSrs } from '../lib/srs.js';
@@ -50,8 +51,6 @@ const VIEW_TITLES = {
   'exam-detail': 'Session details', 'flashcards-config': 'Flashcards', flashcards: 'Flashcards',
   dashboard: 'Performance', guides: 'Study guides',
 };
-
-const prefersReducedMotion =() => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const NO_EXTRA = [];
 
