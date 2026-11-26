@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import TopBar from '../../components/TopBar.jsx';
-import { fetchHistory, fetchLiveMe, joinRoom } from '../../lib/live.js';
-import { sendUniCode, verifyUniCode } from '../../lib/access.js';
+import { fetchHistory, fetchHosted, fetchLiveMe, joinRoom } from '../../lib/live.js';
+import { openSubscribeDialog, sendUniCode, verifyUniCode } from '../../lib/access.js';
 
 /* The EU email step, same flow as the plan page: send a code, enter it. */
 function UniEmailBox({ onDone }) {
@@ -60,6 +60,41 @@ function UniEmailBox({ onDone }) {
   );
 }
 
+/* Pass holders: start a game with friends and see the last few. */
+function HostCard() {
+  const hosted = useQuery({ queryKey: ['live-hosted'], queryFn: fetchHosted, staleTime: 30_000, retry: false });
+  const rooms = (hosted.data?.rooms || []).filter((r) => r.mode !== 'cases').slice(0, 5);
+  return (
+    <>
+      <section className="lv-host-card" aria-labelledby="live-host-h">
+        <h2 id="live-host-h">Host a game</h2>
+        <p>Play with your friends: pick the lectures, share the code, and everyone answers on their phone.</p>
+        <Link className="btn primary" to="/live/host">Host a game</Link>
+      </section>
+      {rooms.length ? (
+        <section className="live-history" aria-labelledby="live-games-h">
+          <h2 id="live-games-h">Your games</h2>
+          <ul className="live-list">
+            {rooms.map((r) => (
+              <li key={r.room}>
+                <Link to={r.stage === 'finished' ? `/live/results/${r.room}` : `/live/teach/room/${r.room}`} className="live-row">
+                  <span className="live-row-main">
+                    <b>{r.title}</b>
+                    <span className="live-muted">{new Date(r.date).toLocaleDateString()}</span>
+                  </span>
+                  <span className="live-row-side">
+                    {r.stage === 'finished' ? `${r.players} ${r.players === 1 ? 'player' : 'players'}` : 'Running, open'}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </>
+  );
+}
+
 export default function LiveHome() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -113,6 +148,13 @@ export default function LiveHome() {
 
         {me.data?.teacher ? (
           <p className="live-teacher-link"><Link to="/live/teach">Teacher dashboard</Link></p>
+        ) : null}
+        {me.data?.can_host ? <HostCard /> : null}
+        {me.data && !me.data.can_host && !me.data.teacher ? (
+          <p className="live-muted live-pass-note">
+            Hosting games with friends comes with the pass.{' '}
+            <button type="button" className="btn ghost sm" onClick={() => openSubscribeDialog()}>See the pass</button>
+          </p>
         ) : null}
 
         <section className="live-history" aria-labelledby="live-hist-h">

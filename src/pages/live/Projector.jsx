@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { useAutoNext, useCaseView, useCountdown, useLiveRoom } from '../../lib/live.js';
 import { CodeTag, TimerSticker } from './LiveBits.jsx';
+import { celebrate } from '../../lib/confetti.js';
+import { CastList, spellEventText } from './SpellBits.jsx';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -27,7 +29,26 @@ function topPlayers(roster, n) {
 
 export default function Projector() {
   const { room: roomId } = useParams();
-  const { state, error, offsetMs, version } = useLiveRoom(roomId, { asHost: true });
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+  const showSpell = (p) => {
+    const text = spellEventText(p);
+    if (!text) return;
+    clearTimeout(toastTimer.current);
+    setToast({ text, kind: p.blocked ? 'blocked' : p.spell === 'point_steal' && p.amount > 0 ? 'steal' : 'cast', amount: p.amount, by: p.by, target: p.target, key: Date.now() });
+    toastTimer.current = setTimeout(() => setToast(null), 6000);
+  };
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
+  // Confetti once when a game ends on the big screen.
+  const confettiDone = useRef(false);
+  // Demo pages (no realtime) send the same event by hand.
+  useEffect(() => {
+    if (!(import.meta.env.DEV || import.meta.env.VITE_LIVE_DEMO === '1')) return undefined;
+    const on = (e) => showSpell(e.detail);
+    window.addEventListener('live-demo-spell', on);
+    return () => window.removeEventListener('live-demo-spell', on);
+  }, []);
+  const { state, error, offsetMs, version } = useLiveRoom(roomId, { asHost: true, onEvent: (event, payload) => { if (event === 'spell') showSpell(payload); } });
   const caseRoom = state?.room?.settings?.mode === 'cases';
   const { cases: caseView } = useCaseView(caseRoom ? roomId : null, version);
   const r = state?.room;
@@ -40,6 +61,7 @@ export default function Projector() {
   if (!state) return <main className="proj"><div className="proj-center"><p>Loading…</p></div></main>;
 
   const stage = r.stage;
+  if (stage === 'finished' && !confettiDone.current && !caseRoom) { confettiDone.current = true; setTimeout(() => celebrate('podium'), 300); }
   const q = state.question;
   const hidden = r.settings?.leaderboard === 'none';
   const roster = state.roster || [];
@@ -129,6 +151,7 @@ export default function Projector() {
         {isReveal ? (
           <>
             {reveal?.explanation ? <p className="proj-expl">{reveal.explanation}</p> : null}
+            <CastList casts={state.casts} big />
             {autoIn != null ? <p className="proj-answered">Next question in {autoIn} s</p> : null}
           </>
         ) : (
@@ -141,7 +164,7 @@ export default function Projector() {
     body = (
       <div className="proj-center">
         <h1 className="proj-h">Leaderboard</h1>
-        {hidden ? <p className="proj-label">Leaderboard hidden by the teacher</p> : (
+        {hidden ? <p className="proj-label">Leaderboard hidden by the {r.settings?.kind === 'student' ? 'host' : 'teacher'}</p> : (
           <ol className="proj-board">
             {teamRoom ? rankedTeams.slice(0, 5).map((t) => (
               <li key={t.no}><span>{t.rank}</span><b>{t.name}</b><u>{t.score}</u></li>
@@ -150,6 +173,7 @@ export default function Projector() {
             ))}
           </ol>
         )}
+        <CastList casts={state.casts} big />
       </div>
     );
   } else if (stage === 'finished') {
@@ -161,7 +185,7 @@ export default function Projector() {
     body = (
       <div className="proj-center">
         <h1 className="proj-h">Thanks for playing</h1>
-        {hidden ? <p className="proj-label">Results are hidden by the teacher</p> : (
+        {hidden ? <p className="proj-label">Results are hidden by the {r.settings?.kind === 'student' ? 'host' : 'teacher'}</p> : (
           <div className="proj-podium">
             {order.filter(Boolean).map(({ p, place }) => (
               <div key={p.user_id} className={`proj-step place${place}`}>
@@ -178,5 +202,20 @@ export default function Projector() {
     body = <div className="proj-center"><p>Waiting…</p></div>;
   }
 
-  return <main className="proj">{body}</main>;
+  return (
+    <main className="proj">
+      {body}
+      {toast && stage !== 'question' ? (
+        <div key={toast.key} className={`proj-toast is-${toast.kind}`} role="status">
+          <p>{toast.text}</p>
+          {toast.kind === 'steal' ? (
+            <div className="proj-steal" aria-hidden="true">
+              <span className="is-minus">{toast.target} −{toast.amount}</span>
+              <span className="is-plus">{toast.by} +{toast.amount}</span>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </main>
+  );
 }

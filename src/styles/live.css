@@ -272,3 +272,110 @@
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
 textarea.lv-chart { font: inherit; resize: vertical; }
+
+/* Pass holders: the "Host a game" card on /live */
+.lv-host-card {
+  margin: 18px 0; padding: 16px 18px; display: grid; gap: 8px; justify-items: start;
+  background: var(--card, var(--sheet)); color: var(--card-ink, var(--ink));
+  border: 2px solid var(--card-ink, var(--ink)); border-radius: var(--r-card, 12px); box-shadow: 5px 5px 0 var(--hard, var(--card-ink, #000));
+}
+.lv-host-card h2 { font: 700 var(--t-21)/1.2 var(--font-display); margin: 0; }
+.lv-host-card p { margin: 0; }
+.live-pass-note { margin: 14px 0; font-size: var(--t-14); }
+
+/* ── Power-ups (friends' rooms). Everything here is still: no motion. ── */
+.lv-spellbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; margin: 0; padding: 8px 12px;
+  font: 600 var(--t-14)/1.3 var(--font-ui); background: var(--sheet); color: var(--ink); border: var(--line) solid var(--edge); border-radius: var(--r-control); }
+.lv-badge { display: inline-block; justify-self: start; margin: 0; padding: 2px 10px; font: 800 var(--t-14)/1.4 var(--font-display);
+  background: var(--marker); color: var(--card-ink); border: var(--line) solid var(--card-ink); border-radius: 99px; }
+.lv-spell { display: grid; gap: 4px; text-align: left; padding: 12px 14px; font: inherit; cursor: default;
+  background: var(--fill-mint); color: var(--card-ink); border: var(--line) solid var(--card-ink); border-radius: var(--r-control); box-shadow: 4px 4px 0 var(--hard); }
+button.lv-spell { cursor: pointer; }
+button.lv-spell:disabled { opacity: 0.55; cursor: default; }
+.lv-spell.is-rare { background: var(--fill-yellow); }
+.lv-spell-name { display: flex; align-items: center; gap: 8px; font: 800 var(--t-16)/1.2 var(--font-display); }
+.lv-spell-rare { margin-left: 8px; font: 800 12px/1 var(--font-ui); padding: 3px 8px; background: #fff; color: var(--card-ink); border: 2px solid var(--card-ink); border-radius: 99px; font-style: normal; }
+.lv-spell-effect { font: 600 var(--t-14)/1.3 var(--font-ui); }
+.lv-sheet { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; max-height: 80vh; overflow-y: auto; display: grid; gap: 10px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); background: var(--sheet); color: var(--ink);
+  border-top: var(--line) solid var(--edge); box-shadow: 0 -6px 0 var(--hard); }
+.lv-sheet h2, .lv-cast h2 { margin: 0; font: 800 var(--t-21)/1.2 var(--font-display); }
+.lv-sheet p { margin: 0; }
+.lv-sheet-cards { display: grid; gap: 10px; }
+.lv-cast { display: grid; gap: 10px; padding: 14px; background: var(--sheet); color: var(--ink); border: var(--line) solid var(--edge); border-radius: var(--r-control); box-shadow: 4px 4px 0 var(--hard); }
+.lv-cast p { margin: 0; }
+.lv-cast-ask { font-weight: 800; }
+.lv-cast-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.lv-targets { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.lv-targets button { width: 100%; display: flex; justify-content: space-between; gap: 8px; padding: 10px 12px; font: inherit; text-align: left; color: var(--ink);
+  background: var(--sheet-hover); border: var(--line) solid var(--edge); border-radius: var(--r-control); cursor: pointer; }
+.lv-targets button[aria-pressed="true"] { background: var(--marker); color: var(--card-ink); outline: 3px solid var(--card-ink); }
+.lv-targets button:disabled { opacity: 0.5; cursor: not-allowed; }
+.lv-effects { display: grid; gap: 6px; padding: 10px 12px; background: var(--fill-coral); color: var(--card-ink); border: var(--line) solid var(--card-ink); border-radius: var(--r-control); box-shadow: 4px 4px 0 var(--hard); }
+.lv-effects p { margin: 0; display: grid; gap: 2px; font: 600 var(--t-14)/1.3 var(--font-ui); }
+.lv-effects b { font: 800 var(--t-16)/1.2 var(--font-display); }
+.lv-fx { display: grid; gap: 14px; }
+.lv-qwrap { position: relative; }
+.lv-qwrap .live-q-text { margin: 0; }
+/* Cataract: the question and the answer texts are blurred; the buttons still work. */
+.lv-fx-cataract .live-q-text, .lv-fx-cataract .live-opt > span { filter: blur(5px); }
+/* Scotoma: a solid dark patch at a fixed place, about 45% of the question area. */
+.lv-scotoma { position: absolute; left: 22%; top: 18%; width: 62%; height: 72%; background: var(--card-ink); border-radius: 18px; pointer-events: none; }
+.lv-casts { display: grid; gap: 6px; padding: 10px 14px; background: var(--sheet); color: var(--ink); border: var(--line) solid var(--edge); border-radius: var(--r-control); }
+.lv-casts h2 { margin: 0; font: 800 var(--t-16)/1.2 var(--font-display); }
+.lv-casts ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.lv-casts.is-big { margin-top: 1em; padding: 0.5em 0.9em; border-radius: var(--r-sheet); box-shadow: 6px 6px 0 var(--hard); }
+.lv-casts.is-big h2 { font-size: clamp(1.1rem, 2.2vw, 2.2rem); }
+.lv-casts.is-big li { font: 600 clamp(1.1rem, 2.4vw, 2.4rem)/1.3 var(--font-display); }
+.proj-toast { position: fixed; left: 50%; bottom: 4vh; transform: translateX(-50%); z-index: 20; max-width: 90vw; margin: 0; padding: 0.5em 1em;
+  font: 800 clamp(1.2rem, 2.8vw, 2.8rem)/1.2 var(--font-display); text-align: center; background: var(--marker); color: var(--card-ink);
+  border: var(--line) solid var(--card-ink); border-radius: var(--r-sheet); box-shadow: 6px 6px 0 var(--hard); }
+
+/* ── Power-up and reward animations ───────────────────────────────── */
+/* Short, never flashing; Reduce motion stops them (base.css kill switch). */
+@keyframes lv-deal { from { opacity: 0; transform: translateY(40px) rotate(-6deg) scale(0.9); } }
+@keyframes lv-stamp { 0% { opacity: 0; transform: scale(1.6) rotate(-4deg); } 60% { opacity: 1; transform: scale(0.96) rotate(1deg); } 100% { transform: none; } }
+@keyframes lv-flyaway { 0% { transform: none; opacity: 1; } 100% { transform: translateY(-160px) rotate(14deg) scale(0.6); opacity: 0; } }
+@keyframes lv-blur-in { from { filter: blur(0); } }
+@keyframes lv-spread { from { transform: scale(0.15); opacity: 0.2; } }
+@keyframes lv-heartbeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.08); } 30% { transform: scale(1); } 45% { transform: scale(1.05); } }
+@keyframes lv-pop { 0% { transform: scale(0.85); } 60% { transform: scale(1.04); } 100% { transform: none; } }
+@keyframes lv-ring { from { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; } to { transform: translate(-50%, -50%) scale(1.6); opacity: 0; } }
+@keyframes lv-up { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40px); opacity: 0; } }
+@keyframes lv-down { from { transform: translateY(0); opacity: 1; } to { transform: translateY(30px); opacity: 0; } }
+
+/* Earning: the cards are dealt one after another. */
+.lv-sheet-cards .lv-spell { animation: lv-deal 0.45s var(--ease-pop) backwards; }
+.lv-sheet-cards .lv-spell:nth-child(2) { animation-delay: 0.12s; }
+.lv-sheet-cards .lv-spell:nth-child(3) { animation-delay: 0.24s; }
+
+/* Casting: the card flies off, the result stamps in. */
+.lv-cast-done { position: relative; }
+.lv-flyaway { position: absolute; left: 0; right: 0; top: -10px; pointer-events: none; animation: lv-flyaway 0.7s cubic-bezier(.4, 0, .9, .6) forwards; }
+.lv-stamp { animation: lv-stamp 0.45s var(--ease-out) both; }
+
+/* Getting hit: the banner stamps in; each effect arrives its own way. */
+.lv-effects { animation: lv-stamp 0.45s var(--ease-out) both; }
+.lv-fx-cataract .live-q-text, .lv-fx-cataract .live-opt span { animation: lv-blur-in 0.6s ease-out both; }
+.lv-scotoma { animation: lv-spread 0.5s var(--ease-pop) both; transform-origin: center; }
+.lv-heartbeat { display: inline-flex; animation: lv-heartbeat 0.9s ease-in-out infinite; }
+
+/* Paralysis: frost over the answers that melts as the 5 seconds pass. */
+.live-options.is-frozen { position: relative; }
+.live-options.is-frozen::after {
+  content: ''; position: absolute; inset: -4px; border-radius: var(--r-control); pointer-events: none;
+  background: repeating-linear-gradient(135deg, rgba(225, 240, 255, 0.85) 0 10px, rgba(200, 225, 255, 0.7) 10px 20px);
+  border: var(--line) solid #fff; opacity: var(--frost, 1); transition: opacity 0.25s linear;
+}
+
+/* A right answer pops. */
+.live-result.ok { animation: lv-pop 0.4s var(--ease-pop) both; }
+
+/* Projector: spell messages stamp in; an Antidote block bursts; a steal moves points. */
+.proj-toast { position: relative; animation: lv-stamp 0.5s var(--ease-out) both; }
+.proj-toast p { margin: 0; }
+.proj-toast.is-blocked::before { content: ''; position: absolute; left: 50%; top: 50%; width: 120%; aspect-ratio: 1; border-radius: 50%;
+  border: 6px solid var(--fill-mint); pointer-events: none; animation: lv-ring 0.8s ease-out forwards; }
+.proj-steal { display: flex; justify-content: center; gap: 2em; margin-top: 0.3em; font: 800 0.8em/1 var(--font-display); }
+.proj-steal .is-minus { color: var(--wrong); animation: lv-down 1.4s 0.3s ease-in forwards; }
+.proj-steal .is-plus { color: var(--correct); animation: lv-up 1.4s 0.3s ease-in forwards; }

@@ -176,7 +176,7 @@ export default function Results() {
         {isLoading ? <p className="live-muted">Loading…</p> : null}
         {error ? (
           <div className="live-card">
-            <p>{error.status === 404 ? 'Results appear here when the teacher finishes the quiz.' : error.message}</p>
+            <p>{error.status === 404 ? 'Results appear here when the quiz is finished.' : error.message}</p>
           </div>
         ) : null}
         {data?.players ? <HostResults data={data} /> : null}

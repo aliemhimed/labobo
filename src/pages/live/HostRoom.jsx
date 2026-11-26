@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import TopBar from '../../components/TopBar.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import { useConfirm } from '../../components/Confirm.jsx';
+import { CastList } from './SpellBits.jsx';
 import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
 import { CodeTag } from './LiveBits.jsx';
 import TeacherGate from './TeacherGate.jsx';
@@ -198,7 +199,7 @@ function Room({ roomId }) {
             <h1>Could not open this room</h1>
             <p className="lt-sub">{error.message}</p>
             <button type="button" className="btn primary" onClick={refresh}>Try again</button>
-            <Link className="btn" to="/live/teach">Back</Link>
+            <Link className="btn" to="/live">Back</Link>
           </div>
         ) : <p className="lt-muted" role="status">Loading…</p>}
       </main>
@@ -305,6 +306,10 @@ function Room({ roomId }) {
 
         {stage === 'question' || stage === 'reveal' || stage === 'leaderboard' ? <QuestionCard state={state} left={left} /> : null}
 
+        {(stage === 'reveal' || stage === 'leaderboard') && state.casts?.length ? (
+          <section className="lt-card" aria-label="Spells for the next question"><CastList casts={state.casts} /></section>
+        ) : null}
+
         <section className="lt-card" aria-labelledby="lt-roster">
           <h2 id="lt-roster" style={{ fontSize: 'var(--t-21)', marginBottom: 10 }}>Students ({state.players})</h2>
           <Roster roster={state.roster || []} showAnswered={stage === 'question'}
@@ -322,7 +327,7 @@ function Room({ roomId }) {
 export default function HostRoom() {
   const { room } = useParams();
   return (
-    <TeacherGate>
+    <TeacherGate host>
       <TopBar subtitle="Live" />
       <Room roomId={room} />
     </TeacherGate>

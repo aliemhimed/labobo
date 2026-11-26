@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import LiveApp from './live/LiveApp.jsx';
 
@@ -58,6 +58,25 @@ function roomState(scene, role) {
         answer: stage === 'question' ? null : { choice: 0, auto: false, correct: true, points: 87 } };
     }
   }
+  // Power-ups: scene names with "spells" give a phone its fake state.spells.
+  if (scene.includes('spells') && !team && !cases) {
+    const none = { streak: 1, cards: null, held: null, held_kind: null, shield: false, effects: [], hide: [] };
+    const fx = (spell, kind = 'attack', by = 'Omar') => [{ spell, kind, by }];
+    if (role === 'player') {
+      base.spells = { ...none };
+      if (scene.includes('cards')) base.spells = { ...none, streak: 0, cards: ['second_opinion', 'paralysis', 'cataract'] };
+      else if (scene.includes('held')) {
+        base.spells = { ...none, streak: 0, held: 'cataract', held_kind: 'attack',
+          targets: ROSTER.slice(1, 6).map((p, i) => ({ user_id: p.user_id, shown: p.shown, score: p.score, busy: i === 2 })) };
+      } else if (scene.includes('cataract')) base.spells.effects = fx('cataract');
+      else if (scene.includes('aphasia')) base.spells.effects = fx('aphasia', 'attack', 'Nini');
+      else if (scene.includes('scotoma')) base.spells.effects = fx('scotoma', 'attack', 'Mira');
+      else if (scene.includes('second')) { base.spells.effects = fx('second_opinion', 'self', 'Ace'); base.spells.hide = [1, 2]; base.spells.shield = true; }
+      else if (scene.includes('tachy')) base.spells.effects = fx('tachycardia');
+    } else {
+      base.casts = [{ spell: 'cataract', by: 'Ace', target: 'Omar' }, { spell: 'paralysis', by: 'Mira', target: 'Luka' }];
+    }
+  }
   return base;
 }
 
@@ -89,7 +108,7 @@ function fakeLive(path, scene) {
   const view = url.searchParams.get('view');
   const host = !url.pathname.includes('play') && !scene.startsWith('play');
   switch (view) {
-    case 'me': return { teacher: true, subjects: ['gct_biochemistry', 'gct_genetics'], uni_email: 'ace@eu.edu.ge' };
+    case 'me': return { teacher: true, can_host: true, subjects: ['gct_biochemistry', 'gct_genetics'], uni_email: 'ace@eu.edu.ge' };
     case 'quizzes': return { quizzes: [{ id: 'q1', title: 'Week 10 revision', subject: 'GCT I · Biochemistry', updated_at: now(), count: 10, settings: {} },
       { id: 'q2', title: 'Midterm warm-up', subject: 'GCT I · Biochemistry, GCT I · Medical Genetics', updated_at: now(), count: 25, settings: {} }] };
     case 'case_sets': return { sets: [{ id: 'c1', title: 'Chest pain cases', subject: '', updated_at: now(), count: 3 }] };
@@ -136,11 +155,20 @@ const SCREENS = [
   ['Projector: reveal', `/dev/live/screen/${ROOM}`, 'reveal'],
   ['Projector: leaderboard', `/dev/live/screen/${ROOM}`, 'board'],
   ['Projector: team podium', `/dev/live/screen/${ROOM}`, 'team-finished'],
+  ['Host a game (pass holders)', '/dev/live/host', ''],
   ['Join page', '/dev/live', 'join'],
   ['Phone: lobby', `/dev/live/play/${ROOM}`, 'play-lobby'],
   ['Phone: question', `/dev/live/play/${ROOM}`, 'play-question'],
   ['Phone: answered', `/dev/live/play/${ROOM}`, 'play-question-answered'],
   ['Phone: reveal', `/dev/live/play/${ROOM}`, 'play-reveal'],
+  ['Phone: power-up cards', `/dev/live/play/${ROOM}`, 'play-reveal-spells-cards'],
+  ['Phone: power-up held, choose a friend', `/dev/live/play/${ROOM}`, 'play-reveal-spells-held'],
+  ['Phone: under Cataract', `/dev/live/play/${ROOM}`, 'play-question-spells-cataract'],
+  ['Phone: under Aphasia', `/dev/live/play/${ROOM}`, 'play-question-spells-aphasia'],
+  ['Phone: under Scotoma', `/dev/live/play/${ROOM}`, 'play-question-spells-scotoma'],
+  ['Phone: second opinion', `/dev/live/play/${ROOM}`, 'play-question-spells-second'],
+  ['Phone: tachycardia', `/dev/live/play/${ROOM}`, 'play-question-spells-tachy'],
+  ['Projector: spells and toast', `/dev/live/screen/${ROOM}`, 'reveal-spells-toast'],
   ['Phone: team captain', `/dev/live/play/${ROOM}`, 'play-team-question'],
   ['Phone: team advisor', `/dev/live/play/${ROOM}`, 'play-team-question-advisor'],
   ['Phone: case', `/dev/live/play/${ROOM}`, 'play-case-work'],
@@ -160,6 +188,14 @@ export default function DevLivePreview() {
   const location = useLocation();
   const [scene] = useState(() => new URLSearchParams(location.search).get('s') || '');
   installFakeApi(() => new URLSearchParams(window.location.search).get('s') || scene);
+  // The projector toast normally comes from a realtime event; here we send one.
+  useEffect(() => {
+    if (!scene.includes('toast')) return undefined;
+    const send = () => window.dispatchEvent(new CustomEvent('live-demo-spell', { detail: { spell: 'cataract', by: 'Ace', target: 'Omar' } }));
+    const first = setTimeout(send, 1200);
+    const again = setInterval(send, 9000);
+    return () => { clearTimeout(first); clearInterval(again); };
+  }, [scene]);
   return (
     <Routes>
       <Route path="screens" element={<Index />} />
