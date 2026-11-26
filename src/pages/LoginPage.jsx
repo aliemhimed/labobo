@@ -9,6 +9,7 @@ import { FREE_LECTURES, PASS_PRICE } from '../lib/access.js';
 import { CONTACT_EMAIL, INSTAGRAM_HANDLE, INSTAGRAM_PROFILE } from '../lib/contact.js';
 import { ThemeToggle } from '../components/ThemeIcons.jsx';
 import TryQuestion from '../components/TryQuestion.jsx';
+import { prefersReducedMotion } from '../lib/settings.js';
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
@@ -209,7 +210,7 @@ export default function LoginPage() {
 
   /* Every "sign in" button on the page leads to the one sign-in card. */
   function toSignIn() {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = prefersReducedMotion();
     document.getElementById('sign-in')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
     googleRef.current?.focus({ preventScroll: true });
   }
