@@ -243,7 +243,7 @@ end $$;
 -- ── Existing functions, extended for team rooms ──────────────────────
 
 create or replace function public.live_counts(p_room uuid, p_position integer)
-returns jsonb language sql stable security definer set search_path = public as $
+returns jsonb language sql stable security definer set search_path = public as $$
   -- Team rooms count one answer per team.
   select case when public.live_is_teams((select settings from public.live_rooms where id = p_room)) then (
     select jsonb_build_object('answered', count(*), 'by_option', coalesce((select jsonb_object_agg(choice, n) from (
@@ -256,7 +256,7 @@ returns jsonb language sql stable security definer set search_path = public as $
         select choice, count(*) n from public.live_answers
          where room_id = p_room and position = p_position group by choice) c), '{}'::jsonb))
   from public.live_answers where room_id = p_room and position = p_position) end;
-$;
+$$;
 
 create or replace function public.live_public_board(p_room uuid)
 returns jsonb language sql stable security definer set search_path = public as $$
@@ -294,7 +294,7 @@ begin
                      and team_no::text = split_part(p_topic, ':', 3));
   end if;
   return false;
-end $;
+end $$;
 
 create or replace function public.live_join(p_code text, p_user uuid, p_display text, p_email text, p_nickname text)
 returns jsonb language plpgsql security definer set search_path = public as $$
@@ -520,7 +520,7 @@ begin
     end if;
   end if;
   return v_out;
-end $;
+end $$;
 
 create or replace function public.live_results(p_room uuid, p_user uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
