@@ -31,7 +31,7 @@ const settings = (mode = 'individual') => ({ mode, seconds: 20, names: 'nickname
 
 function roomState(scene, role) {
   const team = scene.includes('team');
-  const cases = scene.startsWith('case');
+  const cases = scene.includes('case');
   const stage = cases ? (scene === 'case-lobby' ? 'lobby' : 'cases')
     : scene.includes('lobby') ? 'lobby' : scene.includes('reveal') ? 'reveal' : scene.includes('board') ? 'leaderboard' : scene.includes('finished') ? 'finished' : 'question';
   const base = {

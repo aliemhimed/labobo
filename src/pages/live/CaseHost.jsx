@@ -125,12 +125,12 @@ function Marking({ view, act }) {
       </div>
 
       <div>
-        <p className="lt-muted" style={{ whiteSpace: 'pre-wrap' }}>{c.scenario}</p>
+        <p className="lv-chart" style={{ whiteSpace: 'pre-wrap' }}>{c.scenario}</p>
         <h3 style={{ margin: '10px 0 6px' }}>{q.q} <span className="lt-muted">({q.max} marks)</span></h3>
         {q.kind === 'options' ? (
           <ul className="lt-dist">
             {q.options.map((o, i) => (
-              <li key={i} className={i === q.answer ? 'right' : ''}><span>{LETTERS[i]}. {o}{i === q.answer ? ' (correct)' : ''}</span></li>
+              <li key={i} className={`c${i % 4}${i === q.answer ? ' right' : ''}`}><span><em className="lt-letter">{LETTERS[i]}</em>{o}{i === q.answer ? ' (correct)' : ''}</span></li>
             ))}
           </ul>
         ) : <p className="lt-muted">Open answer. Mark what the team wrote.</p>}

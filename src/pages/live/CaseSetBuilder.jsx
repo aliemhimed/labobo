@@ -168,8 +168,8 @@ function Editor({ id, initial }) {
         </label>
 
         {cases.map((c, ci) => (
-          <section key={c._k} className="lt-card" aria-label={`Case ${ci + 1}`} style={{ display: 'grid', gap: 14 }}>
-            <div className="lt-q-top" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <section key={c._k} className="lt-card lt-case" aria-label={`Case ${ci + 1}`} style={{ display: 'grid', gap: 14 }}>
+            <div className="lt-q-top lt-case-band" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
               <h2 style={{ fontSize: 'var(--t-21)' }}>Case {ci + 1}</h2>
               <div className="lt-tools">
                 <button type="button" disabled={ci === 0} onClick={() => setCases((l) => move(l, ci, -1))} aria-label={`Move case ${ci + 1} up`}>↑</button>
@@ -179,7 +179,7 @@ function Editor({ id, initial }) {
             </div>
             <label className="lt-field" style={{ marginBottom: 0 }}>
               <span>Scenario</span>
-              <textarea className="lt-input" rows={5} maxLength={5000} value={c.scenario} onChange={(e) => setCase(ci, { scenario: e.target.value })} />
+              <textarea className="lt-input lv-chart" rows={5} maxLength={5000} value={c.scenario} onChange={(e) => setCase(ci, { scenario: e.target.value })} />
             </label>
             {c.questions.map((q, qi) => (
               <QuestionEditor key={q._k} n={qi + 1} q={q}
