@@ -6,7 +6,7 @@
    supabase/migrations/20261127000000_labobo_live.sql, which also push the
    game's events over Supabase Realtime (private channels).
 
-   GET  /api/live?view=me             -> { teacher, subjects: [bank tables], uni_email }
+   GET  /api/live?view=me             -> { teacher, can_host, subjects: [bank tables], uni_email }
    GET  /api/live?view=bank&tables=a,b  teacher: raw rows of up to 6 of THEIR banks
    GET  /api/live?view=quizzes         teacher: their saved quizzes
    GET  /api/live?view=quiz&id=        teacher: one quiz with its items
@@ -21,6 +21,9 @@
                   items are the questions always included; the rest of `count`
                   is drawn at random from the pool's lectures at each start
      delete_quiz  { id }
+     create_student_room { title?, settings, picks: [{ table, id }] }   pass holders (and teachers): a quick
+                  room built on the server from bank ids; closes the student's earlier running room.
+                  Student rooms (settings.kind 'student') need no university address to join.
      create_room  { quiz_id?, title, settings, questions: [{q, options, answer, explanation, image, source_table, source_id, custom_id}] }
      join         { code, nickname }        needs a verified @eu.edu.ge address
      next | close | board | finish  { room }
@@ -49,7 +52,8 @@
    Teachers are rows in `teachers`, granted by an admin (admin.js). */
 
 const { SUPA_URL, dbHeaders, json, fail, parseBody, verifyUser, allowRequest } = require('./_lib/common');
-const { trialEmail } = require('./_lib/access');
+const { trialEmail, getAccess } = require('./_lib/access');
+const { bankQuestion } = require('./_lib/bankQuestion');
 const { verifiedEmail } = require('./_lib/uniEmail');
 const { ALLOWED_TABLES } = require('./questions');
 const { containsProfanity } = require('./_lib/profanity');
@@ -78,6 +82,15 @@ async function rpc(name, args) {
 }
 
 /** The caller's teacher row ({ subjects: [bank tables] }), or null. */
+/** True if the caller has an active pass (teachers are reported as a pass too). */
+async function hasPass(caller) {
+  try { return (await getAccess(caller)).kind === 'pass'; } catch { return false; }
+}
+
+// Actions only teachers may take; every other host action is also open to
+// pass holders, for their own rooms (the database checks who the host is).
+const TEACHER_ONLY = new Set(['save_quiz', 'delete_quiz', 'create_room', 'save_case_set', 'delete_case_set', 'create_case_room', 'upload_image']);
+
 async function getTeacher(userId) {
   const [r] = await rows(`/teachers?user_id=eq.${encodeURIComponent(userId)}&select=user_id,subjects`);
   return r ? { subjects: (r.subjects || []).filter((t) => ALLOWED_TABLES.includes(t)) } : null;
@@ -363,14 +376,54 @@ function cleanDraft(list) {
   }));
 }
 
+// ── Student rooms (pass holders) ──────────────────────────────────────
+
+/** A pass holder's quick room: the client picks bank questions at random
+    from the lectures the student ticked and sends their ids; the server
+    reads those rows itself and builds the questions, so nobody can put
+    their own text in front of their friends. One running room per student:
+    starting a new one closes the previous one. */
+async function createStudentRoom(caller, body) {
+  const picks = Array.isArray(body.picks) ? body.picks.slice(0, MAX_QUESTIONS) : [];
+  if (!picks.length) return fail(400, 'Choose at least one lecture');
+  if (picks.some((p) => !ALLOWED_TABLES.includes(p?.table) || !Number.isSafeInteger(p?.id))) return fail(400, 'A question is not valid');
+  if (!(await allowRequest(caller.id, 'live_student_room', 20, 3600))) return fail(429, 'Too many rooms. Try again later.');
+
+  const byTable = new Map();
+  for (const p of picks) { if (!byTable.has(p.table)) byTable.set(p.table, []); byTable.get(p.table).push(p.id); }
+  const rowsBy = new Map();
+  for (const [table, ids] of byTable) {
+    const list = await rows(`/${table}?id=in.(${[...new Set(ids)].join(',')})&select=id,q,options,answer,explanation,image,images`);
+    for (const r of list) rowsBy.set(`${table}:${r.id}`, bankQuestion(r, table));
+  }
+  const questions = picks.map((p) => rowsBy.get(`${p.table}:${p.id}`)).filter(Boolean).map(cleanQuestion).filter(Boolean);
+  if (!questions.length) return fail(400, 'Those questions are not available');
+
+  // Close this student's earlier rooms that are still running.
+  const old = await rest(`/live_rooms?host=eq.${caller.id}&stage=neq.finished&settings->>kind=eq.student`, {
+    method: 'PATCH', body: JSON.stringify({ stage: 'finished', finished_at: new Date().toISOString() }),
+  });
+  if (!old.ok) console.error('[live] could not close old student rooms', old.status, await old.text());
+
+  const out = await rpc('live_create_room', {
+    p_host: caller.id, p_title: str(body.title, 120) || 'Study game',
+    p_settings: { ...cleanSettings(body.settings), kind: 'student' },
+    p_questions: questions.map(shuffled), p_quiz: null,
+  });
+  return json(200, out);
+}
+
 // ── Everyone in a room ────────────────────────────────────────────────
 
 async function join(caller, body) {
   const code = String(body.code || '').replace(/\D/g, '');
   if (!CODE.test(code)) return fail(400, 'Room codes have 6 digits');
   if (!(await allowRequest(caller.id, 'live_join', 30, 600))) return fail(429, 'Too many tries. Wait a few minutes.');
-  const email = await uniEmail(caller);
-  if (!email) return json(403, { error: 'Confirm your EU university email to join', code: 'uni_email_required' });
+  const [target] = await rows(`/live_rooms?code=eq.${code}&stage=neq.finished&select=settings`);
+  const studentRoom = target?.settings?.kind === 'student';
+  // Teacher rooms are for EU students; friends' rooms are open to anyone signed in.
+  const email = (await uniEmail(caller)) || (studentRoom ? caller.email || '' : null);
+  if (email === null) return json(403, { error: 'Confirm your EU university email to join', code: 'uni_email_required' });
   if (containsProfanity(str(body.nickname, 24))) return json(400, { error: 'Please choose another nickname', code: 'bad_nickname' });
   const out = await rpc('live_join', {
     p_code: code, p_user: caller.id, p_display: await displayName(caller), p_email: email,
@@ -403,7 +456,8 @@ exports.handler = async (event) => {
       const { view, room, id, tables } = event.queryStringParameters || {};
       if (view === 'me') {
         const [teacher, email] = await Promise.all([getTeacher(caller.id), uniEmail(caller)]);
-        return json(200, { teacher: !!teacher, subjects: teacher?.subjects || [], uni_email: email });
+        const canHost = !!teacher || (await hasPass(caller));
+        return json(200, { teacher: !!teacher, can_host: canHost, subjects: teacher?.subjects || [], uni_email: email });
       }
       if (view === 'state' || view === 'results') {
         if (!UUID.test(room || '')) return fail(400, 'Invalid room');
@@ -418,6 +472,10 @@ exports.handler = async (event) => {
       }
 
       const teacher = await getTeacher(caller.id);
+      if (view === 'hosted') {
+        if (!teacher && !(await hasPass(caller))) return fail(403, 'Hosting a room needs a pass');
+        return json(200, { rooms: await rpc('live_hosted', { p_host: caller.id }) });
+      }
       if (!teacher) return fail(403, 'Teachers only');
       if (view === 'bank') return await bankView(tables, teacher);
       if (view === 'quizzes') return await quizzesView(caller.id);
@@ -481,10 +539,13 @@ exports.handler = async (event) => {
       default: break;
     }
 
-    // Everything below is for teachers.
+    // Everything below is for people who host rooms: teachers, and students
+    // with a pass (their own rooms only; the database checks the host).
     const teacher = await getTeacher(caller.id);
-    if (!teacher) return fail(403, 'Teachers only');
+    if (TEACHER_ONLY.has(body.action) && !teacher) return fail(403, 'Teachers only');
+    if (!teacher && !(await hasPass(caller))) return fail(403, 'Hosting a room needs a pass');
     switch (body.action) {
+      case 'create_student_room': return await createStudentRoom(caller, body);
       case 'save_quiz': return await saveQuiz(caller.id, body, teacher);
       case 'delete_quiz': return await deleteQuiz(caller.id, body.id);
       case 'create_room': return await createRoom(caller.id, body, teacher);
