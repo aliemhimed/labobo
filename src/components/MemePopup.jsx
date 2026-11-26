@@ -3,6 +3,7 @@ import {
   MEME_CONFIG, RIGHT_MEMES, WRONG_MEMES, RIGHT_CAPTIONS, WRONG_CAPTIONS,
   RIGHT_DIR, WRONG_DIR,
 } from '../lib/memes.js';
+import { REACTION_CHANCE, getSettings } from '../lib/settings.js';
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -44,9 +45,12 @@ export function useMeme(quizMode) {
 
   const trigger = useCallback((isCorrect) => {
     if (quizMode === 'exam') return;
+    // How often comes from the student's Settings; 'off' never shows (or downloads) one.
+    const chance = REACTION_CHANCE[getSettings().reactions] ?? MEME_CONFIG.PROBABILITY;
+    if (!chance) return;
     preloadOne(RIGHT_DIR, RIGHT_MEMES);
     preloadOne(WRONG_DIR, WRONG_MEMES);
-    if (Math.random() > MEME_CONFIG.PROBABILITY) return;
+    if (Math.random() >= chance) return;
     const src = isCorrect ? RIGHT_DIR + pick(RIGHT_MEMES) : WRONG_DIR + pick(WRONG_MEMES);
     const caption = pick(isCorrect ? RIGHT_CAPTIONS : WRONG_CAPTIONS);
     clearTimeout(timer.current);
