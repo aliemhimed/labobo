@@ -122,7 +122,7 @@ export default function LiveHome() {
           <ul className="live-list">
             {sessions.map((s) => (
               <li key={s.room}>
-                <Link to={`/live/results/${s.room}`} className="live-row">
+                <Link to={s.mode === 'cases' ? `/live/play/${s.room}` : `/live/results/${s.room}`} className="live-row">
                   <span className="live-row-main">
                     <b>{s.title}</b>
                     <span className="live-muted">{new Date(s.date).toLocaleDateString()}</span>

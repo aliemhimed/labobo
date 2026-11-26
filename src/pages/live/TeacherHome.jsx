@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import TopBar from '../../components/TopBar.jsx';
 import { useConfirm } from '../../components/Confirm.jsx';
-import { deleteQuiz, fetchHosted, fetchQuizzes } from '../../lib/live.js';
+import { deleteCaseSet, deleteQuiz, fetchCaseSets, fetchHosted, fetchQuizzes } from '../../lib/live.js';
 import TeacherGate from './TeacherGate.jsx';
 import '../../styles/live-teach.css';
 
 const date = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '');
-const STAGES = { lobby: 'Waiting for students', question: 'Running', reveal: 'Running', leaderboard: 'Running', finished: 'Finished' };
+const STAGES = { lobby: 'Waiting for students', question: 'Running', reveal: 'Running', leaderboard: 'Running', cases: 'Running', finished: 'Finished' };
 
 function Quizzes() {
   const qc = useQueryClient();
@@ -55,6 +55,55 @@ function Quizzes() {
   );
 }
 
+function CaseSets() {
+  const qc = useQueryClient();
+  const { confirm, element } = useConfirm();
+  const { data, error, isLoading, refetch } = useQuery({ queryKey: ['live-case-sets'], queryFn: fetchCaseSets });
+  const remove = useMutation({
+    mutationFn: deleteCaseSet,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['live-case-sets'] }),
+  });
+  const sets = data?.sets || [];
+
+  return (
+    <section className="lt-section" aria-labelledby="lt-cases">
+      {element}
+      <div className="lt-head" style={{ marginBottom: 12 }}>
+        <h2 id="lt-cases" style={{ fontSize: 'var(--t-21)' }}>Case sets</h2>
+        <Link className="btn sm" to="/live/teach/cases/new">New case set</Link>
+      </div>
+      {isLoading ? <p className="lt-muted" role="status">Loading…</p>
+        : error ? <p className="lt-error" role="alert">Could not load your case sets: {error.message}{' '}
+          <button type="button" className="btn sm" onClick={() => refetch()}>Try again</button></p>
+          : sets.length === 0 ? <p className="lt-muted">No case sets yet. Press New case set to write your first one.</p> : (
+            <ul className="lt-list">
+              {sets.map((s) => (
+                <li key={s.id} className="lt-row">
+                  <div className="lt-row-main">
+                    <div className="lt-row-title">{s.title}</div>
+                    <div className="lt-muted">{s.count} {s.count === 1 ? 'case' : 'cases'} · edited {date(s.updated_at)}</div>
+                  </div>
+                  <div className="lt-row-actions">
+                    <Link className="btn primary sm" to={`/live/teach/cases/start/${s.id}`}>Start</Link>
+                    <Link className="btn sm" to={`/live/teach/cases/${s.id}`}>Edit</Link>
+                    <button type="button" className="btn sm" disabled={remove.isPending && remove.variables === s.id}
+                            onClick={async () => {
+                              const ok = await confirm({
+                                title: 'Delete this case set?', message: `"${s.title}" will be deleted.`,
+                                confirmLabel: 'Delete', danger: true,
+                              });
+                              if (ok) remove.mutate(s.id);
+                            }}>Delete</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+      {remove.isError ? <p className="lt-error" role="alert">{remove.error.message}</p> : null}
+    </section>
+  );
+}
+
 function Rooms() {
   const { data, error, isLoading, refetch } = useQuery({ queryKey: ['live-hosted'], queryFn: fetchHosted });
   const rooms = data?.rooms || [];
@@ -80,7 +129,7 @@ function Rooms() {
                     </div>
                     <div className="lt-row-actions">
                       {done
-                        ? <Link className="btn sm" to={`/live/results/${r.room}`}>Results</Link>
+                        ? <Link className="btn sm" to={r.mode === 'cases' ? `/live/teach/room/${r.room}` : `/live/results/${r.room}`}>{r.mode === 'cases' ? 'Marks' : 'Results'}</Link>
                         : <Link className="btn primary sm" to={`/live/teach/room/${r.room}`}>Running — open</Link>}
                     </div>
                   </li>
@@ -102,6 +151,7 @@ export default function TeacherHome() {
           <Link className="btn primary" to="/live/teach/quiz/new">New quiz</Link>
         </div>
         <Quizzes />
+        <CaseSets />
         <Rooms />
       </main>
     </TeacherGate>

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../lib/auth.jsx';
 import { fetchResults, useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
 import { feedSpacedReview } from '../../lib/liveReview.js';
+import CasePlay from './CasePlay.jsx';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -49,7 +50,7 @@ function NameTeam({ team, act }) {
 
 export default function PlayerRoom() {
   const { room: roomId } = useParams();
-  const { state, error, offsetMs, connected, act } = useLiveRoom(roomId);
+  const { state, error, offsetMs, connected, act, version } = useLiveRoom(roomId);
   const { user } = useAuth();
   const [sent, setSent] = useState(null); // { position, choice }
   const [voted, setVoted] = useState(null); // advisor's own pick: { position, choice }
@@ -66,7 +67,7 @@ export default function PlayerRoom() {
   // When the quiz ends, put this student's answers into their spaced review.
   const finished = r?.stage === 'finished';
   useEffect(() => {
-    if (!finished) return;
+    if (!finished || r?.settings?.mode === 'cases') return;
     fetchResults(roomId).then((res) => feedSpacedReview(roomId, res)).catch(() => {});
   }, [finished, roomId]);
 
@@ -127,7 +128,8 @@ export default function PlayerRoom() {
   }
 
   const stage = r.stage;
-  const team = r.settings?.mode === 'teams' && state.team ? state.team : null;
+  const caseRoom = r.settings?.mode === 'cases';
+  const team = (r.settings?.mode === 'teams' || caseRoom) && state.team ? state.team : null;
   const teamAnswer = team?.answer || null;
   const myId = user?.id;
   const votesFor = (i) => (team?.votes || []).filter((v) => v.choice === i).map((v) => v.shown);
@@ -148,7 +150,9 @@ export default function PlayerRoom() {
   const pct = Math.min(100, (left / total) * 100);
 
   let body = null;
-  if (stage === 'lobby') {
+  if (caseRoom && stage !== 'lobby') {
+    body = <CasePlay roomId={roomId} version={version} act={act} myId={myId} team={team} />;
+  } else if (stage === 'lobby') {
     const mates = team ? (team.members || []).filter((m) => m.user_id !== myId).map((m) => m.shown) : [];
     body = (
       <div className="live-card">
@@ -270,9 +274,9 @@ export default function PlayerRoom() {
       {!connected ? <div className="live-reconnect" role="status">Reconnecting…</div> : null}
       <header className="live-play-head">
         <span className="live-play-nick">{me.nickname || 'You'}</span>
-        <span className="live-play-score">{me.score ?? 0} points</span>
+        {caseRoom ? null : <span className="live-play-score">{me.score ?? 0} points</span>}
       </header>
-      {stage !== 'lobby' ? teamBar : null}
+      {stage !== 'lobby' && !caseRoom ? teamBar : null}
       {body}
     </main>
   );
