@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { celebrate } from '../../lib/confetti.js';
+import { prefersReducedMotion } from '../../lib/settings.js';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../lib/auth.jsx';
 import { fetchResults, useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
@@ -70,6 +72,27 @@ export default function PlayerRoom() {
   const autoIn = useAutoNext(state, offsetMs);
 
   useEffect(() => { setNotice(''); setSendError(''); }, [q?.position]);
+
+  // Aphasia: the letters shuffle for half a second, then freeze scrambled.
+  const aphasiaOn = state?.room?.stage === 'question' && (state?.spells?.effects || []).some((e) => e.spell === 'aphasia');
+  const [shuffle, setShuffle] = useState(0);
+  useEffect(() => {
+    if (!aphasiaOn || prefersReducedMotion()) return undefined;
+    let n = 1;
+    setShuffle(n);
+    const id = setInterval(() => { n += 1; if (n > 6) { clearInterval(id); setShuffle(0); } else setShuffle(n); }, 85);
+    return () => { clearInterval(id); setShuffle(0); };
+  }, [aphasiaOn, q?.position]);
+
+  // A small burst of confetti when power-up cards are dealt, and at the end
+  // for the top three (once each).
+  const dealt = !!state?.spells?.cards;
+  useEffect(() => { if (dealt) celebrate('burst'); }, [dealt]);
+  const podiumDone = useRef(false);
+  const myRank = state?.me?.rank;
+  useEffect(() => {
+    if (state?.room?.stage === 'finished' && myRank && myRank <= 3 && !podiumDone.current) { podiumDone.current = true; celebrate('podium'); }
+  }, [state?.room?.stage, myRank]);
 
   // When the quiz ends, put this student's answers into their spaced review.
   const finished = r?.stage === 'finished';
@@ -169,7 +192,7 @@ export default function PlayerRoom() {
   const shownTotal = tachy ? total * TACHYCARDIA_SHARE : total;
   const shownLeft = tachy ? Math.max(0, left - total * (1 - TACHYCARDIA_SHARE)) : left;
   const paralysedMs = fx.has('paralysis') && !r.paused ? Math.max(0, PARALYSIS_MS - (total - left)) : 0;
-  const tx = (text) => (fx.has('aphasia') ? scrambleText(text, q ? q.position : '') : text);
+  const tx = (text) => (fx.has('aphasia') ? scrambleText(text, shuffle ? `${q ? q.position : ''}~${shuffle}` : (q ? q.position : '')) : text);
 
   let body = null;
   if (caseRoom && stage !== 'lobby') {
@@ -206,7 +229,7 @@ export default function PlayerRoom() {
       <div className={`lv-fx${fx.has('cataract') ? ' lv-fx-cataract' : ''}`}>
         <div className="live-q-top">
           <span>Question {r.current + 1} of {r.total}</span>
-          <TimerSticker msLeft={shownLeft} totalMs={shownTotal} paused={r.paused} size="sm" />
+          <span className={tachy ? 'lv-heartbeat' : undefined}><TimerSticker msLeft={shownLeft} totalMs={shownTotal} paused={r.paused} size="sm" /></span>
         </div>
         {r.paused ? <p className="live-paused">Paused by the {who}</p> : null}
         <EffectBanner effects={sp?.effects} />
@@ -217,7 +240,7 @@ export default function PlayerRoom() {
           {fx.has('scotoma') ? <span className="lv-scotoma" aria-hidden="true" /> : null}
         </div>
         {q.image ? <img className="live-q-img" src={q.image} alt="" /> : null}
-        <div className="live-options">
+        <div className={`live-options${paralysedMs > 0 ? ' is-frozen' : ''}`} style={paralysedMs > 0 ? { '--frost': paralysedMs / PARALYSIS_MS } : undefined}>
           {q.options.map((o, i) => (hidden.has(i) ? null : (
             <button key={i} type="button" className={`live-opt c${i % 4}${chosen(i) ? ' is-chosen' : ''}`}
                     disabled={answered || r.paused || paralysedMs > 0 || (tachy && shownLeft <= 0)} onClick={() => pick(i)}>

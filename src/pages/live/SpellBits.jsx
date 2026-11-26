@@ -84,16 +84,25 @@ export function CastPanel({ spells, act }) {
   const held = spells.held;
   const kind = spells.held_kind || SPELLS[held]?.kind;
 
+  const [flown, setFlown] = useState(null);
   async function cast(who) {
     setBusy(true); setErr('');
     try {
       const out = await act('cast', who ? { target: who.user_id } : {});
+      if (out?.status === 'ok' || out?.status === 'blocked') setFlown(held);
       setLine(lineFor(out || {}, held, who?.shown));
       setChoosing(false); setTarget(null);
     } catch (e) { setErr(e.message); } finally { setBusy(false); }
   }
 
-  if (!held) return line ? <p className="live-status" role="status">{line}</p> : null;
+  if (!held) {
+    return line ? (
+      <div className="lv-cast-done">
+        {flown ? <div className="lv-flyaway" aria-hidden="true"><SpellCard id={flown} /></div> : null}
+        <p className="live-status lv-stamp" role="status">{line}</p>
+      </div>
+    ) : null;
+  }
   const targets = [...(spells.targets || [])].sort((a, b) => b.score - a.score);
   const direct = kind === 'self' || kind === 'shield';
   return (

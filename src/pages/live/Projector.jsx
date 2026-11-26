@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { useAutoNext, useCaseView, useCountdown, useLiveRoom } from '../../lib/live.js';
 import { CodeTag, TimerSticker } from './LiveBits.jsx';
+import { celebrate } from '../../lib/confetti.js';
 import { CastList, spellEventText } from './SpellBits.jsx';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -34,10 +35,12 @@ export default function Projector() {
     const text = spellEventText(p);
     if (!text) return;
     clearTimeout(toastTimer.current);
-    setToast(text);
+    setToast({ text, kind: p.blocked ? 'blocked' : p.spell === 'point_steal' && p.amount > 0 ? 'steal' : 'cast', amount: p.amount, by: p.by, target: p.target, key: Date.now() });
     toastTimer.current = setTimeout(() => setToast(null), 6000);
   };
   useEffect(() => () => clearTimeout(toastTimer.current), []);
+  // Confetti once when a game ends on the big screen.
+  const confettiDone = useRef(false);
   // Demo pages (no realtime) send the same event by hand.
   useEffect(() => {
     if (!(import.meta.env.DEV || import.meta.env.VITE_LIVE_DEMO === '1')) return undefined;
@@ -58,6 +61,7 @@ export default function Projector() {
   if (!state) return <main className="proj"><div className="proj-center"><p>Loading…</p></div></main>;
 
   const stage = r.stage;
+  if (stage === 'finished' && !confettiDone.current && !caseRoom) { confettiDone.current = true; setTimeout(() => celebrate('podium'), 300); }
   const q = state.question;
   const hidden = r.settings?.leaderboard === 'none';
   const roster = state.roster || [];
@@ -201,7 +205,17 @@ export default function Projector() {
   return (
     <main className="proj">
       {body}
-      {toast && stage !== 'question' ? <p className="proj-toast" role="status">{toast}</p> : null}
+      {toast && stage !== 'question' ? (
+        <div key={toast.key} className={`proj-toast is-${toast.kind}`} role="status">
+          <p>{toast.text}</p>
+          {toast.kind === 'steal' ? (
+            <div className="proj-steal" aria-hidden="true">
+              <span className="is-minus">{toast.target} −{toast.amount}</span>
+              <span className="is-plus">{toast.by} +{toast.amount}</span>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </main>
   );
 }
