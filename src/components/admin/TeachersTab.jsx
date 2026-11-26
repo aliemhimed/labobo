@@ -1,19 +1,77 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchTeachers, grantTeacher, revokeTeacher } from '../../lib/adminApi.js';
+import { fetchTeachers, grantTeacher, revokeTeacher, setTeacherSubjects } from '../../lib/adminApi.js';
+import { bankGroups, tableLabelMap } from '../../lib/liveSubjects.js';
 import { useConfirm } from '../Confirm.jsx';
 import { Panel, Table } from './parts.jsx';
 
 const KEY = ['admin-teachers'];
 const day = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '');
 
+/* Checkboxes of every question bank, grouped by subject. */
+function SubjectPicker({ value, onChange }) {
+  const toggle = (table) => onChange(value.includes(table) ? value.filter((t) => t !== table) : [...value, table]);
+  return (
+    <div className="adm-subjects">
+      {bankGroups().map((g) => (
+        <fieldset key={g.title} className="adm-subject-group">
+          <legend>{g.title}</legend>
+          {g.tables.map((t) => (
+            <label key={t.table} className="adm-check">
+              <input type="checkbox" checked={value.includes(t.table)} onChange={() => toggle(t.table)} />
+              <span>{t.label}</span>
+            </label>
+          ))}
+        </fieldset>
+      ))}
+    </div>
+  );
+}
+
+/* One teacher's subjects, with an editor. */
+function TeacherSubjects({ teacher }) {
+  const qc = useQueryClient();
+  const labels = tableLabelMap();
+  const current = teacher.subjects || [];
+  const [editing, setEditing] = useState(false);
+  const [picked, setPicked] = useState(current);
+  const save = useMutation({
+    mutationFn: () => setTeacherSubjects(teacher.user_id, picked),
+    onSuccess: () => {
+      setEditing(false);
+      qc.invalidateQueries({ queryKey: KEY });
+      qc.invalidateQueries({ queryKey: ['admin-log'] });
+    },
+  });
+  if (!editing) {
+    return (
+      <>
+        {current.length ? current.map((t) => labels.get(t) || t).join(', ') : <em>none yet</em>}{' '}
+        <button type="button" className="btn sm" onClick={() => { setPicked(current); setEditing(true); }}>Edit subjects</button>
+      </>
+    );
+  }
+  return (
+    <div>
+      <SubjectPicker value={picked} onChange={setPicked} />
+      {save.isError ? <p className="adm-error" role="alert">{save.error.message}</p> : null}
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <button type="button" className="btn primary sm" disabled={save.isPending} onClick={() => save.mutate()}>{save.isPending ? 'Saving…' : 'Save'}</button>
+        <button type="button" className="btn sm" onClick={() => setEditing(false)}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 function AddTeacher() {
   const qc = useQueryClient();
   const [email, setEmail] = useState('');
+  const [subjects, setSubjects] = useState([]);
   const add = useMutation({
-    mutationFn: () => grantTeacher(email.trim()),
+    mutationFn: () => grantTeacher(email.trim(), subjects),
     onSuccess: () => {
       setEmail('');
+      setSubjects([]);
       qc.invalidateQueries({ queryKey: KEY });
       qc.invalidateQueries({ queryKey: ['admin-log'] });
     },
@@ -26,6 +84,11 @@ function AddTeacher() {
                placeholder="teacher@example.com" autoComplete="off" />
         <em>The teacher must already have a Labobo account.</em>
       </label>
+      <div className="adm-field">
+        <span>Subjects this teacher may use</span>
+        <SubjectPicker value={subjects} onChange={setSubjects} />
+        <em>They can only build quizzes from these question banks.</em>
+      </div>
       {add.isError ? <p className="adm-error" role="alert">{add.error.message}</p> : null}
       {add.isSuccess && !email ? <p className="adm-ok" role="status">Teacher added.</p> : null}
       <div>
@@ -63,12 +126,13 @@ export default function TeachersTab() {
         ) : teachers.length === 0 ? <p className="adm-empty">No teachers yet.</p> : (
           <>
             {remove.isError ? <p className="adm-error" role="alert">{remove.error.message}</p> : null}
-            <Table head={['Name', 'Email', 'EU email', 'Added by', 'Added', '']}>
+            <Table head={['Name', 'Email', 'EU email', 'Subjects', 'Added by', 'Added', '']}>
               {teachers.map((t) => (
                 <tr key={t.user_id}>
                   <td>{t.username || '—'}</td>
                   <td>{t.email}</td>
                   <td>{t.uni_email || 'no EU email'}</td>
+                  <td><TeacherSubjects key={(t.subjects || []).join(',')} teacher={t} /></td>
                   <td>{t.granted_by || '—'}</td>
                   <td>{day(t.granted_at)}</td>
                   <td>

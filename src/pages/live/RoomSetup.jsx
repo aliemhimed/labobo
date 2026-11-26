@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import TopBar from '../../components/TopBar.jsx';
 import PageHead from '../../components/PageHead.jsx';
 import { SECONDS_CHOICES, createRoom, lastSettings, rememberSettings } from '../../lib/live.js';
 import TeacherGate from './TeacherGate.jsx';
-import { loadQuizItems, roomQuestion } from './quizData.js';
+import { drawQuestions, loadQuizItems, roomQuestion } from './quizData.js';
 import '../../styles/live-teach.css';
+
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 function Choice({ label, value, onChange, options }) {
   return (
@@ -21,7 +23,7 @@ function Choice({ label, value, onChange, options }) {
   );
 }
 
-function Setup({ quiz, items, missing }) {
+function Setup({ quiz, items, missing, pool, count, bank }) {
   const navigate = useNavigate();
   const [settings, setSettings] = useState(() => ({ ...lastSettings(), mode: 'individual' }));
   const set = (key) => (value) => setSettings((s) => ({ ...s, [key]: value }));
@@ -29,10 +31,19 @@ function Setup({ quiz, items, missing }) {
   const start = useMutation({
     mutationFn: () => {
       rememberSettings(settings);
-      return createRoom({ quiz_id: quiz.id, title: quiz.title, settings, questions: items.map(roomQuestion) });
+      return createRoom({ quiz_id: quiz.id, title: quiz.title, settings, questions: drawQuestions({ items, pool, count: wanted, bank }).questions.map(roomQuestion) });
     },
     onSuccess: (room) => navigate(`/live/teach/room/${room.id}`),
   });
+
+  // What one start will hold: the chosen questions plus random ones from the pool lectures.
+  const wanted = Math.max(count || 0, items.length);
+  const preview = useMemo(() => drawQuestions({ items, pool, count: wanted, bank }), [items, pool, wanted, bank]);
+  const total = preview.questions.length;
+  const lectureNames = [...new Set(pool.map((p) => p.topic))];
+  const makeup = pool.length === 0 ? plural(items.length, 'question')
+    : items.length === 0 ? `${plural(total, 'random question')} from ${lectureNames.join(', ')}`
+      : `${total} questions: ${items.length} chosen + ${preview.random} random from ${lectureNames.join(', ')}`;
 
   return (
     <main id="main" tabIndex={-1} className="lt">
@@ -40,7 +51,9 @@ function Setup({ quiz, items, missing }) {
       <div className="lt-setup">
         <div className="lt-card">
           <h2>{quiz.title}</h2>
-          <p className="lt-sub">{items.length} {items.length === 1 ? 'question' : 'questions'} · {quiz.subject}</p>
+          <p className="lt-sub">{makeup} · {quiz.subject}</p>
+          {preview.short ? <p className="lt-muted">Only {total} {total === 1 ? 'question is' : 'questions are'} available, the quiz will have {total}.</p> : null}
+          <p className="lt-muted">The random questions are picked again each time you start.</p>
           {missing ? <p className="lt-error" role="alert">{missing} {missing === 1 ? 'question is' : 'questions are'} no longer in the bank and will be left out.</p> : null}
         </div>
 
@@ -65,7 +78,7 @@ function Setup({ quiz, items, missing }) {
         </details>
 
         {start.isError ? <p className="lt-error" role="alert">{start.error.message}</p> : null}
-        <button type="button" className="btn primary lg lt-start" disabled={start.isPending || items.length === 0}
+        <button type="button" className="btn primary lg lt-start" disabled={start.isPending || total === 0}
                 onClick={() => start.mutate()}>
           {start.isPending ? 'Starting…' : 'Start'}
         </button>
@@ -93,7 +106,7 @@ export default function RoomSetup() {
         </div>
       </main>
     );
-  } else body = <Setup quiz={{ ...data.quiz, id }} items={data.items} missing={data.missing} />;
+  } else body = <Setup quiz={{ ...data.quiz, id }} items={data.items} missing={data.missing} pool={data.pool} count={data.count} bank={data.bank} />;
 
   return (
     <TeacherGate>

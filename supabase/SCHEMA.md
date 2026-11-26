@@ -41,7 +41,7 @@ Column notation: `name type`, `!` not null, `=default`. Tables with the same col
 - **user_progress**: user_id text!, prefix text!, data jsonb!='{}', version integer!=1, updated_at timestamptz!=now()
 
 ### Labobo Live (20261127000000_labobo_live.sql, added 2026-11-26)
-- **teachers**: user_id uuid! (pk, auth.users), email text, granted_by text, granted_at timestamptz!=now() — granted in the admin Teachers tab
+- **teachers**: user_id uuid! (pk, auth.users), email text, subjects text[]!={} (bank tables the teacher may use; 20261127010000), granted_by text, granted_at timestamptz!=now() — granted in the admin Teachers tab
 - **custom_questions**: id uuid!, owner uuid!, q text!, options jsonb! (2-6), answer integer!, explanation text!='', review_status text!='private' (private|pending|approved|rejected), created_at, updated_at
 - **live_quizzes**: id uuid!, owner uuid!, title text!, subject text!='', settings jsonb!='{}', created_at, updated_at
 - **live_quiz_items**: quiz_id uuid!, position integer!, source_table text, source_id bigint, custom_id uuid — either a bank ref or a custom question

@@ -6,8 +6,8 @@
    supabase/migrations/20261127000000_labobo_live.sql, which also push the
    game's events over Supabase Realtime (private channels).
 
-   GET  /api/live?view=me             -> { teacher, uni_email }
-   GET  /api/live?view=bank&tables=a,b  teacher: raw rows of up to 6 banks
+   GET  /api/live?view=me             -> { teacher, subjects: [bank tables], uni_email }
+   GET  /api/live?view=bank&tables=a,b  teacher: raw rows of up to 6 of THEIR banks
    GET  /api/live?view=quizzes         teacher: their saved quizzes
    GET  /api/live?view=quiz&id=        teacher: one quiz with its items
    GET  /api/live?view=hosted          teacher: their rooms, newest first
@@ -16,7 +16,10 @@
    GET  /api/live?view=history         student: past teacher sessions
 
    POST /api/live  { action, ... }
-     save_quiz    { id?, title, subject, settings, items: [{table, id} | {custom: {id?, q, options, answer, explanation, share}}] }
+     save_quiz    { id?, title, subject, settings, pool: [{table, topic}], count,
+                    items: [{table, id} | {custom: {id?, q, options, answer, explanation, share}}] }
+                  items are the questions always included; the rest of `count`
+                  is drawn at random from the pool's lectures at each start
      delete_quiz  { id }
      create_room  { quiz_id?, title, settings, questions: [{q, options, answer, explanation, image, source_table, source_id, custom_id}] }
      join         { code, nickname }        needs a verified @eu.edu.ge address
@@ -56,9 +59,10 @@ async function rpc(name, args) {
   return res.json();
 }
 
-async function isTeacher(userId) {
-  const r = await rows(`/teachers?user_id=eq.${encodeURIComponent(userId)}&select=user_id`);
-  return r.length > 0;
+/** The caller's teacher row ({ subjects: [bank tables] }), or null. */
+async function getTeacher(userId) {
+  const [r] = await rows(`/teachers?user_id=eq.${encodeURIComponent(userId)}&select=user_id,subjects`);
+  return r ? { subjects: (r.subjects || []).filter((t) => ALLOWED_TABLES.includes(t)) } : null;
 }
 
 /** The caller's university address: the sign-in one, or one proved by code. */
@@ -118,10 +122,10 @@ function shuffled(question) {
 const BANK_COLS = 'id,ord,topic,q,options,answer,explanation,image,images';
 const WITH_DISPLAY_TOPIC = ['clinical_skills', 'clinical_skills_2'];
 
-async function bankView(raw) {
+async function bankView(raw, teacher) {
   const tables = [...new Set(String(raw || '').split(',').map((t) => t.trim()).filter(Boolean))];
   if (!tables.length || tables.length > 6) return fail(400, 'Ask for 1-6 tables');
-  if (tables.some((t) => !ALLOWED_TABLES.includes(t))) return fail(403, 'Table not allowed');
+  if (tables.some((t) => !teacher.subjects.includes(t))) return fail(403, 'That subject is not assigned to you');
   const out = {};
   for (const t of tables) {
     const cols = WITH_DISPLAY_TOPIC.includes(t) ? `${BANK_COLS},display_topic` : BANK_COLS;
@@ -151,11 +155,23 @@ async function quizView(owner, id) {
   return json(200, { quiz, items });
 }
 
-async function saveQuiz(owner, body) {
+/** The lectures a quiz draws random questions from, and how many questions it has. */
+function cleanPool(body, teacher) {
+  const pool = Array.isArray(body.pool) ? body.pool : [];
+  const lectures = pool
+    .filter((p) => p && teacher.subjects.includes(p.table) && typeof p.topic === 'string' && p.topic.trim())
+    .slice(0, 200)
+    .map((p) => ({ table: p.table, topic: p.topic.trim().slice(0, 200) }));
+  const count = Number.isInteger(body.count) ? Math.max(1, Math.min(MAX_QUESTIONS, body.count)) : 10;
+  return { lectures, count };
+}
+
+async function saveQuiz(owner, body, teacher) {
   const title = str(body.title, 120);
   if (!title) return fail(400, 'Give the quiz a title');
   const items = Array.isArray(body.items) ? body.items.slice(0, MAX_QUESTIONS) : [];
-  if (!items.length) return fail(400, 'Add at least one question');
+  const { lectures, count } = cleanPool(body, teacher);
+  if (!items.length && !lectures.length) return fail(400, 'Choose at least one lecture or question');
 
   // Own questions first, so the items can point at them.
   const resolved = [];
@@ -183,14 +199,20 @@ async function saveQuiz(owner, body) {
         [saved] = await res.json();
       }
       resolved.push({ custom_id: saved.id });
-    } else if (ALLOWED_TABLES.includes(it?.table) && Number.isSafeInteger(it?.id)) {
+    } else if (teacher.subjects.includes(it?.table) && Number.isSafeInteger(it?.id)) {
       resolved.push({ source_table: it.table, source_id: it.id });
     } else {
       return fail(400, 'A question in the quiz is not valid');
     }
   }
 
-  const quizRow = { owner, title, subject: str(body.subject, 80), settings: cleanSettings(body.settings), updated_at: new Date().toISOString() };
+  const quizRow = {
+    owner, title, subject: str(body.subject, 80),
+    // Room settings, plus the lectures to draw random questions from and the
+    // quiz length. Random questions are drawn fresh each time it starts.
+    settings: { ...cleanSettings(body.settings), pool: lectures, count },
+    updated_at: new Date().toISOString(),
+  };
   let quizId = UUID.test(body.id || '') ? body.id : null;
   if (quizId) {
     const res = await rest(`/live_quizzes?id=eq.${quizId}&owner=eq.${owner}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(quizRow) });
@@ -203,6 +225,7 @@ async function saveQuiz(owner, body) {
     if (!res.ok) throw new Error(`quiz insert ${res.status} ${await res.text()}`);
     quizId = (await res.json())[0].id;
   }
+  if (!resolved.length) return json(200, { id: quizId });
   const ins = await rest('/live_quiz_items', {
     method: 'POST',
     body: JSON.stringify(resolved.map((r, position) => ({ quiz_id: quizId, position, source_table: null, source_id: null, custom_id: null, ...r }))),
@@ -218,9 +241,10 @@ async function deleteQuiz(owner, id) {
   return json(200, { ok: true });
 }
 
-async function createRoom(host, body) {
+async function createRoom(host, body, teacher) {
   const list = Array.isArray(body.questions) ? body.questions.slice(0, MAX_QUESTIONS).map(cleanQuestion) : [];
   if (!list.length || list.some((q) => !q)) return fail(400, 'The quiz has a question that cannot be used');
+  if (list.some((q) => q.source_table && !teacher.subjects.includes(q.source_table))) return fail(403, 'That subject is not assigned to you');
   const quizId = UUID.test(body.quiz_id || '') ? body.quiz_id : null;
   const out = await rpc('live_create_room', {
     p_host: host, p_title: str(body.title, 120), p_settings: cleanSettings(body.settings),
@@ -267,8 +291,8 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'GET') {
       const { view, room, id, tables } = event.queryStringParameters || {};
       if (view === 'me') {
-        const [teacher, email] = await Promise.all([isTeacher(caller.id), uniEmail(caller)]);
-        return json(200, { teacher, uni_email: email });
+        const [teacher, email] = await Promise.all([getTeacher(caller.id), uniEmail(caller)]);
+        return json(200, { teacher: !!teacher, subjects: teacher?.subjects || [], uni_email: email });
       }
       if (view === 'state' || view === 'results') {
         if (!UUID.test(room || '')) return fail(400, 'Invalid room');
@@ -277,8 +301,9 @@ exports.handler = async (event) => {
       }
       if (view === 'history') return json(200, { sessions: await rpc('live_history', { p_user: caller.id }) });
 
-      if (!(await isTeacher(caller.id))) return fail(403, 'Teachers only');
-      if (view === 'bank') return await bankView(tables);
+      const teacher = await getTeacher(caller.id);
+      if (!teacher) return fail(403, 'Teachers only');
+      if (view === 'bank') return await bankView(tables, teacher);
       if (view === 'quizzes') return await quizzesView(caller.id);
       if (view === 'quiz') return await quizView(caller.id, id);
       if (view === 'hosted') return json(200, { rooms: await rpc('live_hosted', { p_host: caller.id }) });
@@ -310,11 +335,12 @@ exports.handler = async (event) => {
     }
 
     // Everything below is for teachers.
-    if (!(await isTeacher(caller.id))) return fail(403, 'Teachers only');
+    const teacher = await getTeacher(caller.id);
+    if (!teacher) return fail(403, 'Teachers only');
     switch (body.action) {
-      case 'save_quiz': return await saveQuiz(caller.id, body);
+      case 'save_quiz': return await saveQuiz(caller.id, body, teacher);
       case 'delete_quiz': return await deleteQuiz(caller.id, body.id);
-      case 'create_room': return await createRoom(caller.id, body);
+      case 'create_room': return await createRoom(caller.id, body, teacher);
       case 'next':
       case 'board':
       case 'finish': {

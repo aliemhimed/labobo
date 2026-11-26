@@ -14,7 +14,8 @@
    GET  /api/admin?view=reviews    -> student reviews, waiting ones first
    GET  /api/admin?view=log        -> what admins did, newest first
    GET  /api/admin?view=teachers   -> Labobo Live teachers
-   POST /api/admin   body: { action: 'grant_teacher', email } / { action: 'revoke_teacher', id }
+   POST /api/admin   body: { action: 'grant_teacher', email, subjects } / { action: 'revoke_teacher', id }
+   POST /api/admin   body: { action: 'set_teacher_subjects', id, subjects: [bank tables] }
    POST /api/admin   body: { action: 'resolve_reports', ids: [..] }
    POST /api/admin   body: { action: 'reopen_reports', ids: [..] }
      -> marks question reports dealt with (or not) — kept, not deleted
@@ -684,7 +685,7 @@ async function revokePass(id, caller) {
 
 /* Every teacher, with whether their account has a university address. */
 async function teachersView() {
-  const list = await rows('/teachers?select=user_id,email,granted_by,granted_at&order=granted_at.desc');
+  const list = await rows('/teachers?select=user_id,email,subjects,granted_by,granted_at&order=granted_at.desc');
   if (!list.length) return { teachers: [] };
   const ids = list.map((t) => t.user_id).join(',');
   const [profiles, uni] = await Promise.all([
@@ -705,7 +706,10 @@ async function teachersView() {
   };
 }
 
-/* Makes the account with this sign-in email a teacher. */
+/* Question banks a teacher may use (bank table names, known ones only). */
+const cleanSubjects = (list) => [...new Set((Array.isArray(list) ? list : []).filter((t) => BANKS.some((b) => b.tables.includes(t))))];
+
+/* Makes the account with this sign-in email a teacher, with the subjects ticked. */
 async function grantTeacher(body, caller) {
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail(400, 'Enter the teacher\'s sign-in email');
@@ -714,11 +718,27 @@ async function grantTeacher(body, caller) {
   const res = await rest('/teachers?on_conflict=user_id', {
     method: 'POST',
     headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-    body: JSON.stringify({ user_id: profile.id, email: profile.email, granted_by: caller.email, granted_at: new Date().toISOString() }),
+    body: JSON.stringify({
+      user_id: profile.id, email: profile.email, subjects: cleanSubjects(body.subjects),
+      granted_by: caller.email, granted_at: new Date().toISOString(),
+    }),
   });
   if (!res.ok) return fail(502, 'Could not add the teacher', `${res.status} ${await res.text()}`);
-  await logAction(caller, 'grant_teacher', profile.id, { email: profile.email, username: profile.username });
+  await logAction(caller, 'grant_teacher', profile.id, { email: profile.email, username: profile.username, subjects: cleanSubjects(body.subjects) });
   return json(200, { ok: true });
+}
+
+/* Changes which subjects a teacher may use. */
+async function setTeacherSubjects(body, caller) {
+  if (!UUID.test(body.id || '')) return fail(400, 'Invalid user id');
+  const subjects = cleanSubjects(body.subjects);
+  const res = await rest(`/teachers?user_id=eq.${encodeURIComponent(body.id)}`, {
+    method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ subjects }),
+  });
+  if (!res.ok) return fail(502, 'Could not save the subjects', `${res.status} ${await res.text()}`);
+  if (!(await res.json()).length) return fail(404, 'Not a teacher');
+  await logAction(caller, 'set_teacher_subjects', body.id, { subjects });
+  return json(200, { ok: true, subjects });
 }
 
 async function revokeTeacher(id, caller) {
@@ -987,6 +1007,7 @@ exports.handler = async (event) => {
         case 'set_review_status': return await setReviewStatus(body, caller);
         case 'grant_teacher': return await grantTeacher(body, caller);
         case 'revoke_teacher': return await revokeTeacher(body.id, caller);
+        case 'set_teacher_subjects': return await setTeacherSubjects(body, caller);
         default: return fail(400, 'Unknown action');
       }
     }

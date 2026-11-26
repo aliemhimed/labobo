@@ -46,7 +46,8 @@ export const resolveReports = (ids) => post({ action: 'resolve_reports', ids });
 export const reopenReports = (ids) => post({ action: 'reopen_reports', ids });
 export const createAnnouncement = (a) => post({ action: 'create_announcement', ...a });
 export const endAnnouncement = (id) => post({ action: 'end_announcement', id });
-export const grantTeacher = (email) => post({ action: 'grant_teacher', email });
+export const grantTeacher = (email, subjects) => post({ action: 'grant_teacher', email, subjects });
+export const setTeacherSubjects = (id, subjects) => post({ action: 'set_teacher_subjects', id, subjects });
 export const revokeTeacher = (id) => post({ action: 'revoke_teacher', id });
 export const setReviewStatus = (id, status) => post({ action: 'set_review_status', id, status });
 

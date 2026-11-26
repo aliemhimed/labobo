@@ -3,22 +3,8 @@
    builder and the room setup screen. */
 import { fetchBank, fetchQuiz } from '../../lib/live.js';
 import { questionFromRow } from '../../lib/questions.js';
-import { SUBJECTS } from '../../lib/subjects.js';
 
 export const MAX_QUESTIONS = 100;
-
-export const subjectByTitle = (title) => Object.values(SUBJECTS).find((s) => s.title === title) || null;
-
-/** Subjects grouped by semester: [[semester, [subject, ...]], ...]. */
-export function subjectsBySemester() {
-  const groups = new Map();
-  for (const s of Object.values(SUBJECTS)) {
-    const sem = [].concat(s.semester)[0];
-    if (!groups.has(sem)) groups.set(sem, []);
-    groups.get(sem).push(s);
-  }
-  return [...groups.entries()].sort((a, b) => String(a[0]).localeCompare(String(b[0])));
-}
 
 /** A bank question as the builder keeps it. */
 export const bankItem = (table, row) => {
@@ -52,10 +38,11 @@ export async function loadBankItems(tables) {
   return out;
 }
 
-/** A saved quiz with every item resolved: { quiz, items, missing }. */
+/** A saved quiz with every item resolved: { quiz, items, missing, pool, count, bank }. */
 export async function loadQuizItems(id) {
   const { quiz, items } = await fetchQuiz(id);
-  const bank = await loadBankItems(items.filter((i) => i.source_table).map((i) => i.source_table));
+  const pool = quiz.settings?.pool || [];
+  const bank = await loadBankItems([...items.filter((i) => i.source_table).map((i) => i.source_table), ...pool.map((p) => p.table)]);
   const out = [];
   let missing = 0;
   for (const it of [...items].sort((a, b) => a.position - b.position)) {
@@ -65,7 +52,7 @@ export async function loadQuizItems(id) {
       if (found) out.push(found); else missing += 1;
     }
   }
-  return { quiz, items: out, missing };
+  return { quiz, items: out, missing, pool, count: quiz.settings?.count || 0, bank };
 }
 
 /** The question shape create_room expects. */
@@ -75,3 +62,87 @@ export const roomQuestion = (it) => ({
   source_id: it.kind === 'bank' ? it.id : null,
   custom_id: it.kind === 'custom' ? it.customId : null,
 });
+
+/* ---- Pasted questions ---- */
+
+const OPTION_LINE = /^\(?([A-Za-z])[).]\s*(\S.*)$/;
+const ANSWER_LINE = /^(?:correct\s+)?(?:answer|ans)\s*[:=\-]\s*\(?([A-Za-z])\b\)?/i;
+const MAX_PASTED_OPTIONS = 6;
+
+/** Reads a question pasted from Word: the question, options "A) ...", and the answer
+    marked with a trailing "*" or a last line "Answer: B".
+    Returns { q, options, answer } or { error }. */
+export function parsePastedQuestion(text) {
+  const lines = String(text || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  if (!lines.length) return { error: 'Paste the question with its options.' };
+
+  let marked = null; // letter index from an "Answer: B" line
+  if (lines.length > 1) {
+    const m = ANSWER_LINE.exec(lines[lines.length - 1]);
+    if (m) { marked = m[1].toUpperCase().charCodeAt(0) - 65; lines.pop(); }
+  }
+
+  const stem = [];
+  const options = [];
+  const stars = [];
+  for (const line of lines) {
+    const m = OPTION_LINE.exec(line);
+    const next = options.length;
+    if (m && m[1].toUpperCase().charCodeAt(0) - 65 === next && next < MAX_PASTED_OPTIONS) {
+      options.push(m[2]);
+    } else if (options.length) {
+      options[options.length - 1] += ` ${line}`; // a wrapped option line
+    } else {
+      stem.push(line);
+    }
+  }
+  if (options.length < 2) return { error: 'Could not find the options. Start each one with A) B) C) D).' };
+
+  options.forEach((o, i) => {
+    if (/\s*\*+\s*$/.test(o)) { stars.push(i); options[i] = o.replace(/\s*\*+\s*$/, '').trim(); }
+  });
+  const q = stem.join('\n').replace(/^\d+[.)]\s+/, '').trim();
+  if (!q) return { error: 'Could not find the question text above the options.' };
+  if (options.some((o) => !o)) return { error: 'One of the options is empty.' };
+
+  let answer;
+  if (stars.length > 1) return { error: 'More than one option is marked with *. Mark only the correct one.' };
+  if (stars.length === 1) {
+    if (marked !== null && marked !== stars[0]) return { error: 'The * and the Answer line disagree.' };
+    answer = stars[0];
+  } else if (marked !== null) {
+    if (marked < 0 || marked >= options.length) return { error: `The answer is not one of the ${options.length} options.` };
+    answer = marked;
+  } else {
+    return { error: 'Could not find the answer. Put * after the correct option, or end with "Answer: B".' };
+  }
+  return { q, options, answer };
+}
+
+/* ---- Random draw ---- */
+
+const keyOf = (table, topic) => `${table}\u0001${topic}`;
+export const lectureKey = keyOf;
+export const splitLectureKey = (key) => { const i = key.indexOf('\u0001'); return { table: key.slice(0, i), topic: key.slice(i + 1) }; };
+
+function shuffle(list) {
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/** The questions of one start: the always-included ones plus random ones from the pool
+    lectures (never a repeat), all shuffled, up to `count`. Returns { questions, available, short }
+    where `short` is true when the pool could not fill `count`. */
+export function drawQuestions({ items, pool, count, bank }) {
+  const lectures = new Set((pool || []).map((p) => keyOf(p.table, p.topic)));
+  const have = new Set(items.filter((i) => i.kind === 'bank').map((i) => i.key));
+  const candidates = [...bank.values()].filter((q) => lectures.has(keyOf(q.table, q.topic)) && !have.has(q.key));
+  const need = Math.max(0, count - items.length);
+  const picked = shuffle(candidates).slice(0, need);
+  const questions = shuffle([...items, ...picked]);
+  return { questions, random: picked.length, short: items.length + picked.length < count };
+}
