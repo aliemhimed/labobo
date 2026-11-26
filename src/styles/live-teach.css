@@ -178,3 +178,34 @@ section[aria-labelledby="lt-cases"] .lt-row { height: auto; min-height: 0; }
 .lt-dist li.dim { opacity: 0.75; }
 section[aria-labelledby="lt-quizzes"] .lt-row-main,
 section[aria-labelledby="lt-cases"] .lt-row-main { flex: 0 0 auto; }
+
+/* ── Design round 2 ───────────────────────────────────────────────── */
+/* Case scenarios read like a ward chart: ruled sheet, red margin line. */
+.lv-chart, .live-case-scenario {
+  --ln: 1.6em;
+  margin: 0; padding: 0.35em 0.9em 0.5em 2.6em; line-height: var(--ln);
+  background-color: var(--sheet); color: var(--ink);
+  background-image:
+    linear-gradient(to right, transparent 1.75em, var(--band) 1.75em, var(--band) calc(1.75em + 2px), transparent calc(1.75em + 2px)),
+    repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--ln) - 1px), var(--rule) calc(var(--ln) - 1px), var(--rule) var(--ln));
+  background-position: 0 0, 0 0.35em; background-attachment: local;
+  border: var(--line) solid var(--edge); border-radius: var(--r-control); box-shadow: 4px 4px 0 var(--hard);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+textarea.lv-chart { font: inherit; resize: vertical; }
+
+/* Each case in the builder: its own sheet with a violet band on top. */
+.lt-case { padding-top: 0; overflow: hidden; box-shadow: 6px 6px 0 var(--hard); }
+.lt-case-band { margin: 0 -20px; padding: 10px 20px; background: var(--fill-violet); color: var(--card-ink);
+  border-bottom: var(--line) solid var(--card-ink); }
+.lt-case-band h2 { color: var(--card-ink); margin: 0; }
+.lt-case-band .lt-tools button { color: var(--card-ink); }
+
+/* Chosen options read as yellow marker stickers (Labobo's highlight). */
+.lt-seg button[aria-pressed="true"] { background: var(--marker); color: var(--card-ink); box-shadow: inset 0 0 0 2px var(--card-ink); }
+.lt [aria-pressed="true"]:not(.lt-seg button):not(.btn.primary) { background: var(--marker); color: var(--card-ink); border-color: var(--card-ink); }
+
+/* Sheets: the same outline and hard shadow as everywhere else. */
+.lt-card { box-shadow: 6px 6px 0 var(--hard); }
+.lt-step > h2 { font: 800 var(--t-24)/1.15 var(--font-display); letter-spacing: -0.01em; }
+textarea.lt-input.lv-chart { padding: 0.35em 0.9em 0.5em 2.6em; line-height: var(--ln); }

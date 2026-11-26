@@ -257,3 +257,18 @@
 .live-opt { box-shadow: 4px 4px 0 var(--hard); }
 .live-opt:not(:disabled):active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--hard); }
 .live-opt.is-chosen { outline: 4px solid var(--hema); outline-offset: 3px; }
+
+/* ── Design round 2 ───────────────────────────────────────────────── */
+/* Case scenarios read like a ward chart: ruled sheet, red margin line. */
+.lv-chart, .live-case-scenario {
+  --ln: 1.6em;
+  margin: 0; padding: 0.35em 0.9em 0.5em 2.6em; line-height: var(--ln);
+  background-color: var(--sheet); color: var(--ink);
+  background-image:
+    linear-gradient(to right, transparent 1.75em, var(--band) 1.75em, var(--band) calc(1.75em + 2px), transparent calc(1.75em + 2px)),
+    repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--ln) - 1px), var(--rule) calc(var(--ln) - 1px), var(--rule) var(--ln));
+  background-position: 0 0, 0 0.35em; background-attachment: local;
+  border: var(--line) solid var(--edge); border-radius: var(--r-control); box-shadow: 4px 4px 0 var(--hard);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+textarea.lv-chart { font: inherit; resize: vertical; }
