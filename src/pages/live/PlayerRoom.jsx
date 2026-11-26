@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useCountdown, useLiveRoom } from '../../lib/live.js';
+import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -29,6 +29,7 @@ export default function PlayerRoom() {
   const r = state?.room;
   const q = state?.question;
   const left = useCountdown(r?.deadline, offsetMs, r?.paused, r?.paused_left_ms);
+  const autoIn = useAutoNext(state, offsetMs);
 
   useEffect(() => { setNotice(''); setSendError(''); }, [q?.position]);
 
@@ -130,6 +131,7 @@ export default function PlayerRoom() {
           ))}
         </div>
         {state.reveal?.explanation ? <p className="live-expl">{state.reveal.explanation}</p> : null}
+        {autoIn != null ? <p className="live-muted live-center" role="status">Next question in {autoIn} s</p> : null}
       </>
     );
   } else if (stage === 'leaderboard') {
@@ -138,6 +140,7 @@ export default function PlayerRoom() {
         <h1>Leaderboard</h1>
         <Board board={state.board} myRank={me.rank} />
         <p className="live-muted">You: {me.score ?? 0} points{me.rank ? ` · rank ${me.rank}` : ''}</p>
+        {autoIn != null ? <p className="live-muted" role="status">Next question in {autoIn} s</p> : null}
       </div>
     );
   } else if (stage === 'finished') {

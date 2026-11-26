@@ -53,7 +53,7 @@ export const createRoom = (room) => livePost('create_room', room);
 export const joinRoom = (code, nickname) => livePost('join', { code, nickname });
 
 /** Settings a new room starts with (the "More options" defaults). */
-export const DEFAULT_SETTINGS = Object.freeze({ seconds: 20, names: 'nicknames', leaderboard: 'top5', review: true });
+export const DEFAULT_SETTINGS = Object.freeze({ seconds: 20, names: 'nicknames', leaderboard: 'top5', review: true, advance: 'teacher' });
 export const SECONDS_CHOICES = [10, 15, 20, 30, 45, 60, 90];
 
 const LAST_SETTINGS_KEY = 'labobo.live.lastSettings';
@@ -177,8 +177,9 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
             me: s.me ? { ...s.me, answer: null } : s.me,
           };
         }
-        if (event === 'reveal') return { ...s, reveal: { answer: payload.answer, explanation: payload.explanation, counts: payload.counts }, room: { ...s.room, stage: 'reveal' } };
-        if (event === 'leaderboard') return { ...s, board: payload.board, room: { ...s.room, stage: 'leaderboard' } };
+        // In auto mode the room's deadline becomes "next question at".
+        if (event === 'reveal') return { ...s, reveal: { answer: payload.answer, explanation: payload.explanation, counts: payload.counts }, room: { ...s.room, stage: 'reveal', deadline: payload.next_at ?? s.room.deadline } };
+        if (event === 'leaderboard') return { ...s, board: payload.board, room: { ...s.room, stage: 'leaderboard', deadline: payload.next_at ?? s.room.deadline } };
         if (event === 'finished') return { ...s, board: payload.board, room: { ...s.room, stage: 'finished' } };
         if (event === 'paused') return { ...s, room: { ...s.room, paused: true } };
         if (event === 'resumed') return { ...s, room: { ...s.room, paused: false, deadline: payload.deadline ?? s.room.deadline } };
@@ -214,6 +215,22 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
     return () => clearTimeout(closing.current);
   }, [room?.stage, room?.paused, room?.deadline, room?.current, roomId, asHost, refreshSoon]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto mode: when the reveal's time is up, ask the server for the next
+  // question. The host asks first; players a moment later, spread out, so the
+  // quiz goes on even if the teacher's laptop has dropped.
+  const advancing = useRef(null);
+  const auto = room?.settings?.advance === 'auto';
+  useEffect(() => {
+    clearTimeout(advancing.current);
+    if (!room || !auto || room.paused || !room.deadline || !['reveal', 'leaderboard'].includes(room.stage)) return undefined;
+    const wait = msLeft(room.deadline, offsetRef.current) + (asHost ? 100 : 1000 + Math.random() * 1500);
+    advancing.current = setTimeout(async () => {
+      try { await livePost('auto_next', { room: roomId }); } catch { /* someone else did */ }
+      refreshSoon(asHost ? 0 : 500);
+    }, Math.max(0, wait));
+    return () => clearTimeout(advancing.current);
+  }, [room?.stage, room?.paused, room?.deadline, auto, roomId, asHost, refreshSoon]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Players: tell the teacher when the student leaves the app mid-question.
   useEffect(() => {
     if (asHost || !roomId) return undefined;
@@ -233,4 +250,12 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
   }, [roomId, refreshSoon]);
 
   return { state, error, offsetMs, connected, refresh, act };
+}
+
+/** Seconds until the next question in auto mode, or null when not counting down. */
+export function useAutoNext(state, offsetMs) {
+  const r = state?.room;
+  const on = r?.settings?.advance === 'auto' && !r?.paused && ['reveal', 'leaderboard'].includes(r?.stage) && r?.current < r?.total - 1;
+  const left = useCountdown(on ? r.deadline : null, offsetMs, false, 0);
+  return on ? Math.ceil(left / 1000) : null;
 }

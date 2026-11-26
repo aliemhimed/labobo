@@ -74,6 +74,8 @@ function Setup({ quiz, items, missing, pool, count, bank }) {
                     options={[['all', 'Everyone'], ['top5', 'Top 5'], ['none', 'None']]} />
             <Choice label="Students can review questions afterwards" value={settings.review} onChange={set('review')}
                     options={[[true, 'Yes'], [false, 'No']]} />
+            <Choice label="Next question" value={settings.advance || 'teacher'} onChange={set('advance')}
+                    options={[['teacher', 'Teacher clicks'], ['auto', 'Automatic (8 s after the answer)']]} />
           </div>
         </details>
 

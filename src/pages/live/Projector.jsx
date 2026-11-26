@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
-import { useCountdown, useLiveRoom } from '../../lib/live.js';
+import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -29,6 +29,7 @@ export default function Projector() {
   const { state, error, offsetMs } = useLiveRoom(roomId, { asHost: true });
   const r = state?.room;
   const left = useCountdown(r?.deadline, offsetMs, r?.paused, r?.paused_left_ms);
+  const autoIn = useAutoNext(state, offsetMs);
 
   if (error && !state) {
     return <main className="proj"><div className="proj-center"><h1>This room isn't available</h1></div></main>;
@@ -91,7 +92,10 @@ export default function Projector() {
           })}
         </div>
         {isReveal ? (
-          reveal?.explanation ? <p className="proj-expl">{reveal.explanation}</p> : null
+          <>
+            {reveal?.explanation ? <p className="proj-expl">{reveal.explanation}</p> : null}
+            {autoIn != null ? <p className="proj-answered">Next question in {autoIn} s</p> : null}
+          </>
         ) : (
           <p className="proj-answered">{state.counts?.answered ?? 0} of {state.players} answered</p>
         )}

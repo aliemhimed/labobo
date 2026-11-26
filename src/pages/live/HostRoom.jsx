@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import TopBar from '../../components/TopBar.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import { useConfirm } from '../../components/Confirm.jsx';
-import { useCountdown, useLiveRoom } from '../../lib/live.js';
+import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
 import TeacherGate from './TeacherGate.jsx';
 import '../../styles/live-teach.css';
 
@@ -113,6 +113,7 @@ function Room({ roomId }) {
   const [renaming, setRenaming] = useState(null);
   const room = state?.room;
   const left = useCountdown(room?.deadline, offsetMs, room?.paused, room?.paused_left_ms);
+  const autoIn = useAutoNext(state, offsetMs);
 
   const run = async (fn) => {
     setBusy(true); setProblem('');
@@ -138,6 +139,13 @@ function Room({ roomId }) {
   const last = room.current >= room.total - 1;
   const next = <button type="button" className="btn primary" disabled={busy} onClick={() => run(() => act('next'))}>{last ? 'Finish' : 'Next question'}</button>;
   const stage = room.stage;
+  // Auto mode: say when the next question starts, and let the teacher hold it.
+  const autoBits = room.settings?.advance === 'auto' && (stage === 'reveal' || stage === 'leaderboard') ? (
+    <>
+      <button type="button" className="btn" disabled={busy} onClick={() => run(() => act('pause', { paused: !room.paused }))}>{room.paused ? 'Resume' : 'Hold'}</button>
+      <span className="lt-sub" role="status">{room.paused ? 'Held. Resume to continue.' : autoIn != null ? `Next question in ${autoIn} s` : last ? 'Finishing…' : ''}</span>
+    </>
+  ) : null;
 
   return (
     <main id="main" tabIndex={-1} className="lt">
@@ -181,9 +189,10 @@ function Room({ roomId }) {
               <>
                 <button type="button" className="btn" disabled={busy} onClick={() => run(() => act('board'))}>Show leaderboard</button>
                 {next}
+                {autoBits}
               </>
             ) : null}
-            {stage === 'leaderboard' ? next : null}
+            {stage === 'leaderboard' ? <>{next}{autoBits}</> : null}
             {stage === 'finished' ? <Link className="btn primary" to={`/live/results/${roomId}`}>See results</Link> : null}
             {stage !== 'finished' ? (
               <>

@@ -27,6 +27,7 @@
      pause        { room, paused }
      moderate     { room, act: 'kick'|'rename'|'lock', user?, value? }
      answer       { room, position, choice }
+     auto_next    { room }   auto mode: anyone in the room, once the reveal's time is up
      away         { room }
 
    Teachers are rows in `teachers`, granted by an admin (admin.js). */
@@ -86,6 +87,9 @@ function cleanSettings(s) {
     names: o.names === 'real' ? 'real' : 'nicknames',
     leaderboard: ['all', 'top5', 'none'].includes(o.leaderboard) ? o.leaderboard : 'top5',
     review: o.review !== false,
+    // 'teacher': the teacher clicks Next (default); 'auto': the next question
+    // starts by itself a few seconds after the reveal.
+    advance: o.advance === 'auto' ? 'auto' : 'teacher',
   };
 }
 
@@ -326,6 +330,10 @@ exports.handler = async (event) => {
       case 'close': {
         const bad = needRoom(); if (bad) return bad;
         return statusReply(await rpc('live_close', { p_room: room, p_user: caller.id }));
+      }
+      case 'auto_next': {
+        const bad = needRoom(); if (bad) return bad;
+        return statusReply(await rpc('live_auto_next', { p_room: room, p_user: caller.id }));
       }
       case 'away': {
         const bad = needRoom(); if (bad) return bad;
