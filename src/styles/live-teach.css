@@ -1,0 +1,114 @@
+/* Labobo Live: teacher screens (home, quiz builder, room setup, control). */
+
+.lt { max-width: var(--page); margin: 0 auto; padding: 24px 24px 72px; }
+.lt h1 { margin-bottom: 4px; }
+.lt-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.lt-sub { color: var(--ink-soft); font-size: var(--t-14); }
+.lt-muted { color: var(--ink-muted); font-size: var(--t-14); }
+.lt-error { color: var(--wrong); font-size: var(--t-14); font-weight: 600; }
+.lt-ok { color: var(--correct); font-size: var(--t-14); font-weight: 600; }
+.lt-state { max-width: 32rem; margin: 64px auto; text-align: center; display: grid; gap: 14px; justify-items: center; }
+
+.lt-card {
+  background: var(--sheet); border: var(--line) solid var(--edge); border-radius: var(--r-sheet);
+  box-shadow: 4px 4px 0 var(--hard); padding: 18px 20px;
+}
+.lt-section { margin-top: 28px; }
+.lt-section > h2 { font-size: var(--t-21); margin-bottom: 12px; }
+
+.lt-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.lt-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px;
+  padding: 12px 16px; background: var(--sheet); border: 1.5px solid var(--rule-strong); border-radius: var(--r-control);
+}
+.lt-row-main { min-width: 0; flex: 1 1 240px; }
+.lt-row-title { font: 700 var(--t-16)/1.3 var(--font-display); overflow-wrap: anywhere; }
+.lt-row-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+a.btn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+
+/* Forms */
+.lt-field { display: grid; gap: 6px; margin-bottom: 14px; }
+.lt-field > span, .lt-label { font: 700 var(--t-14)/1.3 var(--font-ui); color: var(--ink-soft); }
+.lt-input {
+  min-height: 42px; padding: 0 12px; width: 100%;
+  border: 1.5px solid var(--rule-strong); border-radius: var(--r-control);
+  background: var(--sheet); color: var(--ink); font: 500 var(--t-16) var(--font-ui);
+}
+textarea.lt-input { min-height: 84px; padding: 10px 12px; resize: vertical; line-height: 1.45; }
+.lt-input:focus-visible { outline: 3px solid var(--hema); outline-offset: 1px; }
+.lt-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Segmented controls with more than two choices */
+.lt-seg { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: var(--line) solid var(--edge); border-radius: var(--r-control); background: var(--sheet-hover); }
+.lt-seg button {
+  flex: 1 1 auto; min-height: 40px; min-width: 52px; padding: 0 12px; border: 0; border-radius: 10px;
+  background: transparent; color: var(--ink-soft); font: 700 var(--t-14)/1 var(--font-display); cursor: pointer;
+}
+.lt-seg button[aria-pressed="true"] { background: var(--hema); color: var(--on-hema); }
+.lt-seg button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Quiz builder */
+.lt-builder { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.lt-side { position: sticky; top: 12px; display: grid; gap: 16px; max-height: calc(100vh - 24px); overflow: auto; }
+.lt-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.lt-filters .lt-input { flex: 1 1 180px; width: auto; }
+.lt-q { padding: 12px 14px; background: var(--sheet); border: 1.5px solid var(--rule-strong); border-radius: var(--r-control); display: grid; gap: 8px; }
+.lt-q.on { border-color: var(--hema); background: var(--hema-wash); }
+.lt-q-top { display: flex; gap: 12px; align-items: flex-start; }
+.lt-q-top input[type="checkbox"] { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--hema); }
+.lt-q-text { font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.lt-topic { color: var(--ink-muted); font-size: var(--t-12); font-weight: 700; }
+.lt-opts { list-style: none; margin: 0 0 0 34px; padding: 0; display: grid; gap: 3px; font-size: var(--t-14); color: var(--ink-soft); }
+.lt-opts li.right { color: var(--correct); font-weight: 700; }
+.lt-opts li.right::after { content: ' (correct)'; font-weight: 600; }
+.lt-sel { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lt-sel li { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border: 1.5px solid var(--rule); border-radius: 12px; background: var(--sheet); }
+.lt-sel-text { flex: 1 1 auto; min-width: 0; font-size: var(--t-14); line-height: 1.35; overflow-wrap: anywhere; }
+.lt-sel-text b { color: var(--hema); margin-right: 4px; }
+.lt-tools { display: flex; gap: 2px; flex: none; }
+.lt-tools button {
+  min-width: 32px; min-height: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-soft);
+  font: 700 var(--t-14) var(--font-ui); cursor: pointer;
+}
+.lt-tools button:hover:not(:disabled) { background: var(--hema-wash); color: var(--hema); }
+.lt-tools button:disabled { opacity: 0.35; cursor: not-allowed; }
+.lt-tag { display: inline-block; padding: 1px 8px; border-radius: 99px; background: var(--marker); color: var(--card-ink); font-size: var(--t-12); font-weight: 800; }
+.lt-opt-edit { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.lt-opt-edit input[type="radio"] { width: 20px; height: 20px; accent-color: var(--hema); flex: none; }
+.lt-check { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; font-size: var(--t-14); }
+.lt-check input { width: 20px; height: 20px; flex: none; accent-color: var(--hema); }
+
+/* Room setup */
+.lt-setup { max-width: 40rem; margin: 0 auto; display: grid; gap: 22px; }
+.lt-start { min-height: 64px; font-size: var(--t-21); }
+.lt-more { border: 1.5px solid var(--rule-strong); border-radius: var(--r-control); background: var(--sheet); padding: 4px 16px; }
+.lt-more summary { cursor: pointer; padding: 12px 0; font: 700 var(--t-16) var(--font-display); }
+.lt-more > div { padding-bottom: 8px; }
+
+/* Control room */
+.lt-code { font: 800 clamp(2.5rem, 8vw, 4.5rem)/1 var(--font-display); letter-spacing: 0.08em; }
+.lt-join { color: var(--ink-soft); }
+.lt-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--rule-strong); margin-right: 6px; }
+.lt-dot.on { background: var(--correct); }
+.lt-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.lt-time { font: 800 var(--t-36)/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.lt-bar { height: 12px; border-radius: 99px; background: var(--sheet-hover); border: 1.5px solid var(--rule-strong); overflow: hidden; }
+.lt-bar i { display: block; height: 100%; background: var(--hema); }
+.lt-dist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lt-dist li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 8px 12px; border: 1.5px solid var(--rule); border-radius: 12px; }
+.lt-dist li.right { border-color: var(--correct); background: var(--correct-wash); }
+.lt-dist .lt-bar { grid-column: 1 / -1; height: 8px; }
+.lt-table-wrap { overflow-x: auto; }
+.lt-table { width: 100%; border-collapse: collapse; font-size: var(--t-14); }
+.lt-table th { text-align: left; padding: 8px 10px; color: var(--ink-soft); border-bottom: 1.5px solid var(--rule-strong); white-space: nowrap; }
+.lt-table td { padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.lt-table td.num { font-variant-numeric: tabular-nums; }
+.lt-away { color: var(--wrong); font-weight: 700; white-space: nowrap; }
+.lt-grid { display: grid; gap: 18px; }
+
+@media (max-width: 767px) {
+  .lt { padding: 16px 16px 56px; }
+  .lt-builder { grid-template-columns: 1fr; }
+  .lt-side { position: static; max-height: none; }
+  .lt-two { grid-template-columns: 1fr; }
+}

@@ -231,3 +231,6 @@ exports.handler = async (event) => {
     return reply(fail(502, 'Questions are unavailable right now', e));
   }
 };
+
+// Shared with live.js (the teacher's question picker reads the same banks).
+exports.ALLOWED_TABLES = ALLOWED_TABLES;

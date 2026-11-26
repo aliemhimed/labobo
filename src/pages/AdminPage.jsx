@@ -10,6 +10,7 @@ import LogTab from '../components/admin/LogTab.jsx';
 import ReviewsTab from '../components/admin/ReviewsTab.jsx';
 import ErrorsTab from '../components/admin/ErrorsTab.jsx';
 import PaymentsTab from '../components/admin/PaymentsTab.jsx';
+import TeachersTab from '../components/admin/TeachersTab.jsx';
 import { RetentionPanel, QuietPanel } from '../components/admin/Retention.jsx';
 import { Stat, Panel, DayBars, HBars, Table, ago, pct, num } from '../components/admin/parts.jsx';
 import { fetchSnapshot } from '../lib/adminApi.js';
@@ -214,7 +215,7 @@ function Overview({ data, onOpenUser, onOpenQuestions }) {
 
 export default function AdminPage() {
   const [params, setParams] = useSearchParams();
-  const tab = ['users', 'payments', 'questions', 'announcements', 'reviews', 'errors', 'log'].includes(params.get('tab')) ? params.get('tab') : 'overview';
+  const tab = ['users', 'payments', 'questions', 'announcements', 'reviews', 'teachers', 'errors', 'log'].includes(params.get('tab')) ? params.get('tab') : 'overview';
   const studentId = params.get('u');
 
   const setView = (next) => setParams(next, { replace: false });
@@ -275,6 +276,9 @@ export default function AdminPage() {
           <button type="button" role="tab" aria-selected={tab === 'reviews'} onClick={() => setView({ tab: 'reviews' })}>
             Reviews
           </button>
+          <button type="button" role="tab" aria-selected={tab === 'teachers'} onClick={() => setView({ tab: 'teachers' })}>
+            Teachers
+          </button>
           <button type="button" role="tab" aria-selected={tab === 'errors'} onClick={() => setView({ tab: 'errors' })}>
             Errors
           </button>
@@ -291,6 +295,7 @@ export default function AdminPage() {
           : tab === 'questions' ? <QuestionsTab onOpenUser={openUser} />
             : tab === 'announcements' ? <AnnouncementsTab />
               : tab === 'reviews' ? <ReviewsTab />
+              : tab === 'teachers' ? <TeachersTab />
               : tab === 'errors' ? <ErrorsTab />
               : tab === 'log' ? <LogTab />
                 : <Overview data={data} onOpenUser={openUser} onOpenQuestions={() => setView({ tab: 'questions' })} />}

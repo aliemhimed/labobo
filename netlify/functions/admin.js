@@ -13,6 +13,8 @@
    GET  /api/admin?view=announcements -> banners, newest first
    GET  /api/admin?view=reviews    -> student reviews, waiting ones first
    GET  /api/admin?view=log        -> what admins did, newest first
+   GET  /api/admin?view=teachers   -> Labobo Live teachers
+   POST /api/admin   body: { action: 'grant_teacher', email } / { action: 'revoke_teacher', id }
    POST /api/admin   body: { action: 'resolve_reports', ids: [..] }
    POST /api/admin   body: { action: 'reopen_reports', ids: [..] }
      -> marks question reports dealt with (or not) — kept, not deleted
@@ -678,6 +680,56 @@ async function revokePass(id, caller) {
   return json(200, { ok: true });
 }
 
+/* ── Teachers (Labobo Live) ───────────────────────────────────────── */
+
+/* Every teacher, with whether their account has a university address. */
+async function teachersView() {
+  const list = await rows('/teachers?select=user_id,email,granted_by,granted_at&order=granted_at.desc');
+  if (!list.length) return { teachers: [] };
+  const ids = list.map((t) => t.user_id).join(',');
+  const [profiles, uni] = await Promise.all([
+    rows(`/profiles?id=in.(${ids})&select=id,username,email`),
+    rows(`/university_emails?user_id=in.(${ids})&verified_at=not.is.null&select=user_id,email`),
+  ]);
+  return {
+    teachers: list.map((t) => {
+      const p = profiles.find((x) => x.id === t.user_id);
+      const signIn = (p?.email || t.email || '').toLowerCase();
+      return {
+        ...t,
+        username: p?.username || null,
+        email: p?.email || t.email,
+        uni_email: signIn.endsWith('@eu.edu.ge') ? signIn : uni.find((u) => u.user_id === t.user_id)?.email || null,
+      };
+    }),
+  };
+}
+
+/* Makes the account with this sign-in email a teacher. */
+async function grantTeacher(body, caller) {
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail(400, 'Enter the teacher\'s sign-in email');
+  const [profile] = await rows(`/profiles?email=ilike.${encodeURIComponent(email)}&select=id,username,email`);
+  if (!profile) return fail(404, 'No account uses that email. Ask the teacher to sign in once first.');
+  const res = await rest('/teachers?on_conflict=user_id', {
+    method: 'POST',
+    headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+    body: JSON.stringify({ user_id: profile.id, email: profile.email, granted_by: caller.email, granted_at: new Date().toISOString() }),
+  });
+  if (!res.ok) return fail(502, 'Could not add the teacher', `${res.status} ${await res.text()}`);
+  await logAction(caller, 'grant_teacher', profile.id, { email: profile.email, username: profile.username });
+  return json(200, { ok: true });
+}
+
+async function revokeTeacher(id, caller) {
+  if (!UUID.test(id || '')) return fail(400, 'Invalid user id');
+  const res = await rest(`/teachers?user_id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=representation' } });
+  if (!res.ok) return fail(502, 'Could not remove the teacher', `${res.status} ${await res.text()}`);
+  const [row] = await res.json();
+  if (row) await logAction(caller, 'revoke_teacher', id, { email: row.email });
+  return json(200, { ok: true });
+}
+
 /* ── Payments ─────────────────────────────────────────────────────── */
 
 const RECEIPTS = 'receipts';
@@ -909,6 +961,7 @@ exports.handler = async (event) => {
       if (view === 'errors') return json(200, await errorsView());
       if (view === 'payments') return json(200, await paymentsView());
       if (view === 'log') return json(200, await logView());
+      if (view === 'teachers') return json(200, await teachersView());
       if (user) {
         if (!UUID.test(user)) return fail(400, 'Invalid user id');
         const detail = await userDetail(user, tz);
@@ -932,6 +985,8 @@ exports.handler = async (event) => {
         case 'create_announcement': return await createAnnouncement(body, caller);
         case 'end_announcement': return await endAnnouncement(body.id, caller);
         case 'set_review_status': return await setReviewStatus(body, caller);
+        case 'grant_teacher': return await grantTeacher(body, caller);
+        case 'revoke_teacher': return await revokeTeacher(body.id, caller);
         default: return fail(400, 'Unknown action');
       }
     }

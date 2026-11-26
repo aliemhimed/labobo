@@ -1,6 +1,6 @@
 # Live database schema (Supabase `boukmowybmtfqkinuvqj`, `public`)
 
-Snapshot taken 2026-11-24 from the live database; client_errors, push_subscriptions and option_notes added 2026-11-26. Read this instead of calling `list_tables`. To refresh it, run `supabase/schema-snapshot.sql` with the Supabase `execute_sql` tool and replace everything below this header with the `md` value it returns. Refresh after every migration.
+Snapshot taken 2026-11-24 from the live database; client_errors, push_subscriptions, option_notes and the Labobo Live tables added 2026-11-26. Read this instead of calling `list_tables`. To refresh it, run `supabase/schema-snapshot.sql` with the Supabase `execute_sql` tool and replace everything below this header with the `md` value it returns. Refresh after every migration.
 
 ## Tables
 Column notation: `name type`, `!` not null, `=default`. Tables with the same columns share a line.
@@ -40,6 +40,16 @@ Column notation: `name type`, `!` not null, `=default`. Tables with the same col
 - **user_devices**: user_id uuid!, slot text!, device_id text!, label text, first_seen timestamptz!=now(), last_seen timestamptz!=now(), switched_at timestamptz, net_hash text, split_hits integer!=0, last_split_at timestamptz
 - **user_progress**: user_id text!, prefix text!, data jsonb!='{}', version integer!=1, updated_at timestamptz!=now()
 
+### Labobo Live (20261127000000_labobo_live.sql, added 2026-11-26)
+- **teachers**: user_id uuid! (pk, auth.users), email text, granted_by text, granted_at timestamptz!=now() — granted in the admin Teachers tab
+- **custom_questions**: id uuid!, owner uuid!, q text!, options jsonb! (2-6), answer integer!, explanation text!='', review_status text!='private' (private|pending|approved|rejected), created_at, updated_at
+- **live_quizzes**: id uuid!, owner uuid!, title text!, subject text!='', settings jsonb!='{}', created_at, updated_at
+- **live_quiz_items**: quiz_id uuid!, position integer!, source_table text, source_id bigint, custom_id uuid — either a bank ref or a custom question
+- **live_rooms**: id uuid!, code text! (6 digits, unique among rooms not finished), host uuid!, quiz_id uuid, title text!, settings jsonb!, stage text!='lobby' (lobby|question|reveal|leaderboard|finished), current_q integer!=-1, total_q integer!, q_started_at, deadline, paused boolean!, paused_left_ms integer, locked boolean!, created_at, last_activity_at, finished_at
+- **live_room_questions**: room_id uuid!, position integer!, q text!, options jsonb! (shuffled), answer integer!, explanation text!, image text!, source_table text, source_id bigint, custom_id uuid
+- **live_players**: room_id uuid!, user_id uuid!, display_name text!, email text!, nickname text!, score integer!, correct integer!, total_ms bigint!, away_count integer!, kicked boolean!, joined_at, last_seen_at
+- **live_answers**: room_id uuid!, position integer!, user_id uuid!, choice integer!, received_at timestamptz!, ms integer!, correct boolean!, points integer! (pk room_id, position, user_id: first answer wins)
+
 ### Backup and scratch tables (from one-off fixes; not used by the app)
 bracket_fix_backup, semester4_length_fix_backup, gct4_immunology_options_backup_20261110, gct4_microbiology_options_backup_20261110, bs2_physiology_removed_20261110, qbank_fix_backup_20261111, semester1_quality_fix_backup, zz_done, zz_edits, zz_skip
 
@@ -48,7 +58,8 @@ bracket_fix_backup, semester4_length_fix_backup, gct4_immunology_options_backup_
 - **clinical_skills, clinical_skills_2**: same, but matching `free_topics.topic` against `coalesce(nullif(display_topic, ''), topic)`.
 - **free_topics**: `free_topics_public_read` [SELECT to public] using true
 - **profiles**: `profiles_select_own` [SELECT] and `profiles_update_own` [UPDATE] using `auth.uid() = id`
-- All other tables: RLS on, no policies — reached only by the Netlify functions with the service key.
+- **realtime.messages**: `live_listen` [SELECT to authenticated] using extension = broadcast and live_can_listen(realtime.topic()) — Labobo Live private channels live:<room> (host + players) and live-host:<room> (host only); no INSERT policy, so clients cannot send
+- All other tables (Live tables included): RLS on, no policies — reached only by the Netlify functions with the service key.
 
 ## Grants to anon / authenticated
 - Every question bank and `free_topics`: anon SELECT, authenticated SELECT
@@ -70,3 +81,4 @@ bracket_fix_backup, semester4_length_fix_backup, gct4_immunology_options_backup_
 - record_visit(p_user text, p_tz text)
 - touch_profile_updated_at()
 - zz_apply(p_tb text, p_e jsonb)
+- live_* (Labobo Live; SECDEF, service_role only except live_can_listen(text) for authenticated): live_create_room, live_join, live_next, live_answer, live_close, live_show_board, live_finish, live_pause, live_moderate, live_away, live_state, live_results, live_history, live_hosted, live_can_listen, live_emit and helpers (live_shown_name, live_active_count, live_ranking, live_public_board, live_counts, live_open_question)

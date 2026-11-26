@@ -15,6 +15,7 @@ import { loadSubjectPage } from './pages/loadSubjectPage.js';
 const SubjectPage = lazy(loadSubjectPage);
 const AdminPage = lazy(() => import('./pages/AdminPage.jsx'));
 const TermsPage = lazy(() => import('./pages/TermsPage.jsx'));
+const LiveApp = lazy(() => import('./pages/live/LiveApp.jsx'));
 // Development only: the subscription screens with made-up data. The built
 // site has neither the route nor the page.
 const DevPlanPreview = import.meta.env.DEV ? lazy(() => import('./pages/DevPlanPreview.jsx')) : null;
@@ -33,6 +34,8 @@ export default function App() {
       <Routes>
         {/* Admins skip the semester gate; the API itself enforces who may see data. */}
         <Route path="/admin" element={<AuthGate><Suspense fallback={null}><AdminPage /></Suspense></AuthGate>} />
+        {/* Labobo Live: signed in, no semester needed (teachers have none). */}
+        <Route path="/live/*" element={<AuthGate><Suspense fallback={null}><LiveApp /></Suspense></AuthGate>} />
         {/* Public: readable before signing in or paying. */}
         <Route path="/terms" element={<Suspense fallback={null}><TermsPage /></Suspense>} />
         {DevPlanPreview ? <Route path="/dev/plan" element={<Suspense fallback={null}><DevPlanPreview /></Suspense>} /> : null}

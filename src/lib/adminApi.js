@@ -37,7 +37,8 @@ export const fetchQuestions = (signal) => request({ signal }, '?view=questions')
 export const fetchAnnouncements = (signal) => request({ signal }, '?view=announcements');
 export const fetchLog = (signal) => request({ signal }, '?view=log');
 export const fetchReviews = (signal) => request({ signal }, '?view=reviews');
-export const fetchErrors = (signal) => request({ signal }, '?view=errors');
+export const fetchTeachers = (signal) => request({ signal }, '?view=teachers');
+export const fetchErrors =(signal) => request({ signal }, '?view=errors');
 
 const post = (body) => request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 export const deleteUser = (id) => post({ action: 'delete_user', id });
@@ -45,6 +46,8 @@ export const resolveReports = (ids) => post({ action: 'resolve_reports', ids });
 export const reopenReports = (ids) => post({ action: 'reopen_reports', ids });
 export const createAnnouncement = (a) => post({ action: 'create_announcement', ...a });
 export const endAnnouncement = (id) => post({ action: 'end_announcement', id });
+export const grantTeacher = (email) => post({ action: 'grant_teacher', email });
+export const revokeTeacher = (id) => post({ action: 'revoke_teacher', id });
 export const setReviewStatus = (id, status) => post({ action: 'set_review_status', id, status });
 
 /** Downloads every student as a CSV file (the server logs the export). */
