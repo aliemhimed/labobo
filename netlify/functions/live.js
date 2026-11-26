@@ -30,6 +30,8 @@
      pause        { room, paused }
      moderate     { room, act: 'kick'|'rename'|'lock', user?, value? }
      answer       { room, position, choice }
+     pick_spell   { room, index }   power-ups: keep one of the offered cards
+     cast         { room, target? }   power-ups: cast the held spell between questions
      auto_next    { room }   auto mode: anyone in the room, once the reveal's time is up
      vote         { room, position, choice }   team rooms: an advisor's pick (the captain uses answer)
      make_teams   { room }   team rooms, lobby: (re)make the teams at random
@@ -131,6 +133,8 @@ function cleanSettings(s) {
     // 'teacher': the teacher clicks Next (default); 'auto': the next question
     // starts by itself a few seconds after the reveal.
     advance: o.advance === 'auto' ? 'auto' : 'teacher',
+    // Power-ups: only acted on in friends' rooms in individual mode (live_spells_on).
+    spells: o.spells === true,
   };
 }
 
@@ -536,6 +540,16 @@ exports.handler = async (event) => {
         const bad = needRoom(); if (bad) return bad;
         if (!Number.isInteger(body.position)) return fail(400, 'Invalid case');
         return statusReply(await rpc('live_case_submit', { p_room: room, p_user: caller.id, p_position: body.position }));
+      }
+      case 'pick_spell': {
+        const bad = needRoom(); if (bad) return bad;
+        if (!Number.isInteger(body.index)) return fail(400, 'Invalid card');
+        return statusReply(await rpc('live_pick_spell', { p_room: room, p_user: caller.id, p_index: body.index }));
+      }
+      case 'cast': {
+        const bad = needRoom(); if (bad) return bad;
+        if (body.target != null && !UUID.test(body.target)) return fail(400, 'Invalid target');
+        return statusReply(await rpc('live_cast', { p_room: room, p_user: caller.id, p_target: body.target || null }));
       }
       case 'auto_next': {
         const bad = needRoom(); if (bad) return bad;
