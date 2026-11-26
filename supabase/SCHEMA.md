@@ -54,6 +54,12 @@ Column notation: `name type`, `!` not null, `=default`. Tables with the same col
 - live_players also has team_no integer (team rooms)
 - **live_answers**: room_id uuid!, position integer!, user_id uuid!, choice integer!, received_at timestamptz!, ms integer!, correct boolean!, points integer! (pk room_id, position, user_id: first answer wins)
 
+### Labobo Live case-scenario rooms (20261127060000, 20261127070000)
+- **case_sets**: id uuid!, owner uuid!, title text!, subject text!='', cases jsonb!='[]' ([{scenario, questions:[{kind:'options'|'open', q, options, answer, max}]}]), created_at, updated_at
+- **live_room_cases**: room_id uuid!, position integer!, scenario text!, questions jsonb! (a case room's frozen copy)
+- **live_case_answers**: room_id uuid!, position integer!, team_no integer!, answers jsonb! ([{choice, text}] per question; the team's shared draft, then its submission), updated_by uuid, updated_at, submitted_at, submitted_by uuid, marks jsonb! ([{mark, comment}] per question) (pk room_id, position, team_no)
+- live_rooms also has marks_released boolean!=false, and stage may be 'cases' (mode 'cases'); live_case_* functions: live_create_case_room, live_case_current, live_case_draft, live_case_submit, live_case_mark, live_case_release, live_case_totals, live_case_view, live_is_cases
+
 ### Backup and scratch tables (from one-off fixes; not used by the app)
 bracket_fix_backup, semester4_length_fix_backup, gct4_immunology_options_backup_20261110, gct4_microbiology_options_backup_20261110, bs2_physiology_removed_20261110, qbank_fix_backup_20261111, semester1_quality_fix_backup, zz_done, zz_edits, zz_skip
 

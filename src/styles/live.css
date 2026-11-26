@@ -184,3 +184,27 @@
 .live-team-bar span { font-size: var(--t-14); color: var(--ink-soft); }
 .live-opt-picks { display: block; margin-top: 2px; font: 600 var(--t-14)/1.2 var(--font-ui); }
 .live-opt .live-opt-text { flex: 1; min-width: 0; display: grid; }
+
+/* ── Case rooms ───────────────────────────────────────────────────── */
+.live-case-state { font-size: var(--t-14); font-weight: 700; color: var(--ink-soft); min-height: 1.2em; }
+.live-case-scenario { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.live-case-scenario p { margin: 0; }
+.live-case-q { display: grid; gap: 10px; }
+.live-case-label { display: grid; gap: 4px; font: 700 var(--t-14)/1.3 var(--font-ui); color: var(--ink-soft); }
+.live-case-text {
+  width: 100%; padding: 10px 12px; resize: vertical; line-height: 1.45;
+  border: 1.5px solid var(--rule-strong); border-radius: var(--r-control);
+  background: var(--sheet); color: var(--ink); font: 500 var(--t-16) var(--font-ui);
+}
+.live-case-text:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+.live-case-opt.is-chosen { outline: 4px solid var(--focus); outline-offset: 2px; }
+.live-case-review { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--rule); }
+.live-case-review p { margin: 0; }
+.live-case-answer { white-space: pre-wrap; overflow-wrap: anywhere; padding: 8px 10px; background: var(--hema-wash); border-radius: var(--r-control); }
+.live-case-mark { font-size: var(--t-14); }
+.proj-progress { list-style: none; margin: 0; padding: 0; width: min(100%, 70rem); display: grid; gap: clamp(8px, 1.2vw, 18px); }
+.proj-progress li { display: grid; grid-template-columns: minmax(8ch, 1fr) 2fr auto; align-items: center; gap: 0.8em; padding: 0.35em 0.8em; font: 700 clamp(1.25rem, 2.8vw, 2.8rem)/1.2 var(--font-display); background: var(--sheet); border: var(--line) solid var(--edge); border-radius: var(--r-sheet); text-align: left; }
+.proj-progress b { overflow-wrap: anywhere; }
+.proj-progress .proj-pbar { height: 0.6em; border-radius: 99px; background: var(--rule); border: 1.5px solid var(--rule-strong); overflow: hidden; }
+.proj-progress .proj-pbar i { display: block; height: 100%; background: var(--hema); transition: width 0.3s; }
+.proj-progress u { text-decoration: none; min-width: 3ch; text-align: right; }

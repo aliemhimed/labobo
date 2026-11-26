@@ -11,7 +11,10 @@ import '../../styles/live.css';
      /live/teach/quiz/new        quiz builder (new)
      /live/teach/quiz/:id        quiz builder (edit)
      /live/teach/start/:id       room setup screen for a saved quiz
-     /live/teach/room/:room      the teacher's control view */
+     /live/teach/room/:room      the teacher's control view
+     /live/teach/cases/new       case set builder (new)
+     /live/teach/cases/:id       case set builder (edit)
+     /live/teach/cases/start/:id case room setup for a saved case set */
 const LiveHome = lazy(() => import('./LiveHome.jsx'));
 const PlayerRoom = lazy(() => import('./PlayerRoom.jsx'));
 const Results = lazy(() => import('./Results.jsx'));
@@ -20,6 +23,8 @@ const TeacherHome = lazy(() => import('./TeacherHome.jsx'));
 const QuizBuilder = lazy(() => import('./QuizBuilder.jsx'));
 const RoomSetup = lazy(() => import('./RoomSetup.jsx'));
 const HostRoom = lazy(() => import('./HostRoom.jsx'));
+const CaseSetBuilder = lazy(() => import('./CaseSetBuilder.jsx'));
+const CaseSetup = lazy(() => import('./CaseSetup.jsx'));
 
 export default function LiveApp() {
   return (
@@ -34,6 +39,9 @@ export default function LiveApp() {
         <Route path="teach/quiz/:id" element={<QuizBuilder />} />
         <Route path="teach/start/:id" element={<RoomSetup />} />
         <Route path="teach/room/:room" element={<HostRoom />} />
+        <Route path="teach/cases/new" element={<CaseSetBuilder />} />
+        <Route path="teach/cases/start/:id" element={<CaseSetup />} />
+        <Route path="teach/cases/:id" element={<CaseSetBuilder />} />
         <Route path="*" element={<Navigate to="/live" replace />} />
       </Routes>
     </Suspense>

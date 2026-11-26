@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
-import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
+import { useAutoNext, useCaseView, useCountdown, useLiveRoom } from '../../lib/live.js';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -26,7 +26,9 @@ function topPlayers(roster, n) {
 
 export default function Projector() {
   const { room: roomId } = useParams();
-  const { state, error, offsetMs } = useLiveRoom(roomId, { asHost: true });
+  const { state, error, offsetMs, version } = useLiveRoom(roomId, { asHost: true });
+  const caseRoom = state?.room?.settings?.mode === 'cases';
+  const { cases: caseView } = useCaseView(caseRoom ? roomId : null, version);
   const r = state?.room;
   const left = useCountdown(r?.deadline, offsetMs, r?.paused, r?.paused_left_ms);
   const autoIn = useAutoNext(state, offsetMs);
@@ -40,7 +42,7 @@ export default function Projector() {
   const q = state.question;
   const hidden = r.settings?.leaderboard === 'none';
   const roster = state.roster || [];
-  const teamRoom = r.settings?.mode === 'teams';
+  const teamRoom = r.settings?.mode === 'teams' || caseRoom;
   const teams = state.teams || [];
   const rankedTeams = [...teams].sort((a, b) => a.rank - b.rank || b.score - a.score);
   let body = null;
@@ -67,6 +69,29 @@ export default function Projector() {
             {roster.map((p) => <li key={p.user_id}>{p.shown}</li>)}
           </ul>
         )}
+      </div>
+    );
+  } else if (caseRoom && (stage === 'cases' || stage === 'finished')) {
+    const total = caseView?.total ?? 0;
+    const board = [...(caseView?.teams || [])].sort((a, b) => a.no - b.no);
+    body = (
+      <div className="proj-center">
+        <h1 className="proj-h">{stage === 'finished' ? 'Thanks for playing' : r.title}</h1>
+        {stage === 'finished' ? null : <p className="proj-label">Cases in progress</p>}
+        <ol className="proj-progress">
+          {board.map((t) => {
+            const finished = total > 0 && t.done >= total;
+            return (
+              <li key={t.no}>
+                <b>{t.name}</b>
+                <span className="proj-pbar" role="progressbar" aria-label={`${t.name} progress`} aria-valuemin={0} aria-valuemax={total} aria-valuenow={t.done}>
+                  <i style={{ width: `${total ? Math.min(100, (t.done / total) * 100) : 0}%` }} />
+                </span>
+                <u>{finished ? '✓' : `${t.done}/${total}`}</u>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     );
   } else if ((stage === 'question' || stage === 'reveal') && q) {

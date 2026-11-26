@@ -5,6 +5,7 @@ import Dialog from '../../components/Dialog.jsx';
 import { useConfirm } from '../../components/Confirm.jsx';
 import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
 import TeacherGate from './TeacherGate.jsx';
+import CaseHost from './CaseHost.jsx';
 import '../../styles/live-teach.css';
 
 const spaced = (code) => (code && code.length === 6 ? `${code.slice(0, 3)} ${code.slice(3)}` : code || '');
@@ -173,7 +174,7 @@ function QuestionCard({ state, left }) {
 }
 
 function Room({ roomId }) {
-  const { state, error, offsetMs, connected, refresh, act } = useLiveRoom(roomId, { asHost: true });
+  const { state, error, offsetMs, connected, refresh, act, version } = useLiveRoom(roomId, { asHost: true });
   const { confirm, element: confirmElement } = useConfirm();
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
@@ -203,7 +204,8 @@ function Room({ roomId }) {
     );
   }
 
-  const teamRoom = room.settings?.mode === 'teams';
+  const caseRoom = room.settings?.mode === 'cases';
+  const teamRoom = room.settings?.mode === 'teams' || caseRoom;
   const teams = state.teams || [];
   const last = room.current >= room.total - 1;
   const next = <button type="button" className="btn primary" disabled={busy} onClick={() => run(() => act('next'))}>{last ? 'Finish' : 'Next question'}</button>;
@@ -244,7 +246,7 @@ function Room({ roomId }) {
           <div className="lt-controls">
             {stage === 'lobby' ? (
               <>
-                <button type="button" className="btn primary lg" disabled={busy} onClick={() => run(() => act('next'))}>Start quiz</button>
+                <button type="button" className="btn primary lg" disabled={busy} onClick={() => run(() => act('next'))}>{caseRoom ? 'Start cases' : 'Start quiz'}</button>
                 {teamRoom ? (
                   <button type="button" className="btn" disabled={busy || state.players < 2} onClick={() => run(() => act('make_teams'))}>
                     {teams.length ? 'Reshuffle teams' : 'Make teams'}
@@ -267,18 +269,18 @@ function Room({ roomId }) {
               </>
             ) : null}
             {stage === 'leaderboard' ? <>{next}{autoBits}</> : null}
-            {stage === 'finished' ? <Link className="btn primary" to={`/live/results/${roomId}`}>See results</Link> : null}
+            {stage === 'finished' && !caseRoom ? <Link className="btn primary" to={`/live/results/${roomId}`}>See results</Link> : null}
             {stage !== 'finished' ? (
               <>
                 <button type="button" className="btn" disabled={busy}
                         onClick={() => run(() => act('moderate', { act: 'lock', value: !room.locked }))}>
                   {room.locked ? 'Unlock room' : 'Lock room'}
                 </button>
-                <button type="button" className="btn danger" disabled={busy}
+                {caseRoom ? null : <button type="button" className="btn danger" disabled={busy}
                         onClick={async () => {
                           const ok = await confirm({ title: 'End the quiz now?', message: 'The room closes and students see their final scores.', confirmLabel: 'End quiz', danger: true });
                           if (ok) run(() => act('finish'));
-                        }}>End quiz</button>
+                        }}>End quiz</button>}
               </>
             ) : null}
           </div>
@@ -297,7 +299,9 @@ function Room({ roomId }) {
           </section>
         ) : null}
 
-        {teamRoom && stage !== 'lobby' && teams.length ? <TeamsPanel teams={teams} stage={stage} /> : null}
+        {teamRoom && !caseRoom && stage !== 'lobby' && teams.length ? <TeamsPanel teams={teams} stage={stage} /> : null}
+
+        {caseRoom && (stage === 'cases' || stage === 'finished') ? <CaseHost roomId={roomId} version={version} act={act} busy={busy} run={run} confirm={confirm} /> : null}
 
         {stage === 'question' || stage === 'reveal' || stage === 'leaderboard' ? <QuestionCard state={state} left={left} /> : null}
 
