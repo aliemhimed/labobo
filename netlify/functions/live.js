@@ -586,7 +586,10 @@ exports.handler = async (event) => {
       if (view === 'lectures') {
         const pass = !teacher && (await hasPass(caller));
         if (!teacher && !pass) return fail(403, 'Hosting a room needs a pass');
-        return await lecturesView(tables, teacher ? teacher.subjects : ALLOWED_TABLES);
+        // Every host may list any bank: names and counts only. Creating a
+        // friends' room accepts every bank too; teacher quizzes still keep
+        // to the teacher's subjects when the room starts (startQuiz).
+        return await lecturesView(tables, ALLOWED_TABLES);
       }
       if (view === 'hosted') {
         if (!teacher && !(await hasPass(caller))) return fail(403, 'Hosting a room needs a pass');
