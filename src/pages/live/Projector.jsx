@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { useAutoNext, useCaseView, useCountdown, useLiveRoom } from '../../lib/live.js';
 import { CodeTag, TimerSticker } from './LiveBits.jsx';
+import { CastList, spellEventText } from './SpellBits.jsx';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -27,7 +28,24 @@ function topPlayers(roster, n) {
 
 export default function Projector() {
   const { room: roomId } = useParams();
-  const { state, error, offsetMs, version } = useLiveRoom(roomId, { asHost: true });
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+  const showSpell = (p) => {
+    const text = spellEventText(p);
+    if (!text) return;
+    clearTimeout(toastTimer.current);
+    setToast(text);
+    toastTimer.current = setTimeout(() => setToast(null), 6000);
+  };
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
+  // Demo pages (no realtime) send the same event by hand.
+  useEffect(() => {
+    if (!(import.meta.env.DEV || import.meta.env.VITE_LIVE_DEMO === '1')) return undefined;
+    const on = (e) => showSpell(e.detail);
+    window.addEventListener('live-demo-spell', on);
+    return () => window.removeEventListener('live-demo-spell', on);
+  }, []);
+  const { state, error, offsetMs, version } = useLiveRoom(roomId, { asHost: true, onEvent: (event, payload) => { if (event === 'spell') showSpell(payload); } });
   const caseRoom = state?.room?.settings?.mode === 'cases';
   const { cases: caseView } = useCaseView(caseRoom ? roomId : null, version);
   const r = state?.room;
@@ -129,6 +147,7 @@ export default function Projector() {
         {isReveal ? (
           <>
             {reveal?.explanation ? <p className="proj-expl">{reveal.explanation}</p> : null}
+            <CastList casts={state.casts} big />
             {autoIn != null ? <p className="proj-answered">Next question in {autoIn} s</p> : null}
           </>
         ) : (
@@ -150,6 +169,7 @@ export default function Projector() {
             ))}
           </ol>
         )}
+        <CastList casts={state.casts} big />
       </div>
     );
   } else if (stage === 'finished') {
@@ -178,5 +198,10 @@ export default function Projector() {
     body = <div className="proj-center"><p>Waiting…</p></div>;
   }
 
-  return <main className="proj">{body}</main>;
+  return (
+    <main className="proj">
+      {body}
+      {toast && stage !== 'question' ? <p className="proj-toast" role="status">{toast}</p> : null}
+    </main>
+  );
 }

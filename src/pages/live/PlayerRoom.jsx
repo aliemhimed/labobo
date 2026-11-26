@@ -5,6 +5,8 @@ import { fetchResults, useAutoNext, useCountdown, useLiveRoom } from '../../lib/
 import { feedSpacedReview } from '../../lib/liveReview.js';
 import { TimerSticker } from './LiveBits.jsx';
 import CasePlay from './CasePlay.jsx';
+import { CardSheet, CastPanel, EffectBanner, SpellBar } from './SpellBits.jsx';
+import { PARALYSIS_MS, TACHYCARDIA_SHARE, scrambleText } from '../../lib/spells.js';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -57,6 +59,8 @@ export default function PlayerRoom() {
   const [voted, setVoted] = useState(null); // advisor's own pick: { position, choice }
   const [notice, setNotice] = useState('');
   const [sendError, setSendError] = useState('');
+  const [pickBusy, setPickBusy] = useState(false);
+  const [pickError, setPickError] = useState('');
 
   const r = state?.room;
   const q = state?.question;
@@ -102,10 +106,16 @@ export default function PlayerRoom() {
       if (out?.status === 'late') setNotice('Too late. Time was up.');
       else if (out?.status === 'closed') setNotice('This question is closed.');
       else if (out?.status === 'not_captain') setNotice('Only the captain answers. Tap to suggest an answer.');
+      else if (out?.status === 'paralyzed') { setSent(null); setNotice("You're paralysed for the first 5 seconds."); }
     } catch (e) {
       setSent(null);
       setSendError(e.message);
     }
+  }
+
+  async function pickSpell(index) {
+    setPickBusy(true); setPickError('');
+    try { await act('pick_spell', { index }); } catch (e) { setPickError(e.message); } finally { setPickBusy(false); }
   }
 
   if (error && !state) {
@@ -151,6 +161,16 @@ export default function PlayerRoom() {
   const mine = me.answer || (q && sent?.position === q.position ? { choice: sent.choice } : null);
   const total = Math.max(1, (r.settings?.seconds || 20) * 1000);
 
+  // Power-ups (friends' rooms, individual mode): what is acting on this question.
+  const sp = !team && !caseRoom ? state.spells || null : null;
+  const fx = new Set(stage === 'question' ? (sp?.effects || []).map((e) => e.spell) : []);
+  const hidden = new Set(stage === 'question' ? sp?.hide || [] : []);
+  const tachy = fx.has('tachycardia');
+  const shownTotal = tachy ? total * TACHYCARDIA_SHARE : total;
+  const shownLeft = tachy ? Math.max(0, left - total * (1 - TACHYCARDIA_SHARE)) : left;
+  const paralysedMs = fx.has('paralysis') && !r.paused ? Math.max(0, PARALYSIS_MS - (total - left)) : 0;
+  const tx = (text) => (fx.has('aphasia') ? scrambleText(text, q ? q.position : '') : text);
+
   let body = null;
   if (caseRoom && stage !== 'lobby') {
     body = <CasePlay roomId={roomId} version={version} act={act} myId={myId} team={team} />;
@@ -183,35 +203,42 @@ export default function PlayerRoom() {
     const chosen = (i) => (advisor ? myVote === i : mine?.choice === i);
     const captainChose = teamAnswer && !teamAnswer.auto ? teamAnswer.choice : null;
     body = (
-      <>
+      <div className={`lv-fx${fx.has('cataract') ? ' lv-fx-cataract' : ''}`}>
         <div className="live-q-top">
           <span>Question {r.current + 1} of {r.total}</span>
-          <TimerSticker msLeft={left} totalMs={total} paused={r.paused} size="sm" />
+          <TimerSticker msLeft={shownLeft} totalMs={shownTotal} paused={r.paused} size="sm" />
         </div>
         {r.paused ? <p className="live-paused">Paused by the {who}</p> : null}
-        <h1 className="live-q-text">{q.q}</h1>
+        <EffectBanner effects={sp?.effects} />
+        {tachy ? <p className="lv-badge">Tachycardia: 60% of the time</p> : null}
+        {fx.has('double_or_nothing') ? <p className="lv-badge">Double or nothing</p> : null}
+        <div className="lv-qwrap">
+          <h1 className="live-q-text">{tx(q.q)}</h1>
+          {fx.has('scotoma') ? <span className="lv-scotoma" aria-hidden="true" /> : null}
+        </div>
         {q.image ? <img className="live-q-img" src={q.image} alt="" /> : null}
         <div className="live-options">
-          {q.options.map((o, i) => (
+          {q.options.map((o, i) => (hidden.has(i) ? null : (
             <button key={i} type="button" className={`live-opt c${i % 4}${chosen(i) ? ' is-chosen' : ''}`}
-                    disabled={answered || r.paused} onClick={() => pick(i)}>
+                    disabled={answered || r.paused || paralysedMs > 0 || (tachy && shownLeft <= 0)} onClick={() => pick(i)}>
               <b>{LETTERS[i]}</b>
               {team ? (
                 <span className="live-opt-text">
-                  <span>{o}</span>
+                  <span>{tx(o)}</span>
                   {votesFor(i).length ? <span className="live-opt-picks">{votesFor(i).join(', ')}</span> : null}
                 </span>
-              ) : <span>{o}</span>}
+              ) : <span>{tx(o)}</span>}
             </button>
-          ))}
+          )))}
         </div>
+        {paralysedMs > 0 ? <p className="live-status" role="status">Paralysed: you can answer in {Math.ceil(paralysedMs / 1000)} s</p> : null}
         {team && advisor && captainChose != null ? <p className="live-status" role="status">Captain chose {LETTERS[captainChose]}</p> : null}
         {team && advisor && captainChose == null && myVote != null ? <p className="live-status" role="status">{notice || 'Suggestion sent. You can change it until the captain answers.'}</p> : null}
         {team && !advisor && answered ? <p className="live-status" role="status">{notice || 'Answer sent for your team. Wait for the reveal.'}</p> : null}
         {!team && answered ? <p className="live-status" role="status">{notice || 'Answer sent. Wait for the reveal.'}</p> : null}
         {team && notice && !answered && myVote == null ? <p className="live-status" role="status">{notice}</p> : null}
         {sendError ? <p className="form-error" role="alert">{sendError}</p> : null}
-      </>
+      </div>
     );
   } else if (stage === 'reveal' && q) {
     const ans = team ? teamAnswer : me.answer;
@@ -278,7 +305,11 @@ export default function PlayerRoom() {
         {caseRoom ? null : <span className="live-play-score">{me.score ?? 0} points</span>}
       </header>
       {stage !== 'lobby' && !caseRoom ? teamBar : null}
+      {sp && stage !== 'finished' ? <SpellBar spells={sp} /> : null}
+      {/* Casting comes first between questions, where it can't be missed. */}
+      {sp && (stage === 'reveal' || stage === 'leaderboard') ? <CastPanel spells={sp} act={act} /> : null}
       {body}
+      {sp?.cards ? <CardSheet cards={sp.cards} onPick={pickSpell} busy={pickBusy} error={pickError} /> : null}
     </main>
   );
 }

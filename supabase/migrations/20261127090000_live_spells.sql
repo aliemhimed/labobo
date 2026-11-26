@@ -116,8 +116,8 @@ begin
   v_kind := public.live_spell_kind(p.held);
 
   if v_kind = 'shield' then
+    -- Kept secret: the room only hears of it when it blocks an attack.
     update public.live_players set shield = true, held = null where room_id = p_room and user_id = p_user;
-    perform public.live_emit('live:' || p_room, 'spell', jsonb_build_object('spell', p.held, 'by', public.live_shown_name(r.settings, p.nickname, p.display_name)));
     return jsonb_build_object('status', 'ok');
   end if;
 

@@ -88,6 +88,7 @@ function Setup() {
         settings: {
           mode: settings.mode, seconds: settings.seconds, team_size: settings.team_size, names: settings.names,
           leaderboard: settings.leaderboard, review: settings.review, advance: settings.advance,
+          spells: settings.mode === 'individual' && settings.spells !== false,
         },
         picks,
       });
@@ -166,6 +167,13 @@ function Setup() {
             <Choice label="Students per team" value={settings.team_size} onChange={set('team_size')}
                     options={[2, 3, 4, 5].map((n) => [n, String(n)])} />
             <p className="lt-muted" style={{ marginTop: -8 }}>Teams are made at random. Each question a different member is captain and answers for the team; the others advise.</p>
+          </div>
+        ) : null}
+        {settings.mode === 'individual' ? (
+          <div>
+            <Choice label="Power-ups" value={settings.spells !== false} onChange={set('spells')}
+                    options={[[true, 'On'], [false, 'Off']]} />
+            <p className="lt-muted" style={{ marginTop: -8 }}>3 right answers in a row earn a power-up to use on a friend.</p>
           </div>
         ) : null}
         <Choice label="Next question" value={settings.advance || 'teacher'} onChange={set('advance')}

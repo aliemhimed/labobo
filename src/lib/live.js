@@ -123,10 +123,11 @@ const GRACE_MS = 1000;
 /**
  * Keeps one room's state in sync. `asHost` also listens to the host topic
  * (joins, answer counts, who left the app).
+ * `onEvent(event, payload)` (optional) sees every room event, e.g. 'spell'.
  * Returns { state, error, offsetMs, connected, refresh, act }.
  *   act(action, extra) posts an action for this room and re-reads the state.
  */
-export function useLiveRoom(roomId, { asHost = false } = {}) {
+export function useLiveRoom(roomId, { asHost = false, onEvent } = {}) {
   const [state, setState] = useState(null);
   const [error, setError] = useState(null);
   const [connected, setConnected] = useState(false);
@@ -135,6 +136,8 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
   const [offsetMs, setOffsetMs] = useState(0);
   const refreshTimer = useRef(null);
   const closing = useRef(null);
+  const onEventRef = useRef(onEvent);
+  onEventRef.current = onEvent;
 
   const refresh = useCallback(async () => {
     if (!roomId) return;
@@ -180,6 +183,7 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
     supabase.auth.getSession().then(({ data }) => { me = data.session?.user?.id ?? null; });
     let unsubs = [];
     const onRoomEvent = (event, payload) => {
+      try { onEventRef.current?.(event, payload); } catch { /* a screen's handler must not break the room */ }
       // Removed by the teacher: leave the room's channel at once, then show it.
       if (event === 'kicked' && payload.user && payload.user === me) {
         unsubs.forEach((u) => u());
