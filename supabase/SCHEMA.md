@@ -81,4 +81,4 @@ bracket_fix_backup, semester4_length_fix_backup, gct4_immunology_options_backup_
 - record_visit(p_user text, p_tz text)
 - touch_profile_updated_at()
 - zz_apply(p_tb text, p_e jsonb)
-- live_* (Labobo Live; SECDEF, service_role only except live_can_listen(text) for authenticated): live_create_room, live_join, live_next, live_answer, live_close, live_show_board, live_finish, live_pause, live_moderate, live_away, live_state, live_results, live_history, live_hosted, live_can_listen, live_emit and helpers (live_shown_name, live_active_count, live_ranking, live_public_board, live_counts, live_open_question)
+- live_* (Labobo Live; SECDEF, service_role only except live_can_listen(text) for authenticated): live_create_room, live_join, live_next, live_auto_next (auto mode, 20261127020000), live_answer, live_close, live_show_board, live_finish, live_pause, live_moderate, live_away, live_state, live_results, live_history, live_hosted, live_can_listen, live_emit and helpers (live_shown_name, live_active_count, live_ranking, live_public_board, live_counts, live_open_question)
