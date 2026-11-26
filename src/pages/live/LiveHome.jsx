@@ -68,12 +68,13 @@ export default function LiveHome() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [needUni, setNeedUni] = useState(false);
+  const [nickError, setNickError] = useState('');
 
   const me = useQuery({ queryKey: ['live-me'], queryFn: fetchLiveMe, staleTime: 60_000, retry: false });
   const history = useQuery({ queryKey: ['live-history'], queryFn: fetchHistory, staleTime: 30_000, retry: false });
 
   async function join() {
-    setBusy(true); setError('');
+    setBusy(true); setError(''); setNickError('');
     try {
       const out = await joinRoom(code, nickname.trim());
       setNeedUni(false);
@@ -81,6 +82,7 @@ export default function LiveHome() {
       else navigate(`/live/play/${out.room}`);
     } catch (e) {
       if (e.code === 'uni_email_required') { setNeedUni(true); setError(''); }
+      else if (e.code === 'bad_nickname') setNickError(e.message);
       else setError(e.message);
     } finally { setBusy(false); }
   }
@@ -99,7 +101,9 @@ export default function LiveHome() {
                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} />
           <label className="field-label" htmlFor="live-nick">Nickname (optional)</label>
           <input id="live-nick" type="text" maxLength={24} autoComplete="off" placeholder="Shown on the screen"
-                 value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                 value={nickname} onChange={(e) => setNickname(e.target.value)}
+                 aria-invalid={nickError ? true : undefined} aria-describedby={nickError ? 'live-nick-err' : undefined} />
+          {nickError ? <p id="live-nick-err" className="form-error" role="alert">{nickError}</p> : null}
           <button type="submit" className="btn primary lg block" disabled={busy || code.length !== 6}>
             {busy ? 'Joining…' : 'Join'}
           </button>

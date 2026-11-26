@@ -25,7 +25,7 @@ function Choice({ label, value, onChange, options }) {
 
 function Setup({ quiz, items, missing, pool, count, bank }) {
   const navigate = useNavigate();
-  const [settings, setSettings] = useState(() => ({ ...lastSettings(), mode: 'individual' }));
+  const [settings, setSettings] = useState(() => lastSettings());
   const set = (key) => (value) => setSettings((s) => ({ ...s, [key]: value }));
 
   const start = useMutation({
@@ -61,9 +61,15 @@ function Setup({ quiz, items, missing, pool, count, bank }) {
                 options={SECONDS_CHOICES.map((n) => [n, String(n)])} />
         <div>
           <Choice label="Mode" value={settings.mode} onChange={set('mode')}
-                  options={[['individual', 'Individual'], ['teams', 'Teams', true]]} />
-          <p className="lt-muted" style={{ marginTop: -8 }}>Teams come in the next update</p>
+                  options={[['individual', 'Individual'], ['teams', 'Teams']]} />
         </div>
+        {settings.mode === 'teams' ? (
+          <div>
+            <Choice label="Students per team" value={settings.team_size} onChange={set('team_size')}
+                    options={[2, 3, 4, 5].map((n) => [n, String(n)])} />
+            <p className="lt-muted" style={{ marginTop: -8 }}>Teams are made at random. Each question a different member is captain and answers for the team; the others advise.</p>
+          </div>
+        ) : null}
 
         <details className="lt-more">
           <summary>More options</summary>

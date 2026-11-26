@@ -64,10 +64,77 @@ function Roster({ roster, showAnswered, onKick, onRename }) {
   );
 }
 
+function TeamList({ teams, onMove, onReject, disabled }) {
+  return (
+    <ul className="lt-list">
+      {teams.map((t) => (
+        <li key={t.no} className="lt-row" style={{ display: 'grid', gap: 6 }}>
+          <div className="lt-row-title">
+            {t.name}
+            {onReject && t.name !== `Team ${t.no}` ? (
+              <button type="button" className="btn sm" style={{ marginLeft: 10 }} disabled={disabled} onClick={() => onReject(t)}>Reject name</button>
+            ) : null}
+          </div>
+          <ul className="lt-team-members">
+            {t.members.map((m) => (
+              <li key={m.user_id}>
+                <span>{m.name || m.shown}{m.shown && m.name && m.shown !== m.name ? ` (${m.shown})` : ''}</span>
+                {onMove && teams.length > 1 ? (
+                  <select className="lt-input lt-move" aria-label={`Move ${m.name || m.shown} to another team`} disabled={disabled} value=""
+                          onChange={(e) => { if (e.target.value) onMove(m, Number(e.target.value)); }}>
+                    <option value="">Move to…</option>
+                    {teams.filter((o) => o.no !== t.no).map((o) => <option key={o.no} value={o.no}>{o.name}</option>)}
+                  </select>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function TeamsPanel({ teams, stage }) {
+  const sorted = [...teams].sort((a, b) => a.no - b.no);
+  const asking = stage === 'question';
+  const answered = teams.filter((t) => t.answered).length;
+  return (
+    <section className="lt-card" aria-labelledby="lt-teams">
+      <h2 id="lt-teams" style={{ fontSize: 'var(--t-21)', marginBottom: 10 }}>Teams ({teams.length})</h2>
+      {asking ? <p className="lt-sub" style={{ marginBottom: 10 }}>Answered {answered} of {teams.length} teams</p> : null}
+      <div className="lt-table-wrap">
+        <table className="lt-table">
+          <thead>
+            <tr><th>Team</th><th>Captain</th>{asking ? <th>Answer</th> : null}<th>Score</th><th>Correct</th><th>Rank</th></tr>
+          </thead>
+          <tbody>
+            {sorted.map((t) => {
+              const cap = t.members.find((m) => m.user_id === t.captain);
+              return (
+                <tr key={t.no}>
+                  <td>{t.name}</td>
+                  <td>{cap ? (cap.name || cap.shown) : ''}</td>
+                  {asking ? <td>{t.answered ? <span aria-label="Answered">✓</span> : <span className="lt-muted">Waiting</span>}</td> : null}
+                  <td className="num">{t.score}</td>
+                  <td className="num">{t.correct}</td>
+                  <td className="num">{t.rank}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 function QuestionCard({ state, left }) {
   const { room, question, reveal } = state;
   const answered = (reveal?.counts || state.counts)?.answered ?? 0;
-  const total = state.players || 0;
+  const teamRoom = room.settings?.mode === 'teams' && Array.isArray(state.teams);
+  const total = teamRoom ? state.teams.length : (state.players || 0);
+  const unit = teamRoom ? 'teams' : '';
   const by = (reveal?.counts || state.counts)?.by_option || {};
   const open = room.stage === 'question';
   const options = question?.options || [];
@@ -80,7 +147,7 @@ function QuestionCard({ state, left }) {
         <div className="lt-grid" style={{ marginBottom: 12 }}>
           <div className="lt-time" aria-live="off">{room.paused ? 'Paused · ' : ''}{seconds(left)} s</div>
           <div>
-            <div>Answered {answered} of {total}</div>
+            <div>Answered {answered} of {total}{unit ? ` ${unit}` : ''}</div>
             <div className="lt-bar" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={answered}>
               <i style={{ width: `${total ? Math.min(100, (answered / total) * 100) : 0}%` }} />
             </div>
@@ -136,6 +203,8 @@ function Room({ roomId }) {
     );
   }
 
+  const teamRoom = room.settings?.mode === 'teams';
+  const teams = state.teams || [];
   const last = room.current >= room.total - 1;
   const next = <button type="button" className="btn primary" disabled={busy} onClick={() => run(() => act('next'))}>{last ? 'Finish' : 'Next question'}</button>;
   const stage = room.stage;
@@ -176,6 +245,11 @@ function Room({ roomId }) {
             {stage === 'lobby' ? (
               <>
                 <button type="button" className="btn primary lg" disabled={busy} onClick={() => run(() => act('next'))}>Start quiz</button>
+                {teamRoom ? (
+                  <button type="button" className="btn" disabled={busy || state.players < 2} onClick={() => run(() => act('make_teams'))}>
+                    {teams.length ? 'Reshuffle teams' : 'Make teams'}
+                  </button>
+                ) : null}
                 <span className="lt-sub">{state.players} {state.players === 1 ? 'student' : 'students'} joined</span>
               </>
             ) : null}
@@ -211,6 +285,19 @@ function Room({ roomId }) {
           {room.locked && stage !== 'finished' ? <p className="lt-muted" style={{ marginTop: 8 }}>The room is locked. New students cannot join.</p> : null}
           {stage === 'leaderboard' ? <p className="lt-muted" style={{ marginTop: 8 }}>The leaderboard is showing.</p> : null}
         </div>
+
+        {teamRoom && stage === 'lobby' ? (
+          <section className="lt-card" aria-labelledby="lt-teamlist">
+            <h2 id="lt-teamlist" style={{ fontSize: 'var(--t-21)', marginBottom: 10 }}>Teams{teams.length ? ` (${teams.length})` : ''}</h2>
+            {teams.length ? (
+              <TeamList teams={teams} disabled={busy}
+                        onReject={(t) => run(() => act('reject_team_name', { team: t.no }))}
+                        onMove={(m, no) => moderate({ act: 'move', user: m.user_id, value: no })} />
+            ) : <p className="lt-muted">No teams yet. Press Make teams when the students have joined, or teams are made when you start.</p>}
+          </section>
+        ) : null}
+
+        {teamRoom && stage !== 'lobby' && teams.length ? <TeamsPanel teams={teams} stage={stage} /> : null}
 
         {stage === 'question' || stage === 'reveal' || stage === 'leaderboard' ? <QuestionCard state={state} left={left} /> : null}
 

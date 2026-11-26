@@ -40,6 +40,9 @@ export default function Projector() {
   const q = state.question;
   const hidden = r.settings?.leaderboard === 'none';
   const roster = state.roster || [];
+  const teamRoom = r.settings?.mode === 'teams';
+  const teams = state.teams || [];
+  const rankedTeams = [...teams].sort((a, b) => a.rank - b.rank || b.score - a.score);
   let body = null;
 
   if (stage === 'lobby') {
@@ -53,9 +56,17 @@ export default function Projector() {
           <p className="proj-count">{state.players} {state.players === 1 ? 'player' : 'players'} joined</p>
         </div>
         <QrCode text={joinUrl} />
-        <ul className="proj-names">
-          {roster.map((p) => <li key={p.user_id}>{p.shown}</li>)}
-        </ul>
+        {teamRoom && teams.length ? (
+          <ul className="proj-teams">
+            {[...teams].sort((a, b) => a.no - b.no).map((t) => (
+              <li key={t.no}><b>{t.name}</b><span>{t.members.map((m) => m.shown).join(', ')}</span></li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="proj-names">
+            {roster.map((p) => <li key={p.user_id}>{p.shown}</li>)}
+          </ul>
+        )}
       </div>
     );
   } else if ((stage === 'question' || stage === 'reveal') && q) {
@@ -68,7 +79,7 @@ export default function Projector() {
         <div className="proj-q-top">
           <span>Question {r.current + 1} of {r.total}</span>
           {isReveal ? (
-            <span>{reveal?.counts?.answered ?? 0} of {state.players} answered</span>
+            <span>{reveal?.counts?.answered ?? 0} of {teamRoom ? teams.length : state.players} {teamRoom ? 'teams ' : ''}answered</span>
           ) : (
             <span className="proj-timer">{Math.ceil(left / 1000)}</span>
           )}
@@ -97,7 +108,7 @@ export default function Projector() {
             {autoIn != null ? <p className="proj-answered">Next question in {autoIn} s</p> : null}
           </>
         ) : (
-          <p className="proj-answered">{state.counts?.answered ?? 0} of {state.players} answered</p>
+          <p className="proj-answered">{state.counts?.answered ?? 0} of {teamRoom ? teams.length : state.players} {teamRoom ? 'teams ' : ''}answered</p>
         )}
         {r.paused && !isReveal ? <div className="proj-paused"><span>Paused</span></div> : null}
       </div>
@@ -108,7 +119,9 @@ export default function Projector() {
         <h1 className="proj-h">Leaderboard</h1>
         {hidden ? <p className="proj-label">Leaderboard hidden by the teacher</p> : (
           <ol className="proj-board">
-            {topPlayers(roster, 5).map((p, i) => (
+            {teamRoom ? rankedTeams.slice(0, 5).map((t) => (
+              <li key={t.no}><span>{t.rank}</span><b>{t.name}</b><u>{t.score}</u></li>
+            )) : topPlayers(roster, 5).map((p, i) => (
               <li key={p.user_id}><span>{i + 1}</span><b>{p.shown}</b><u>{p.score}</u></li>
             ))}
           </ol>
@@ -116,7 +129,9 @@ export default function Projector() {
       </div>
     );
   } else if (stage === 'finished') {
-    const top = topPlayers(roster, 3);
+    const top = teamRoom
+      ? rankedTeams.slice(0, 3).map((t) => ({ user_id: `team-${t.no}`, shown: t.name, score: t.score }))
+      : topPlayers(roster, 3);
     // Podium order: 2nd, 1st, 3rd.
     const order = [top[1], top[0], top[2]].map((p, i) => p && { p, place: [2, 1, 3][i] });
     body = (

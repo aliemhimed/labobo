@@ -128,3 +128,8 @@ textarea.lt-input { min-height: 84px; padding: 10px 12px; resize: vertical; line
 .lt-count > .btn { min-width: 44px; }
 .lt-count .lt-seg { flex: 0 1 auto; }
 .lt-more[open] > summary { border-bottom: 1px solid var(--rule); margin-bottom: 12px; }
+
+/* Team rooms */
+.lt-team-members { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.lt-team-members li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.lt-move { width: auto; min-height: 36px; padding: 4px 8px; }

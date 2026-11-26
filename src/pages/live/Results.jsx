@@ -30,7 +30,7 @@ function downloadCsv(data) {
 }
 
 function HostResults({ data }) {
-  const { room, players, questions, average } = data;
+  const { room, players, questions, average, teams } = data;
   return (
     <>
       <h1 className="live-title">{room.title}</h1>
@@ -38,6 +38,27 @@ function HostResults({ data }) {
       <div className="live-actions">
         <button type="button" className="btn" onClick={() => downloadCsv(data)}>Download CSV</button>
       </div>
+
+      {teams?.length ? (
+        <>
+          <h2>Teams</h2>
+          <div className="live-table-wrap">
+            <table className="live-table">
+              <thead>
+                <tr><th>Rank</th><th>Team</th><th>Members</th><th>Score</th><th>Correct</th></tr>
+              </thead>
+              <tbody>
+                {teams.map((t) => (
+                  <tr key={t.no}>
+                    <td>{t.rank}</td><td>{t.name}</td><td style={{ whiteSpace: 'normal' }}>{(t.members || []).join(', ')}</td>
+                    <td>{t.score}</td><td>{t.correct} of {room.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : null}
 
       <h2>Students</h2>
       <div className="live-table-wrap">
@@ -83,7 +104,7 @@ function HostResults({ data }) {
 }
 
 function StudentResults({ data }) {
-  const { room, me, board, review, answers } = data;
+  const { room, me, board, review, answers, team } = data;
   // Live answers join the student's spaced review (once per room).
   useEffect(() => { feedSpacedReview(room.id, data); }, [room.id, data]);
   return (
@@ -92,7 +113,8 @@ function StudentResults({ data }) {
       <p className="live-muted">{day(room.created_at)}</p>
       <div className="live-card live-summary">
         <p className="live-final">{me.score} points</p>
-        <p>{me.correct} correct of {room.total} · rank {me.rank} of {me.players}</p>
+        {team ? <p>{team.name} · rank {team.rank} of {team.teams}</p> : null}
+        <p>{me.correct} correct of {room.total}{team ? '' : ` · rank ${me.rank} of ${me.players}`}</p>
       </div>
 
       {board?.length ? (
@@ -100,7 +122,7 @@ function StudentResults({ data }) {
           <h2>Leaderboard</h2>
           <ol className="live-board">
             {board.map((r) => (
-              <li key={`${r.rank}-${r.name}`} className={r.rank === me.rank ? 'is-me' : ''}>
+              <li key={`${r.rank}-${r.name}`} className={team ? (r.name === team.name ? 'is-me' : '') : (r.rank === me.rank ? 'is-me' : '')}>
                 <span className="live-board-rank">{r.rank}</span>
                 <span className="live-board-name">{r.name}</span>
                 <span className="live-board-score">{r.score}</span>
