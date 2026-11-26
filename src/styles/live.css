@@ -208,3 +208,52 @@
 .proj-progress .proj-pbar { height: 0.6em; border-radius: 99px; background: var(--rule); border: 1.5px solid var(--rule-strong); overflow: hidden; }
 .proj-progress .proj-pbar i { display: block; height: 100%; background: var(--hema); transition: width 0.3s; }
 .proj-progress u { text-decoration: none; min-width: 3ch; text-align: right; }
+
+/* ── Design pass: shared Live pieces (LiveBits.jsx) ───────────────── */
+/* The room's name tag: the sign-in page's name tag, with the room code. */
+.lv-tag { overflow: hidden; border: var(--line) solid var(--card-ink); border-radius: var(--r-sheet); background: #fff; color: var(--card-ink);
+  box-shadow: 8px 8px 0 var(--hard); transform: rotate(-1.5deg); }
+.lv-tag-band { margin: 0; padding: 0.55em 1em 0.45em; border-bottom: var(--line) solid var(--card-ink); background: var(--band); color: #fff;
+  font: 800 var(--t-16)/1.15 var(--font-display); letter-spacing: -0.01em; text-align: center; }
+.lv-tag-body { display: flex; align-items: center; justify-content: center; gap: 0.6em; padding: 0.35em 0.6em 0.45em; }
+.lv-tag-code { margin: 0; font: 800 2.6rem/1 var(--font-display); letter-spacing: 0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lv-tag-sm { display: inline-block; }
+.lv-tag-lg .lv-tag-band { font-size: clamp(1.1rem, 2.2vw, 2.2rem); }
+.lv-tag-lg .lv-tag-code { font-size: clamp(4rem, 11vw, 10rem); }
+.lv-tag-lg .lv-tag-body { padding: 0.3em 0.5em 0.4em; gap: clamp(16px, 3vw, 48px); }
+.lv-tag-lg .proj-qr { border: 0; box-shadow: none; padding: 0; width: clamp(140px, 17vw, 300px); }
+
+/* The countdown sticker: a red wedge that empties as time runs out. */
+.lv-timer { --p: 1; display: grid; place-items: center; flex: none; aspect-ratio: 1; border-radius: 50%;
+  border: var(--line) solid var(--card-ink); box-shadow: 4px 4px 0 var(--hard);
+  background: conic-gradient(var(--fill-yellow) calc(var(--p) * 1turn), #fff 0); color: var(--card-ink); }
+.lv-timer.is-low { background: conic-gradient(var(--fill-coral) calc(var(--p) * 1turn), #fff 0); }
+.lv-timer span { display: grid; place-items: center; width: 64%; aspect-ratio: 1; border-radius: 50%; background: #fff;
+  border: var(--line) solid var(--card-ink); font: 800 1em/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.lv-timer-lg { width: clamp(84px, 10vw, 170px); font-size: clamp(1.6rem, 3.6vw, 3.6rem); }
+.lv-timer-sm { width: 56px; font-size: 1.2rem; box-shadow: 3px 3px 0 var(--hard); }
+
+/* Answers are stickers in four fixed colours (A blue, B mint, C orange, D
+   violet) everywhere, so students match the screen to their phone at a glance.
+   The letter badge stays white with dark ink in both themes. */
+.proj-opt, .live-opt { border: var(--line) solid var(--card-ink) !important; color: var(--card-ink) !important; box-shadow: 5px 5px 0 var(--hard); }
+.proj-opt b, .live-opt b { background: #fff !important; color: var(--card-ink) !important; border: var(--line) solid var(--card-ink); }
+.proj-opt.is-dim { opacity: 0.4; box-shadow: none; }
+.proj-opt.is-correct { outline: 5px solid var(--correct); outline-offset: 4px; }
+
+/* Projector: the desk (dotted paper), the question on a sheet. */
+.proj { background-color: var(--paper); background-image: radial-gradient(var(--dot) 1.6px, transparent 1.7px); background-size: 26px 26px; }
+.proj-lobby { grid-template-columns: auto 1fr; align-items: center; }
+.proj-lobby .lv-tag { grid-row: 1 / span 2; align-self: center; }
+.proj-q-text { padding: 0.6em 0.8em; background: var(--sheet); border: var(--line) solid var(--edge); border-radius: var(--r-sheet); box-shadow: 6px 6px 0 var(--hard); }
+
+.proj-lobby-info { align-self: center; }
+.proj-names { align-self: end; }
+
+/* Phone: the desk behind the game, the question on a sheet, a calmer bar. */
+.live-play { background-color: var(--paper); background-image: radial-gradient(var(--dot) 1.4px, transparent 1.5px); background-size: 22px 22px; }
+.live-q-top { align-items: center; }
+.live-q-text { padding: 14px 16px; background: var(--sheet); border: var(--line) solid var(--edge); border-radius: var(--r-control); box-shadow: 4px 4px 0 var(--hard); }
+.live-opt { box-shadow: 4px 4px 0 var(--hard); }
+.live-opt:not(:disabled):active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--hard); }
+.live-opt.is-chosen { outline: 4px solid var(--hema); outline-offset: 3px; }

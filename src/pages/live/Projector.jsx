@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { useAutoNext, useCaseView, useCountdown, useLiveRoom } from '../../lib/live.js';
+import { CodeTag, TimerSticker } from './LiveBits.jsx';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -51,13 +52,11 @@ export default function Projector() {
     const joinUrl = `${window.location.origin}/live?code=${r.code}`;
     body = (
       <div className="proj-lobby">
+        <CodeTag code={r.code}><QrCode text={joinUrl} /></CodeTag>
         <div className="proj-lobby-info">
-          <p className="proj-label">Join at studywithlabobo.online/live</p>
-          <p className="proj-code" aria-label={`Room code ${r.code}`}>{spaced(r.code)}</p>
           <p className="proj-title">{r.title}</p>
           <p className="proj-count">{state.players} {state.players === 1 ? 'player' : 'players'} joined</p>
         </div>
-        <QrCode text={joinUrl} />
         {teamRoom && teams.length ? (
           <ul className="proj-teams">
             {[...teams].sort((a, b) => a.no - b.no).map((t) => (
@@ -106,7 +105,7 @@ export default function Projector() {
           {isReveal ? (
             <span>{reveal?.counts?.answered ?? 0} of {teamRoom ? teams.length : state.players} {teamRoom ? 'teams ' : ''}answered</span>
           ) : (
-            <span className="proj-timer">{Math.ceil(left / 1000)}</span>
+            <TimerSticker msLeft={left} totalMs={(r.settings?.seconds || 20) * 1000} paused={r.paused} />
           )}
         </div>
         <h1 className="proj-q-text">{q.q}</h1>

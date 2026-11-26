@@ -4,6 +4,7 @@ import TopBar from '../../components/TopBar.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import { useConfirm } from '../../components/Confirm.jsx';
 import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
+import { CodeTag } from './LiveBits.jsx';
 import TeacherGate from './TeacherGate.jsx';
 import CaseHost from './CaseHost.jsx';
 import '../../styles/live-teach.css';
@@ -160,8 +161,8 @@ function QuestionCard({ state, left }) {
           const n = by[String(i)] || 0;
           const right = !open && reveal && reveal.answer === i;
           return (
-            <li key={i} className={right ? 'right' : ''}>
-              <span>{o}{right ? ' (correct)' : ''}</span>
+            <li key={i} className={`c${i % 4}${right ? ' right' : ''}${!open && reveal && !right ? ' dim' : ''}`}>
+              <span><em className="lt-letter">{'ABCDEF'[i]}</em>{o}{right ? ' (correct)' : ''}</span>
               {!open && reveal ? <b>{n}</b> : null}
               {!open && reveal ? <div className="lt-bar"><i style={{ width: `${answered ? (n / answered) * 100 : 0}%` }} /></div> : null}
             </li>
@@ -229,8 +230,7 @@ function Room({ roomId }) {
       <div className="lt-head">
         <div>
           <h1>{room.title}</h1>
-          <p className="lt-join">Join at studywithlabobo.online/live with code</p>
-          <div className="lt-code" aria-label={`Code ${room.code.split('').join(' ')}`}>{spaced(room.code)}</div>
+          <CodeTag code={room.code} size="sm" />
         </div>
         <div className="lt-grid" style={{ justifyItems: 'start' }}>
           <button type="button" className="btn" onClick={() => window.open(`/live/screen/${roomId}`, '_blank', 'noopener')}>Open projector view</button>

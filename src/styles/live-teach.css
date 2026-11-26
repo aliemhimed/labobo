@@ -133,3 +133,48 @@ textarea.lt-input { min-height: 84px; padding: 10px 12px; resize: vertical; line
 .lt-team-members { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .lt-team-members li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .lt-move { width: auto; min-height: 36px; padding: 4px 8px; }
+
+/* Design pass: the room's name tag in the teacher's header. */
+.lt-head .lv-tag { transform: rotate(-1deg); box-shadow: 5px 5px 0 var(--hard); }
+.lt-head .lv-tag-code { font-size: clamp(2.2rem, 5vw, 3.2rem); }
+.lt-head .lv-tag-band { font-size: var(--t-14); }
+
+/* Teacher's question card: answers as the A-D stickers students see. */
+.lt-dist li { border: var(--line) solid var(--card-ink) !important; border-radius: var(--r-control); color: var(--card-ink); box-shadow: 3px 3px 0 var(--hard); }
+.lt-dist li.c0 { background: var(--fill-blue); } .lt-dist li.c1 { background: var(--fill-mint); }
+.lt-dist li.c2 { background: var(--fill-orange); } .lt-dist li.c3 { background: var(--fill-violet); }
+.lt-dist li.right { outline: 4px solid var(--correct); outline-offset: 3px; }
+.lt-dist li.dim { opacity: 0.55; box-shadow: none; }
+.lt-dist li .lt-bar { background: rgba(255, 255, 255, 0.55); }
+.lt-dist li .lt-bar i { background: var(--card-ink); }
+.lt-letter { display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; margin-right: 0.6em; border-radius: 50%;
+  background: #fff; border: 2px solid var(--card-ink); font: 800 0.85em/1 var(--font-display); font-style: normal; color: var(--card-ink); }
+
+/* Teacher home: saved quizzes (blue) and case sets (violet) as sticker
+   decks, like the subject cards on the home page; past rooms stay a list. */
+section[aria-labelledby="lt-quizzes"] .lt-list,
+section[aria-labelledby="lt-cases"] .lt-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
+section[aria-labelledby="lt-quizzes"] .lt-row,
+section[aria-labelledby="lt-cases"] .lt-row {
+  flex-direction: column; align-items: stretch; gap: 14px; padding: 18px 18px 16px;
+  border: var(--line) solid var(--card-ink); border-radius: var(--r-sheet); color: var(--card-ink);
+  box-shadow: 6px 6px 0 var(--hard); }
+section[aria-labelledby="lt-quizzes"] .lt-row { background: var(--fill-blue); }
+section[aria-labelledby="lt-cases"] .lt-row { background: var(--fill-violet); }
+section[aria-labelledby="lt-quizzes"] .lt-row:nth-child(even) { transform: rotate(0.6deg); }
+section[aria-labelledby="lt-quizzes"] .lt-row:nth-child(odd),
+section[aria-labelledby="lt-cases"] .lt-row { transform: rotate(-0.6deg); }
+section[aria-labelledby="lt-quizzes"] .lt-row-title,
+section[aria-labelledby="lt-cases"] .lt-row-title { font: 800 var(--t-21)/1.15 var(--font-display); letter-spacing: -0.01em; }
+section[aria-labelledby="lt-quizzes"] .lt-row .lt-muted,
+section[aria-labelledby="lt-cases"] .lt-row .lt-muted { color: var(--card-ink); opacity: 0.8; }
+section[aria-labelledby="lt-quizzes"] .lt-row-actions,
+section[aria-labelledby="lt-cases"] .lt-row-actions { justify-content: flex-start; }
+@media (prefers-reduced-motion: reduce) { section .lt-row { transform: none !important; } }
+section[aria-labelledby="lt-quizzes"] .lt-list,
+section[aria-labelledby="lt-cases"] .lt-list { align-items: start; grid-auto-rows: auto; }
+section[aria-labelledby="lt-quizzes"] .lt-row,
+section[aria-labelledby="lt-cases"] .lt-row { height: auto; min-height: 0; }
+.lt-dist li.dim { opacity: 0.75; }
+section[aria-labelledby="lt-quizzes"] .lt-row-main,
+section[aria-labelledby="lt-cases"] .lt-row-main { flex: 0 0 auto; }
