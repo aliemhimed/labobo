@@ -28,6 +28,11 @@
      moderate     { room, act: 'kick'|'rename'|'lock', user?, value? }
      answer       { room, position, choice }
      auto_next    { room }   auto mode: anyone in the room, once the reveal's time is up
+     vote         { room, position, choice }   team rooms: an advisor's pick (the captain uses answer)
+     make_teams   { room }   team rooms, lobby: (re)make the teams at random
+     name_team    { room, name }   team rooms, lobby: the team's first captain names it
+     reject_team_name { room, team }   teacher: the team goes back to "Team <n>" and is asked again
+     moderate act 'move'  { user, value: team no }   team rooms: move a student
      away         { room }
 
    Teachers are rows in `teachers`, granted by an admin (admin.js). */
@@ -36,6 +41,7 @@ const { SUPA_URL, dbHeaders, json, fail, parseBody, verifyUser, allowRequest } =
 const { trialEmail } = require('./_lib/access');
 const { verifiedEmail } = require('./_lib/uniEmail');
 const { ALLOWED_TABLES } = require('./questions');
+const { containsProfanity } = require('./_lib/profanity');
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const CODE = /^\d{6}$/;
@@ -82,7 +88,9 @@ const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 function cleanSettings(s) {
   const o = s && typeof s === 'object' ? s : {};
   return {
-    mode: 'individual',
+    // 'teams': groups of team_size (2-5) with a rotating captain (slice 2).
+    mode: o.mode === 'teams' ? 'teams' : 'individual',
+    team_size: Number.isInteger(Number(o.team_size)) ? Math.max(2, Math.min(5, Number(o.team_size))) : 3,
     seconds: SECONDS.includes(Number(o.seconds)) ? Number(o.seconds) : 20,
     names: o.names === 'real' ? 'real' : 'nicknames',
     leaderboard: ['all', 'top5', 'none'].includes(o.leaderboard) ? o.leaderboard : 'top5',
@@ -265,6 +273,7 @@ async function join(caller, body) {
   if (!(await allowRequest(caller.id, 'live_join', 30, 600))) return fail(429, 'Too many tries. Wait a few minutes.');
   const email = await uniEmail(caller);
   if (!email) return json(403, { error: 'Confirm your EU university email to join', code: 'uni_email_required' });
+  if (containsProfanity(str(body.nickname, 24))) return json(400, { error: 'Please choose another nickname', code: 'bad_nickname' });
   const out = await rpc('live_join', {
     p_code: code, p_user: caller.id, p_display: await displayName(caller), p_email: email,
     p_nickname: str(body.nickname, 24),
@@ -331,6 +340,20 @@ exports.handler = async (event) => {
         const bad = needRoom(); if (bad) return bad;
         return statusReply(await rpc('live_close', { p_room: room, p_user: caller.id }));
       }
+      case 'vote': {
+        const bad = needRoom(); if (bad) return bad;
+        if (!Number.isInteger(body.position) || !Number.isInteger(body.choice)) return fail(400, 'Invalid pick');
+        return statusReply(await rpc('live_vote', { p_room: room, p_user: caller.id, p_position: body.position, p_choice: body.choice }));
+      }
+      case 'name_team': {
+        const bad = needRoom(); if (bad) return bad;
+        const name = str(body.name, 24);
+        if (containsProfanity(name)) return json(400, { error: 'Please choose another team name', code: 'bad_name' });
+        const out = await rpc('live_name_team', { p_room: room, p_user: caller.id, p_name: name });
+        if (out.status === 'taken') return json(409, { error: 'Another team already has that name', code: 'taken' });
+        if (out.status === 'too_short') return json(400, { error: 'Use at least 2 characters', code: 'too_short' });
+        return statusReply(out);
+      }
       case 'auto_next': {
         const bad = needRoom(); if (bad) return bad;
         return statusReply(await rpc('live_auto_next', { p_room: room, p_user: caller.id }));
@@ -356,17 +379,28 @@ exports.handler = async (event) => {
         const fn = { next: 'live_next', board: 'live_show_board', finish: 'live_finish' }[body.action];
         return statusReply(await rpc(fn, { p_room: room, p_host: caller.id }));
       }
+      case 'reject_team_name': {
+        const bad = needRoom(); if (bad) return bad;
+        if (!Number.isInteger(body.team)) return fail(400, 'Invalid team');
+        return statusReply(await rpc('live_reject_team_name', { p_room: room, p_host: caller.id, p_team: body.team }));
+      }
+      case 'make_teams': {
+        const bad = needRoom(); if (bad) return bad;
+        return statusReply(await rpc('live_make_teams', { p_room: room, p_host: caller.id }));
+      }
       case 'pause': {
         const bad = needRoom(); if (bad) return bad;
         return statusReply(await rpc('live_pause', { p_room: room, p_host: caller.id, p_paused: body.paused === true }));
       }
       case 'moderate': {
         const bad = needRoom(); if (bad) return bad;
-        if (!['kick', 'rename', 'lock'].includes(body.act)) return fail(400, 'Unknown action');
+        if (!['kick', 'rename', 'lock', 'move'].includes(body.act)) return fail(400, 'Unknown action');
+        if (body.act === 'move' && !Number.isInteger(body.value)) return fail(400, 'Invalid team');
         if (body.act !== 'lock' && !UUID.test(body.user || '')) return fail(400, 'Invalid player');
         return statusReply(await rpc('live_moderate', {
           p_room: room, p_host: caller.id, p_action: body.act,
-          p_user: body.act === 'lock' ? null : body.user, p_value: body.act === 'lock' ? String(body.value === true) : str(body.value, 24),
+          p_user: body.act === 'lock' ? null : body.user,
+          p_value: body.act === 'lock' ? String(body.value === true) : body.act === 'move' ? String(body.value) : str(body.value, 24),
         }));
       }
       default: return fail(400, 'Unknown action');

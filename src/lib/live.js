@@ -53,7 +53,7 @@ export const createRoom = (room) => livePost('create_room', room);
 export const joinRoom = (code, nickname) => livePost('join', { code, nickname });
 
 /** Settings a new room starts with (the "More options" defaults). */
-export const DEFAULT_SETTINGS = Object.freeze({ seconds: 20, names: 'nicknames', leaderboard: 'top5', review: true, advance: 'teacher' });
+export const DEFAULT_SETTINGS = Object.freeze({ seconds: 20, names: 'nicknames', leaderboard: 'top5', review: true, advance: 'teacher', mode: 'individual', team_size: 3 });
 export const SECONDS_CHOICES = [10, 15, 20, 30, 45, 60, 90];
 
 const LAST_SETTINGS_KEY = 'labobo.live.lastSettings';
@@ -210,6 +210,14 @@ export function useLiveRoom(roomId, { asHost = false } = {}) {
     }
     return () => unsubs.forEach((u) => u());
   }, [roomId, asHost, refresh, refreshSoon]);
+
+  // Team rooms: listen to the student's own team (advisors' picks, the
+  // captain's answer). The server only lets team members listen.
+  const teamNo = state?.team?.no;
+  useEffect(() => {
+    if (asHost || !roomId || teamNo == null) return undefined;
+    return listen(`live-team:${roomId}:${teamNo}`, () => refreshSoon(150));
+  }, [asHost, roomId, teamNo, refreshSoon]);
 
   // Close the question once its time is up. The host closes right at the
   // deadline; players only after the grace, spread out, so the game moves
