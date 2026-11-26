@@ -89,7 +89,7 @@ function fakeLive(path, scene) {
   const view = url.searchParams.get('view');
   const host = !url.pathname.includes('play') && !scene.startsWith('play');
   switch (view) {
-    case 'me': return { teacher: true, subjects: ['gct_biochemistry', 'gct_genetics'], uni_email: 'ace@eu.edu.ge' };
+    case 'me': return { teacher: true, can_host: true, subjects: ['gct_biochemistry', 'gct_genetics'], uni_email: 'ace@eu.edu.ge' };
     case 'quizzes': return { quizzes: [{ id: 'q1', title: 'Week 10 revision', subject: 'GCT I · Biochemistry', updated_at: now(), count: 10, settings: {} },
       { id: 'q2', title: 'Midterm warm-up', subject: 'GCT I · Biochemistry, GCT I · Medical Genetics', updated_at: now(), count: 25, settings: {} }] };
     case 'case_sets': return { sets: [{ id: 'c1', title: 'Chest pain cases', subject: '', updated_at: now(), count: 3 }] };
@@ -136,6 +136,7 @@ const SCREENS = [
   ['Projector: reveal', `/dev/live/screen/${ROOM}`, 'reveal'],
   ['Projector: leaderboard', `/dev/live/screen/${ROOM}`, 'board'],
   ['Projector: team podium', `/dev/live/screen/${ROOM}`, 'team-finished'],
+  ['Host a game (pass holders)', '/dev/live/host', ''],
   ['Join page', '/dev/live', 'join'],
   ['Phone: lobby', `/dev/live/play/${ROOM}`, 'play-lobby'],
   ['Phone: question', `/dev/live/play/${ROOM}`, 'play-question'],

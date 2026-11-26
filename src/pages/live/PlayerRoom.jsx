@@ -60,6 +60,8 @@ export default function PlayerRoom() {
 
   const r = state?.room;
   const q = state?.question;
+  // Rooms hosted by a pass holder have a host, not a teacher.
+  const who = r?.settings?.kind === 'student' ? 'host' : 'teacher';
   const left = useCountdown(r?.deadline, offsetMs, r?.paused, r?.paused_left_ms);
   const autoIn = useAutoNext(state, offsetMs);
 
@@ -122,7 +124,7 @@ export default function PlayerRoom() {
   if (me.kicked) {
     return (
       <main className="live-play"><div className="live-card">
-        <h1>The teacher removed you from this room.</h1>
+        <h1>The {who} removed you from this room.</h1>
         <Link className="btn primary" to="/live">Back to Live</Link>
       </div></main>
     );
@@ -157,13 +159,13 @@ export default function PlayerRoom() {
     body = (
       <div className="live-card">
         <h1>You're in!</h1>
-        <p>Waiting for the teacher to start.</p>
+        <p>Waiting for the {who} to start.</p>
         <p className="live-big-name">{me.nickname || 'No nickname'}</p>
         {team ? (
           <>
             {team.name_status === 'rejected' ? (
               <p className="form-error" role="alert">
-                {team.am_namer ? 'The teacher rejected your team name. Choose another one.' : `The teacher rejected your team name. ${team.namer_name || 'A teammate'} will choose another.`}
+                {team.am_namer ? `The ${who} rejected your team name. Choose another one.` : `The ${who} rejected your team name. ${team.namer_name || 'A teammate'} will choose another.`}
               </p>
             ) : null}
             <p>You're in {team.name}{mates.length ? ` with ${mates.join(', ')}` : ''}</p>
@@ -186,7 +188,7 @@ export default function PlayerRoom() {
           <span>Question {r.current + 1} of {r.total}</span>
           <TimerSticker msLeft={left} totalMs={total} paused={r.paused} size="sm" />
         </div>
-        {r.paused ? <p className="live-paused">Paused by the teacher</p> : null}
+        {r.paused ? <p className="live-paused">Paused by the {who}</p> : null}
         <h1 className="live-q-text">{q.q}</h1>
         {q.image ? <img className="live-q-img" src={q.image} alt="" /> : null}
         <div className="live-options">
@@ -265,7 +267,7 @@ export default function PlayerRoom() {
       </div>
     );
   } else {
-    body = <div className="live-card"><p>Waiting for the teacher…</p></div>;
+    body = <div className="live-card"><p>Waiting for the {who}…</p></div>;
   }
 
   return (

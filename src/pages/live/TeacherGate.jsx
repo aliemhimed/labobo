@@ -4,14 +4,14 @@ import TopBar from '../../components/TopBar.jsx';
 import { fetchLiveMe } from '../../lib/live.js';
 import '../../styles/live-teach.css';
 
-/* Shows its children only to Labobo Live teachers. Everyone else gets a
+/* Shows its children only to Labobo Live teachers (and, with `host`, pass holders). Everyone else gets a
    short message; load errors get a retry button. */
-export default function TeacherGate({ subtitle = 'Live', children }) {
+export default function TeacherGate({ subtitle = 'Live', host = false, children }) {
   const { data, error, isLoading, refetch } = useQuery({ queryKey: ['live-me'], queryFn: fetchLiveMe, staleTime: 60_000 });
 
   if (isLoading) return <div className="splash" role="status">Loading</div>;
 
-  if (error || !data?.teacher) {
+  if (error || !(data?.teacher || (host && data?.can_host))) {
     return (
       <>
         <TopBar subtitle={subtitle} />

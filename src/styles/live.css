@@ -272,3 +272,13 @@
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
 textarea.lv-chart { font: inherit; resize: vertical; }
+
+/* Pass holders: the "Host a game" card on /live */
+.lv-host-card {
+  margin: 18px 0; padding: 16px 18px; display: grid; gap: 8px; justify-items: start;
+  background: var(--card, var(--sheet)); color: var(--card-ink, var(--ink));
+  border: 2px solid var(--card-ink, var(--ink)); border-radius: var(--r-card, 12px); box-shadow: 5px 5px 0 var(--hard, var(--card-ink, #000));
+}
+.lv-host-card h2 { font: 700 var(--t-21)/1.2 var(--font-display); margin: 0; }
+.lv-host-card p { margin: 0; }
+.live-pass-note { margin: 14px 0; font-size: var(--t-14); }

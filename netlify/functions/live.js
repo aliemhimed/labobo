@@ -101,9 +101,18 @@ async function uniEmail(caller) {
   return trialEmail(caller) || (await verifiedEmail(caller.id).catch(() => null));
 }
 
-async function displayName(caller) {
+/** The name a player is listed under. In friends' rooms (`student`), never
+    the email: a student without a username shows by nickname or "Student". */
+async function displayName(caller, studentRoom = false) {
   const [p] = await rows(`/profiles?id=eq.${encodeURIComponent(caller.id)}&select=username`).catch(() => []);
-  return p?.username || caller.email || '';
+  return p?.username || (studentRoom ? '' : caller.email || '');
+}
+
+/** Friends' rooms: the host is a student, so players' emails are left out. */
+function withoutEmails(out) {
+  if (out?.room?.settings?.kind !== 'student') return out;
+  const strip = (list) => (Array.isArray(list) ? list.map(({ email, ...rest }) => rest) : list);
+  return { ...out, roster: strip(out.roster), players: strip(out.players) };
 }
 
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
@@ -426,7 +435,7 @@ async function join(caller, body) {
   if (email === null) return json(403, { error: 'Confirm your EU university email to join', code: 'uni_email_required' });
   if (containsProfanity(str(body.nickname, 24))) return json(400, { error: 'Please choose another nickname', code: 'bad_nickname' });
   const out = await rpc('live_join', {
-    p_code: code, p_user: caller.id, p_display: await displayName(caller), p_email: email,
+    p_code: code, p_user: caller.id, p_display: await displayName(caller, studentRoom), p_email: studentRoom ? '' : email,
     p_nickname: str(body.nickname, 24),
   });
   const messages = {
@@ -462,7 +471,7 @@ exports.handler = async (event) => {
       if (view === 'state' || view === 'results') {
         if (!UUID.test(room || '')) return fail(400, 'Invalid room');
         const out = await rpc(view === 'state' ? 'live_state' : 'live_results', { p_room: room, p_user: caller.id });
-        return out ? json(200, out) : fail(404, 'Not available');
+        return out ? json(200, withoutEmails(out)) : fail(404, 'Not available');
       }
       if (view === 'history') return json(200, { sessions: await rpc('live_history', { p_user: caller.id }) });
       if (view === 'cases') {

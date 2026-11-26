@@ -7,6 +7,7 @@ import '../../styles/live.css';
      /live/play/:room            a student's phone in a room
      /live/results/:room         results of a finished room (teacher or student)
      /live/screen/:room          the projector view (opened by the teacher)
+     /live/host                  pass holders: quick setup for a game with friends
      /live/teach                 teacher home: quizzes and past rooms
      /live/teach/quiz/new        quiz builder (new)
      /live/teach/quiz/:id        quiz builder (edit)
@@ -25,6 +26,7 @@ const RoomSetup = lazy(() => import('./RoomSetup.jsx'));
 const HostRoom = lazy(() => import('./HostRoom.jsx'));
 const CaseSetBuilder = lazy(() => import('./CaseSetBuilder.jsx'));
 const CaseSetup = lazy(() => import('./CaseSetup.jsx'));
+const HostSetup = lazy(() => import('./HostSetup.jsx'));
 
 export default function LiveApp() {
   return (
@@ -34,6 +36,7 @@ export default function LiveApp() {
         <Route path="play/:room" element={<PlayerRoom />} />
         <Route path="results/:room" element={<Results />} />
         <Route path="screen/:room" element={<Projector />} />
+        <Route path="host" element={<HostSetup />} />
         <Route path="teach" element={<TeacherHome />} />
         <Route path="teach/quiz/new" element={<QuizBuilder />} />
         <Route path="teach/quiz/:id" element={<QuizBuilder />} />

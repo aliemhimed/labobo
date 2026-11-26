@@ -141,7 +141,7 @@ export default function Projector() {
     body = (
       <div className="proj-center">
         <h1 className="proj-h">Leaderboard</h1>
-        {hidden ? <p className="proj-label">Leaderboard hidden by the teacher</p> : (
+        {hidden ? <p className="proj-label">Leaderboard hidden by the {r.settings?.kind === 'student' ? 'host' : 'teacher'}</p> : (
           <ol className="proj-board">
             {teamRoom ? rankedTeams.slice(0, 5).map((t) => (
               <li key={t.no}><span>{t.rank}</span><b>{t.name}</b><u>{t.score}</u></li>
@@ -161,7 +161,7 @@ export default function Projector() {
     body = (
       <div className="proj-center">
         <h1 className="proj-h">Thanks for playing</h1>
-        {hidden ? <p className="proj-label">Results are hidden by the teacher</p> : (
+        {hidden ? <p className="proj-label">Results are hidden by the {r.settings?.kind === 'student' ? 'host' : 'teacher'}</p> : (
           <div className="proj-podium">
             {order.filter(Boolean).map(({ p, place }) => (
               <div key={p.user_id} className={`proj-step place${place}`}>

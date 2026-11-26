@@ -198,7 +198,7 @@ function Room({ roomId }) {
             <h1>Could not open this room</h1>
             <p className="lt-sub">{error.message}</p>
             <button type="button" className="btn primary" onClick={refresh}>Try again</button>
-            <Link className="btn" to="/live/teach">Back</Link>
+            <Link className="btn" to="/live">Back</Link>
           </div>
         ) : <p className="lt-muted" role="status">Loading…</p>}
       </main>
@@ -322,7 +322,7 @@ function Room({ roomId }) {
 export default function HostRoom() {
   const { room } = useParams();
   return (
-    <TeacherGate>
+    <TeacherGate host>
       <TopBar subtitle="Live" />
       <Room roomId={room} />
     </TeacherGate>
