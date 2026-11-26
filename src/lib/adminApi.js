@@ -37,7 +37,8 @@ export const fetchQuestions = (signal) => request({ signal }, '?view=questions')
 export const fetchAnnouncements = (signal) => request({ signal }, '?view=announcements');
 export const fetchLog = (signal) => request({ signal }, '?view=log');
 export const fetchReviews = (signal) => request({ signal }, '?view=reviews');
-export const fetchErrors = (signal) => request({ signal }, '?view=errors');
+export const fetchTeachers = (signal) => request({ signal }, '?view=teachers');
+export const fetchErrors =(signal) => request({ signal }, '?view=errors');
 
 const post = (body) => request({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 export const deleteUser = (id) => post({ action: 'delete_user', id });
@@ -45,7 +46,14 @@ export const resolveReports = (ids) => post({ action: 'resolve_reports', ids });
 export const reopenReports = (ids) => post({ action: 'reopen_reports', ids });
 export const createAnnouncement = (a) => post({ action: 'create_announcement', ...a });
 export const endAnnouncement = (id) => post({ action: 'end_announcement', id });
-export const setReviewStatus = (id, status) => post({ action: 'set_review_status', id, status });
+export const grantTeacher = (email, subjects) => post({ action: 'grant_teacher', email, subjects });
+export const setTeacherSubjects = (id, subjects) => post({ action: 'set_teacher_subjects', id, subjects });
+export const revokeTeacher = (id) => post({ action: 'revoke_teacher', id });
+export const fetchSharedQuestions = (signal) => request({ signal }, '?view=shared_questions');
+export const fetchBankTopics = (table, signal) => request({ signal }, `?view=bank_topics&table=${encodeURIComponent(table)}`);
+export const approveShared = (id, table, topic) => post({ action: 'approve_shared', id, table, topic });
+export const rejectShared = (id) => post({ action: 'reject_shared', id });
+export const setReviewStatus =(id, status) => post({ action: 'set_review_status', id, status });
 
 /** Downloads every student as a CSV file (the server logs the export). */
 export async function downloadStudentsCsv() {

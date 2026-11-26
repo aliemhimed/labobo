@@ -79,6 +79,9 @@ export default function ProfileMenu({ onSignOut }) {
           <Link to="/select-semester" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
             Change semester
           </Link>
+          <Link to="/live" className="profile-item" role="menuitem" onClick={() => setOpen(false)}>
+            Labobo Live
+          </Link>
           <button type="button" className="profile-item" role="menuitem"
                   onClick={() => { setOpen(false); openSubscribeDialog(); }}>
             Subscription

@@ -13,6 +13,13 @@
    GET  /api/admin?view=announcements -> banners, newest first
    GET  /api/admin?view=reviews    -> student reviews, waiting ones first
    GET  /api/admin?view=log        -> what admins did, newest first
+   GET  /api/admin?view=teachers   -> Labobo Live teachers
+   POST /api/admin   body: { action: 'grant_teacher', email, subjects } / { action: 'revoke_teacher', id }
+   POST /api/admin   body: { action: 'set_teacher_subjects', id, subjects: [bank tables] }
+   GET  /api/admin?view=shared_questions -> teachers' questions waiting to join the bank
+   GET  /api/admin?view=bank_topics&table= -> that bank's lectures (raw topic values), in order
+   POST /api/admin   body: { action: 'approve_shared', id, table, topic } -> copied into the bank
+   POST /api/admin   body: { action: 'reject_shared', id }
    POST /api/admin   body: { action: 'resolve_reports', ids: [..] }
    POST /api/admin   body: { action: 'reopen_reports', ids: [..] }
      -> marks question reports dealt with (or not) — kept, not deleted
@@ -678,6 +685,142 @@ async function revokePass(id, caller) {
   return json(200, { ok: true });
 }
 
+/* ── Teachers (Labobo Live) ───────────────────────────────────────── */
+
+/* Every teacher, with whether their account has a university address. */
+async function teachersView() {
+  const list = await rows('/teachers?select=user_id,email,subjects,granted_by,granted_at&order=granted_at.desc');
+  if (!list.length) return { teachers: [] };
+  const ids = list.map((t) => t.user_id).join(',');
+  const [profiles, uni] = await Promise.all([
+    rows(`/profiles?id=in.(${ids})&select=id,username,email`),
+    rows(`/university_emails?user_id=in.(${ids})&verified_at=not.is.null&select=user_id,email`),
+  ]);
+  return {
+    teachers: list.map((t) => {
+      const p = profiles.find((x) => x.id === t.user_id);
+      const signIn = (p?.email || t.email || '').toLowerCase();
+      return {
+        ...t,
+        username: p?.username || null,
+        email: p?.email || t.email,
+        uni_email: signIn.endsWith('@eu.edu.ge') ? signIn : uni.find((u) => u.user_id === t.user_id)?.email || null,
+      };
+    }),
+  };
+}
+
+/* Question banks a teacher may use (bank table names, known ones only). */
+const cleanSubjects = (list) => [...new Set((Array.isArray(list) ? list : []).filter((t) => BANKS.some((b) => b.tables.includes(t))))];
+
+/* Makes the account with this sign-in email a teacher, with the subjects ticked. */
+async function grantTeacher(body, caller) {
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail(400, 'Enter the teacher\'s sign-in email');
+  const [profile] = await rows(`/profiles?email=ilike.${encodeURIComponent(email)}&select=id,username,email`);
+  if (!profile) return fail(404, 'No account uses that email. Ask the teacher to sign in once first.');
+  const res = await rest('/teachers?on_conflict=user_id', {
+    method: 'POST',
+    headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+    body: JSON.stringify({
+      user_id: profile.id, email: profile.email, subjects: cleanSubjects(body.subjects),
+      granted_by: caller.email, granted_at: new Date().toISOString(),
+    }),
+  });
+  if (!res.ok) return fail(502, 'Could not add the teacher', `${res.status} ${await res.text()}`);
+  await logAction(caller, 'grant_teacher', profile.id, { email: profile.email, username: profile.username, subjects: cleanSubjects(body.subjects) });
+  return json(200, { ok: true });
+}
+
+/* Changes which subjects a teacher may use. */
+async function setTeacherSubjects(body, caller) {
+  if (!UUID.test(body.id || '')) return fail(400, 'Invalid user id');
+  const subjects = cleanSubjects(body.subjects);
+  const res = await rest(`/teachers?user_id=eq.${encodeURIComponent(body.id)}`, {
+    method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ subjects }),
+  });
+  if (!res.ok) return fail(502, 'Could not save the subjects', `${res.status} ${await res.text()}`);
+  if (!(await res.json()).length) return fail(404, 'Not a teacher');
+  await logAction(caller, 'set_teacher_subjects', body.id, { subjects });
+  return json(200, { ok: true, subjects });
+}
+
+/* ── Teachers' shared questions ───────────────────────────────────── */
+
+/* Teachers' own questions they allowed Labobo to use, waiting for an admin. */
+async function sharedQuestionsView() {
+  const list = await rows('/custom_questions?review_status=eq.pending&select=id,owner,q,options,answer,explanation,created_at&order=created_at.asc&limit=200');
+  if (!list.length) return { questions: [] };
+  const owners = [...new Set(list.map((q) => q.owner))].join(',');
+  const profiles = await rows(`/profiles?id=in.(${owners})&select=id,username,email`);
+  return {
+    questions: list.map((q) => {
+      const p = profiles.find((x) => x.id === q.owner);
+      return { ...q, teacher: p?.username || p?.email || 'Teacher', teacher_email: p?.email || null };
+    }),
+  };
+}
+
+/* The lectures (raw topic values) of one bank, in bank order, for the "add to" picker. */
+async function bankTopicsView(table) {
+  if (!BANKS.some((b) => b.tables.includes(table))) return null;
+  // Supabase returns at most 1000 rows per request, so page through.
+  const seen = new Set(); const topics = [];
+  for (let from = 0; ; from += 1000) {
+    const res = await rest(`/${table}?select=topic&order=ord.asc.nullslast,id.asc`, { headers: { Range: `${from}-${from + 999}`, 'Range-Unit': 'items' } });
+    if (!res.ok) throw new Error(`bank_topics ${res.status} ${await res.text()}`);
+    const batch = await res.json();
+    for (const r of batch) if (r.topic && !seen.has(r.topic)) { seen.add(r.topic); topics.push(r.topic); }
+    if (batch.length < 1000) break;
+  }
+  return { topics };
+}
+
+const WITH_DISPLAY_TOPIC = ['clinical_skills', 'clinical_skills_2'];
+
+/* Copies a shared question into a bank lecture, so every student can practise it. */
+async function approveShared(body, caller) {
+  if (!UUID.test(body.id || '')) return fail(400, 'Invalid question');
+  const table = body.table;
+  const topic = typeof body.topic === 'string' ? body.topic.trim() : '';
+  if (!BANKS.some((b) => b.tables.includes(table)) || !topic) return fail(400, 'Choose a subject and a lecture');
+  const [q] = await rows(`/custom_questions?id=eq.${body.id}&review_status=eq.pending&select=id,q,options,answer,explanation`);
+  if (!q) return fail(404, 'That question is no longer waiting');
+  const [last] = await rows(`/${table}?select=ord&order=ord.desc.nullslast&limit=1`);
+  const row = {
+    ord: (Number(last?.ord) || 0) + 1, topic, q: q.q, options: q.options, answer: q.answer, explanation: q.explanation || '',
+    ...(WITH_DISPLAY_TOPIC.includes(table) ? { display_topic: topic } : {}),
+  };
+  const ins = await rest(`/${table}`, { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(row) });
+  if (!ins.ok) return fail(502, 'Could not add it to the bank', `${ins.status} ${await ins.text()}`);
+  const [added] = await ins.json();
+  const upd = await rest(`/custom_questions?id=eq.${q.id}`, { method: 'PATCH', body: JSON.stringify({ review_status: 'approved', updated_at: new Date().toISOString() }) });
+  if (!upd.ok) console.error('[shared] approved but status not saved', upd.status, await upd.text());
+  await logAction(caller, 'approve_shared_question', q.id, { table, topic, bank_id: added?.id });
+  return json(200, { ok: true, table, id: added?.id });
+}
+
+async function rejectShared(id, caller) {
+  if (!UUID.test(id || '')) return fail(400, 'Invalid question');
+  const res = await rest(`/custom_questions?id=eq.${id}&review_status=eq.pending`, {
+    method: 'PATCH', headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({ review_status: 'rejected', updated_at: new Date().toISOString() }),
+  });
+  if (!res.ok) return fail(502, 'Could not reject it', `${res.status} ${await res.text()}`);
+  if (!(await res.json()).length) return fail(404, 'That question is no longer waiting');
+  await logAction(caller, 'reject_shared_question', id, {});
+  return json(200, { ok: true });
+}
+
+async function revokeTeacher(id, caller) {
+  if (!UUID.test(id || '')) return fail(400, 'Invalid user id');
+  const res = await rest(`/teachers?user_id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=representation' } });
+  if (!res.ok) return fail(502, 'Could not remove the teacher', `${res.status} ${await res.text()}`);
+  const [row] = await res.json();
+  if (row) await logAction(caller, 'revoke_teacher', id, { email: row.email });
+  return json(200, { ok: true });
+}
+
 /* ── Payments ─────────────────────────────────────────────────────── */
 
 const RECEIPTS = 'receipts';
@@ -909,6 +1052,12 @@ exports.handler = async (event) => {
       if (view === 'errors') return json(200, await errorsView());
       if (view === 'payments') return json(200, await paymentsView());
       if (view === 'log') return json(200, await logView());
+      if (view === 'teachers') return json(200, await teachersView());
+      if (view === 'shared_questions') return json(200, await sharedQuestionsView());
+      if (view === 'bank_topics') {
+        const out = await bankTopicsView(event.queryStringParameters.table);
+        return out ? json(200, out) : fail(400, 'Unknown bank');
+      }
       if (user) {
         if (!UUID.test(user)) return fail(400, 'Invalid user id');
         const detail = await userDetail(user, tz);
@@ -932,6 +1081,11 @@ exports.handler = async (event) => {
         case 'create_announcement': return await createAnnouncement(body, caller);
         case 'end_announcement': return await endAnnouncement(body.id, caller);
         case 'set_review_status': return await setReviewStatus(body, caller);
+        case 'grant_teacher': return await grantTeacher(body, caller);
+        case 'revoke_teacher': return await revokeTeacher(body.id, caller);
+        case 'set_teacher_subjects': return await setTeacherSubjects(body, caller);
+        case 'approve_shared': return await approveShared(body, caller);
+        case 'reject_shared': return await rejectShared(body.id, caller);
         default: return fail(400, 'Unknown action');
       }
     }
