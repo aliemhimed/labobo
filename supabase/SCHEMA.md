@@ -48,6 +48,10 @@ Column notation: `name type`, `!` not null, `=default`. Tables with the same col
 - **live_rooms**: id uuid!, code text! (6 digits, unique among rooms not finished), host uuid!, quiz_id uuid, title text!, settings jsonb!, stage text!='lobby' (lobby|question|reveal|leaderboard|finished), current_q integer!=-1, total_q integer!, q_started_at, deadline, paused boolean!, paused_left_ms integer, locked boolean!, created_at, last_activity_at, finished_at
 - **live_room_questions**: room_id uuid!, position integer!, q text!, options jsonb! (shuffled), answer integer!, explanation text!, image text!, source_table text, source_id bigint, custom_id uuid
 - **live_players**: room_id uuid!, user_id uuid!, display_name text!, email text!, nickname text!, score integer!, correct integer!, total_ms bigint!, away_count integer!, kicked boolean!, joined_at, last_seen_at
+- **live_teams** (20261127040000, team rooms): room_id uuid!, team_no integer!, name text!, name_status text!='default' (default|chosen|rejected; 20261127050000)
+- **live_team_answers**: room_id uuid!, position integer!, team_no integer!, user_id uuid (captain; null = advisors' pick), choice integer!, ms integer!, correct boolean!, points integer!, auto boolean!, received_at timestamptz! (pk room_id, position, team_no)
+- **live_votes**: room_id uuid!, position integer!, user_id uuid!, team_no integer!, choice integer!, at timestamptz! (advisors' picks; pk room_id, position, user_id)
+- live_players also has team_no integer (team rooms)
 - **live_answers**: room_id uuid!, position integer!, user_id uuid!, choice integer!, received_at timestamptz!, ms integer!, correct boolean!, points integer! (pk room_id, position, user_id: first answer wins)
 
 ### Backup and scratch tables (from one-off fixes; not used by the app)
@@ -58,7 +62,7 @@ bracket_fix_backup, semester4_length_fix_backup, gct4_immunology_options_backup_
 - **clinical_skills, clinical_skills_2**: same, but matching `free_topics.topic` against `coalesce(nullif(display_topic, ''), topic)`.
 - **free_topics**: `free_topics_public_read` [SELECT to public] using true
 - **profiles**: `profiles_select_own` [SELECT] and `profiles_update_own` [UPDATE] using `auth.uid() = id`
-- **realtime.messages**: `live_listen` [SELECT to authenticated] using extension = broadcast and live_can_listen(realtime.topic()) — Labobo Live private channels live:<room> (host + players) and live-host:<room> (host only); no INSERT policy, so clients cannot send
+- **realtime.messages**: `live_listen` [SELECT to authenticated] using extension = broadcast and live_can_listen(realtime.topic()) — Labobo Live private channels live:<room> (host + players), live-host:<room> (host only) and live-team:<room>:<team no> (that team + host); no INSERT policy, so clients cannot send
 - All other tables (Live tables included): RLS on, no policies — reached only by the Netlify functions with the service key.
 
 ## Grants to anon / authenticated
@@ -81,4 +85,4 @@ bracket_fix_backup, semester4_length_fix_backup, gct4_immunology_options_backup_
 - record_visit(p_user text, p_tz text)
 - touch_profile_updated_at()
 - zz_apply(p_tb text, p_e jsonb)
-- live_* (Labobo Live; SECDEF, service_role only except live_can_listen(text) for authenticated): live_create_room, live_join, live_next, live_auto_next (auto mode, 20261127020000), live_answer, live_close, live_show_board, live_finish, live_pause, live_moderate, live_away, live_state, live_results, live_history, live_hosted, live_can_listen, live_emit and helpers (live_shown_name, live_active_count, live_ranking, live_public_board, live_counts, live_open_question)
+- live_* (Labobo Live; SECDEF, service_role only except live_can_listen(text) for authenticated): live_create_room, live_join, live_next, live_auto_next (auto mode, 20261127020000), team rooms: live_make_teams, live_assign_team, live_captain, live_vote, live_team_answer, live_fill_team_answers, live_team_ranking, live_team_view, live_name_team, live_reject_team_name, live_is_teams, live_answer, live_close, live_show_board, live_finish, live_pause, live_moderate, live_away, live_state, live_results, live_history, live_hosted, live_can_listen, live_emit and helpers (live_shown_name, live_active_count, live_ranking, live_public_board, live_counts, live_open_question)
