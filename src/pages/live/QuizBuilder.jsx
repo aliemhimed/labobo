@@ -3,8 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import TopBar from '../../components/TopBar.jsx';
 import PageHead from '../../components/PageHead.jsx';
-import { fetchLiveMe, lastSettings, saveQuiz } from '../../lib/live.js';
-import { bankTables } from '../../lib/liveSubjects.js';
+import { fetchLectures, fetchLiveMe, lastSettings, saveQuiz } from '../../lib/live.js';
+import { bankTables, displayTopic } from '../../lib/liveSubjects.js';
 import TeacherGate from './TeacherGate.jsx';
 import CustomQuestionForm from './CustomQuestionForm.jsx';
 import {
@@ -102,26 +102,38 @@ function Builder({ existing, id, mine }) {
   const [form, setForm] = useState(null); // null | 'new' | custom item being edited
 
   const tablesKey = [...tables].sort().join(',');
-  const bankQuery = useQuery({
-    queryKey: ['live-bank', tablesKey],
-    queryFn: async () => [...(await loadBankItems(tables)).values()],
+  // Lecture names and counts only: fast. The full bank loads when the teacher
+  // opens "Choose specific questions".
+  const lectureQuery = useQuery({
+    queryKey: ['live-lectures', tablesKey],
+    queryFn: () => fetchLectures(tables),
     enabled: tables.length > 0,
+    staleTime: 5 * 60_000,
+  });
+  const lectureLists = lectureQuery.data?.tables;
+
+  // Lectures per chosen table, in the bank's order (topic = the stored value).
+  const groups = useMemo(() => tables.map((table) => ({
+    table, label: labels.get(table),
+    lectures: (lectureLists?.[table] || []).map(({ topic, n }) => ({ topic, n, key: lectureKey(table, topic) })),
+  })), [tables, lectureLists, labels]);
+  const allKeys = useMemo(() => groups.flatMap((g) => g.lectures.map((l) => l.key)), [groups]);
+  const lectureN = useMemo(() => new Map(groups.flatMap((g) => g.lectures.map((l) => [l.key, l.n]))), [groups]);
+
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickTables = useMemo(() => [...new Set([...lectures].map((k) => splitLectureKey(k).table))].sort(), [lectures]);
+  const bankQuery = useQuery({
+    queryKey: ['live-bank', pickTables.join(',')],
+    queryFn: async () => [...(await loadBankItems(pickTables)).values()],
+    enabled: pickerOpen && pickTables.length > 0,
     staleTime: 10 * 60_000,
   });
-  const bank = useMemo(() => (tables.length ? bankQuery.data || [] : []), [tables.length, bankQuery.data]);
-
-  // Lectures per chosen table, in the bank's order.
-  const groups = useMemo(() => tables.map((table) => {
-    const byTopic = new Map();
-    for (const q of bank) if (q.table === table) byTopic.set(q.topic, (byTopic.get(q.topic) || 0) + 1);
-    return {
-      table, label: labels.get(table),
-      lectures: [...byTopic.entries()].map(([topic, n]) => ({ topic, n, key: lectureKey(table, topic) })),
-    };
-  }), [tables, bank, labels]);
-  const allKeys = useMemo(() => groups.flatMap((g) => g.lectures.map((l) => l.key)), [groups]);
-
-  const picked = useMemo(() => bank.filter((q) => lectures.has(lectureKey(q.table, q.topic))), [bank, lectures]);
+  const picked = useMemo(
+    () => (bankQuery.data || []).filter((q) => lectures.has(lectureKey(q.table, q.rawTopic))),
+    [bankQuery.data, lectures],
+  );
+  // The picker's questions show once the teacher opens it.
+  const pickedN = useMemo(() => [...lectures].reduce((n, k) => n + (lectureN.get(k) || 0), 0), [lectures, lectureN]);
   const selectedKeys = useMemo(() => new Set(items.map((i) => i.key)), [items]);
   const bankItems = items.filter((i) => i.kind === 'bank');
   const customItems = items.filter((i) => i.kind === 'custom');
@@ -129,7 +141,8 @@ function Builder({ existing, id, mine }) {
   const full = items.length >= MAX_QUESTIONS;
 
   const min = Math.max(1, items.length);
-  const poolFree = picked.filter((q) => !selectedKeys.has(q.key)).length;
+  const fixedInPool = items.filter((i) => i.kind === 'bank' && lectures.has(lectureKey(i.table, i.rawTopic))).length;
+  const poolFree = Math.max(0, pickedN - fixedInPool);
   const max = Math.max(min, Math.min(MAX_QUESTIONS, items.length + poolFree));
   const total = Math.min(max, Math.max(min, count));
   const random = total - items.length;
@@ -217,16 +230,16 @@ function Builder({ existing, id, mine }) {
           {tables.length > 0 ? (
             <section className="lt-step" aria-labelledby="lt-lec">
               <h2 id="lt-lec">Lectures</h2>
-              {bankQuery.isLoading ? <p className="lt-muted" role="status">Loading questions…</p>
-                : bankQuery.error ? (
-                  <p className="lt-error" role="alert">Could not load the questions: {bankQuery.error.message}{' '}
-                    <button type="button" className="btn sm" onClick={() => bankQuery.refetch()}>Try again</button></p>
+              {lectureQuery.isLoading ? <p className="lt-muted" role="status">Loading lectures…</p>
+                : lectureQuery.error ? (
+                  <p className="lt-error" role="alert">Could not load the lectures: {lectureQuery.error.message}{' '}
+                    <button type="button" className="btn sm" onClick={() => lectureQuery.refetch()}>Try again</button></p>
                 ) : (
                   <div className="lt-card">
                     <div className="lt-controls" style={{ marginBottom: 10 }}>
                       <button type="button" className="btn sm" onClick={() => setLectures(new Set(allKeys))}>Select all</button>
                       <button type="button" className="btn sm" onClick={() => setLectures(new Set())}>Clear</button>
-                      <span className="lt-muted">{tickedCount} of {allKeys.length} lectures, {plural(picked.length, 'question')}</span>
+                      <span className="lt-muted">{tickedCount} of {allKeys.length} lectures, {plural(pickedN, 'question')}</span>
                     </div>
                     {groups.map((g) => (
                       <div key={g.table}>
@@ -235,7 +248,7 @@ function Builder({ existing, id, mine }) {
                           {g.lectures.map((l) => (
                             <label key={l.key} className="lt-check">
                               <input type="checkbox" checked={lectures.has(l.key)} onChange={() => toggleLecture(l.key)} />
-                              <span>{l.topic} <span className="lt-muted">({l.n})</span></span>
+                              <span>{displayTopic(g.table, l.topic)} <span className="lt-muted">({l.n})</span></span>
                             </label>
                           ))}
                         </div>
@@ -267,9 +280,13 @@ function Builder({ existing, id, mine }) {
 
       <section className="lt-step" aria-labelledby="lt-spec">
         <h2 id="lt-spec">Choose specific questions <span className="lt-muted">(optional)</span></h2>
-        <details className="lt-more">
+        <details className="lt-more" onToggle={(e) => { if (e.currentTarget.open) setPickerOpen(true); }}>
           <summary>Pick questions that are always included</summary>
-          <QuestionPicker questions={picked} selectedKeys={selectedKeys} full={full} onToggle={toggleItem} />
+          {bankQuery.isLoading ? <p className="lt-muted" role="status">Loading questions…</p>
+            : bankQuery.error ? (
+              <p className="lt-error" role="alert">Could not load the questions: {bankQuery.error.message}{' '}
+                <button type="button" className="btn sm" onClick={() => bankQuery.refetch()}>Try again</button></p>
+            ) : <QuestionPicker questions={picked} selectedKeys={selectedKeys} full={full} onToggle={toggleItem} />}
         </details>
         {bankItems.length ? (
           <div className="lt-card" style={{ marginTop: 12 }}>

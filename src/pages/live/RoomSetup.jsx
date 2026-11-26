@@ -1,11 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import TopBar from '../../components/TopBar.jsx';
 import PageHead from '../../components/PageHead.jsx';
-import { SECONDS_CHOICES, createRoom, lastSettings, rememberSettings } from '../../lib/live.js';
+import { SECONDS_CHOICES, lastSettings, rememberSettings, startQuiz } from '../../lib/live.js';
+import { displayTopic } from '../../lib/liveSubjects.js';
 import TeacherGate from './TeacherGate.jsx';
-import { drawQuestions, loadQuizItems, roomQuestion } from './quizData.js';
+import { loadQuizSummary } from './quizData.js';
 import '../../styles/live-teach.css';
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
@@ -23,27 +24,31 @@ function Choice({ label, value, onChange, options }) {
   );
 }
 
-function Setup({ quiz, items, missing, pool, count, bank }) {
+function Setup({ quiz, fixed, pool, count }) {
   const navigate = useNavigate();
-  const [settings, setSettings] = useState(() => lastSettings());
+  const [settings, setSettings] = useState(() => ({ read_seconds: 5, clinical_double: true, ...lastSettings() }));
   const set = (key) => (value) => setSettings((s) => ({ ...s, [key]: value }));
+  const [short, setShort] = useState(null);
 
   const start = useMutation({
     mutationFn: () => {
       rememberSettings(settings);
-      return createRoom({ quiz_id: quiz.id, title: quiz.title, settings, questions: drawQuestions({ items, pool, count: wanted, bank }).questions.map(roomQuestion) });
+      return startQuiz(quiz.id, settings, quiz.title);
     },
-    onSuccess: (room) => navigate(`/live/teach/room/${room.id}`),
+    onSuccess: (room) => {
+      if (room.short) { setShort(Array.isArray(room.questions) ? room.questions.length : Number(room.questions) || 0); setTimeout(() => navigate(`/live/teach/room/${room.id}`), 1800); } else navigate(`/live/teach/room/${room.id}`);
+    },
   });
 
   // What one start will hold: the chosen questions plus random ones from the pool lectures.
-  const wanted = Math.max(count || 0, items.length);
-  const preview = useMemo(() => drawQuestions({ items, pool, count: wanted, bank }), [items, pool, wanted, bank]);
-  const total = preview.questions.length;
-  const lectureNames = [...new Set(pool.map((p) => p.topic))];
-  const makeup = pool.length === 0 ? plural(items.length, 'question')
-    : items.length === 0 ? `${plural(total, 'random question')} from ${lectureNames.join(', ')}`
-      : `${total} questions: ${items.length} chosen + ${preview.random} random from ${lectureNames.join(', ')}`;
+  const poolN = pool.reduce((n, l) => n + l.n, 0);
+  const wanted = Math.max(count || 0, fixed);
+  const total = Math.min(wanted, fixed + poolN);
+  const random = Math.max(0, total - fixed);
+  const lectureNames = [...new Set(pool.map((p) => displayTopic(p.table, p.topic)))];
+  const makeup = pool.length === 0 ? plural(fixed, 'question')
+    : fixed === 0 ? `${plural(total, 'random question')} from ${lectureNames.join(', ')}`
+      : `${total} questions: ${fixed} chosen + ${random} random from ${lectureNames.join(', ')}`;
 
   return (
     <main id="main" tabIndex={-1} className="lt">
@@ -52,9 +57,13 @@ function Setup({ quiz, items, missing, pool, count, bank }) {
         <div className="lt-card">
           <h2>{quiz.title}</h2>
           <p className="lt-sub">{makeup} · {quiz.subject}</p>
-          {preview.short ? <p className="lt-muted">Only {total} {total === 1 ? 'question is' : 'questions are'} available, the quiz will have {total}.</p> : null}
+          {pool.length ? (
+            <ul className="lt-muted" style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+              {pool.map((l) => <li key={`${l.table}|${l.topic}`}>{displayTopic(l.table, l.topic)} ({l.n})</li>)}
+            </ul>
+          ) : null}
+          {wanted > fixed + poolN ? <p className="lt-muted">Only {total} {total === 1 ? 'question is' : 'questions are'} available, the quiz will have {total}.</p> : null}
           <p className="lt-muted">The random questions are picked again each time you start.</p>
-          {missing ? <p className="lt-error" role="alert">{missing} {missing === 1 ? 'question is' : 'questions are'} no longer in the bank and will be left out.</p> : null}
         </div>
 
         <Choice label="Seconds per question" value={settings.seconds} onChange={set('seconds')}
@@ -82,11 +91,16 @@ function Setup({ quiz, items, missing, pool, count, bank }) {
                     options={[[true, 'Yes'], [false, 'No']]} />
             <Choice label="Next question" value={settings.advance || 'teacher'} onChange={set('advance')}
                     options={[['teacher', 'Teacher clicks'], ['auto', 'Automatic (8 s after the answer)']]} />
+            <Choice label="Reading time" value={settings.read_seconds ?? 5} onChange={set('read_seconds')}
+                    options={[[0, 'Off'], [3, '3 s'], [5, '5 s'], [8, '8 s']]} />
+            <Choice label="Clinical cases get double time" value={settings.clinical_double !== false} onChange={set('clinical_double')}
+                    options={[[true, 'On'], [false, 'Off']]} />
           </div>
         </details>
 
         {start.isError ? <p className="lt-error" role="alert">{start.error.message}</p> : null}
-        <button type="button" className="btn primary lg lt-start" disabled={start.isPending || total === 0}
+        {short != null ? <p className="lt-muted" role="status">Only {short} {short === 1 ? 'question was' : 'questions were'} available.</p> : null}
+        <button type="button" className="btn primary lg lt-start" disabled={start.isPending || short != null || total === 0}
                 onClick={() => start.mutate()}>
           {start.isPending ? 'Starting…' : 'Start'}
         </button>
@@ -98,7 +112,7 @@ function Setup({ quiz, items, missing, pool, count, bank }) {
 export default function RoomSetup() {
   const { id } = useParams();
   const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ['live-quiz-items', id], queryFn: () => loadQuizItems(id), gcTime: 0,
+    queryKey: ['live-quiz-summary', id], queryFn: () => loadQuizSummary(id), gcTime: 0,
   });
 
   let body;
@@ -114,7 +128,7 @@ export default function RoomSetup() {
         </div>
       </main>
     );
-  } else body = <Setup quiz={{ ...data.quiz, id }} items={data.items} missing={data.missing} pool={data.pool} count={data.count} bank={data.bank} />;
+  } else body = <Setup quiz={{ ...data.quiz, id }} fixed={data.fixed} pool={data.pool} count={data.count} />;
 
   return (
     <TeacherGate>

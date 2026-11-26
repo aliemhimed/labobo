@@ -43,3 +43,23 @@ export function bankGroups() {
 
 /** table name to label, for lookups. */
 export const tableLabelMap = () => new Map(bankTables().map((t) => [t.table, t.label]));
+
+/* Some banks (the bs_* tables) store topic slugs and show them through a
+   topicMap. Live's lecture lists carry the stored value; these two helpers
+   go between the stored value and the name students read. */
+function topicMapFor(table) {
+  for (const entry of Object.values(SUBJECTS)) {
+    if (entry.topicMap && (entry.sources || []).some((s) => s.table === table)) return entry.topicMap;
+  }
+  return null;
+}
+
+/** The name to show for a stored topic value. */
+export const displayTopic = (table, topic) => topicMapFor(table)?.[topic] || topic;
+
+/** The stored value for a topic that may be a display name (old saved quizzes). */
+export function storedTopic(table, topic) {
+  const map = topicMapFor(table);
+  if (!map || Object.prototype.hasOwnProperty.call(map, topic)) return topic;
+  return Object.keys(map).find((k) => map[k] === topic) ?? topic;
+}

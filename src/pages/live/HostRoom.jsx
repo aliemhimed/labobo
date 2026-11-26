@@ -1,17 +1,44 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import TopBar from '../../components/TopBar.jsx';
 import Dialog from '../../components/Dialog.jsx';
 import { useConfirm } from '../../components/Confirm.jsx';
 import { CastList } from './SpellBits.jsx';
-import { useAutoNext, useCountdown, useLiveRoom } from '../../lib/live.js';
-import { CodeTag } from './LiveBits.jsx';
+import { useAutoNext, useLiveRoom } from '../../lib/live.js';
+import { ClinicalBadge, CodeTag, ReadingNote, useQuestionClock, usePowerupLeft } from './LiveBits.jsx';
 import TeacherGate from './TeacherGate.jsx';
 import CaseHost from './CaseHost.jsx';
 import '../../styles/live-teach.css';
 
 const spaced = (code) => (code && code.length === 6 ? `${code.slice(0, 3)} ${code.slice(3)}` : code || '');
 const seconds = (ms) => Math.ceil(ms / 1000);
+
+/** True on phones (under 700 px): the host room then gets a bottom action bar. */
+function useNarrow() {
+  const query = '(max-width: 699px)';
+  const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia(query).matches);
+  useEffect(() => {
+    if (!window.matchMedia) return undefined;
+    const mq = window.matchMedia(query);
+    const on = () => setNarrow(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return narrow;
+}
+
+function MoreSheet({ onClose, children }) {
+  return (
+    <Dialog onClose={onClose} labelledBy="lt-more-title">
+      <h2 id="lt-more-title">More</h2>
+      <div className="lt-more-list">{children}</div>
+      <div className="dialog-actions">
+        <button type="button" className="btn" onClick={onClose}>Close</button>
+      </div>
+    </Dialog>
+  );
+}
 
 function RenameDialog({ player, onSave, onClose }) {
   const [value, setValue] = useState(player.shown || player.nickname || '');
@@ -98,13 +125,16 @@ function TeamList({ teams, onMove, onReject, disabled }) {
   );
 }
 
-function TeamsPanel({ teams, stage }) {
+function TeamsPanel({ teams, stage, folded }) {
   const sorted = [...teams].sort((a, b) => a.no - b.no);
   const asking = stage === 'question';
   const answered = teams.filter((t) => t.answered).length;
+  const Wrap = folded ? 'details' : 'section';
   return (
-    <section className="lt-card" aria-labelledby="lt-teams">
-      <h2 id="lt-teams" style={{ fontSize: 'var(--t-21)', marginBottom: 10 }}>Teams ({teams.length})</h2>
+    <Wrap className={folded ? 'lt-card lt-fold' : 'lt-card'} aria-labelledby={folded ? undefined : 'lt-teams'}>
+      {folded
+        ? <summary>Teams ({teams.length})</summary>
+        : <h2 id="lt-teams" style={{ fontSize: 'var(--t-21)', marginBottom: 10 }}>Teams ({teams.length})</h2>}
       {asking ? <p className="lt-sub" style={{ marginBottom: 10 }}>Answered {answered} of {teams.length} teams</p> : null}
       <div className="lt-table-wrap">
         <table className="lt-table">
@@ -128,11 +158,11 @@ function TeamsPanel({ teams, stage }) {
           </tbody>
         </table>
       </div>
-    </section>
+    </Wrap>
   );
 }
 
-function QuestionCard({ state, left }) {
+function QuestionCard({ state, left, clock, compact }) {
   const { room, question, reveal } = state;
   const answered = (reveal?.counts || state.counts)?.answered ?? 0;
   const teamRoom = room.settings?.mode === 'teams' && Array.isArray(state.teams);
@@ -142,13 +172,16 @@ function QuestionCard({ state, left }) {
   const open = room.stage === 'question';
   const options = question?.options || [];
   return (
-    <section className="lt-card" aria-label="Current question">
+    <section className={`lt-card${compact ? ' lt-compact' : ''}`} aria-label="Current question">
       <p className="lt-sub">Question {room.current + 1} of {room.total}</p>
       <h2 style={{ margin: '6px 0 12px' }}>{question?.q}</h2>
-      {question?.image ? <img src={question.image} alt="" style={{ maxWidth: '100%', maxHeight: 220, marginBottom: 12 }} /> : null}
+      {question?.image ? <img src={question.image} alt="" style={{ maxWidth: '100%', maxHeight: compact ? 140 : 220, marginBottom: 12 }} /> : null}
       {open ? (
         <div className="lt-grid" style={{ marginBottom: 12 }}>
-          <div className="lt-time" aria-live="off">{room.paused ? 'Paused · ' : ''}{seconds(left)} s</div>
+          <div>
+            {clock.reading ? <ReadingNote msLeft={clock.readLeft} /> : <div className="lt-time" aria-live="off">{room.paused ? 'Paused · ' : ''}{seconds(left)} s</div>}
+            <ClinicalBadge question={question} settings={room.settings} />
+          </div>
           <div>
             <div>Answered {answered} of {total}{unit ? ` ${unit}` : ''}</div>
             <div className="lt-bar" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={answered}>
@@ -157,7 +190,7 @@ function QuestionCard({ state, left }) {
           </div>
         </div>
       ) : null}
-      <ul className="lt-dist">
+      {open && clock.reading ? null : <ul className="lt-dist">
         {options.map((o, i) => {
           const n = by[String(i)] || 0;
           const right = !open && reveal && reveal.answer === i;
@@ -169,7 +202,7 @@ function QuestionCard({ state, left }) {
             </li>
           );
         })}
-      </ul>
+      </ul>}
       {!open && reveal?.explanation ? <p style={{ marginTop: 12 }}><b>Explanation:</b> {reveal.explanation}</p> : null}
     </section>
   );
@@ -182,7 +215,11 @@ function Room({ roomId }) {
   const [problem, setProblem] = useState('');
   const [renaming, setRenaming] = useState(null);
   const room = state?.room;
-  const left = useCountdown(room?.deadline, offsetMs, room?.paused, room?.paused_left_ms);
+  const clock = useQuestionClock(room, offsetMs);
+  const left = clock.left;
+  const puLeft = usePowerupLeft(room, offsetMs);
+  const narrow = useNarrow();
+  const [moreOpen, setMoreOpen] = useState(false);
   const autoIn = useAutoNext(state, offsetMs);
 
   const run = async (fn) => {
@@ -210,7 +247,14 @@ function Room({ roomId }) {
   const teamRoom = room.settings?.mode === 'teams' || caseRoom;
   const teams = state.teams || [];
   const last = room.current >= room.total - 1;
-  const next = <button type="button" className="btn primary" disabled={busy} onClick={() => run(() => act('next'))}>{last ? 'Finish' : 'Next question'}</button>;
+  const skipPowerup = () => run(() => act('next', { force: true }));
+  // During power-up time Next waits; the host may skip the wait.
+  const next = puLeft > 0 ? (
+    <>
+      <button type="button" className="btn primary" disabled>Power-up time {puLeft} s</button>
+      <button type="button" className="btn" disabled={busy} onClick={skipPowerup}>Skip</button>
+    </>
+  ) : <button type="button" className="btn primary" disabled={busy} onClick={() => run(() => act('next'))}>{last ? 'Finish' : 'Next question'}</button>;
   const stage = room.stage;
   // Auto mode: say when the next question starts, and let the teacher hold it.
   const autoBits = room.settings?.advance === 'auto' && (stage === 'reveal' || stage === 'leaderboard') ? (
@@ -220,8 +264,65 @@ function Room({ roomId }) {
     </>
   ) : null;
 
+  // Phones: a short status line, a bottom bar with the main actions and a More sheet.
+  const teamUnit = teamRoom && teams.length ? teams.length : state.players;
+  const answeredNow = state.counts?.answered ?? 0;
+  const where = `Question ${room.current + 1} of ${room.total}`;
+  const stageLine = stage === 'lobby' ? `${state.players} ${state.players === 1 ? 'student' : 'students'} joined`
+    : stage === 'question' ? `${where} · ${room.paused ? 'paused' : clock.reading ? `answers open in ${Math.ceil(clock.readLeft / 1000)} s` : `${seconds(left)} s left`} · ${answeredNow} of ${teamUnit} answered`
+      : stage === 'reveal' ? `${where} · answer shown`
+        : stage === 'leaderboard' ? `${where} · leaderboard`
+          : stage === 'finished' ? 'Finished' : '';
+  const nextOrSkip = puLeft > 0
+    ? <button type="button" className="btn primary lg" disabled={busy} onClick={skipPowerup}>Skip wait ({puLeft} s)</button>
+    : <button type="button" className="btn primary lg" disabled={busy} onClick={() => run(() => act('next'))}>{last ? 'Finish' : 'Next question'}</button>;
+  const endQuiz = async () => {
+    const ok = await confirm({ title: 'End the quiz now?', message: 'The room closes and students see their final scores.', confirmLabel: 'End quiz', danger: true });
+    if (ok) run(() => act('finish'));
+  };
+  const closeMore = (fn) => () => { setMoreOpen(false); fn(); };
+  const bar = narrow ? (
+    <>
+      <div className="lt-actbar" role="toolbar" aria-label="Room actions">
+        {stage === 'lobby' ? (
+          <>
+            {teamRoom ? (
+              <button type="button" className="btn lg" disabled={busy || state.players < 2} onClick={() => run(() => act('make_teams'))}>{teams.length ? 'Reshuffle teams' : 'Make teams'}</button>
+            ) : null}
+            <button type="button" className="btn primary lg" disabled={busy} onClick={() => run(() => act('next'))}>{caseRoom ? 'Start cases' : 'Start quiz'}</button>
+          </>
+        ) : null}
+        {stage === 'question' ? <button type="button" className="btn primary lg" disabled={busy} onClick={() => run(() => act('close'))}>End question now</button> : null}
+        {stage === 'reveal' ? (
+          <>
+            <button type="button" className="btn lg" disabled={busy} onClick={() => run(() => act('board'))}>Show leaderboard</button>
+            {nextOrSkip}
+          </>
+        ) : null}
+        {stage === 'leaderboard' ? nextOrSkip : null}
+        {stage === 'finished' && !caseRoom ? <Link className="btn primary lg" to={`/live/results/${roomId}`}>See results</Link> : null}
+        <button type="button" className="btn lg lt-actbar-more" aria-haspopup="dialog" onClick={() => setMoreOpen(true)}>More</button>
+      </div>
+      {moreOpen ? (
+        <MoreSheet onClose={() => setMoreOpen(false)}>
+          {stage === 'question' ? (
+            <button type="button" className="btn" disabled={busy} onClick={closeMore(() => run(() => act('pause', { paused: !room.paused })))}>{room.paused ? 'Resume' : 'Pause'}</button>
+          ) : null}
+          {room.settings?.advance === 'auto' && (stage === 'reveal' || stage === 'leaderboard') ? (
+            <button type="button" className="btn" disabled={busy} onClick={closeMore(() => run(() => act('pause', { paused: !room.paused })))}>{room.paused ? 'Resume' : 'Hold'}</button>
+          ) : null}
+          {stage !== 'finished' ? (
+            <button type="button" className="btn" disabled={busy} onClick={closeMore(() => run(() => act('moderate', { act: 'lock', value: !room.locked })))}>{room.locked ? 'Unlock room' : 'Lock room'}</button>
+          ) : null}
+          <button type="button" className="btn" onClick={closeMore(() => window.open(`/live/screen/${roomId}`, '_blank', 'noopener'))}>Open projector view</button>
+          {stage !== 'finished' && !caseRoom ? <button type="button" className="btn danger" disabled={busy} onClick={closeMore(endQuiz)}>End quiz</button> : null}
+        </MoreSheet>
+      ) : null}
+    </>
+  ) : null;
+
   return (
-    <main id="main" tabIndex={-1} className="lt">
+    <main id="main" tabIndex={-1} className={`lt${narrow ? ' has-actbar' : ''}`}>
       {confirmElement}
       {renaming ? (
         <RenameDialog player={renaming} onClose={() => setRenaming(null)}
@@ -234,7 +335,7 @@ function Room({ roomId }) {
           <CodeTag code={room.code} size="sm" />
         </div>
         <div className="lt-grid" style={{ justifyItems: 'start' }}>
-          <button type="button" className="btn" onClick={() => window.open(`/live/screen/${roomId}`, '_blank', 'noopener')}>Open projector view</button>
+          {narrow ? null : <button type="button" className="btn" onClick={() => window.open(`/live/screen/${roomId}`, '_blank', 'noopener')}>Open projector view</button>}
           <span className="lt-sub" role="status"><span className={`lt-dot${connected ? ' on' : ''}`} aria-hidden="true" />{connected ? 'Connected' : 'Reconnecting…'}</span>
         </div>
       </div>
@@ -242,9 +343,17 @@ function Room({ roomId }) {
       {error ? <p className="lt-error" role="alert">Could not refresh: {error.message}</p> : null}
       {problem ? <p className="lt-error" role="alert">{problem}</p> : null}
 
+      {narrow ? <p className="lt-stageline" role="status">{stageLine}</p> : null}
+
       <div className="lt-grid">
-        <div className="lt-card">
-          <div className="lt-controls">
+        <div className="lt-card" hidden={narrow && !(autoBits || puLeft > 0 || (room.locked && stage !== 'finished') || stage === 'leaderboard')}>
+          {narrow ? (
+            <>
+              {autoBits ? <p className="lt-sub" role="status">{room.paused ? 'Held. Resume to continue.' : autoIn != null ? `Next question in ${autoIn} s` : last ? 'Finishing…' : ''}</p> : null}
+              {puLeft > 0 ? <p className="lt-sub" role="status">Power-up time: {puLeft} s</p> : null}
+            </>
+          ) : null}
+          <div className="lt-controls" hidden={narrow}>
             {stage === 'lobby' ? (
               <>
                 <button type="button" className="btn primary lg" disabled={busy} onClick={() => run(() => act('next'))}>{caseRoom ? 'Start cases' : 'Start quiz'}</button>
@@ -300,16 +409,22 @@ function Room({ roomId }) {
           </section>
         ) : null}
 
-        {teamRoom && !caseRoom && stage !== 'lobby' && teams.length ? <TeamsPanel teams={teams} stage={stage} /> : null}
+        {teamRoom && !caseRoom && stage !== 'lobby' && teams.length ? <TeamsPanel teams={teams} stage={stage} folded={narrow} /> : null}
 
         {caseRoom && (stage === 'cases' || stage === 'finished') ? <CaseHost roomId={roomId} version={version} act={act} busy={busy} run={run} confirm={confirm} /> : null}
 
-        {stage === 'question' || stage === 'reveal' || stage === 'leaderboard' ? <QuestionCard state={state} left={left} /> : null}
+        {stage === 'question' || stage === 'reveal' || stage === 'leaderboard' ? <QuestionCard state={state} left={left} clock={clock} compact={narrow} /> : null}
 
         {(stage === 'reveal' || stage === 'leaderboard') && state.casts?.length ? (
           <section className="lt-card" aria-label="Spells for the next question"><CastList casts={state.casts} /></section>
         ) : null}
 
+        {narrow ? <details className="lt-card lt-fold"><summary>Players ({state.players})</summary><Roster showAnswered={stage === 'question'} roster={state.roster || []}
+                  onRename={setRenaming}
+                  onKick={async (p) => {
+                    const ok = await confirm({ title: `Remove ${p.name || 'this student'}?`, message: 'They are removed from the room and cannot join again.', confirmLabel: 'Kick', danger: true });
+                    if (ok) moderate({ act: 'kick', user: p.user_id });
+                  }} /></details> : (
         <section className="lt-card" aria-labelledby="lt-roster">
           <h2 id="lt-roster" style={{ fontSize: 'var(--t-21)', marginBottom: 10 }}>Students ({state.players})</h2>
           <Roster roster={state.roster || []} showAnswered={stage === 'question'}
@@ -318,8 +433,9 @@ function Room({ roomId }) {
                     const ok = await confirm({ title: `Remove ${p.name || 'this student'}?`, message: 'They are removed from the room and cannot join again.', confirmLabel: 'Kick', danger: true });
                     if (ok) moderate({ act: 'kick', user: p.user_id });
                   }} />
-        </section>
+        </section>)}
       </div>
+      {bar}
     </main>
   );
 }

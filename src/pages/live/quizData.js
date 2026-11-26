@@ -1,7 +1,8 @@
 /* Teacher-side helpers: turn a saved quiz into full questions, and rooms
    into the frozen question list the server wants. Shared by the quiz
    builder and the room setup screen. */
-import { fetchBank, fetchQuiz } from '../../lib/live.js';
+import { fetchBank, fetchLectures, fetchQuiz } from '../../lib/live.js';
+import { storedTopic } from '../../lib/liveSubjects.js';
 import { questionFromRow } from '../../lib/questions.js';
 
 export const MAX_QUESTIONS = 100;
@@ -10,7 +11,7 @@ export const MAX_QUESTIONS = 100;
 export const bankItem = (table, row) => {
   const q = questionFromRow(row, table);
   return {
-    kind: 'bank', key: `${table}:${row.id}`, table, id: row.id, topic: q.topic, q: q.q,
+    kind: 'bank', key: `${table}:${row.id}`, table, id: row.id, topic: q.topic, rawTopic: row.topic || '', q: q.q,
     options: q.options, answer: q.answer, explanation: q.explanation, images: q.images,
   };
 };
@@ -38,11 +39,15 @@ export async function loadBankItems(tables) {
   return out;
 }
 
-/** A saved quiz with every item resolved: { quiz, items, missing, pool, count, bank }. */
+/** A quiz's lecture pool with stored topic values (old quizzes saved display names for some banks). */
+const cleanPool = (quiz) => (quiz.settings?.pool || []).map((p) => ({ table: p.table, topic: storedTopic(p.table, p.topic) }));
+
+/** A saved quiz with its fixed items resolved: { quiz, items, missing, pool, count, bank }.
+    Only the banks of the fixed questions are loaded (not the lecture pool's). */
 export async function loadQuizItems(id) {
   const { quiz, items } = await fetchQuiz(id);
-  const pool = quiz.settings?.pool || [];
-  const bank = await loadBankItems([...items.filter((i) => i.source_table).map((i) => i.source_table), ...pool.map((p) => p.table)]);
+  const pool = cleanPool(quiz);
+  const bank = await loadBankItems(items.filter((i) => i.source_table).map((i) => i.source_table));
   const out = [];
   let missing = 0;
   for (const it of [...items].sort((a, b) => a.position - b.position)) {
@@ -53,6 +58,21 @@ export async function loadQuizItems(id) {
     }
   }
   return { quiz, items: out, missing, pool, count: quiz.settings?.count || 0, bank };
+}
+
+/** What a start of this quiz is made of, without loading any bank:
+    { quiz, fixed, pool: [{ table, topic, n }], count }. */
+export async function loadQuizSummary(id) {
+  const { quiz, items } = await fetchQuiz(id);
+  const pool = cleanPool(quiz);
+  const tables = [...new Set(pool.map((p) => p.table))];
+  const lists = tables.length ? (await fetchLectures(tables)).tables || {} : {};
+  const counts = new Map();
+  for (const [table, list] of Object.entries(lists)) for (const l of list) counts.set(lectureKey(table, l.topic), l.n);
+  return {
+    quiz, fixed: items.length, count: quiz.settings?.count || 0,
+    pool: pool.map((p) => ({ ...p, n: counts.get(lectureKey(p.table, p.topic)) || 0 })),
+  };
 }
 
 /** The question shape create_room expects. */

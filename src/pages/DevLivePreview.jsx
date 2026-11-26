@@ -13,6 +13,9 @@ import LiveApp from './live/LiveApp.jsx';
 const ROOM = '00000000-0000-4000-8000-000000000001';
 const now = () => new Date().toISOString();
 const inSec = (s) => new Date(Date.now() + s * 1000).toISOString();
+// Fixed at page load, so the reading and power-up scenes count down once instead of restarting on every re-read.
+const T0 = Date.now();
+const at = (s) => new Date(T0 + s * 1000).toISOString();
 
 const Q = {
   position: 2, q: 'A 6-year-old has bloody diarrhoea and, a week later, low platelets and rising creatinine. Which toxin is most likely responsible?',
@@ -27,7 +30,7 @@ const TEAMS = [
   { no: 2, name: 'Team 2', score: 410, correct: 5, rank: 2, answered: false, captain: 'u3', members: ROSTER.slice(3, 6) },
   { no: 3, name: 'Synapses', score: 320, correct: 4, rank: 3, answered: true, captain: 'u6', members: ROSTER.slice(6) },
 ];
-const settings = (mode = 'individual') => ({ mode, seconds: 20, names: 'nicknames', leaderboard: 'top5', review: true, advance: 'teacher', team_size: 3 });
+const settings = (mode = 'individual') => ({ mode, seconds: 20, names: 'nicknames', leaderboard: 'top5', review: true, advance: 'teacher', team_size: 3, read_seconds: 5, clinical_double: true });
 
 function roomState(scene, role) {
   const team = scene.includes('team');
@@ -37,10 +40,12 @@ function roomState(scene, role) {
   const base = {
     role, server_now: now(), players: ROSTER.length,
     room: { id: ROOM, code: '482915', title: 'Biochem Wk 10: Enzymes', stage, current: stage === 'lobby' ? -1 : 2, total: 10,
-      deadline: stage === 'question' ? inSec(14) : null, paused: false, paused_left_ms: null, locked: false,
+      opens_at: stage === 'question' ? (scene.includes('reading') || scene.includes('clinical') ? at(12) : inSec(-6)) : null,
+      deadline: stage === 'question' ? (scene.includes('reading') ? at(32) : scene.includes('clinical') ? at(52) : inSec(14)) : null,
+      powerup_until: scene.includes('powerup') && ['reveal', 'leaderboard'].includes(stage) ? at(25) : null, paused: false, paused_left_ms: null, locked: false,
       settings: settings(cases ? 'cases' : team ? 'teams' : 'individual') },
   };
-  if (stage !== 'lobby' && !cases) base.question = Q;
+  if (stage !== 'lobby' && !cases) base.question = scene.includes('clinical') ? { ...Q, clinical: true } : Q;
   if (['reveal', 'leaderboard', 'finished'].includes(stage)) base.reveal = { answer: 0, explanation: 'Shiga toxin (E. coli O157:H7) damages glomerular endothelium, causing haemolytic uraemic syndrome.', counts: { answered: 7, by_option: { 0: 4, 1: 2, 3: 1 } } };
   const board = (team ? TEAMS : ROSTER.slice(0, 5)).map((x, i) => ({ rank: i + 1, name: x.shown || x.name, score: x.score, correct: x.correct }));
   if (['leaderboard', 'finished'].includes(stage)) base.board = board;
@@ -115,6 +120,8 @@ function fakeLive(path, scene) {
     case 'hosted': return { rooms: [{ room: ROOM, title: 'Biochem Wk 10: Enzymes', code: '482915', stage: 'finished', date: now(), total: 10, players: 34, average: 236, mode: 'individual' },
       { room: 'r2', title: 'Chest pain cases', code: '113052', stage: 'cases', date: now(), total: 3, players: 9, average: 0, mode: 'cases' }] };
     case 'history': return { sessions: [{ room: ROOM, title: 'Biochem Wk 10: Enzymes', date: now(), total: 10, score: 372, correct: 4, rank: 1, players: 34, mode: 'individual' }] };
+    case 'lectures': return { tables: Object.fromEntries((url.searchParams.get('tables') || '').split(',').map((t) => [t, [
+      { topic: 'Biochem Wk 10: Enzymes and Kinetics', n: 14 }, { topic: 'Biochem Wk 11: Glycolysis', n: 12 }, { topic: 'Biochem Wk 12: TCA cycle', n: 9 }]])) };
     case 'bank': return { tables: Object.fromEntries((url.searchParams.get('tables') || '').split(',').map((t) => [t, BANK])) };
     case 'quiz': return { quiz: { id: 'q1', title: 'Week 10 revision', subject: 'GCT I · Biochemistry', settings: { pool: [{ table: 'gct_biochemistry', topic: 'Biochem Wk 10: Enzymes and Kinetics' }], count: 10 } }, items: [] };
     case 'state': return roomState(scene, host ? 'host' : 'player');
@@ -148,8 +155,15 @@ const SCREENS = [
   ['Teacher room: lobby', `/dev/live/teach/room/${ROOM}`, 'lobby'],
   ['Teacher room: question', `/dev/live/teach/room/${ROOM}`, 'question'],
   ['Teacher room: reveal', `/dev/live/teach/room/${ROOM}`, 'reveal'],
+  ['Teacher room: reading time', `/dev/live/teach/room/${ROOM}`, 'reading'],
+  ['Teacher room: clinical case', `/dev/live/teach/room/${ROOM}`, 'clinical'],
+  ['Teacher room: power-up time', `/dev/live/teach/room/${ROOM}`, 'reveal-powerup'],
+  ['Teacher room on a phone (use a narrow window)', `/dev/live/teach/room/${ROOM}`, 'question'],
   ['Teacher room: teams question', `/dev/live/teach/room/${ROOM}`, 'team-question'],
   ['Teacher room: cases', `/dev/live/teach/room/${ROOM}`, 'case-work'],
+  ['Projector: reading time', `/dev/live/screen/${ROOM}`, 'reading'],
+  ['Projector: clinical case', `/dev/live/screen/${ROOM}`, 'clinical'],
+  ['Projector: power-up time', `/dev/live/screen/${ROOM}`, 'reveal-spells-powerup-toast'],
   ['Projector: lobby', `/dev/live/screen/${ROOM}`, 'lobby'],
   ['Projector: question', `/dev/live/screen/${ROOM}`, 'question'],
   ['Projector: reveal', `/dev/live/screen/${ROOM}`, 'reveal'],
@@ -159,6 +173,9 @@ const SCREENS = [
   ['Join page', '/dev/live', 'join'],
   ['Phone: lobby', `/dev/live/play/${ROOM}`, 'play-lobby'],
   ['Phone: question', `/dev/live/play/${ROOM}`, 'play-question'],
+  ['Phone: reading time', `/dev/live/play/${ROOM}`, 'play-question-reading'],
+  ['Phone: clinical case', `/dev/live/play/${ROOM}`, 'play-question-clinical'],
+  ['Phone: power-up time', `/dev/live/play/${ROOM}`, 'play-reveal-spells-held-powerup'],
   ['Phone: answered', `/dev/live/play/${ROOM}`, 'play-question-answered'],
   ['Phone: reveal', `/dev/live/play/${ROOM}`, 'play-reveal'],
   ['Phone: power-up cards', `/dev/live/play/${ROOM}`, 'play-reveal-spells-cards'],
